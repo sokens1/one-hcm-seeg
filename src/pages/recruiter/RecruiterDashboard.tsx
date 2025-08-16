@@ -43,6 +43,14 @@ const mockRecruiterData = {
 };
 
 export default function RecruiterDashboard() {
+  const handleEditJob = (jobId: number) => {
+    // Pour l'instant, on peut rediriger vers une page d'édition ou ouvrir un modal
+    // Ici, on va rediriger vers la page de création avec l'ID de l'offre
+    console.log(`Édition de l'offre ${jobId}`);
+    // TODO: Implémenter la redirection vers /recruiter/jobs/${jobId}/edit
+    // ou ouvrir un modal d'édition avec les données de l'offre
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -171,7 +179,12 @@ export default function RecruiterDashboard() {
                               Voir le pipeline
                             </Button>
                           </Link>
-                          <Button variant="outline" size="sm" className="gap-2 px-3">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="gap-2 px-3"
+                            onClick={() => handleEditJob(job.id)}
+                          >
                             <Edit className="w-4 h-4" />
                             Modifier
                           </Button>
