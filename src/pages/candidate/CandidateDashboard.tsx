@@ -68,7 +68,8 @@ export default function CandidateDashboard() {
   const { user } = useCandidateAuth();
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
 
-  // Simulation d'une candidature en cours
+  // État de candidature - vide par défaut, se remplit après candidature
+  const [hasApplied, setHasApplied] = useState(false);
   const candidatureStatus = {
     poste: "Directeur des Ressources Humaines",
     etapeActuelle: 2,
@@ -96,15 +97,7 @@ export default function CandidateDashboard() {
         {/* Header avec navigation */}
         <div className="bg-white shadow-sm border-b">
           <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">
-                  Bonjour {user?.firstName}
-                </h1>
-                <p className="text-muted-foreground">
-                  Bienvenue dans votre espace candidat
-                </p>
-              </div>
+            <div className="flex items-center justify-end">
               <div className="flex items-center gap-4">
                 <Button variant="outline" size="sm" className="gap-2">
                   <Bell className="w-4 h-4" />
@@ -125,69 +118,71 @@ export default function CandidateDashboard() {
             {/* Colonne principale */}
             <div className="lg:col-span-2 space-y-8">
               
-              {/* Ma Progression avec pipeline améliorée */}
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-primary" />
-                    Ma Progression
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">
-                      Candidature pour le poste de{" "}
-                      <span className="text-primary">{candidatureStatus.poste}</span>
-                    </h3>
-                    
-                    {/* Pipeline visuelle améliorée */}
-                    <div className="relative">
-                      {/* Ligne de connexion */}
-                      <div className="absolute top-6 left-6 right-6 h-0.5 bg-gradient-to-r from-green-400 via-blue-400 to-gray-300"></div>
+              {/* Ma Progression - ne s'affiche que si candidature */}
+              {hasApplied && (
+                <Card className="shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-primary" />
+                      Ma Progression
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">
+                        Candidature pour le poste de{" "}
+                        <span className="text-primary">{candidatureStatus.poste}</span>
+                      </h3>
                       
-                      {/* Étapes */}
-                      <div className="grid grid-cols-4 gap-4 relative z-10">
-                        {etapesPipeline.map((etape, index) => {
-                          const IconComponent = etape.icon;
-                          return (
-                            <div key={etape.numero} className="text-center">
-                              <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center border-2 transition-all ${
-                                etape.statut === "completed"
-                                  ? "bg-green-500 border-green-500 text-white shadow-lg"
-                                  : etape.statut === "current"
-                                  ? "bg-blue-500 border-blue-500 text-white shadow-lg animate-pulse"
-                                  : "bg-white border-gray-300 text-gray-400"
-                              }`}>
-                                <IconComponent className="w-5 h-5" />
-                              </div>
-                              <p className={`text-sm font-medium ${
-                                etape.statut === "completed" || etape.statut === "current"
-                                  ? "text-foreground"
-                                  : "text-muted-foreground"
-                              }`}>
-                                {etape.titre}
-                              </p>
-                              {etape.statut === "current" && (
-                                <div className="mt-2">
-                                  <Badge variant="secondary" className="text-xs">
-                                    En cours
-                                  </Badge>
+                      {/* Pipeline visuelle améliorée */}
+                      <div className="relative">
+                        {/* Ligne de connexion */}
+                        <div className="absolute top-6 left-6 right-6 h-0.5 bg-gradient-to-r from-green-400 via-blue-400 to-gray-300"></div>
+                        
+                        {/* Étapes */}
+                        <div className="grid grid-cols-4 gap-4 relative z-10">
+                          {etapesPipeline.map((etape, index) => {
+                            const IconComponent = etape.icon;
+                            return (
+                              <div key={etape.numero} className="text-center">
+                                <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center border-2 transition-all ${
+                                  etape.statut === "completed"
+                                    ? "bg-green-500 border-green-500 text-white shadow-lg"
+                                    : etape.statut === "current"
+                                    ? "bg-blue-500 border-blue-500 text-white shadow-lg animate-pulse"
+                                    : "bg-white border-gray-300 text-gray-400"
+                                }`}>
+                                  <IconComponent className="w-5 h-5" />
                                 </div>
-                              )}
-                            </div>
-                          );
-                        })}
+                                <p className={`text-sm font-medium ${
+                                  etape.statut === "completed" || etape.statut === "current"
+                                    ? "text-foreground"
+                                    : "text-muted-foreground"
+                                }`}>
+                                  {etape.titre}
+                                </p>
+                                {etape.statut === "current" && (
+                                  <div className="mt-2">
+                                    <Badge variant="secondary" className="text-xs">
+                                      En cours
+                                    </Badge>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p className="text-sm">
+                          <strong>Statut actuel :</strong> {candidatureStatus.statusText}
+                        </p>
                       </div>
                     </div>
-
-                    <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <p className="text-sm">
-                        <strong>Statut actuel :</strong> {candidatureStatus.statusText}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Offres d'emploi */}
               <Card className="shadow-lg">
@@ -234,12 +229,9 @@ export default function CandidateDashboard() {
                                 <Badge variant="outline">{job.type}</Badge>
                               </div>
                               <p className="text-sm line-clamp-2">{job.description}</p>
-                              <div className="flex gap-2">
-                                <Button asChild variant="outline" size="sm" className="flex-1">
+                               <div className="flex gap-2">
+                                <Button asChild variant="outline" size="sm" className="w-full">
                                   <Link to={`/jobs/${job.id}`}>Voir l'offre</Link>
-                                </Button>
-                                <Button asChild size="sm" className="flex-1">
-                                  <Link to={`/jobs/${job.id}/apply`}>Postuler</Link>
                                 </Button>
                               </div>
                             </div>
@@ -264,12 +256,9 @@ export default function CandidateDashboard() {
                               <Badge variant="outline">{job.type}</Badge>
                             </div>
                           </div>
-                          <div className="flex gap-2 ml-4">
+                           <div className="flex gap-2 ml-4">
                             <Button asChild variant="outline" size="sm">
                               <Link to={`/jobs/${job.id}`}>Voir l'offre</Link>
-                            </Button>
-                            <Button asChild size="sm">
-                              <Link to={`/jobs/${job.id}/apply`}>Postuler</Link>
                             </Button>
                           </div>
                         </div>
@@ -282,66 +271,6 @@ export default function CandidateDashboard() {
 
             {/* Colonne latérale */}
             <div className="space-y-6">
-              {/* Mes Informations */}
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="w-5 h-5 text-primary" />
-                    Mes Informations
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Nom complet</p>
-                    <p className="font-medium">{user?.firstName} {user?.lastName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Email</p>
-                    <p className="font-medium">{user?.email}</p>
-                  </div>
-                  {user?.matricule && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Matricule SEEG</p>
-                      <p className="font-medium">{user.matricule}</p>
-                    </div>
-                  )}
-                  <Button variant="outline" className="w-full" size="sm">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Modifier mes informations
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Mes Documents */}
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-primary" />
-                    Mes Documents
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {documentsSubmis.map((doc, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <FileText className="w-4 h-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">{doc.nom}</p>
-                            <p className="text-xs text-muted-foreground">{doc.type} • {doc.taille}</p>
-                          </div>
-                        </div>
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
-                          Envoyé
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* Contexte entreprise */}
               <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200">
                 <CardContent className="p-6">
