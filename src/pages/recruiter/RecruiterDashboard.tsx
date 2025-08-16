@@ -239,6 +239,12 @@ export default function RecruiterDashboard() {
                   Tunnel de recrutement
                 </Button>
               </Link>
+              <Link to="/jobs" className="block">
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <Eye className="w-4 h-4" />
+                  Espace candidature
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 

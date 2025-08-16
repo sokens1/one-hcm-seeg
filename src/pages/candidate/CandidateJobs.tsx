@@ -61,20 +61,40 @@ export default function CandidateJobs() {
 
   return (
     <Layout showFooter={true}>
-      <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center py-12 mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 animate-fade-in">
-            Postes de{" "}
-            <span className="bg-gradient-hero bg-clip-text text-transparent">
-              Direction
-            </span>
-            {" "}à la SEEG
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in delay-100">
-            Rejoignez l'équipe dirigeante de la Société d'Energie et d'eau du Gabon et participez au développement énergétique du pays.
-          </p>
+      {/* Hero Section with enhanced design */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -translate-x-36 -translate-y-36"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-48 translate-y-48"></div>
         </div>
+        <div className="relative container mx-auto px-4 py-20">
+          <div className="text-center space-y-6">
+            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 text-sm font-medium animate-fade-in">
+              Société d'Énergie et d'Eau du Gabon
+            </div>
+            <h1 className="text-5xl md:text-6xl font-bold animate-fade-in delay-100">
+              Postes de Direction
+            </h1>
+            <p className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in delay-200">
+              Rejoignez l'équipe dirigeante de la SEEG et participez au développement énergétique du Gabon
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 pt-6 animate-fade-in delay-300">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm">🏢 Secteur Public</span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm">⚡ Énergie & Eau</span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm">🇬🇦 Gabon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
 
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-200">
