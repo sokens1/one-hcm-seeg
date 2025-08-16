@@ -30,13 +30,8 @@ const menuItems = [
     icon: Users,
   },
   {
-    title: "Vue d'ensemble Pipeline",
-    url: "/recruiter/pipeline",
-    icon: Workflow,
-  },
-  {
     title: "Tunnel de recrutement",
-    url: "/recruiter/tunnel",
+    url: "/recruiter/pipeline",
     icon: Workflow,
   },
 ];
