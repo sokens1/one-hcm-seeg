@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Building2, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { useRecruiterAuth } from "@/hooks/useRecruiterAuth";
 
 // Faux compte pour simulation
 const MOCK_CREDENTIALS = {
@@ -20,6 +21,7 @@ export default function RecruiterLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useRecruiterAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +30,8 @@ export default function RecruiterLogin() {
     // Simulation d'un délai de connexion
     setTimeout(() => {
       if (email === MOCK_CREDENTIALS.email && password === MOCK_CREDENTIALS.password) {
-        // Stocker l'état de connexion
-        localStorage.setItem("recruiter_authenticated", "true");
+        // Utiliser la fonction login du hook pour mettre à jour l'état
+        login();
         toast({
           title: "Connexion réussie",
           description: "Bienvenue dans votre espace recruteur",

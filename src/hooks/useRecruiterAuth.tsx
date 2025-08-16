@@ -11,6 +11,11 @@ export function useRecruiterAuth() {
     setIsLoading(false);
   }, []);
 
+  const login = () => {
+    localStorage.setItem("recruiter_authenticated", "true");
+    setIsAuthenticated(true);
+  };
+
   const logout = () => {
     localStorage.removeItem("recruiter_authenticated");
     setIsAuthenticated(false);
@@ -19,6 +24,7 @@ export function useRecruiterAuth() {
   return {
     isAuthenticated,
     isLoading,
+    login,
     logout
   };
 }
