@@ -13,6 +13,7 @@ import JobDetail from "./pages/candidate/JobDetail";
 // Import recruiter pages
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import CreateJob from "./pages/recruiter/CreateJob";
+import EditJob from "./pages/recruiter/EditJob";
 import JobPipeline from "./pages/recruiter/JobPipeline";
 import CandidatesPage from "./pages/recruiter/CandidatesPage";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
@@ -40,6 +41,11 @@ const App = () => (
           <Route path="/recruiter/jobs/new" element={
             <ProtectedRecruiterRoute>
               <CreateJob />
+            </ProtectedRecruiterRoute>
+          } />
+          <Route path="/recruiter/jobs/:id/edit" element={
+            <ProtectedRecruiterRoute>
+              <EditJob />
             </ProtectedRecruiterRoute>
           } />
           <Route path="/recruiter/jobs/:id/pipeline" element={

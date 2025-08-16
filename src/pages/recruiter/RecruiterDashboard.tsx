@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Eye, Users, TrendingUp, Clock, BarChart3, Edit } from "lucide-react";
 import { JobCard } from "@/components/ui/job-card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Mock data - à remplacer par les vraies données
 const mockRecruiterData = {
@@ -43,12 +43,11 @@ const mockRecruiterData = {
 };
 
 export default function RecruiterDashboard() {
+  const navigate = useNavigate();
+  
   const handleEditJob = (jobId: number) => {
-    // Pour l'instant, on peut rediriger vers une page d'édition ou ouvrir un modal
-    // Ici, on va rediriger vers la page de création avec l'ID de l'offre
-    console.log(`Édition de l'offre ${jobId}`);
-    // TODO: Implémenter la redirection vers /recruiter/jobs/${jobId}/edit
-    // ou ouvrir un modal d'édition avec les données de l'offre
+    // Redirection vers la page d'édition de l'offre
+    navigate(`/recruiter/jobs/${jobId}/edit`);
   };
 
   return (
