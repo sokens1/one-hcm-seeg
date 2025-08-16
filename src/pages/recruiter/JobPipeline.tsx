@@ -3,80 +3,127 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Eye, X, CheckCircle, Filter } from "lucide-react";
+import { ArrowLeft, Eye, X, CheckCircle, Filter, Users, MapPin } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Label } from "@/components/ui/label";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 
-// Types pour le pipeline
+// Types pour le tunnel de recrutement
+interface TunnelTask {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
 interface Candidate {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
+  position: string;
   appliedDate: string;
-  status: 'new' | 'preselected' | 'offer' | 'rejected';
+  status: 'candidature' | 'preselection' | 'selection' | 'embauche';
+  tasks: TunnelTask[];
   notes?: string;
 }
 
-// Mock data
+// Mock data avec tâches pour le tunnel de recrutement
 const mockCandidates: Candidate[] = [
   {
     id: 1,
-    firstName: "Marie",
-    lastName: "Obame",
-    email: "marie.obame@email.com",
+    firstName: "Jean",
+    lastName: "Dupont",
+    email: "jean.dupont@email.com",
     phone: "+241 XX XX XX XX",
+    position: "Chef de Projet Innovation",
     appliedDate: "2024-01-15",
-    status: "new"
+    status: "candidature",
+    tasks: [
+      { id: "task1", title: "Analyse des profils", completed: false }
+    ]
   },
   {
     id: 2,
-    firstName: "Jean",
-    lastName: "Ndong",
-    email: "jean.ndong@email.com",
+    firstName: "Aïssata",
+    lastName: "Traoré",
+    email: "aissata.traore@email.com",
     phone: "+241 XX XX XX XX",
+    position: "Data Scientist Senior",
     appliedDate: "2024-01-14",
-    status: "new"
+    status: "preselection",
+    tasks: [
+      { id: "task1", title: "Tests de personnalité", completed: true },
+      { id: "task2", title: "Tests de raisonnement", completed: true },
+      { id: "task3", title: "Evaluation du Gap de compétence", completed: false },
+      { id: "task4", title: "Entretien Face à Face", completed: false },
+      { id: "task5", title: "QCM / Jeux de rôle", completed: false }
+    ]
   },
   {
     id: 3,
-    firstName: "Sarah",
-    lastName: "Mba",
-    email: "sarah.mba@email.com",
+    firstName: "Marc",
+    lastName: "Lemoine",
+    email: "marc.lemoine@email.com",
     phone: "+241 XX XX XX XX",
+    position: "Développeur Backend",
     appliedDate: "2024-01-13",
-    status: "preselected"
+    status: "selection",
+    tasks: [
+      { id: "task1", title: "Evaluation des comportements pro.", completed: true },
+      { id: "task2", title: "Job Shadowing", completed: false },
+      { id: "task3", title: "Conduite d'un Projet à valeur ajoutée", completed: false },
+      { id: "task4", title: "Edition Fiche de poste", completed: false }
+    ]
   },
   {
     id: 4,
-    firstName: "Paul",
-    lastName: "Nze",
-    email: "paul.nze@email.com",
+    firstName: "Sophie",
+    lastName: "Martin",
+    email: "sophie.martin@email.com",
     phone: "+241 XX XX XX XX",
+    position: "Data Scientist Senior",
     appliedDate: "2024-01-12",
-    status: "offer"
-  },
-  {
-    id: 5,
-    firstName: "Lucie",
-    lastName: "Ondo",
-    email: "lucie.ondo@email.com",
-    phone: "+241 XX XX XX XX",
-    appliedDate: "2024-01-10",
-    status: "offer"
+    status: "embauche",
+    tasks: [
+      { id: "task1", title: "Intégration & Formation", completed: true },
+      { id: "task2", title: "Team Building", completed: false },
+      { id: "task3", title: "Suivi Productivité & Performance", completed: false },
+      { id: "task4", title: "Evaluation continue", completed: false }
+    ]
   }
 ];
 
-const statusConfig = {
-  new: { label: "Nouveaux", color: "bg-blue-100 text-blue-800 border-blue-200", count: 0 },
-  preselected: { label: "Présélectionnés", color: "bg-yellow-100 text-yellow-800 border-yellow-200", count: 0 },
-  offer: { label: "Sélection retenus", color: "bg-green-100 text-green-800 border-green-200", count: 0 },
-  rejected: { label: "Refusés", color: "bg-red-100 text-red-800 border-red-200", count: 0 }
+const phaseConfig = {
+  candidature: { 
+    label: "Candidature", 
+    duration: "2 semaines",
+    protocol: "Protocole 1",
+    color: "bg-blue-50 border-blue-200", 
+    count: 0 
+  },
+  preselection: { 
+    label: "Pré-sélection", 
+    duration: "1 semaine",
+    protocol: "Protocole 2 : Coaching & Assessment",
+    color: "bg-yellow-50 border-yellow-200", 
+    count: 0 
+  },
+  selection: { 
+    label: "Sélection", 
+    duration: "12 semaines",
+    protocol: "Protocole 3 : Mentoring & Engagement",
+    color: "bg-purple-50 border-purple-200", 
+    count: 0 
+  },
+  embauche: { 
+    label: "Embauche", 
+    duration: "n semaines",
+    protocol: "Protocole 4 : Intégration & Performance",
+    color: "bg-green-50 border-green-200", 
+    count: 0 
+  }
 };
 
 interface CandidateCardProps {
@@ -85,24 +132,85 @@ interface CandidateCardProps {
   onViewDetails: (candidate: Candidate) => void;
 }
 
-function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCardProps) {
-  const [interviewDate, setInterviewDate] = useState<Date>();
+interface TunnelCandidateCardProps {
+  candidate: Candidate;
+  onTaskToggle: (candidateId: number, taskId: string) => void;
+  onStatusChange: (candidateId: number, newStatus: Candidate['status']) => void;
+  onViewDetails: (candidate: Candidate) => void;
+}
+
+function TunnelCandidateCard({ candidate, onTaskToggle, onStatusChange, onViewDetails }: TunnelCandidateCardProps) {
+  const completedTasks = candidate.tasks.filter(task => task.completed).length;
+  const totalTasks = candidate.tasks.length;
+  const phaseData = phaseConfig[candidate.status];
+
+  const getNextStatus = (currentStatus: Candidate['status']): Candidate['status'] | null => {
+    const statusOrder: Candidate['status'][] = ['candidature', 'preselection', 'selection', 'embauche'];
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    return currentIndex < statusOrder.length - 1 ? statusOrder[currentIndex + 1] : null;
+  };
+
+  const canAdvance = completedTasks === totalTasks && totalTasks > 0;
+  const nextStatus = getNextStatus(candidate.status);
+
   return (
-    <Card className="cursor-pointer hover:shadow-medium transition-all group">
+    <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4" 
+          style={{ borderLeftColor: candidate.status === 'candidature' ? '#3B82F6' : 
+                                    candidate.status === 'preselection' ? '#F59E0B' : 
+                                    candidate.status === 'selection' ? '#8B5CF6' : '#10B981' }}>
       <CardContent className="p-4">
         <div className="space-y-3">
+          {/* En-tête candidat */}
           <div>
-            <h4 className="font-medium text-foreground group-hover:text-primary-dark transition-colors">
+            <h4 className="font-semibold text-foreground text-sm">
               {candidate.firstName} {candidate.lastName}
             </h4>
-            <p className="text-sm text-muted-foreground">{candidate.email}</p>
-          </div>
-          
-          <div className="text-xs text-muted-foreground">
-            Candidature du {new Date(candidate.appliedDate).toLocaleDateString('fr-FR')}
+            <p className="text-xs text-muted-foreground font-medium">
+              Poste : {candidate.position}
+            </p>
           </div>
 
-          <div className="flex items-center gap-1">
+          {/* Protocole */}
+          <div className="text-xs font-medium text-primary">
+            {phaseData.protocol}
+          </div>
+
+          {/* Liste des tâches */}
+          <div className="space-y-1.5">
+            {candidate.tasks.map((task) => (
+              <div key={task.id} className="flex items-center space-x-2">
+                <Checkbox
+                  checked={task.completed}
+                  onCheckedChange={() => onTaskToggle(candidate.id, task.id)}
+                  className="h-3.5 w-3.5"
+                />
+                <span className={cn(
+                  "text-xs flex-1",
+                  task.completed ? "line-through text-muted-foreground" : "text-foreground"
+                )}>
+                  {task.title}
+                </span>
+                {task.completed && <CheckCircle className="h-3 w-3 text-green-500" />}
+              </div>
+            ))}
+          </div>
+
+          {/* Progression */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-medium">Progression :</span>
+              <span className="text-xs font-bold">{completedTasks}/{totalTasks}</span>
+            </div>
+            <div className="w-full bg-muted rounded-full h-1.5">
+              <div 
+                className="bg-primary h-1.5 rounded-full transition-all duration-300"
+                style={{ width: `${totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-1 pt-2">
             <Button
               variant="outline"
               size="sm"
@@ -110,56 +218,25 @@ function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCa
                 e.stopPropagation();
                 onViewDetails(candidate);
               }}
-              className="text-xs px-2 py-1 h-7"
+              className="text-xs px-2 py-1 h-6 flex-1"
             >
-              <Eye className="w-3 h-3 mr-1" />
-              CV
+              Voir détails
             </Button>
             
-          </div>
-          
-          <div className="flex flex-wrap gap-1 mt-2">
-            {candidate.status === 'new' && (
+            {canAdvance && nextStatus && (
               <Button
-                variant="outline"
+                variant="default"
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onStatusChange(candidate.id, 'preselected');
+                  onStatusChange(candidate.id, nextStatus);
                 }}
-                className="text-xs px-2 py-1 h-7 text-primary-dark border-primary-dark hover:bg-primary-dark hover:text-white"
+                className="text-xs px-2 py-1 h-6 bg-green-600 hover:bg-green-700"
               >
                 <CheckCircle className="w-3 h-3 mr-1" />
-                Présélectionner
+                Avancer
               </Button>
             )}
-            
-            {candidate.status === 'preselected' && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onStatusChange(candidate.id, 'offer');
-                }}
-                className="text-xs px-2 py-1 h-7 text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
-              >
-                <CheckCircle className="w-3 h-3 mr-1" />
-                Sélectionner
-              </Button>
-            )}
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onStatusChange(candidate.id, 'rejected');
-              }}
-              className="text-xs px-2 py-1 h-7 text-red-600 border-red-600 hover:bg-red-600 hover:text-white"
-            >
-              <X className="w-3 h-3" />
-            </Button>
           </div>
         </div>
       </CardContent>
@@ -183,13 +260,28 @@ export default function JobPipeline() {
     );
   };
 
+  const handleTaskToggle = (candidateId: number, taskId: string) => {
+    setCandidates(prev => 
+      prev.map(candidate => 
+        candidate.id === candidateId 
+          ? {
+              ...candidate,
+              tasks: candidate.tasks.map(task =>
+                task.id === taskId ? { ...task, completed: !task.completed } : task
+              )
+            }
+          : candidate
+      )
+    );
+  };
+
   const getCandidatesByStatus = (status: Candidate['status']) => {
     return candidates.filter(candidate => candidate.status === status);
   };
 
-  // Calcul des compteurs
-  Object.keys(statusConfig).forEach(status => {
-    statusConfig[status as keyof typeof statusConfig].count = getCandidatesByStatus(status as Candidate['status']).length;
+  // Calcul des compteurs pour chaque phase
+  Object.keys(phaseConfig).forEach(status => {
+    phaseConfig[status as keyof typeof phaseConfig].count = getCandidatesByStatus(status as Candidate['status']).length;
   });
 
   return (
@@ -204,9 +296,9 @@ export default function JobPipeline() {
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Pipeline - Directeur des Ressources Humaines</h1>
+              <h1 className="text-3xl font-bold text-foreground">Tunnel de Recrutement</h1>
               <p className="text-muted-foreground">
-                Gérez les candidatures pour ce poste de direction à la SEEG
+                Suivi des candidats en parcours d'évaluation avancé
               </p>
             </div>
           </div>
@@ -218,10 +310,11 @@ export default function JobPipeline() {
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                <option value="">Toutes les dates</option>
-                <option value="today">Aujourd'hui</option>
-                <option value="week">Cette semaine</option>
-                <option value="month">Ce mois</option>
+                <option value="">Toutes les phases</option>
+                <option value="candidature">Candidature</option>
+                <option value="preselection">Pré-sélection</option>
+                <option value="selection">Sélection</option>
+                <option value="embauche">Embauche</option>
               </select>
             </div>
           </div>
@@ -229,32 +322,43 @@ export default function JobPipeline() {
 
         {/* Stats Bar */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {Object.entries(statusConfig).map(([status, config]) => (
+          {Object.entries(phaseConfig).map(([status, config]) => (
             <Card key={status} className="text-center">
               <CardContent className="p-4">
                 <div className="text-2xl font-bold text-foreground">{config.count}</div>
                 <div className="text-sm text-muted-foreground">{config.label}</div>
+                <div className="text-xs text-muted-foreground mt-1">({config.duration})</div>
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Kanban Board */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          {Object.entries(statusConfig).map(([status, config]) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 overflow-x-auto">
+          {Object.entries(phaseConfig).map(([status, config]) => {
             const statusCandidates = getCandidatesByStatus(status as Candidate['status']);
             
             return (
-              <div key={status} className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground">{config.label}</h3>
+              <div key={status} className="space-y-4 min-w-[280px]">
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-foreground">{config.label}</h3>
+                    <Badge variant="outline" className="text-xs">{config.duration}</Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {statusCandidates.length} candidat{statusCandidates.length !== 1 ? 's' : ''}
+                  </div>
                 </div>
                 
-                <div className="space-y-3 min-h-[300px] lg:min-h-[400px] bg-muted/30 rounded-lg p-2 lg:p-3">
+                <div className={cn(
+                  "space-y-3 min-h-[500px] rounded-lg p-3 border-2 border-dashed",
+                  config.color
+                )}>
                   {statusCandidates.map((candidate) => (
-                    <CandidateCard
+                    <TunnelCandidateCard
                       key={candidate.id}
                       candidate={candidate}
+                      onTaskToggle={handleTaskToggle}
                       onStatusChange={handleStatusChange}
                       onViewDetails={setSelectedCandidate}
                     />
@@ -262,7 +366,7 @@ export default function JobPipeline() {
                   
                   {statusCandidates.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground text-sm">
-                      Aucun candidat
+                      Aucun candidat dans cette phase
                     </div>
                   )}
                 </div>
