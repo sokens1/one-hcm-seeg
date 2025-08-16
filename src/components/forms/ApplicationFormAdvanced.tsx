@@ -204,35 +204,38 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">Prénom *</Label>
-                      <Input
-                        id="firstName"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        required
-                        disabled={!!user?.firstName}
-                      />
+                       <Input
+                         id="firstName"
+                         value={formData.firstName}
+                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                         required
+                         disabled={!!user?.firstName}
+                         className="disabled:opacity-50"
+                       />
                     </div>
                     <div>
                       <Label htmlFor="lastName">Nom *</Label>
-                      <Input
-                        id="lastName"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        required
-                        disabled={!!user?.lastName}
-                      />
+                       <Input
+                         id="lastName"
+                         value={formData.lastName}
+                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                         required
+                         disabled={!!user?.lastName}
+                         className="disabled:opacity-50"
+                       />
                     </div>
                   </div>
                   <div>
                     <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                      disabled={!!user?.email}
-                    />
+                     <Input
+                       id="email"
+                       type="email"
+                       value={formData.email}
+                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                       required
+                       disabled={!!user?.email}
+                       className="disabled:opacity-50"
+                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>

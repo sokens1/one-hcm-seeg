@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Users, Building2, LogOut } from "lucide-react";
+import { Users, Building2, LogOut, LogIn, UserPlus } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useRecruiterAuth } from "@/hooks/useRecruiterAuth";
 import { useCandidateAuth } from "@/hooks/useCandidateAuth";
@@ -49,55 +49,36 @@ export function Header() {
             // Interface recruteur
             <>
               {isRecruiterAuth && (
-                <>
-                  <Link to="/">
-                    <Button variant="candidate" size="sm">
-                      Voir les Offres
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={handleRecruiterLogout} className="gap-2">
-                    <LogOut className="w-4 h-4" />
-                    Déconnexion
-                  </Button>
-                </>
+                <Button variant="outline" size="sm" onClick={handleRecruiterLogout} className="gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Déconnexion
+                </Button>
               )}
             </>
-          ) : (
-            // Interface candidat
+          ) : isCandidateAuth ? (
+            // Interface candidat connecté - redirection automatique vers dashboard
             <>
-              {isCandidateAuth ? (
-                <>
-                  <span className="text-sm text-muted-foreground">
-                    Bonjour {candidateUser?.firstName}
-                  </span>
-                  <Link to="/candidate/dashboard">
-                    <Button variant="outline" size="sm">
-                      Mon Espace
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={handleCandidateLogout} className="gap-2">
-                    <LogOut className="w-4 h-4" />
-                    Déconnexion
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link to="/candidate/login">
-                    <Button variant="outline" size="sm">
-                      Se connecter
-                    </Button>
-                  </Link>
-                  <Link to="/candidate/signup">
-                    <Button variant="default" size="sm">
-                      S'inscrire
-                    </Button>
-                  </Link>
-                </>
-              )}
-              <Link to="/recruiter">
-                <Button variant="recruiter" size="sm" className="gap-2">
-                  <Users className="w-4 h-4" />
-                  Espace Recruteur
+              <span className="text-sm text-muted-foreground">
+                Bonjour {candidateUser?.firstName}
+              </span>
+              <Button variant="outline" size="sm" onClick={handleCandidateLogout} className="gap-2">
+                <LogOut className="w-4 h-4" />
+                Déconnexion
+              </Button>
+            </>
+          ) : (
+            // Interface visiteur - seulement se connecter/s'inscrire
+            <>
+              <Link to="/candidate/login">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <LogIn className="w-4 h-4" />
+                  Se connecter
+                </Button>
+              </Link>
+              <Link to="/candidate/signup">
+                <Button variant="default" size="sm" className="gap-2">
+                  <UserPlus className="w-4 h-4" />
+                  S'inscrire
                 </Button>
               </Link>
             </>
