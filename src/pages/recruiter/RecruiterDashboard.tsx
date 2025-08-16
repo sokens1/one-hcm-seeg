@@ -2,7 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Eye, Users, TrendingUp, Clock, BarChart3 } from "lucide-react";
+import { Plus, Eye, Users, TrendingUp, Clock, BarChart3, Edit } from "lucide-react";
 import { JobCard } from "@/components/ui/job-card";
 import { Link } from "react-router-dom";
 
@@ -164,12 +164,18 @@ export default function RecruiterDashboard() {
                       </div>
 
                       <div className="mt-4 pt-4 border-t">
-                        <Link to={`/recruiter/jobs/${job.id}/pipeline`}>
-                          <Button variant="hero" size="sm" className="gap-2 w-full">
-                            <Eye className="w-4 h-4" />
-                            Voir le pipeline
+                        <div className="flex gap-2">
+                          <Link to={`/recruiter/jobs/${job.id}/pipeline`} className="flex-1">
+                            <Button variant="hero" size="sm" className="gap-2 w-full">
+                              <Eye className="w-4 h-4" />
+                              Voir le pipeline
+                            </Button>
+                          </Link>
+                          <Button variant="outline" size="sm" className="gap-2 px-3">
+                            <Edit className="w-4 h-4" />
+                            Modifier
                           </Button>
-                        </Link>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
