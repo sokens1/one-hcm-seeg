@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Layout } from "@/components/layout/Layout";
+import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Eye, X, CheckCircle, Calendar } from "lucide-react";
+import { ArrowLeft, Eye, X, CheckCircle, Calendar, Filter } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -222,6 +222,7 @@ export default function JobPipeline() {
   const { id } = useParams();
   const [candidates, setCandidates] = useState<Candidate[]>(mockCandidates);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [dateFilter, setDateFilter] = useState<string>("");
 
   const handleStatusChange = (candidateId: number, newStatus: Candidate['status']) => {
     setCandidates(prev => 
@@ -243,7 +244,7 @@ export default function JobPipeline() {
   });
 
   return (
-    <Layout>
+    <RecruiterLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -261,10 +262,19 @@ export default function JobPipeline() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2">
-              <Mail className="w-4 h-4" />
-              Contacter tous
-            </Button>
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <select 
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Toutes les dates</option>
+                <option value="today">Aujourd'hui</option>
+                <option value="week">Cette semaine</option>
+                <option value="month">Ce mois</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -289,9 +299,6 @@ export default function JobPipeline() {
               <div key={status} className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-foreground">{config.label}</h3>
-                  <Badge variant="secondary" className={config.color}>
-                    {statusCandidates.length}
-                  </Badge>
                 </div>
                 
                 <div className="space-y-3 min-h-[400px] bg-muted/30 rounded-lg p-3">
@@ -360,7 +367,7 @@ export default function JobPipeline() {
                       Voir le CV
                     </Button>
                     <Button variant="outline" size="sm" className="gap-2">
-                      <Mail className="w-4 h-4" />
+                      <Eye className="w-4 h-4" />
                       Envoyer un email
                     </Button>
                     <Button variant="outline" size="sm" className="gap-2">
@@ -384,6 +391,6 @@ export default function JobPipeline() {
           </div>
         )}
       </div>
-    </Layout>
+    </RecruiterLayout>
   );
 }

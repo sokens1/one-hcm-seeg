@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Layout } from "@/components/layout/Layout";
+import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -121,7 +121,7 @@ export default function CandidatesPage() {
   });
 
   return (
-    <Layout>
+    <RecruiterLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -296,6 +296,6 @@ export default function CandidatesPage() {
           </div>
         )}
       </div>
-    </Layout>
+    </RecruiterLayout>
   );
 }

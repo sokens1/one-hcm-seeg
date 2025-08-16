@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Layout } from "@/components/layout/Layout";
+import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -83,8 +83,8 @@ export default function EditJob() {
   };
 
   if (!id || !mockJobData[id as "1" | "2" | "3"]) {
-    return (
-      <Layout>
+  return (
+    <RecruiterLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Offre non trouvée</h1>
@@ -96,12 +96,12 @@ export default function EditJob() {
             </Link>
           </div>
         </div>
-      </Layout>
+    </RecruiterLayout>
     );
   }
 
   return (
-    <Layout>
+    <RecruiterLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -228,6 +228,6 @@ export default function EditJob() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </RecruiterLayout>
   );
 }

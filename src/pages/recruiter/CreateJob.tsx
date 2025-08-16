@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Layout } from "@/components/layout/Layout";
+import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -50,8 +50,8 @@ export default function CreateJob() {
   };
 
   if (isPreview) {
-    return (
-      <Layout>
+  return (
+    <RecruiterLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Preview Header */}
@@ -136,12 +136,12 @@ export default function CreateJob() {
             </div>
           </div>
         </div>
-      </Layout>
+    </RecruiterLayout>
     );
   }
 
   return (
-    <Layout>
+    <RecruiterLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -286,6 +286,6 @@ export default function CreateJob() {
           </Card>
         </div>
       </div>
-    </Layout>
+    </RecruiterLayout>
   );
 }
