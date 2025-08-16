@@ -1,10 +1,11 @@
-import { Layout } from "@/components/layout/Layout";
+import { CandidateLayout } from "@/components/layout/CandidateLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useCandidateAuth } from "@/hooks/useCandidateAuth";
-import { FileText, User, Settings, CheckCircle, Clock, Users, Trophy } from "lucide-react";
+import { FileText, User, Settings, CheckCircle, Clock, Users, Trophy, Briefcase } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function CandidateDashboard() {
   const { user } = useCandidateAuth();
@@ -32,20 +33,19 @@ export default function CandidateDashboard() {
   ];
 
   return (
-    <Layout showFooter={false}>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
-        <div className="container mx-auto px-4">
-          {/* Message d'accueil */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Bonjour {user?.firstName}, bienvenue dans votre espace candidat
-            </h1>
-            <p className="text-muted-foreground">
-              Suivez l'avancement de votre candidature et gérez vos informations personnelles
-            </p>
-          </div>
+    <CandidateLayout>
+      <div className="p-6">
+        {/* Message d'accueil */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Bonjour {user?.firstName}, bienvenue dans votre espace candidat
+          </h1>
+          <p className="text-muted-foreground">
+            Suivez l'avancement de votre candidature et gérez vos informations personnelles
+          </p>
+        </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-3">
             {/* Colonne principale - Progression */}
             <div className="lg:col-span-2 space-y-6">
               {/* Ma Progression */}
@@ -184,21 +184,22 @@ export default function CandidateDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button variant="outline" className="w-full justify-start" asChild>
-                    <a href="/jobs">
-                      <FileText className="w-4 h-4 mr-2" />
+                    <Link to="/candidate/jobs">
+                      <Briefcase className="w-4 h-4 mr-2" />
                       Voir toutes les offres
-                    </a>
+                    </Link>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Paramètres du compte
+                  <Button variant="outline" className="w-full justify-start" asChild>
+                    <Link to="/candidate/profile">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Gérer mon profil
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
             </div>
-          </div>
         </div>
       </div>
-    </Layout>
+    </CandidateLayout>
   );
 }

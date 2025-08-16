@@ -8,6 +8,8 @@ import NotFound from "./pages/NotFound";
 
 // Import candidate pages
 import CandidateJobs from "./pages/candidate/CandidateJobs";
+import CandidateJobsInternal from "./pages/candidate/CandidateJobsInternal";
+import CandidateProfile from "./pages/candidate/CandidateProfile";
 import JobDetail from "./pages/candidate/JobDetail";
 import CandidateSignup from "./pages/candidate/CandidateSignup";
 import CandidateLogin from "./pages/candidate/CandidateLogin";
@@ -40,6 +42,9 @@ const App = () => (
           <Route path="/candidate/signup" element={<CandidateSignup />} />
           <Route path="/candidate/login" element={<CandidateLogin />} />
           <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
+          <Route path="/candidate/jobs" element={<CandidateJobsInternal />} />
+          <Route path="/candidate/jobs/:id" element={<JobDetail />} />
+          <Route path="/candidate/profile" element={<CandidateProfile />} />
           <Route path="/company-context" element={<CompanyContext />} />
           
           {/* Recruiter Routes */}
