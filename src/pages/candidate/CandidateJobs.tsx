@@ -60,7 +60,7 @@ export default function CandidateJobs() {
   );
 
   return (
-    <Layout>
+    <Layout showFooter={true}>
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center py-12 mb-8">

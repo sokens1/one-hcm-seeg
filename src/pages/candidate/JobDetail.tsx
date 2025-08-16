@@ -54,7 +54,7 @@ export default function JobDetail() {
   }
 
   return (
-    <Layout>
+    <Layout showFooter={true}>
       <div className="container mx-auto px-4 py-8">
         {/* Navigation */}
         <div className="mb-6">
