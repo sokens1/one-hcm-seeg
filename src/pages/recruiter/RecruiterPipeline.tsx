@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, X, User, Calendar, Clock } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 
 // Types pour le tunnel de recrutement
 interface Task {
@@ -268,72 +269,75 @@ export default function RecruiterPipeline() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Tunnel de Recrutement</h1>
-        <p className="text-muted-foreground">
-          Suivi des candidats en parcours d'évaluation avancé
-        </p>
-      </div>
+    <RecruiterLayout>
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Tunnel de Recrutement</h1>
+          <p className="text-muted-foreground">
+            Suivi des candidats en parcours d'évaluation avancé
+          </p>
+        </div>
 
-      {/* Statistiques globales */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {Object.entries(phaseConfig).map(([phase, config]) => {
-          const count = getCandidatesByPhase(phase as Candidate['phase']).length;
-          return (
-            <Card key={phase}>
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-foreground">{count}</div>
-                <div className="text-sm text-muted-foreground">{config.label}</div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Tableau Kanban */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 overflow-x-auto">
-        {Object.entries(phaseConfig).map(([phase, config]) => {
-          const phaseCandidates = getCandidatesByPhase(phase as Candidate['phase']);
-          
-          return (
-            <div key={phase} className="min-w-[300px]">
-              {/* Header de colonne */}
-              <Card className="mb-4">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold">{config.label}</CardTitle>
-                    <Badge variant="outline" className="text-xs">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {config.duration}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{config.description}</p>
-                </CardHeader>
+        {/* Statistiques globales */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {Object.entries(phaseConfig).map(([phase, config]) => {
+            const count = getCandidatesByPhase(phase as Candidate['phase']).length;
+            return (
+              <Card key={phase}>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-foreground">{count}</div>
+                  <div className="text-sm text-muted-foreground">{config.label}</div>
+                </CardContent>
               </Card>
-              
-              {/* Zone de drop des candidats */}
-              <div className="min-h-[400px] bg-muted/20 rounded-lg p-3 space-y-3">
-                {phaseCandidates.map((candidate) => (
-                  <CandidateCard
-                    key={candidate.id}
-                    candidate={candidate}
-                    onTaskToggle={handleTaskToggle}
-                    onViewDetails={setSelectedCandidate}
-                    onPhaseChange={handlePhaseChange}
-                  />
-                ))}
-                
-                {phaseCandidates.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground text-sm">
-                    Aucun candidat dans cette phase
-                  </div>
-                )}
+            );
+          })}
+        </div>
+
+        {/* Tableau Kanban */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 overflow-x-auto">
+          {Object.entries(phaseConfig).map(([phase, config]) => {
+            const phaseCandidates = getCandidatesByPhase(phase as Candidate['phase']);
+            
+            return (
+              <div key={phase} className="min-w-[300px]">
+                {/* Conteneur unifié avec header et candidats */}
+                <Card className="min-h-[500px]">
+                  {/* Header de colonne */}
+                  <CardHeader className="pb-3 border-b">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold">{config.label}</CardTitle>
+                      <Badge variant="outline" className="text-xs">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {config.duration}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{config.description}</p>
+                  </CardHeader>
+                  
+                  {/* Zone des candidats */}
+                  <CardContent className="p-3 space-y-3">
+                    {phaseCandidates.map((candidate) => (
+                      <CandidateCard
+                        key={candidate.id}
+                        candidate={candidate}
+                        onTaskToggle={handleTaskToggle}
+                        onViewDetails={setSelectedCandidate}
+                        onPhaseChange={handlePhaseChange}
+                      />
+                    ))}
+                    
+                    {phaseCandidates.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground text-sm">
+                        Aucun candidat dans cette phase
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Modal de détails candidat */}
@@ -413,6 +417,6 @@ export default function RecruiterPipeline() {
           </Card>
         </div>
       )}
-    </div>
+    </RecruiterLayout>
   );
 }
