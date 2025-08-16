@@ -69,7 +69,7 @@ export default function RecruiterDashboard() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Offres Actives
               </CardTitle>
-              <BarChart3 className="h-4 w-4 text-primary" />
+              <BarChart3 className="h-4 w-4 text-primary-dark" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.totalJobs}</div>
@@ -129,7 +129,7 @@ export default function RecruiterDashboard() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold text-foreground">Mes offres actives</h2>
-            <Badge variant="secondary" className="bg-primary-light text-primary-foreground">
+            <Badge variant="secondary" className="bg-primary-dark text-white">
               {mockRecruiterData.activeJobs.length} offres
             </Badge>
           </div>
@@ -141,7 +141,7 @@ export default function RecruiterDashboard() {
                   <Card className="hover:shadow-medium transition-all cursor-pointer group h-full">
                     <CardContent className="p-6 flex flex-col h-full">
                       <div className="flex-1 space-y-3">
-                        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary-dark transition-colors">
                           {job.title}
                         </h3>
                         

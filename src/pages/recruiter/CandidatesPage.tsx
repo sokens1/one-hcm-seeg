@@ -101,7 +101,7 @@ const statusConfig = {
   new: { label: "Nouveaux", color: "bg-blue-100 text-blue-800 border-blue-200" },
   preselected: { label: "Présélectionnés", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
   interview: { label: "Entretien", color: "bg-purple-100 text-purple-800 border-purple-200" },
-  offer: { label: "Offre envoyée", color: "bg-green-100 text-green-800 border-green-200" },
+  offer: { label: "Sélection retenus", color: "bg-green-100 text-green-800 border-green-200" },
   rejected: { label: "Refusés", color: "bg-red-100 text-red-800 border-red-200" }
 };
 
@@ -214,8 +214,8 @@ export default function CandidatesPage() {
                     <tr key={candidate.id} className="border-b hover:bg-muted/30 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                            <User className="w-5 h-5 text-primary" />
+                          <div className="w-10 h-10 bg-primary-dark/10 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-primary-dark" />
                           </div>
                           <div>
                             <div className="font-medium text-foreground">

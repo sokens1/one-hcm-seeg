@@ -76,7 +76,7 @@ const statusConfig = {
   new: { label: "Nouveaux", color: "bg-blue-100 text-blue-800 border-blue-200", count: 0 },
   preselected: { label: "Présélectionnés", color: "bg-yellow-100 text-yellow-800 border-yellow-200", count: 0 },
   interview: { label: "Entretien", color: "bg-purple-100 text-purple-800 border-purple-200", count: 0 },
-  offer: { label: "Offre envoyée", color: "bg-green-100 text-green-800 border-green-200", count: 0 },
+  offer: { label: "Sélection retenus", color: "bg-green-100 text-green-800 border-green-200", count: 0 },
   rejected: { label: "Refusés", color: "bg-red-100 text-red-800 border-red-200", count: 0 }
 };
 
@@ -93,7 +93,7 @@ function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCa
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
+            <h4 className="font-medium text-foreground group-hover:text-primary-dark transition-colors">
               {candidate.firstName} {candidate.lastName}
             </h4>
             <p className="text-sm text-muted-foreground">{candidate.email}</p>
@@ -128,7 +128,7 @@ function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCa
                   e.stopPropagation();
                   onStatusChange(candidate.id, 'preselected');
                 }}
-                className="text-xs px-2 py-1 h-7 text-primary border-primary hover:bg-primary hover:text-white"
+                className="text-xs px-2 py-1 h-7 text-primary-dark border-primary-dark hover:bg-primary-dark hover:text-white"
               >
                 <CheckCircle className="w-3 h-3 mr-1" />
                 Présélectionner

@@ -118,7 +118,7 @@ export default function CreateJob() {
               </div>
 
               <div>
-                <Card className="border-primary/20">
+                <Card className="border-primary-dark/20">
                   <CardContent className="p-6 text-center space-y-4">
                     <h3 className="text-xl font-semibold">Prêt à postuler ?</h3>
                     <p className="text-muted-foreground text-sm">
