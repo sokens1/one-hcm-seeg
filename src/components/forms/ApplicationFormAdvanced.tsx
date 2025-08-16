@@ -209,8 +209,6 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                          value={formData.firstName}
                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                          required
-                         disabled={!!user?.firstName}
-                         className="disabled:opacity-50"
                        />
                     </div>
                     <div>
@@ -220,8 +218,6 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                          value={formData.lastName}
                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                          required
-                         disabled={!!user?.lastName}
-                         className="disabled:opacity-50"
                        />
                     </div>
                   </div>
@@ -233,8 +229,6 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                        value={formData.email}
                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                        required
-                       disabled={!!user?.email}
-                       className="disabled:opacity-50"
                      />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
