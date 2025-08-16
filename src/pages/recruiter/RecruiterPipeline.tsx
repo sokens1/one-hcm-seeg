@@ -133,6 +133,8 @@ function CandidateCard({ candidate, onTaskToggle, onViewDetails, onPhaseChange }
     }
   };
 
+  // Trouver la prochaine tâche à faire
+  const nextTask = candidate.tasks.find(task => !task.completed);
   const canAdvance = completedTasks === totalTasks && totalTasks > 0;
 
   return (
@@ -162,36 +164,30 @@ function CandidateCard({ candidate, onTaskToggle, onViewDetails, onPhaseChange }
               {getProtocoleName()}
             </p>
             
-            {/* Liste des tâches */}
-            <div className="space-y-1">
-              {candidate.tasks.map((task) => (
-                <div key={task.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`task-${candidate.id}-${task.id}`}
-                    checked={task.completed}
-                    onCheckedChange={() => onTaskToggle(candidate.id, task.id)}
-                    className="h-4 w-4"
-                  />
-                  <label
-                    htmlFor={`task-${candidate.id}-${task.id}`}
-                    className={`text-sm cursor-pointer ${
-                      task.completed ? 'line-through text-muted-foreground' : 'text-foreground'
-                    }`}
-                  >
-                    {task.completed ? '☑' : '☐'} {task.name}
-                  </label>
-                </div>
-              ))}
-            </div>
-
-            {/* Progression */}
-            <div className="mt-3">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-muted-foreground">Progression :</span>
-                <span className="font-medium">{completedTasks}/{totalTasks}</span>
+            {/* Prochaine tâche uniquement */}
+            {nextTask && (
+              <div className="flex items-center space-x-2 mb-2">
+                <Checkbox
+                  id={`task-${candidate.id}-${nextTask.id}`}
+                  checked={nextTask.completed}
+                  onCheckedChange={() => onTaskToggle(candidate.id, nextTask.id)}
+                  className="h-4 w-4"
+                />
+                <label
+                  htmlFor={`task-${candidate.id}-${nextTask.id}`}
+                  className="text-sm cursor-pointer text-foreground"
+                >
+                  {nextTask.name}
+                </label>
               </div>
-              <Progress value={progressPercentage} className="h-2" />
+            )}
+
+            {/* Score seulement */}
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-muted-foreground">Progression :</span>
+              <span className="font-medium">{completedTasks}/{totalTasks}</span>
             </div>
+            <Progress value={progressPercentage} className="h-2" />
           </div>
 
           {/* Actions */}
@@ -295,24 +291,24 @@ export default function RecruiterPipeline() {
         </div>
 
         {/* Tableau Kanban */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 overflow-x-auto">
+        <div className="flex flex-col lg:flex-row gap-6 overflow-x-auto">
           {Object.entries(phaseConfig).map(([phase, config]) => {
             const phaseCandidates = getCandidatesByPhase(phase as Candidate['phase']);
             
             return (
-              <div key={phase} className="min-w-[300px]">
+              <div key={phase} className="flex-1 min-w-[280px] max-w-none lg:max-w-[25%]">
                 {/* Conteneur unifié avec header et candidats */}
-                <Card className="min-h-[500px]">
-                  {/* Header de colonne */}
-                  <CardHeader className="pb-3 border-b">
+                <Card className="h-full">
+                  {/* Header de colonne - hauteur fixe pour alignement */}
+                  <CardHeader className="pb-3 border-b h-[100px] flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg font-semibold">{config.label}</CardTitle>
-                      <Badge variant="outline" className="text-xs">
+                      <CardTitle className="text-lg font-semibold leading-tight">{config.label}</CardTitle>
+                      <Badge variant="outline" className="text-xs whitespace-nowrap">
                         <Clock className="w-3 h-3 mr-1" />
                         {config.duration}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{config.description}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{config.description}</p>
                   </CardHeader>
                   
                   {/* Zone des candidats */}
