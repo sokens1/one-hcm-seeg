@@ -99,9 +99,6 @@ export default function JobDetail() {
                       </div>
                     </div>
 
-                    <Button variant="outline" size="icon">
-                      <Share2 className="w-4 h-4" />
-                    </Button>
                   </div>
                 </CardHeader>
               </Card>
@@ -181,24 +178,6 @@ export default function JobDetail() {
                 </CardContent>
               </Card>
 
-              {/* Similar Jobs */}
-              <Card className="shadow-soft">
-                <CardHeader>
-                  <CardTitle className="text-lg">Postes similaires</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors">
-                      <h5 className="font-medium text-sm">Développeur Frontend</h5>
-                      <p className="text-xs text-muted-foreground">Port-Gentil • CDI</p>
-                    </div>
-                    <div className="p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors">
-                      <h5 className="font-medium text-sm">Tech Lead React</h5>
-                      <p className="text-xs text-muted-foreground">Libreville • CDI</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>

@@ -111,21 +111,6 @@ export default function RecruiterLogin() {
             >
               {isLoading ? "Connexion..." : "Se connecter"}
             </Button>
-
-            <div className="pt-4 border-t">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={fillDemoCredentials}
-              >
-                Utiliser le compte de démonstration
-              </Button>
-              <p className="text-xs text-muted-foreground text-center mt-2">
-                Email: {MOCK_CREDENTIALS.email}<br />
-                Mot de passe: {MOCK_CREDENTIALS.password}
-              </p>
-            </div>
           </form>
         </CardContent>
       </Card>

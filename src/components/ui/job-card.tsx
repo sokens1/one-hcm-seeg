@@ -23,10 +23,10 @@ export function JobCard({
   onClick 
 }: JobCardProps) {
   return (
-    <Card className="hover:shadow-medium transition-all duration-300 cursor-pointer group" onClick={onClick}>
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 space-y-3">
+    <Card className="hover:shadow-medium transition-all duration-300 cursor-pointer group h-full flex flex-col" onClick={onClick}>
+      <CardContent className="p-6 flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-4 flex-1">
+          <div className="flex-1 space-y-3 flex flex-col">
             <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
               {title}
             </h3>
@@ -43,7 +43,7 @@ export function JobCard({
             </div>
 
             {description && (
-              <p className="text-muted-foreground line-clamp-2 text-sm">
+              <p className="text-muted-foreground line-clamp-3 text-sm flex-1">
                 {description}
               </p>
             )}
