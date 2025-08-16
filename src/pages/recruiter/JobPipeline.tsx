@@ -195,7 +195,7 @@ function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCa
                   className="text-xs px-2 py-1 h-7 text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
                 >
                   <CheckCircle className="w-3 h-3 mr-1" />
-                  Offre
+                  Sélectionner
                 </Button>
               </>
             )}
