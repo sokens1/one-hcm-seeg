@@ -302,17 +302,17 @@ export default function RecruiterPipeline() {
                   {/* Header de colonne - hauteur fixe pour alignement */}
                   <CardHeader className="pb-3 border-b h-[100px] flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg font-semibold leading-tight">{config.label}</CardTitle>
+                      <CardTitle className="text-base font-medium leading-tight">{config.label}</CardTitle>
                       <Badge variant="outline" className="text-xs whitespace-nowrap">
                         <Clock className="w-3 h-3 mr-1" />
                         {config.duration}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{config.description}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{config.description}</p>
                   </CardHeader>
                   
-                  {/* Zone des candidats */}
-                  <CardContent className="p-3 space-y-3">
+                  {/* Zone des candidats avec scroll */}
+                  <CardContent className="p-3 space-y-3 max-h-[600px] overflow-y-auto">
                     {phaseCandidates.map((candidate) => (
                       <CandidateCard
                         key={candidate.id}

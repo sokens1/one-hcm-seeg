@@ -233,6 +233,12 @@ export default function RecruiterDashboard() {
                   Voir tous les candidats
                 </Button>
               </Link>
+              <Link to="/recruiter/pipeline" className="block">
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  Tunnel de recrutement
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
