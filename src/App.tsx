@@ -9,6 +9,10 @@ import NotFound from "./pages/NotFound";
 // Import candidate pages
 import CandidateJobs from "./pages/candidate/CandidateJobs";
 import JobDetail from "./pages/candidate/JobDetail";
+import CandidateSignup from "./pages/candidate/CandidateSignup";
+import CandidateLogin from "./pages/candidate/CandidateLogin";
+import CandidateDashboard from "./pages/candidate/CandidateDashboard";
+import CompanyContext from "./pages/candidate/CompanyContext";
 
 // Import recruiter pages
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
@@ -33,6 +37,10 @@ const App = () => (
           <Route path="/" element={<CandidateJobs />} />
           <Route path="/jobs" element={<CandidateJobs />} />
           <Route path="/jobs/:id" element={<JobDetail />} />
+          <Route path="/candidate/signup" element={<CandidateSignup />} />
+          <Route path="/candidate/login" element={<CandidateLogin />} />
+          <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
+          <Route path="/company-context" element={<CompanyContext />} />
           
           {/* Recruiter Routes */}
           <Route path="/recruiter" element={
