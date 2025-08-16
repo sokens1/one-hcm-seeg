@@ -68,14 +68,15 @@ export default function CandidateDashboard() {
   const { user } = useCandidateAuth();
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
 
-  // État de candidature - vide par défaut, se remplit après candidature
-  const [hasApplied, setHasApplied] = useState(false);
+  // État de candidature - simulation d'une candidature en cours
+  const [hasApplied, setHasApplied] = useState(true); // Changé à true pour montrer la pipeline
   const candidatureStatus = {
     poste: "Directeur des Ressources Humaines",
     etapeActuelle: 2,
     etapeTotale: 4,
     statusText: "Analyse de votre dossier par nos recruteurs",
-    progress: 50
+    progress: 50,
+    dateDepot: "15 Décembre 2024"
   };
 
   const etapesPipeline = [
@@ -174,10 +175,23 @@ export default function CandidateDashboard() {
                         </div>
                       </div>
 
-                      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p className="text-sm">
-                          <strong>Statut actuel :</strong> {candidatureStatus.statusText}
-                        </p>
+                      <div className="mt-6 space-y-4">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm font-medium">Statut actuel :</p>
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                              Étape {candidatureStatus.etapeActuelle}/{candidatureStatus.etapeTotale}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-blue-700">{candidatureStatus.statusText}</p>
+                        </div>
+                        
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Date de dépôt :</span>
+                            <span className="font-medium">{candidatureStatus.dateDepot}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
