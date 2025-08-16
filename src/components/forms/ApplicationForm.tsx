@@ -94,63 +94,135 @@ export function ApplicationForm({ jobTitle, onBack }: ApplicationFormProps) {
   }
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="max-w-2xl mx-auto mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+      {/* Header with gradient background */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8">
+        <div className="container mx-auto px-4">
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-4"
+            className="mb-4 text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour à l'offre
           </Button>
           
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-foreground">Postuler pour</h1>
-            <h2 className="text-xl text-primary">{jobTitle}</h2>
+          <div className="text-center space-y-4">
+            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm">
+              Plateforme de Recrutement Nouvelle Génération
+            </div>
+            <h1 className="text-4xl font-bold">Rejoignez l'Excellence</h1>
+            <h2 className="text-2xl font-light">{jobTitle}</h2>
+            <p className="text-lg opacity-90 max-w-2xl mx-auto">
+              Découvrez un processus de candidature révolutionnaire qui valorise vos compétences, 
+              votre potentiel et votre ambition.
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Progress Bar */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <div className="flex items-center justify-between mb-2">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-all ${
-                  step <= currentStep 
-                    ? 'bg-primary text-primary-foreground border-primary' 
-                    : 'bg-background text-muted-foreground border-border'
-                }`}>
-                  {step}
+      <div className="container mx-auto px-4 py-8">
+        {/* Progress Bar with modern design */}
+        <div className="max-w-4xl mx-auto mb-8">
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                    step <= currentStep 
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg' 
+                      : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
+                  }`}>
+                    {step <= currentStep ? <CheckCircle className="w-6 h-6" /> : step}
+                  </div>
+                  {step < 3 && (
+                    <div className={`h-1 w-24 mx-4 rounded-full transition-all ${
+                      step < currentStep ? 'bg-gradient-to-r from-blue-600 to-blue-700' : 'bg-gray-200'
+                    }`} />
+                  )}
                 </div>
-                {step < 3 && (
-                  <div className={`h-0.5 w-20 mx-2 transition-all ${
-                    step < currentStep ? 'bg-primary' : 'bg-border'
-                  }`} />
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="flex justify-between text-sm font-medium text-gray-600">
+              <span>Informations Personnelles</span>
+              <span>Votre Parcours</span>
+              <span>Finalisation</span>
+            </div>
+            <div className="mt-4 bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-blue-600 to-blue-700 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>Infos Personnelles</span>
-            <span>Votre Parcours</span>
-            <span>Finalisation</span>
-          </div>
-          <Progress value={progress} className="mt-4" />
         </div>
 
-        {/* Form Content */}
-        <div className="max-w-2xl mx-auto">
-          <Card className="shadow-medium">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {currentStep === 1 && <><User className="w-5 h-5" /> Commençons par les bases</>}
-                {currentStep === 2 && <><FileText className="w-5 h-5" /> Parlez-nous de votre expérience</>}
-                {currentStep === 3 && <><Send className="w-5 h-5" /> Un dernier coup d'œil</>}
-              </CardTitle>
-            </CardHeader>
+        {/* Form Content with modern layout */}
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left side - Progress info */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-xl shadow-lg p-6 sticky top-8">
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                      Étape {currentStep}/3 complétée
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-gray-900">Évaluation 360°</h3>
+                    <p className="text-sm text-gray-600">Analyse complète des compétences</p>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Compétences Techniques</span>
+                          <span className="font-medium">85%</span>
+                        </div>
+                        <div className="bg-gray-200 rounded-full h-2">
+                          <div className="bg-blue-600 h-2 rounded-full" style={{width: '85%'}}></div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Leadership</span>
+                          <span className="font-medium">78%</span>
+                        </div>
+                        <div className="bg-gray-200 rounded-full h-2">
+                          <div className="bg-blue-600 h-2 rounded-full" style={{width: '78%'}}></div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Adaptabilité</span>
+                          <span className="font-medium">92%</span>
+                        </div>
+                        <div className="bg-gray-200 rounded-full h-2">
+                          <div className="bg-blue-600 h-2 rounded-full" style={{width: '92%'}}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Form */}
+            <div className="lg:col-span-2">
+              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    {currentStep === 1 && <><User className="w-6 h-6" /> Commençons par les bases</>}
+                    {currentStep === 2 && <><FileText className="w-6 h-6" /> Parlez-nous de votre expérience</>}
+                    {currentStep === 3 && <><Send className="w-6 h-6" /> Un dernier coup d'œil</>}
+                  </CardTitle>
+                </CardHeader>
 
             <CardContent className="space-y-6">
               {/* Step 1: Personal Info */}
@@ -333,8 +405,10 @@ export function ApplicationForm({ jobTitle, onBack }: ApplicationFormProps) {
               </div>
             </CardContent>
           </Card>
+            </div>
+          </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
