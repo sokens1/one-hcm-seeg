@@ -3,7 +3,7 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Eye, X, CheckCircle, Calendar, Filter } from "lucide-react";
+import { ArrowLeft, Eye, X, CheckCircle, Filter } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -19,7 +19,7 @@ interface Candidate {
   email: string;
   phone: string;
   appliedDate: string;
-  status: 'new' | 'preselected' | 'interview' | 'offer' | 'rejected';
+  status: 'new' | 'preselected' | 'offer' | 'rejected';
   notes?: string;
 }
 
@@ -59,7 +59,7 @@ const mockCandidates: Candidate[] = [
     email: "paul.nze@email.com",
     phone: "+241 XX XX XX XX",
     appliedDate: "2024-01-12",
-    status: "interview"
+    status: "offer"
   },
   {
     id: 5,
@@ -75,7 +75,6 @@ const mockCandidates: Candidate[] = [
 const statusConfig = {
   new: { label: "Nouveaux", color: "bg-blue-100 text-blue-800 border-blue-200", count: 0 },
   preselected: { label: "Présélectionnés", color: "bg-yellow-100 text-yellow-800 border-yellow-200", count: 0 },
-  interview: { label: "Entretien", color: "bg-purple-100 text-purple-800 border-purple-200", count: 0 },
   offer: { label: "Sélection retenus", color: "bg-green-100 text-green-800 border-green-200", count: 0 },
   rejected: { label: "Refusés", color: "bg-red-100 text-red-800 border-red-200", count: 0 }
 };
@@ -136,68 +135,18 @@ function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCa
             )}
             
             {candidate.status === 'preselected' && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStatusChange(candidate.id, 'interview');
-                  }}
-                  className="text-xs px-2 py-1 h-7 text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white"
-                >
-                  <Calendar className="w-3 h-3 mr-1" />
-                  Entretien
-                </Button>
-              </>
-            )}
-            
-            {candidate.status === 'interview' && (
-              <>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className="text-xs px-2 py-1 h-7 text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white"
-                    >
-                      <Calendar className="w-3 h-3 mr-1" />
-                      Programmer
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={interviewDate}
-                      onSelect={(date) => {
-                        setInterviewDate(date);
-                        if (date) {
-                          // Ici vous pouvez ajouter la logique pour sauvegarder la date d'entretien
-                          console.log(`Entretien programmé pour ${candidate.firstName} ${candidate.lastName} le ${format(date, "PPP")}`);
-                        }
-                      }}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                      className={cn("p-3 pointer-events-auto")}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStatusChange(candidate.id, 'offer');
-                  }}
-                  className="text-xs px-2 py-1 h-7 text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
-                >
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  Sélectionner
-                </Button>
-              </>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(candidate.id, 'offer');
+                }}
+                className="text-xs px-2 py-1 h-7 text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
+              >
+                <CheckCircle className="w-3 h-3 mr-1" />
+                Sélectionner
+              </Button>
             )}
             
             <Button
@@ -279,7 +228,7 @@ export default function JobPipeline() {
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {Object.entries(statusConfig).map(([status, config]) => (
             <Card key={status} className="text-center">
               <CardContent className="p-4">
@@ -291,7 +240,7 @@ export default function JobPipeline() {
         </div>
 
         {/* Kanban Board */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {Object.entries(statusConfig).map(([status, config]) => {
             const statusCandidates = getCandidatesByStatus(status as Candidate['status']);
             
@@ -371,8 +320,8 @@ export default function JobPipeline() {
                       Envoyer un email
                     </Button>
                     <Button variant="outline" size="sm" className="gap-2">
-                      <Calendar className="w-4 h-4" />
-                      Planifier entretien
+                      <CheckCircle className="w-4 h-4" />
+                      Sélectionner candidat
                     </Button>
                   </div>
                 </div>
