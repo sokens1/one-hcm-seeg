@@ -279,7 +279,7 @@ export default function JobPipeline() {
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {Object.entries(statusConfig).map(([status, config]) => (
             <Card key={status} className="text-center">
               <CardContent className="p-4">
@@ -291,7 +291,7 @@ export default function JobPipeline() {
         </div>
 
         {/* Kanban Board */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
           {Object.entries(statusConfig).map(([status, config]) => {
             const statusCandidates = getCandidatesByStatus(status as Candidate['status']);
             
@@ -301,7 +301,7 @@ export default function JobPipeline() {
                   <h3 className="font-semibold text-foreground">{config.label}</h3>
                 </div>
                 
-                <div className="space-y-3 min-h-[400px] bg-muted/30 rounded-lg p-3">
+                <div className="space-y-3 min-h-[300px] lg:min-h-[400px] bg-muted/30 rounded-lg p-2 lg:p-3">
                   {statusCandidates.map((candidate) => (
                     <CandidateCard
                       key={candidate.id}

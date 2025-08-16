@@ -1,3 +1,4 @@
+import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +44,8 @@ export default function RecruiterJobs() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <RecruiterLayout>
+      <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -106,7 +108,7 @@ export default function RecruiterJobs() {
           <h2 className="text-2xl font-semibold text-foreground">Toutes les offres</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {mockJobs.map((job, index) => (
             <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
               <Card className="hover:shadow-medium transition-all cursor-pointer group h-full">
@@ -159,6 +161,7 @@ export default function RecruiterJobs() {
           ))}
         </div>
       </div>
-    </div>
+      </div>
+    </RecruiterLayout>
   );
 }
