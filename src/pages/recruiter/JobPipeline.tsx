@@ -84,13 +84,10 @@ interface CandidateCardProps {
   candidate: Candidate;
   onStatusChange: (candidateId: number, newStatus: Candidate['status']) => void;
   onViewDetails: (candidate: Candidate) => void;
-  interviewDate?: Date;
-  setInterviewDate: (date: Date | undefined) => void;
-  schedulingCandidateId: number | null;
-  setSchedulingCandidateId: (id: number | null) => void;
 }
 
-function CandidateCard({ candidate, onStatusChange, onViewDetails, interviewDate, setInterviewDate, schedulingCandidateId, setSchedulingCandidateId }: CandidateCardProps) {
+function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCardProps) {
+  const [interviewDate, setInterviewDate] = useState<Date>();
   return (
     <Card className="cursor-pointer hover:shadow-medium transition-all group">
       <CardContent className="p-4">
@@ -164,7 +161,6 @@ function CandidateCard({ candidate, onStatusChange, onViewDetails, interviewDate
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSchedulingCandidateId(candidate.id);
                       }}
                       className="text-xs px-2 py-1 h-7 text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white"
                     >
@@ -181,7 +177,6 @@ function CandidateCard({ candidate, onStatusChange, onViewDetails, interviewDate
                         if (date) {
                           // Ici vous pouvez ajouter la logique pour sauvegarder la date d'entretien
                           console.log(`Entretien programmé pour ${candidate.firstName} ${candidate.lastName} le ${format(date, "PPP")}`);
-                          setSchedulingCandidateId(null);
                         }
                       }}
                       disabled={(date) => date < new Date()}
@@ -227,8 +222,6 @@ export default function JobPipeline() {
   const { id } = useParams();
   const [candidates, setCandidates] = useState<Candidate[]>(mockCandidates);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-  const [interviewDate, setInterviewDate] = useState<Date>();
-  const [schedulingCandidateId, setSchedulingCandidateId] = useState<number | null>(null);
 
   const handleStatusChange = (candidateId: number, newStatus: Candidate['status']) => {
     setCandidates(prev => 
@@ -308,10 +301,6 @@ export default function JobPipeline() {
                       candidate={candidate}
                       onStatusChange={handleStatusChange}
                       onViewDetails={setSelectedCandidate}
-                      interviewDate={interviewDate}
-                      setInterviewDate={setInterviewDate}
-                      schedulingCandidateId={schedulingCandidateId}
-                      setSchedulingCandidateId={setSchedulingCandidateId}
                     />
                   ))}
                   
