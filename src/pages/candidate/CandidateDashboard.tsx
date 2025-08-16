@@ -61,6 +61,123 @@ const jobs = [
     type: "CDI",
     description: "Élaborer et mettre en œuvre la stratégie marketing",
     requirements: "8+ années d'expérience en marketing"
+  },
+  {
+    id: 7,
+    title: "Chef de Projet Digital",
+    department: "Digital",
+    location: "Libreville",
+    type: "CDI",
+    description: "Piloter les projets de transformation digitale",
+    requirements: "5+ années d'expérience en gestion de projet digital"
+  },
+  {
+    id: 8,
+    title: "Responsable Qualité",
+    department: "Qualité",
+    location: "Port-Gentil",
+    type: "CDI",
+    description: "Assurer le contrôle qualité et l'amélioration continue",
+    requirements: "6+ années d'expérience en qualité"
+  },
+  {
+    id: 9,
+    title: "Manager HSE",
+    department: "HSE",
+    location: "Libreville",
+    type: "CDI",
+    description: "Gérer la politique Hygiène, Sécurité et Environnement",
+    requirements: "8+ années d'expérience HSE"
+  },
+  {
+    id: 10,
+    title: "Analyste Financier Senior",
+    department: "Finance",
+    location: "Libreville",
+    type: "CDI",
+    description: "Analyser les performances financières et préparer les budgets",
+    requirements: "5+ années d'expérience en analyse financière"
+  },
+  {
+    id: 11,
+    title: "Gestionnaire de Paie",
+    department: "Ressources Humaines",
+    location: "Libreville",
+    type: "CDI",
+    description: "Gérer la paie et les déclarations sociales",
+    requirements: "3+ années d'expérience en paie"
+  },
+  {
+    id: 12,
+    title: "Ingénieur Maintenance",
+    department: "Technique",
+    location: "Port-Gentil",
+    type: "CDI",
+    description: "Assurer la maintenance préventive et corrective",
+    requirements: "4+ années d'expérience en maintenance industrielle"
+  },
+  {
+    id: 13,
+    title: "Responsable Achats",
+    department: "Achats",
+    location: "Libreville",
+    type: "CDI",
+    description: "Optimiser les achats et négocier avec les fournisseurs",
+    requirements: "6+ années d'expérience en achats"
+  },
+  {
+    id: 14,
+    title: "Chef Comptable",
+    department: "Finance",
+    location: "Libreville",
+    type: "CDI",
+    description: "Superviser la comptabilité générale et analytique",
+    requirements: "7+ années d'expérience comptable"
+  },
+  {
+    id: 15,
+    title: "Responsable Communication",
+    department: "Communication",
+    location: "Libreville",
+    type: "CDI",
+    description: "Développer la stratégie de communication interne et externe",
+    requirements: "5+ années d'expérience en communication"
+  },
+  {
+    id: 16,
+    title: "Juriste d'Entreprise",
+    department: "Juridique",
+    location: "Libreville",
+    type: "CDI",
+    description: "Conseiller sur les aspects juridiques et gérer les contrats",
+    requirements: "4+ années d'expérience juridique"
+  },
+  {
+    id: 17,
+    title: "Data Analyst",
+    department: "Digital",
+    location: "Libreville",
+    type: "CDI",
+    description: "Analyser les données et produire des reportings",
+    requirements: "3+ années d'expérience en analyse de données"
+  },
+  {
+    id: 18,
+    title: "Responsable Logistique",
+    department: "Logistique",
+    location: "Port-Gentil",
+    type: "CDI",
+    description: "Organiser et optimiser la chaîne logistique",
+    requirements: "6+ années d'expérience en logistique"
+  },
+  {
+    id: 19,
+    title: "Assistant de Direction",
+    department: "Direction Générale",
+    location: "Libreville",
+    type: "CDI",
+    description: "Assister la direction dans ses tâches administratives",
+    requirements: "3+ années d'expérience en assistanat de direction"
   }
 ];
 
