@@ -1,4 +1,4 @@
-import { LayoutDashboard, Briefcase, Users, GitBranch, Menu } from "lucide-react";
+import { LayoutDashboard, Briefcase, Users, Workflow } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -32,7 +32,7 @@ const menuItems = [
   {
     title: "Tunnel de recrutement",
     url: "/recruiter/pipeline",
-    icon: GitBranch,
+    icon: Workflow,
   },
 ];
 
