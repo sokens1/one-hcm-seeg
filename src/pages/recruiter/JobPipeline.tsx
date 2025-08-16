@@ -6,6 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Eye, X, CheckCircle, Calendar } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Label } from "@/components/ui/label";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 // Types pour le pipeline
 interface Candidate {
@@ -80,9 +84,13 @@ interface CandidateCardProps {
   candidate: Candidate;
   onStatusChange: (candidateId: number, newStatus: Candidate['status']) => void;
   onViewDetails: (candidate: Candidate) => void;
+  interviewDate?: Date;
+  setInterviewDate: (date: Date | undefined) => void;
+  schedulingCandidateId: number | null;
+  setSchedulingCandidateId: (id: number | null) => void;
 }
 
-function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCardProps) {
+function CandidateCard({ candidate, onStatusChange, onViewDetails, interviewDate, setInterviewDate, schedulingCandidateId, setSchedulingCandidateId }: CandidateCardProps) {
   return (
     <Card className="cursor-pointer hover:shadow-medium transition-all group">
       <CardContent className="p-4">
@@ -149,18 +157,39 @@ function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCa
             
             {candidate.status === 'interview' && (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // TODO: Implémenter la programmation d'entretien
-                  }}
-                  className="text-xs px-2 py-1 h-7 text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white"
-                >
-                  <Calendar className="w-3 h-3 mr-1" />
-                  Programmer
-                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSchedulingCandidateId(candidate.id);
+                      }}
+                      className="text-xs px-2 py-1 h-7 text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white"
+                    >
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Programmer
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={interviewDate}
+                      onSelect={(date) => {
+                        setInterviewDate(date);
+                        if (date) {
+                          // Ici vous pouvez ajouter la logique pour sauvegarder la date d'entretien
+                          console.log(`Entretien programmé pour ${candidate.firstName} ${candidate.lastName} le ${format(date, "PPP")}`);
+                          setSchedulingCandidateId(null);
+                        }
+                      }}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
                 <Button
                   variant="outline"
                   size="sm"
@@ -198,6 +227,8 @@ export default function JobPipeline() {
   const { id } = useParams();
   const [candidates, setCandidates] = useState<Candidate[]>(mockCandidates);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [interviewDate, setInterviewDate] = useState<Date>();
+  const [schedulingCandidateId, setSchedulingCandidateId] = useState<number | null>(null);
 
   const handleStatusChange = (candidateId: number, newStatus: Candidate['status']) => {
     setCandidates(prev => 
@@ -277,6 +308,10 @@ export default function JobPipeline() {
                       candidate={candidate}
                       onStatusChange={handleStatusChange}
                       onViewDetails={setSelectedCandidate}
+                      interviewDate={interviewDate}
+                      setInterviewDate={setInterviewDate}
+                      schedulingCandidateId={schedulingCandidateId}
+                      setSchedulingCandidateId={setSchedulingCandidateId}
                     />
                   ))}
                   
