@@ -18,6 +18,7 @@ import JobPipeline from "./pages/recruiter/JobPipeline";
 import CandidatesPage from "./pages/recruiter/CandidatesPage";
 import RecruiterJobs from "./pages/recruiter/RecruiterJobs";
 import RecruiterPipeline from "./pages/recruiter/RecruiterPipeline";
+import RecruiterTunnel from "./pages/recruiter/RecruiterTunnel";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 
 const queryClient = new QueryClient();
@@ -68,6 +69,11 @@ const App = () => (
           <Route path="/recruiter/pipeline" element={
             <ProtectedRecruiterRoute>
               <RecruiterPipeline />
+            </ProtectedRecruiterRoute>
+          } />
+          <Route path="/recruiter/tunnel" element={
+            <ProtectedRecruiterRoute>
+              <RecruiterTunnel />
             </ProtectedRecruiterRoute>
           } />
           
