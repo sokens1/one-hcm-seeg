@@ -7,8 +7,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Download, Mail, Calendar, CheckCircle, XCircle } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, Download, Calendar, CheckCircle, XCircle, FileText, Eye } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 // Types pour l'évaluation
 interface EvaluationTask {
@@ -68,8 +69,9 @@ const mockCandidate: CandidateDetails = {
 
 export default function CandidateAnalysis() {
   const { jobId, candidateId } = useParams();
+  const navigate = useNavigate();
   const [candidate] = useState<CandidateDetails>(mockCandidate);
-  const [activeTab, setActiveTab] = useState("profil");
+  const [activeTab, setActiveTab] = useState("protocole1");
 
   // État pour le Protocole 1
   const [protocol1Tasks, setProtocol1Tasks] = useState<EvaluationTask[]>([
@@ -119,6 +121,38 @@ export default function CandidateAnalysis() {
     setter(prev => prev.map(task => 
       task.id === taskId ? { ...task, notes } : task
     ));
+  };
+
+  const handleIncuber = () => {
+    toast.success("Candidat déplacé en incubation");
+    navigate(`/recruiter/jobs/${jobId}/pipeline`);
+  };
+
+  const handleRefuser = () => {
+    toast.error("Candidat refusé");
+    navigate(`/recruiter/jobs/${jobId}/pipeline`);
+  };
+
+  const handleEngager = () => {
+    toast.success("Candidat embauché");
+    navigate(`/recruiter/jobs/${jobId}/pipeline`);
+  };
+
+  const handleGenerateReport = () => {
+    const activeProtocol = candidate.status === 'incubation' ? 'Protocole 2' : 'Protocole 1';
+    toast.success(`Rapport du ${activeProtocol} généré et envoyé au candidat`);
+  };
+
+  const handleScheduleNext = () => {
+    toast.success("Invitation à l'étape suivante envoyée au candidat");
+  };
+
+  const handleViewDocument = (docName: string) => {
+    toast.info(`Ouverture du document: ${docName}`);
+  };
+
+  const handleDownloadDocument = (docName: string) => {
+    toast.success(`Téléchargement de ${docName} en cours`);
   };
 
   return (
@@ -212,19 +246,67 @@ export default function CandidateAnalysis() {
                   <div className="space-y-4">
                     <h4 className="font-semibold text-foreground">Documents</h4>
                     <div className="space-y-2">
-                      <Button variant="outline" size="sm" className="w-full gap-2">
-                        <Download className="w-4 h-4" />
-                        {candidate.cv}
-                      </Button>
-                      <Button variant="outline" size="sm" className="w-full gap-2">
-                        <Download className="w-4 h-4" />
-                        {candidate.coverLetter}
-                      </Button>
-                      {candidate.otherDocuments.map((doc, index) => (
-                        <Button key={index} variant="outline" size="sm" className="w-full gap-2">
-                          <Download className="w-4 h-4" />
-                          {doc}
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1 gap-2"
+                          onClick={() => handleViewDocument(candidate.cv)}
+                        >
+                          <Eye className="w-4 h-4" />
+                          Voir
                         </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1 gap-2"
+                          onClick={() => handleDownloadDocument(candidate.cv)}
+                        >
+                          <Download className="w-4 h-4" />
+                          {candidate.cv}
+                        </Button>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1 gap-2"
+                          onClick={() => handleViewDocument(candidate.coverLetter)}
+                        >
+                          <Eye className="w-4 h-4" />
+                          Voir
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1 gap-2"
+                          onClick={() => handleDownloadDocument(candidate.coverLetter)}
+                        >
+                          <Download className="w-4 h-4" />
+                          {candidate.coverLetter}
+                        </Button>
+                      </div>
+                      {candidate.otherDocuments.map((doc, index) => (
+                        <div key={index} className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 gap-2"
+                            onClick={() => handleViewDocument(doc)}
+                          >
+                            <Eye className="w-4 h-4" />
+                            Voir
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 gap-2"
+                            onClick={() => handleDownloadDocument(doc)}
+                          >
+                            <Download className="w-4 h-4" />
+                            {doc}
+                          </Button>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -237,11 +319,17 @@ export default function CandidateAnalysis() {
           <div className="lg:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="protocole1">PROTOCOLE 1</TabsTrigger>
+                <TabsTrigger 
+                  value="protocole1"
+                  disabled={candidate.status === 'incubation'}
+                  className={candidate.status === 'incubation' ? "opacity-50" : ""}
+                >
+                  PROTOCOLE 1
+                </TabsTrigger>
                 <TabsTrigger 
                   value="protocole2" 
-                  disabled={!protocol1Completed}
-                  className={!protocol1Completed ? "opacity-50" : ""}
+                  disabled={candidate.status !== 'incubation'}
+                  className={candidate.status !== 'incubation' ? "opacity-50" : ""}
                 >
                   PROTOCOLE 2
                 </TabsTrigger>
@@ -271,6 +359,7 @@ export default function CandidateAnalysis() {
                           <Checkbox
                             checked={task.completed}
                             onCheckedChange={() => handleTaskToggle(task.id, true, setProtocol1Tasks)}
+                            disabled={candidate.status === 'incubation'}
                           />
                           <span className="font-medium">{task.name}</span>
                           <Badge variant="outline">+{task.points} pts</Badge>
@@ -280,6 +369,7 @@ export default function CandidateAnalysis() {
                           value={task.notes}
                           onChange={(e) => handleNotesChange(task.id, e.target.value, setProtocol1Tasks)}
                           rows={2}
+                          disabled={candidate.status === 'incubation'}
                         />
                       </div>
                     ))}
@@ -289,13 +379,13 @@ export default function CandidateAnalysis() {
 
               {/* Protocole 2 */}
               <TabsContent value="protocole2" className="space-y-6">
-                {!protocol1Completed ? (
+                {candidate.status !== 'incubation' ? (
                   <Card>
                     <CardContent className="p-8 text-center">
                       <div className="text-muted-foreground">
                         <XCircle className="w-16 h-16 mx-auto mb-4 opacity-50" />
                         <h3 className="text-lg font-semibold mb-2">Protocole 2 indisponible</h3>
-                        <p>Disponible après validation complète du Protocole 1</p>
+                        <p>Disponible après passage en incubation</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -341,27 +431,73 @@ export default function CandidateAnalysis() {
         </div>
 
         {/* Barre d'Actions Principales */}
-        <div className="mt-8 p-6 bg-muted/30 rounded-lg">
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Button variant="outline" className="gap-2">
-              <Mail className="w-4 h-4" />
-              Contacter le candidat
-            </Button>
-            <Button variant="outline" className="gap-2">
-              <Calendar className="w-4 h-4" />
-              Planifier un entretien
-            </Button>
-            <Button variant="default" className="gap-2 bg-yellow-600 hover:bg-yellow-700">
-              <CheckCircle className="w-4 h-4" />
-              Déplacer en Incubation
-            </Button>
-            <Button variant="default" className="gap-2 bg-green-600 hover:bg-green-700">
-              <CheckCircle className="w-4 h-4" />
-              Engager
-            </Button>
-            <Button variant="destructive" className="gap-2">
-              <XCircle className="w-4 h-4" />
-              Refuser
+        <div className="mt-8 space-y-4">
+          {/* Actions selon le statut */}
+          <div className="p-6 bg-muted/30 rounded-lg">
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button 
+                variant="outline" 
+                className="gap-2"
+                onClick={handleScheduleNext}
+              >
+                <Calendar className="w-4 h-4" />
+                Planifier l'étape suivante
+              </Button>
+              
+              {candidate.status === 'candidature' && (
+                <>
+                  <Button 
+                    variant="default" 
+                    className="gap-2 bg-yellow-600 hover:bg-yellow-700"
+                    onClick={handleIncuber}
+                    disabled={!protocol1Completed}
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Incuber
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    className="gap-2"
+                    onClick={handleRefuser}
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Refuser
+                  </Button>
+                </>
+              )}
+              
+              {candidate.status === 'incubation' && (
+                <>
+                  <Button 
+                    variant="default" 
+                    className="gap-2 bg-green-600 hover:bg-green-700"
+                    onClick={handleEngager}
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Engager
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    className="gap-2"
+                    onClick={handleRefuser}
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Refuser
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+          
+          {/* Bouton rapport du protocole */}
+          <div className="text-center">
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={handleGenerateReport}
+            >
+              <FileText className="w-4 h-4" />
+              Rapport du protocole
             </Button>
           </div>
         </div>
