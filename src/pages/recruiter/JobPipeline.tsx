@@ -3,171 +3,162 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Plus, Edit } from "lucide-react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Eye, X, CheckCircle, Filter } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
-// Types pour le pipeline Kanban
+// Types pour le pipeline
 interface Candidate {
   id: number;
   firstName: string;
   lastName: string;
-  currentPosition: string;
-  currentDepartment: string;
-  yearsExperience: number;
-  status: 'candidature' | 'incubation' | 'embauche' | 'refuse';
-  protocol1Progress: number; // 0-100
-  protocol2Progress: number; // 0-100
-  applicationDate: string;
+  email: string;
+  phone: string;
+  appliedDate: string;
+  status: 'new' | 'preselected' | 'offer' | 'rejected';
+  notes?: string;
 }
 
-// Mock data pour les candidats
+// Mock data
 const mockCandidates: Candidate[] = [
   {
     id: 1,
     firstName: "Marie",
     lastName: "Obame",
-    currentPosition: "Développeuse Frontend",
-    currentDepartment: "IT",
-    yearsExperience: 3,
-    status: "candidature",
-    protocol1Progress: 60,
-    protocol2Progress: 0,
-    applicationDate: "2024-01-15"
+    email: "marie.obame@email.com",
+    phone: "+241 XX XX XX XX",
+    appliedDate: "2024-01-15",
+    status: "new"
   },
   {
     id: 2,
     firstName: "Jean",
     lastName: "Ndong",
-    currentPosition: "Chef de Projet",
-    currentDepartment: "Digital",
-    yearsExperience: 5,
-    status: "candidature",
-    protocol1Progress: 80,
-    protocol2Progress: 0,
-    applicationDate: "2024-01-14"
+    email: "jean.ndong@email.com",
+    phone: "+241 XX XX XX XX",
+    appliedDate: "2024-01-14",
+    status: "new"
   },
   {
     id: 3,
     firstName: "Sarah",
     lastName: "Mba",
-    currentPosition: "Analyste Senior",
-    currentDepartment: "Finance",
-    yearsExperience: 7,
-    status: "incubation",
-    protocol1Progress: 100,
-    protocol2Progress: 45,
-    applicationDate: "2024-01-13"
+    email: "sarah.mba@email.com",
+    phone: "+241 XX XX XX XX",
+    appliedDate: "2024-01-13",
+    status: "preselected"
   },
   {
     id: 4,
     firstName: "Paul",
     lastName: "Nze",
-    currentPosition: "Développeur Full Stack",
-    currentDepartment: "IT",
-    yearsExperience: 4,
-    status: "embauche",
-    protocol1Progress: 100,
-    protocol2Progress: 100,
-    applicationDate: "2024-01-12"
+    email: "paul.nze@email.com",
+    phone: "+241 XX XX XX XX",
+    appliedDate: "2024-01-12",
+    status: "offer"
+  },
+  {
+    id: 5,
+    firstName: "Lucie",
+    lastName: "Ondo",
+    email: "lucie.ondo@email.com",
+    phone: "+241 XX XX XX XX",
+    appliedDate: "2024-01-10",
+    status: "offer"
   }
 ];
 
 const statusConfig = {
-  candidature: { 
-    label: "Candidature", 
-    color: "bg-blue-50 border-blue-200",
-    count: 0 
-  },
-  incubation: { 
-    label: "Incubation", 
-    color: "bg-yellow-50 border-yellow-200",
-    count: 0 
-  },
-  embauche: { 
-    label: "Embauché", 
-    color: "bg-green-50 border-green-200",
-    count: 0 
-  },
-  refuse: { 
-    label: "Refusé", 
-    color: "bg-red-50 border-red-200",
-    count: 0 
-  }
+  new: { label: "Nouveaux", color: "bg-blue-100 text-blue-800 border-blue-200", count: 0 },
+  preselected: { label: "Présélectionnés", color: "bg-yellow-100 text-yellow-800 border-yellow-200", count: 0 },
+  offer: { label: "Sélection retenus", color: "bg-green-100 text-green-800 border-green-200", count: 0 },
+  rejected: { label: "Refusés", color: "bg-red-100 text-red-800 border-red-200", count: 0 }
 };
 
 interface CandidateCardProps {
   candidate: Candidate;
-  onAnalyze: (candidateId: number) => void;
+  onStatusChange: (candidateId: number, newStatus: Candidate['status']) => void;
+  onViewDetails: (candidate: Candidate) => void;
 }
 
-function CandidateCard({ candidate, onAnalyze }: CandidateCardProps) {
-  const getProgressLabel = () => {
-    if (candidate.status === 'candidature') {
-      return `Protocole 1 : ${Math.round(candidate.protocol1Progress)}%`;
-    } else if (candidate.status === 'incubation') {
-      return `Protocole 2 : ${Math.round(candidate.protocol2Progress)}%`;
-    }
-    return 'Terminé ✓';
-  };
-
-  const getCurrentProgress = () => {
-    if (candidate.status === 'candidature') {
-      return candidate.protocol1Progress;
-    } else if (candidate.status === 'incubation') {
-      return candidate.protocol2Progress;
-    }
-    return 100;
-  };
-
+function CandidateCard({ candidate, onStatusChange, onViewDetails }: CandidateCardProps) {
+  const [interviewDate, setInterviewDate] = useState<Date>();
   return (
-    <Card className="hover:shadow-medium transition-all cursor-pointer group">
+    <Card className="cursor-pointer hover:shadow-medium transition-all group">
       <CardContent className="p-4">
         <div className="space-y-3">
-          {/* Nom du candidat */}
           <div>
-            <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+            <h4 className="font-medium text-foreground group-hover:text-primary-dark transition-colors">
               {candidate.firstName} {candidate.lastName}
             </h4>
+            <p className="text-sm text-muted-foreground">{candidate.email}</p>
+          </div>
+          
+          <div className="text-xs text-muted-foreground">
+            Candidature du {new Date(candidate.appliedDate).toLocaleDateString('fr-FR')}
           </div>
 
-          {/* Poste actuel et ancienneté */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Poste actuel :</span>
-              <span className="font-medium">{candidate.currentPosition}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Département :</span>
-              <span className="font-medium">{candidate.currentDepartment}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Ancienneté :</span>
-              <span className="font-medium">{candidate.yearsExperience} années</span>
-            </div>
-          </div>
-
-          {/* Indicateur de progression */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Progression :</span>
-              <span className="font-medium text-primary">{getProgressLabel()}</span>
-            </div>
-            <Progress value={getCurrentProgress()} className="h-2" />
-          </div>
-
-          {/* Bouton d'action */}
-          <div className="pt-2">
+          <div className="flex items-center gap-1">
             <Button
               variant="outline"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                onAnalyze(candidate.id);
+                onViewDetails(candidate);
               }}
-              className="w-full gap-2 hover:bg-primary hover:text-white"
+              className="text-xs px-2 py-1 h-7"
             >
-              Analyser
+              <Eye className="w-3 h-3 mr-1" />
+              CV
+            </Button>
+            
+          </div>
+          
+          <div className="flex flex-wrap gap-1 mt-2">
+            {candidate.status === 'new' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(candidate.id, 'preselected');
+                }}
+                className="text-xs px-2 py-1 h-7 text-primary-dark border-primary-dark hover:bg-primary-dark hover:text-white"
+              >
+                <CheckCircle className="w-3 h-3 mr-1" />
+                Présélectionner
+              </Button>
+            )}
+            
+            {candidate.status === 'preselected' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(candidate.id, 'offer');
+                }}
+                className="text-xs px-2 py-1 h-7 text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
+              >
+                <CheckCircle className="w-3 h-3 mr-1" />
+                Sélectionner
+              </Button>
+            )}
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onStatusChange(candidate.id, 'rejected');
+              }}
+              className="text-xs px-2 py-1 h-7 text-red-600 border-red-600 hover:bg-red-600 hover:text-white"
+            >
+              <X className="w-3 h-3" />
             </Button>
           </div>
         </div>
@@ -178,11 +169,18 @@ function CandidateCard({ candidate, onAnalyze }: CandidateCardProps) {
 
 export default function JobPipeline() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [candidates, setCandidates] = useState<Candidate[]>(mockCandidates);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [dateFilter, setDateFilter] = useState<string>("");
 
-  const handleAnalyze = (candidateId: number) => {
-    navigate(`/recruiter/jobs/${id}/candidates/${candidateId}/analysis`);
+  const handleStatusChange = (candidateId: number, newStatus: Candidate['status']) => {
+    setCandidates(prev => 
+      prev.map(candidate => 
+        candidate.id === candidateId 
+          ? { ...candidate, status: newStatus }
+          : candidate
+      )
+    );
   };
 
   const getCandidatesByStatus = (status: Candidate['status']) => {
@@ -194,38 +192,38 @@ export default function JobPipeline() {
     statusConfig[status as keyof typeof statusConfig].count = getCandidatesByStatus(status as Candidate['status']).length;
   });
 
-  // Mock job title - en réalité, ceci viendrait d'une API
-  const jobTitle = "Développeur React.js";
-
   return (
     <RecruiterLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link to="/recruiter/jobs">
+            <Link to="/recruiter">
               <Button variant="outline" size="icon">
                 <ArrowLeft className="w-4 h-4" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                Pipeline pour : {jobTitle}
-              </h1>
+              <h1 className="text-3xl font-bold text-foreground">Pipeline - Directeur des Ressources Humaines</h1>
               <p className="text-muted-foreground">
-                Gérez le flux de tous les candidats pour ce poste
+                Gérez les candidatures pour ce poste de direction à la SEEG
               </p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2">
-              <Plus className="w-4 h-4" />
-              Ajouter un candidat
-            </Button>
-            <Button variant="outline" className="gap-2">
-              <Edit className="w-4 h-4" />
-              Modifier l'offre
-            </Button>
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <select 
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Toutes les dates</option>
+                <option value="today">Aujourd'hui</option>
+                <option value="week">Cette semaine</option>
+                <option value="month">Ce mois</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -241,8 +239,8 @@ export default function JobPipeline() {
           ))}
         </div>
 
-        {/* Vue Kanban */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Kanban Board */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {Object.entries(statusConfig).map(([status, config]) => {
             const statusCandidates = getCandidatesByStatus(status as Candidate['status']);
             
@@ -250,17 +248,15 @@ export default function JobPipeline() {
               <div key={status} className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-foreground">{config.label}</h3>
-                  <Badge variant="outline" className="text-xs">
-                    {config.count}
-                  </Badge>
                 </div>
                 
-                <div className={`space-y-3 min-h-[500px] rounded-lg p-3 border-2 border-dashed ${config.color}`}>
+                <div className="space-y-3 min-h-[300px] lg:min-h-[400px] bg-muted/30 rounded-lg p-2 lg:p-3">
                   {statusCandidates.map((candidate) => (
                     <CandidateCard
                       key={candidate.id}
                       candidate={candidate}
-                      onAnalyze={handleAnalyze}
+                      onStatusChange={handleStatusChange}
+                      onViewDetails={setSelectedCandidate}
                     />
                   ))}
                   
@@ -274,6 +270,75 @@ export default function JobPipeline() {
             );
           })}
         </div>
+
+        {/* Candidate Detail Modal (Simplified) */}
+        {selectedCandidate && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>
+                    {selectedCandidate.firstName} {selectedCandidate.lastName}
+                  </CardTitle>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setSelectedCandidate(null)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Email</Label>
+                    <p className="font-medium">{selectedCandidate.email}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Téléphone</Label>
+                    <p className="font-medium">{selectedCandidate.phone}</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="text-sm text-muted-foreground">Date de candidature</Label>
+                  <p className="font-medium">
+                    {new Date(selectedCandidate.appliedDate).toLocaleDateString('fr-FR')}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm text-muted-foreground">Actions rapides</Label>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Eye className="w-4 h-4" />
+                      Voir le CV
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Eye className="w-4 h-4" />
+                      Envoyer un email
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Sélectionner candidat
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm text-muted-foreground">Notes internes</Label>
+                  <textarea
+                    className="w-full mt-2 p-3 border rounded-md resize-none"
+                    rows={4}
+                    placeholder="Ajoutez des notes sur ce candidat..."
+                    value={selectedCandidate.notes || ""}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </RecruiterLayout>
   );

@@ -20,7 +20,7 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Postes à pourvoir",
+    title: "Offres",
     url: "/recruiter/jobs",
     icon: Briefcase,
   },
@@ -28,6 +28,11 @@ const menuItems = [
     title: "Liste des Candidats",
     url: "/recruiter/candidates",
     icon: Users,
+  },
+  {
+    title: "Tunnel de recrutement",
+    url: "/recruiter/pipeline",
+    icon: Workflow,
   },
 ];
 
