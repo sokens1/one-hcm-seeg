@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,74 +30,84 @@ import RecruiterJobs from "./pages/recruiter/RecruiterJobs";
 import RecruiterPipeline from "./pages/recruiter/RecruiterPipeline";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Home and Candidate Routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/jobs" element={<CandidateJobs />} />
-          <Route path="/jobs/:id" element={<JobDetail />} />
-          <Route path="/candidate/signup" element={<CandidateSignup />} />
-          <Route path="/candidate/login" element={<CandidateLogin />} />
-          <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
-          <Route path="/candidate/jobs" element={<CandidateJobs />} />
-          
-          <Route path="/candidate/application/:id" element={<CandidateApplicationTracking />} />
-          <Route path="/candidate/applications" element={<CandidateApplications />} />
-          <Route path="/candidate/profile" element={<CandidateProfile />} />
-          <Route path="/candidate/settings" element={<CandidateSettings />} />
-          <Route path="/company-context" element={<CompanyContext />} />
-          
-          {/* Recruiter Routes */}
-          <Route path="/recruiter" element={
-            <ProtectedRecruiterRoute>
-              <RecruiterDashboard />
-            </ProtectedRecruiterRoute>
-          } />
-          <Route path="/recruiter/jobs/new" element={
-            <ProtectedRecruiterRoute>
-              <CreateJob />
-            </ProtectedRecruiterRoute>
-          } />
-          <Route path="/recruiter/jobs/:id/edit" element={
-            <ProtectedRecruiterRoute>
-              <EditJob />
-            </ProtectedRecruiterRoute>
-          } />
-          <Route path="/recruiter/jobs/:id/pipeline" element={
-            <ProtectedRecruiterRoute>
-              <JobPipeline />
-            </ProtectedRecruiterRoute>
-          } />
-          <Route path="/recruiter/candidates" element={
-            <ProtectedRecruiterRoute>
-              <CandidatesPage />
-            </ProtectedRecruiterRoute>
-          } />
-          <Route path="/recruiter/jobs" element={
-            <ProtectedRecruiterRoute>
-              <RecruiterJobs />
-            </ProtectedRecruiterRoute>
-          } />
-          <Route path="/recruiter/pipeline" element={
-            <ProtectedRecruiterRoute>
-              <RecruiterPipeline />
-            </ProtectedRecruiterRoute>
-          } />
-          
-          {/* Fallback routes */}
-          <Route path="/index" element={<Index />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Home and Candidate Routes */}
+              <Route path="/" element={<Index />} />
+              <Route path="/jobs" element={<CandidateJobs />} />
+              <Route path="/jobs/:id" element={<JobDetail />} />
+              <Route path="/candidate/signup" element={<CandidateSignup />} />
+              <Route path="/candidate/login" element={<CandidateLogin />} />
+              <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
+              <Route path="/candidate/jobs" element={<CandidateJobs />} />
+              
+              <Route path="/candidate/application/:id" element={<CandidateApplicationTracking />} />
+              <Route path="/candidate/applications" element={<CandidateApplications />} />
+              <Route path="/candidate/profile" element={<CandidateProfile />} />
+              <Route path="/candidate/settings" element={<CandidateSettings />} />
+              <Route path="/company-context" element={<CompanyContext />} />
+              
+              {/* Recruiter Routes */}
+              <Route path="/recruiter" element={
+                <ProtectedRecruiterRoute>
+                  <RecruiterDashboard />
+                </ProtectedRecruiterRoute>
+              } />
+              <Route path="/recruiter/jobs/new" element={
+                <ProtectedRecruiterRoute>
+                  <CreateJob />
+                </ProtectedRecruiterRoute>
+              } />
+              <Route path="/recruiter/jobs/:id/edit" element={
+                <ProtectedRecruiterRoute>
+                  <EditJob />
+                </ProtectedRecruiterRoute>
+              } />
+              <Route path="/recruiter/jobs/:id/pipeline" element={
+                <ProtectedRecruiterRoute>
+                  <JobPipeline />
+                </ProtectedRecruiterRoute>
+              } />
+              <Route path="/recruiter/candidates" element={
+                <ProtectedRecruiterRoute>
+                  <CandidatesPage />
+                </ProtectedRecruiterRoute>
+              } />
+              <Route path="/recruiter/jobs" element={
+                <ProtectedRecruiterRoute>
+                  <RecruiterJobs />
+                </ProtectedRecruiterRoute>
+              } />
+              <Route path="/recruiter/pipeline" element={
+                <ProtectedRecruiterRoute>
+                  <RecruiterPipeline />
+                </ProtectedRecruiterRoute>
+              } />
+              
+              {/* Fallback routes */}
+              <Route path="/index" element={<Index />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+          <Toaster />
+          <Sonner />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
+  );
+}
 
 export default App;
