@@ -12,9 +12,10 @@ import {
 interface CandidateHeaderProps {
   user: any;
   onLogout: () => void;
+  showTrigger?: boolean;
 }
 
-export function CandidateHeader({ user, onLogout }: CandidateHeaderProps) {
+export function CandidateHeader({ user, onLogout, showTrigger = true }: CandidateHeaderProps) {
   return (
     <header className="bg-card shadow-sm border-b">
       <div className="container mx-auto px-4 py-4">

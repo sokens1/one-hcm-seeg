@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useCandidateAuth } from "@/hooks/useCandidateAuth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { CandidateHeader } from "@/components/candidate/CandidateHeader";
+import { CandidateLayout } from "@/components/layout/CandidateLayout";
 import { DashboardMain } from "@/components/candidate/DashboardMain";
 import { JobCatalog } from "@/components/candidate/JobCatalog";
 import { JobDetail } from "@/components/candidate/JobDetail";
@@ -178,11 +178,8 @@ export default function CandidateDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <CandidateHeader user={user} onLogout={handleLogout} />
-      <main className="container mx-auto px-4 py-6">
-        {renderCurrentView()}
-      </main>
-    </div>
+    <CandidateLayout user={user} onLogout={handleLogout}>
+      {renderCurrentView()}
+    </CandidateLayout>
   );
 }

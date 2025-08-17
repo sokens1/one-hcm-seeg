@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Briefcase, MapPin, CheckCircle, Send } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, Briefcase, MapPin, CheckCircle, Send, Building, Clock, Calendar } from "lucide-react";
 
 interface Job {
   id: number;
@@ -25,59 +26,85 @@ interface JobDetailProps {
 export function JobDetail({ job, onBack, onApply }: JobDetailProps) {
   return (
     <div className="space-y-6">
-      {/* En-tête avec retour */}
+      {/* Header avec bouton retour */}
       <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={onBack}>
+        <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">{job.title}</h1>
-          <div className="flex items-center gap-4 text-muted-foreground mt-1">
-            <span className="flex items-center gap-1">
-              <Briefcase className="w-4 h-4" />
-              {job.department}
-            </span>
-            <span className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {job.location}
-            </span>
-            <Badge variant="secondary">{job.type}</Badge>
-          </div>
-        </div>
-        <Button onClick={onApply} className="gap-2">
-          <Send className="w-4 h-4" />
-          Postuler
+          Retour au catalogue
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Contenu principal */}
+      {/* Hero Section - Matching /jobs style */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white rounded-xl">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-40 h-40 bg-white/5 rounded-full -translate-x-20 -translate-y-20"></div>
+          <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-full translate-x-24 translate-y-24"></div>
+        </div>
+        <div className="relative p-8">
+          <div className="space-y-4">
+            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium">
+              Société d'Énergie et d'Eau du Gabon
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold">
+              {job.title}
+            </h1>
+            <div className="flex flex-wrap gap-4 text-sm">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1">
+                <span className="flex items-center gap-1">
+                  <Building className="w-4 h-4" />
+                  {job.department}
+                </span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1">
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  {job.location}
+                </span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1">
+                <span className="flex items-center gap-1">
+                  <Briefcase className="w-4 h-4" />
+                  {job.type}
+                </span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  Publié récemment
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column - Job Details */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Description du poste */}
+          {/* Description */}
           <Card>
             <CardHeader>
               <CardTitle>Description du poste</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground leading-relaxed">
-                {job.description}
-              </p>
+              <p className="text-muted-foreground leading-relaxed">{job.description}</p>
             </CardContent>
           </Card>
 
-          {/* Missions et responsabilités */}
+          {/* Missions */}
           {job.missions && (
             <Card>
               <CardHeader>
-                <CardTitle>Missions et responsabilités</CardTitle>
+                <CardTitle>Missions principales</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   {job.missions.map((mission, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">{mission}</span>
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="leading-relaxed">{mission}</span>
                     </li>
                   ))}
                 </ul>
@@ -85,7 +112,7 @@ export function JobDetail({ job, onBack, onApply }: JobDetailProps) {
             </Card>
           )}
 
-          {/* Compétences requises */}
+          {/* Compétences */}
           {job.competences && (
             <Card>
               <CardHeader>
@@ -94,69 +121,55 @@ export function JobDetail({ job, onBack, onApply }: JobDetailProps) {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {job.competences.map((competence, index) => (
-                    <Badge key={index} variant="outline">
+                    <Badge key={index} variant="secondary" className="px-3 py-1">
                       {competence}
                     </Badge>
                   ))}
                 </div>
-                {job.requirements && (
-                  <p className="text-sm text-muted-foreground mt-4">
-                    {job.requirements}
-                  </p>
-                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Profil recherché */}
+          {job.requirements && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Profil recherché</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">{job.requirements}</p>
               </CardContent>
             </Card>
           )}
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Conditions */}
-          <Card>
+        {/* Right Column - Application Card */}
+        <div className="lg:col-span-1">
+          <Card className="sticky top-6">
             <CardHeader>
-              <CardTitle>Conditions</CardTitle>
+              <CardTitle>Conditions d'emploi</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {job.conditions || "Conditions attractives selon profil et expérience"}
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {job.conditions || "CDI, salaire selon expérience, avantages sociaux"}
               </p>
-            </CardContent>
-          </Card>
-
-          {/* Action de candidature */}
-          <Card className="bg-primary/5 border-primary/20">
-            <CardHeader>
-              <CardTitle className="text-primary">Postuler maintenant</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Cette offre correspond à votre profil ? N'hésitez pas à postuler !
-              </p>
-              <Button onClick={onApply} className="w-full gap-2">
-                <Send className="w-4 h-4" />
-                Envoyer ma candidature
+              <Separator />
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <span>Date limite : 31 Décembre 2024</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Briefcase className="w-4 h-4 text-muted-foreground" />
+                  <span>Prise de poste : Janvier 2025</span>
+                </div>
+              </div>
+              <Button onClick={onApply} size="lg" className="w-full">
+                Postuler maintenant
               </Button>
-            </CardContent>
-          </Card>
-
-          {/* Informations complémentaires */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Informations</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-sm font-medium">Département</p>
-                <p className="text-sm text-muted-foreground">{job.department}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Localisation</p>
-                <p className="text-sm text-muted-foreground">{job.location}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Type de contrat</p>
-                <p className="text-sm text-muted-foreground">{job.type}</p>
-              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                Votre candidature sera étudiée dans les plus brefs délais
+              </p>
             </CardContent>
           </Card>
         </div>
