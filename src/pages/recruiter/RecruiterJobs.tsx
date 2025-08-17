@@ -49,9 +49,9 @@ export default function RecruiterJobs() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Mes Offres d'emploi</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Postes à pourvoir</h1>
           <p className="text-muted-foreground">
-            Gérez toutes vos offres d'emploi et suivez les candidatures
+            Gérez tous vos postes à pourvoir et suivez les candidatures
           </p>
         </div>
         <Link to="/recruiter/jobs/new">
