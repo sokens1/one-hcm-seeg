@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Users, Building2, LogOut, LogIn, UserPlus } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Users, Building2, LogOut, LogIn, UserPlus, ChevronDown } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useRecruiterAuth } from "@/hooks/useRecruiterAuth";
 import { useCandidateAuth } from "@/hooks/useCandidateAuth";
@@ -69,12 +70,29 @@ export function Header() {
           ) : (
             // Interface visiteur - seulement se connecter/s'inscrire
             <>
-              <Link to="/candidate/login">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <LogIn className="w-4 h-4" />
-                  Se connecter
-                </Button>
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <LogIn className="w-4 h-4" />
+                    Se connecter
+                    <ChevronDown className="w-3 h-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link to="/candidate/login" className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      Candidat
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/recruiter/login" className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4" />
+                      Recruteur
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Link to="/candidate/signup">
                 <Button variant="default" size="sm" className="gap-2">
                   <UserPlus className="w-4 h-4" />
