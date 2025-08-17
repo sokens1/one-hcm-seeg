@@ -1,7 +1,9 @@
 import { JobCard } from "@/components/ui/job-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Grid, List } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Search, Filter, Grid, List, X } from "lucide-react";
 import { useState } from "react";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { JobDetail } from "./JobDetail";
@@ -149,12 +151,23 @@ export function JobCatalog() {
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [locationFilter, setLocationFilter] = useState("");
+  const [contractFilter, setContractFilter] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const { setCurrentView } = useCandidateLayout();
 
-  const filteredJobs = mockJobs.filter(job => 
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = mockJobs.filter(job => {
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         job.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLocation = !locationFilter || job.location === locationFilter;
+    const matchesContract = !contractFilter || job.contractType === contractFilter;
+    
+    return matchesSearch && matchesLocation && matchesContract;
+  });
+
+  const uniqueLocations = [...new Set(mockJobs.map(job => job.location))];
+  const uniqueContracts = [...new Set(mockJobs.map(job => job.contractType))];
 
   const handleJobClick = (jobId: number) => {
     setSelectedJobId(jobId);
@@ -234,22 +247,111 @@ export function JobCatalog() {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="max-w-2xl mx-auto">
+      {/* Search Bar with Filters */}
+      <div className="max-w-4xl mx-auto">
         <div className="relative flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher un poste ou une ville..."
+              placeholder="Rechercher un poste, une ville ou une description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 h-12"
             />
           </div>
-          <Button variant="outline" size="icon" className="h-12 w-12">
-            <Filter className="w-4 h-4" />
-          </Button>
+          <Popover open={showFilters} onOpenChange={setShowFilters}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="h-12 gap-2">
+                <Filter className="w-4 h-4" />
+                Filtres
+                {(locationFilter || contractFilter) && (
+                  <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                    {(locationFilter ? 1 : 0) + (contractFilter ? 1 : 0)}
+                  </span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Filtres de recherche</h4>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setLocationFilter("");
+                      setContractFilter("");
+                    }}
+                  >
+                    Effacer tout
+                  </Button>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Localisation</label>
+                  <Select value={locationFilter} onValueChange={setLocationFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Toutes les villes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Toutes les villes</SelectItem>
+                      {uniqueLocations.map(location => (
+                        <SelectItem key={location} value={location}>{location}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Type de contrat</label>
+                  <Select value={contractFilter} onValueChange={setContractFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Tous les contrats" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Tous les contrats</SelectItem>
+                      {uniqueContracts.map(contract => (
+                        <SelectItem key={contract} value={contract}>{contract}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
+        
+        {/* Active Filters Display */}
+        {(locationFilter || contractFilter) && (
+          <div className="flex gap-2 mt-3">
+            {locationFilter && (
+              <div className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
+                <span>Lieu: {locationFilter}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  onClick={() => setLocationFilter("")}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
+            {contractFilter && (
+              <div className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
+                <span>Contrat: {contractFilter}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  onClick={() => setContractFilter("")}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Stats Bar */}
@@ -308,14 +410,19 @@ export function JobCatalog() {
 
       {filteredJobs.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Aucune offre ne correspond à votre recherche.</p>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={() => setSearchTerm("")}
-          >
-            Voir toutes les offres
-          </Button>
+          <p className="text-muted-foreground">Aucune offre ne correspond à vos critères de recherche.</p>
+          <div className="flex gap-2 justify-center mt-4">
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setSearchTerm("");
+                setLocationFilter("");
+                setContractFilter("");
+              }}
+            >
+              Effacer tous les filtres
+            </Button>
+          </div>
         </div>
       )}
     </div>

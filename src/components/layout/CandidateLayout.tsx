@@ -18,10 +18,11 @@ import { useState, createContext, useContext } from "react";
 import { DashboardMain } from "@/components/candidate/DashboardMain";
 import { JobCatalog } from "@/components/candidate/JobCatalog";
 import { CandidateApplications } from "@/components/candidate/CandidateApplications";
+import { ApplicationTracking } from "@/components/candidate/ApplicationTracking";
 import { CandidateProfile } from "@/components/candidate/CandidateProfile";
 import { CandidateSettings } from "@/components/candidate/CandidateSettings";
 
-type ViewType = "dashboard" | "jobs" | "applications" | "profile" | "settings";
+type ViewType = "dashboard" | "jobs" | "applications" | "profile" | "settings" | "tracking";
 
 interface CandidateLayoutContextType {
   currentView: ViewType;
@@ -94,6 +95,8 @@ function CandidateMainContent() {
         return <JobCatalog />;
       case "applications":
         return <CandidateApplications />;
+      case "tracking":
+        return <ApplicationTracking />;
       case "profile":
         return <CandidateProfile />;
       case "settings":

@@ -6,8 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, Calendar as CalendarIcon, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface ApplicationFormProps {
   jobTitle: string;
@@ -19,10 +24,16 @@ interface FormData {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
+  dateOfBirth: Date | null;
+  currentPosition: string;
   cv: File | null;
-  linkedinUrl: string;
-  portfolioUrl: string;
+  coverLetter: string;
+  certificates: File[];
+  recommendations: File[];
+  references: string;
+  question1: string;
+  question2: string;
+  question3: string;
   consent: boolean;
 }
 
@@ -33,14 +44,20 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    dateOfBirth: null,
+    currentPosition: "",
     cv: null,
-    linkedinUrl: "",
-    portfolioUrl: "",
+    coverLetter: "",
+    certificates: [],
+    recommendations: [],
+    references: "",
+    question1: "",
+    question2: "",
+    question3: "",
     consent: false
   });
 
-  const totalSteps = 3;
+  const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
 
   const handleNext = () => {
@@ -64,10 +81,16 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
     }, 2000);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData({ ...formData, cv: file });
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'certificates' | 'recommendations') => {
+    const files = e.target.files;
+    if (files) {
+      if (type === 'cv') {
+        setFormData({ ...formData, cv: files[0] });
+      } else if (type === 'certificates') {
+        setFormData({ ...formData, certificates: [...formData.certificates, ...Array.from(files)] });
+      } else if (type === 'recommendations') {
+        setFormData({ ...formData, recommendations: [...formData.recommendations, ...Array.from(files)] });
+      }
     }
   };
 
@@ -131,7 +154,7 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
         <div className="max-w-4xl mx-auto mb-8">
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-4">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
                     step <= currentStep 
@@ -140,17 +163,18 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
                   }`}>
                     {step <= currentStep ? <CheckCircle className="w-6 h-6" /> : step}
                   </div>
-                  {step < 3 && (
-                    <div className={`h-1 w-24 mx-4 rounded-full transition-all ${
+                  {step < 4 && (
+                    <div className={`h-1 w-16 mx-2 rounded-full transition-all ${
                       step < currentStep ? 'bg-gradient-to-r from-blue-600 to-blue-700' : 'bg-gray-200'
                     }`} />
                   )}
                 </div>
               ))}
             </div>
-            <div className="flex justify-between text-sm font-medium text-gray-600">
-              <span>Informations Personnelles</span>
-              <span>Votre Parcours</span>
+            <div className="grid grid-cols-4 gap-2 text-xs font-medium text-gray-600 text-center">
+              <span>Infos Personnelles</span>
+              <span>Parcours & Documents</span>
+              <span>Questionnaire MTP</span>
               <span>Finalisation</span>
             </div>
             <div className="mt-4 bg-gray-200 rounded-full h-2">
@@ -174,7 +198,7 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
                       <CheckCircle className="w-8 h-8 text-white" />
                     </div>
                     <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                      Étape {currentStep}/3 complétée
+                      Étape {currentStep}/4 complétée
                     </div>
                   </div>
                   
@@ -223,9 +247,10 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
                   <CardTitle className="flex items-center gap-3 text-xl">
-                    {currentStep === 1 && <><User className="w-6 h-6" /> Commençons par les bases</>}
-                    {currentStep === 2 && <><FileText className="w-6 h-6" /> Parlez-nous de votre expérience</>}
-                    {currentStep === 3 && <><Send className="w-6 h-6" /> Un dernier coup d'œil</>}
+                    {currentStep === 1 && <><User className="w-6 h-6" /> Informations Personnelles</>}
+                    {currentStep === 2 && <><FileText className="w-6 h-6" /> Parcours & Documents</>}
+                    {currentStep === 3 && <><CheckCircle className="w-6 h-6" /> Questionnaire MTP</>}
+                    {currentStep === 4 && <><Send className="w-6 h-6" /> Finalisation</>}
                   </CardTitle>
                 </CardHeader>
 
@@ -267,23 +292,56 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Téléphone</Label>
+                    <Label htmlFor="dateOfBirth">Date de naissance *</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !formData.dateOfBirth && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.dateOfBirth ? (
+                            format(formData.dateOfBirth, "PPP", { locale: fr })
+                          ) : (
+                            <span>Choisir une date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={formData.dateOfBirth || undefined}
+                          onSelect={(date) => setFormData({ ...formData, dateOfBirth: date || null })}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div>
+                    <Label htmlFor="currentPosition">Poste actuel *</Label>
                     <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+241 XX XX XX XX"
+                      id="currentPosition"
+                      value={formData.currentPosition}
+                      onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value })}
+                      placeholder="Votre poste actuel"
+                      required
                     />
                   </div>
                 </div>
               )}
 
-              {/* Step 2: Experience */}
+              {/* Step 2: Experience & Documents */}
               {currentStep === 2 && (
-                <div className="space-y-4 animate-fade-in">
+                <div className="space-y-6 animate-fade-in">
                   <div>
-                    <Label htmlFor="cv">CV (PDF recommandé) *</Label>
+                    <Label htmlFor="cv">Votre CV *</Label>
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
                         <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
@@ -293,7 +351,7 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
                         <input
                           type="file"
                           accept=".pdf,.doc,.docx"
-                          onChange={handleFileUpload}
+                          onChange={(e) => handleFileUpload(e, 'cv')}
                           className="hidden"
                           id="cv-upload"
                         />
@@ -307,57 +365,243 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
                       </div>
                     </div>
                   </div>
+                  
                   <div>
-                    <Label htmlFor="linkedin">Profil LinkedIn</Label>
-                    <Input
-                      id="linkedin"
-                      value={formData.linkedinUrl}
-                      onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
-                      placeholder="https://linkedin.com/in/votre-profil"
+                    <Label htmlFor="coverLetter">Lettre de motivation *</Label>
+                    <Textarea
+                      id="coverLetter"
+                      value={formData.coverLetter}
+                      onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
+                      placeholder="Expliquez votre motivation pour ce poste..."
+                      className="min-h-[120px]"
+                      required
                     />
                   </div>
+
                   <div>
-                    <Label htmlFor="portfolio">Portfolio ou GitHub</Label>
-                    <Input
-                      id="portfolio"
-                      value={formData.portfolioUrl}
-                      onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
-                      placeholder="https://votre-portfolio.com"
+                    <Label htmlFor="certificates">Certificat(s) (facultatif)</Label>
+                    <div className="mt-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary transition-colors">
+                        <Upload className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {formData.certificates.length > 0 ? `${formData.certificates.length} fichier(s) sélectionné(s)` : "Ajouter des certificats"}
+                        </p>
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx,.jpg,.png"
+                          multiple
+                          onChange={(e) => handleFileUpload(e, 'certificates')}
+                          className="hidden"
+                          id="certificates-upload"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => document.getElementById('certificates-upload')?.click()}
+                        >
+                          Choisir des fichiers
+                        </Button>
+                      </div>
+                      {formData.certificates.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {formData.certificates.map((file, index) => (
+                            <div key={index} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
+                              <span>{file.name}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const newCertificates = formData.certificates.filter((_, i) => i !== index);
+                                  setFormData({ ...formData, certificates: newCertificates });
+                                }}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="recommendations">Lettre(s) de recommandation (facultatif)</Label>
+                    <div className="mt-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary transition-colors">
+                        <Upload className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {formData.recommendations.length > 0 ? `${formData.recommendations.length} fichier(s) sélectionné(s)` : "Ajouter des lettres de recommandation"}
+                        </p>
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          multiple
+                          onChange={(e) => handleFileUpload(e, 'recommendations')}
+                          className="hidden"
+                          id="recommendations-upload"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => document.getElementById('recommendations-upload')?.click()}
+                        >
+                          Choisir des fichiers
+                        </Button>
+                      </div>
+                      {formData.recommendations.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {formData.recommendations.map((file, index) => (
+                            <div key={index} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
+                              <span>{file.name}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const newRecommendations = formData.recommendations.filter((_, i) => i !== index);
+                                  setFormData({ ...formData, recommendations: newRecommendations });
+                                }}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="references">Références de recommandation (facultatif)</Label>
+                    <Textarea
+                      id="references"
+                      value={formData.references}
+                      onChange={(e) => setFormData({ ...formData, references: e.target.value })}
+                      placeholder="Nom, poste, entreprise, téléphone/email de vos références..."
+                      className="min-h-[80px]"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Step 3: Review */}
+              {/* Step 3: Questionnaire MTP */}
               {currentStep === 3 && (
                 <div className="space-y-6 animate-fade-in">
-                  <div className="bg-muted rounded-lg p-4 space-y-3">
-                    <h4 className="font-medium">Récapitulatif de votre candidature</h4>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Nom complet:</span>
-                        <p>{formData.firstName} {formData.lastName}</p>
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-semibold mb-2">Questionnaire : Métier, Talent et Paradigme</h3>
+                    <p className="text-muted-foreground">Quelques questions pour mieux comprendre vos aspirations et votre vision.</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="question1">Question 1 : Décrivez ce qui vous passionne le plus dans votre métier</Label>
+                    <Textarea
+                      id="question1"
+                      value={formData.question1}
+                      onChange={(e) => setFormData({ ...formData, question1: e.target.value })}
+                      placeholder="Partagez votre passion..."
+                      className="min-h-[100px]"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="question2">Question 2 : Quel est le talent unique que vous apporteriez à la SEEG ?</Label>
+                    <Textarea
+                      id="question2"
+                      value={formData.question2}
+                      onChange={(e) => setFormData({ ...formData, question2: e.target.value })}
+                      placeholder="Décrivez votre talent unique..."
+                      className="min-h-[100px]"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="question3">Question 3 : Partagez un exemple où vous avez changé de paradigme pour résoudre un problème complexe</Label>
+                    <Textarea
+                      id="question3"
+                      value={formData.question3}
+                      onChange={(e) => setFormData({ ...formData, question3: e.target.value })}
+                      placeholder="Racontez votre exemple..."
+                      className="min-h-[100px]"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Review */}
+              {currentStep === 4 && (
+                <div className="space-y-6 animate-fade-in">
+                  <h4 className="text-xl font-semibold text-center mb-6">Récapitulatif de votre candidature</h4>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-muted rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Informations Personnelles</h5>
+                        <Button variant="outline" size="sm" onClick={() => setCurrentStep(1)}>Modifier</Button>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Email:</span>
-                        <p>{formData.email}</p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Téléphone:</span>
-                        <p>{formData.phone || "Non renseigné"}</p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">CV:</span>
-                        <p>{formData.cv?.name || "Non fourni"}</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Nom complet:</span>
+                          <p>{formData.firstName} {formData.lastName}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Email:</span>
+                          <p>{formData.email}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Date de naissance:</span>
+                          <p>{formData.dateOfBirth ? format(formData.dateOfBirth, "PPP", { locale: fr }) : "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Poste actuel:</span>
+                          <p>{formData.currentPosition || "Non renseigné"}</p>
+                        </div>
                       </div>
                     </div>
-                    {(formData.linkedinUrl || formData.portfolioUrl) && (
-                      <div className="pt-2 border-t">
-                        <span className="text-muted-foreground text-sm">Liens supplémentaires:</span>
-                        {formData.linkedinUrl && <p className="text-sm">LinkedIn: {formData.linkedinUrl}</p>}
-                        {formData.portfolioUrl && <p className="text-sm">Portfolio: {formData.portfolioUrl}</p>}
+
+                    <div className="bg-muted rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Parcours & Documents</h5>
+                        <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
                       </div>
-                    )}
+                      <div className="space-y-2 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">CV:</span>
+                          <p>{formData.cv?.name || "Non fourni"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Lettre de motivation:</span>
+                          <p>{formData.coverLetter ? "Fournie" : "Non fournie"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Certificats:</span>
+                          <p>{formData.certificates.length} fichier(s)</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Lettres de recommandation:</span>
+                          <p>{formData.recommendations.length} fichier(s)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-muted rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Questionnaire MTP</h5>
+                        <Button variant="outline" size="sm" onClick={() => setCurrentStep(3)}>Modifier</Button>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Question 1:</span>
+                          <p>{formData.question1 ? "Répondue" : "Non répondue"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Question 2:</span>
+                          <p>{formData.question2 ? "Répondue" : "Non répondue"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Question 3:</span>
+                          <p>{formData.question3 ? "Répondue" : "Non répondue"}</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="flex items-start space-x-2">
@@ -390,8 +634,9 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
                     variant="hero"
                     onClick={handleNext}
                     disabled={
-                      (currentStep === 1 && (!formData.firstName || !formData.lastName || !formData.email)) ||
-                      (currentStep === 2 && !formData.cv)
+                      (currentStep === 1 && (!formData.firstName || !formData.lastName || !formData.email || !formData.dateOfBirth || !formData.currentPosition)) ||
+                      (currentStep === 2 && (!formData.cv || !formData.coverLetter)) ||
+                      (currentStep === 3 && (!formData.question1 || !formData.question2 || !formData.question3))
                     }
                   >
                     Suivant

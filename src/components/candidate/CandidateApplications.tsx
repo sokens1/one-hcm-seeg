@@ -84,7 +84,7 @@ export function CandidateApplications() {
                   <Button 
                     variant="outline" 
                     className="gap-2"
-                    onClick={() => setCurrentView("applications")}
+                    onClick={() => setCurrentView("tracking")}
                   >
                     <Eye className="w-4 h-4" />
                     Voir le suivi détaillé
