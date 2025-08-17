@@ -71,7 +71,7 @@ export default function CandidateAnalysis() {
   const { jobId, candidateId } = useParams();
   const navigate = useNavigate();
   const [candidate] = useState<CandidateDetails>(mockCandidate);
-  const [activeTab, setActiveTab] = useState("protocole1");
+  const [activeTab, setActiveTab] = useState(candidate.status === 'incubation' ? "protocole2" : "protocole1");
 
   // État pour le Protocole 1
   const [protocol1Tasks, setProtocol1Tasks] = useState<EvaluationTask[]>([
@@ -318,64 +318,68 @@ export default function CandidateAnalysis() {
           {/* Colonne du bas - Zone d'Évaluation */}
           <div className="lg:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger 
-                  value="protocole1"
-                  disabled={candidate.status === 'incubation'}
-                  className={candidate.status === 'incubation' ? "opacity-50" : ""}
-                >
-                  PROTOCOLE 1
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="protocole2" 
-                  disabled={candidate.status !== 'incubation'}
-                  className={candidate.status !== 'incubation' ? "opacity-50" : ""}
-                >
-                  PROTOCOLE 2
-                </TabsTrigger>
-              </TabsList>
+              {candidate.status !== 'incubation' ? (
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="protocole1">
+                    PROTOCOLE 1
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="protocole2" 
+                    disabled={true}
+                    className="opacity-50"
+                  >
+                    PROTOCOLE 2
+                  </TabsTrigger>
+                </TabsList>
+              ) : (
+                <TabsList className="grid w-full grid-cols-1">
+                  <TabsTrigger value="protocole2">
+                    PROTOCOLE 2
+                  </TabsTrigger>
+                </TabsList>
+              )}
 
-              {/* Protocole 1 */}
-              <TabsContent value="protocole1" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle>Protocole 1 : Évaluation Initiale</CardTitle>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-primary">
-                          {protocol1Score} / {protocol1Total}
+              {/* Protocole 1 - Seulement visible si pas en incubation */}
+              {candidate.status !== 'incubation' && (
+                <TabsContent value="protocole1" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle>Protocole 1 : Évaluation Initiale</CardTitle>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-primary">
+                            {protocol1Score} / {protocol1Total}
+                          </div>
+                          <div className="text-sm text-muted-foreground">Score en temps réel</div>
                         </div>
-                        <div className="text-sm text-muted-foreground">Score en temps réel</div>
                       </div>
-                    </div>
-                    <Progress value={(protocol1Score / protocol1Total) * 100} className="h-3" />
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <h4 className="font-semibold">Critères de recrutement</h4>
-                    
-                    {protocol1Tasks.map((task) => (
-                      <div key={task.id} className="space-y-3 p-4 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <Checkbox
-                            checked={task.completed}
-                            onCheckedChange={() => handleTaskToggle(task.id, true, setProtocol1Tasks)}
-                            disabled={candidate.status === 'incubation'}
+                      <Progress value={(protocol1Score / protocol1Total) * 100} className="h-3" />
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <h4 className="font-semibold">Critères de recrutement</h4>
+                      
+                      {protocol1Tasks.map((task) => (
+                        <div key={task.id} className="space-y-3 p-4 border rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <Checkbox
+                              checked={task.completed}
+                              onCheckedChange={() => handleTaskToggle(task.id, true, setProtocol1Tasks)}
+                            />
+                            <span className="font-medium">{task.name}</span>
+                            <Badge variant="outline">+{task.points} pts</Badge>
+                          </div>
+                          <Textarea
+                            placeholder={`Commentaires sur ${task.name.toLowerCase()}...`}
+                            value={task.notes}
+                            onChange={(e) => handleNotesChange(task.id, e.target.value, setProtocol1Tasks)}
+                            rows={2}
                           />
-                          <span className="font-medium">{task.name}</span>
-                          <Badge variant="outline">+{task.points} pts</Badge>
                         </div>
-                        <Textarea
-                          placeholder={`Commentaires sur ${task.name.toLowerCase()}...`}
-                          value={task.notes}
-                          onChange={(e) => handleNotesChange(task.id, e.target.value, setProtocol1Tasks)}
-                          rows={2}
-                          disabled={candidate.status === 'incubation'}
-                        />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              )}
 
               {/* Protocole 2 */}
               <TabsContent value="protocole2" className="space-y-6">
