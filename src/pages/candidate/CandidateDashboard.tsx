@@ -1,11 +1,19 @@
-import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCandidateAuth } from "@/hooks/useCandidateAuth";
-import { FileText, User, Settings, CheckCircle, Clock, Users, Trophy, Bell, Briefcase, MapPin, Grid, List } from "lucide-react";
-import { Link } from "react-router-dom";
+import { CheckCircle, Clock, Users, Trophy, Bell, Briefcase, MapPin, ChevronDown, ChevronUp, User, FileText, LogOut, Calendar, MessageSquare, Building2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const jobs = [
   {
@@ -182,223 +190,285 @@ const jobs = [
 ];
 
 export default function CandidateDashboard() {
-  const { user } = useCandidateAuth();
-  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
+  const { user, logout } = useCandidateAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isOpportunityOpen, setIsOpportunityOpen] = useState(false);
 
   // État de candidature - simulation d'une candidature en cours
-  const [hasApplied, setHasApplied] = useState(true); // Changé à true pour montrer la pipeline
+  const [hasApplied] = useState(true);
   const candidatureStatus = {
     poste: "Directeur des Ressources Humaines",
     etapeActuelle: 2,
     etapeTotale: 4,
-    statusText: "Analyse de votre dossier par nos recruteurs",
-    progress: 50,
+    statusText: "Votre dossier est en cours d'analyse par notre équipe de recrutement. Vous recevrez une notification dès que nous aurons avancé. Estimation : 5 jours ouvrés.",
     dateDepot: "15 Décembre 2024"
   };
 
   const etapesPipeline = [
     { numero: 1, titre: "Candidature Reçue", statut: "completed", icon: CheckCircle },
-    { numero: 2, titre: "Analyse en cours", statut: "current", icon: Clock },
+    { numero: 2, titre: "Analyse du dossier", statut: "current", icon: Clock },
     { numero: 3, titre: "Entretiens", statut: "pending", icon: Users },
-    { numero: 4, titre: "Décision finale", statut: "pending", icon: Trophy }
+    { numero: 4, titre: "Décision Finale", statut: "pending", icon: Trophy }
   ];
 
-  const documentsSubmis = [
-    { nom: "CV_Jean_Dupont.pdf", type: "CV", taille: "245 KB" },
-    { nom: "Lettre_motivation.pdf", type: "Lettre de motivation", taille: "123 KB" },
-    { nom: "Certificat_formation.pdf", type: "Certificat", taille: "89 KB" }
+  // Entretien planifié (conditionnel)
+  const prochainEntretien = null; // Sera défini quand entretien planifié
+
+  // Messages récents
+  const messagesRecents = [
+    {
+      id: 1,
+      titre: "Confirmation de votre candidature",
+      contenu: "Nous avons bien reçu votre candidature pour le poste de Directeur des Ressources Humaines.",
+      date: "15 Décembre 2024",
+      lu: true
+    },
+    {
+      id: 2,
+      titre: "Analyse en cours",
+      contenu: "Votre dossier est actuellement en cours d'examen par notre équipe de recrutement.",
+      date: "16 Décembre 2024",
+      lu: true
+    }
   ];
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Déconnexion réussie",
+      description: "À bientôt !",
+    });
+    navigate("/");
+  };
+
+  const otherJobs = jobs.filter(job => job.title !== candidatureStatus.poste);
 
   return (
-    <Layout showFooter={false}>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        {/* Header avec navigation */}
-        <div className="bg-white shadow-sm border-b">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-end">
-              <div className="flex items-center gap-4">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Bell className="w-4 h-4" />
-                  Notifications
-                  <Badge variant="destructive" className="ml-1 px-1.5 py-0.5 text-xs">3</Badge>
-                </Button>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <User className="w-4 h-4" />
-                  Profil
-                </Button>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header épuré */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo SEEG */}
+            <div className="flex items-center gap-3">
+              <Building2 className="w-8 h-8 text-primary" />
+              <h1 className="text-2xl font-bold text-primary">SEEG</h1>
+            </div>
+
+            {/* Actions à droite */}
+            <div className="flex items-center gap-4">
+              {/* Notifications */}
+              <Button variant="outline" size="sm" className="gap-2">
+                <Bell className="w-4 h-4" />
+                <Badge variant="destructive" className="ml-1 px-1.5 py-0.5 text-xs">3</Badge>
+              </Button>
+
+              {/* Profil utilisateur avec dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <User className="w-4 h-4" />
+                    {user?.firstName} ▼
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <div className="px-2 py-1.5 text-sm font-medium">Mon Profil</div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <User className="w-4 h-4 mr-2" />
+                    Informations personnelles
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Mes documents
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Se déconnecter
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
+      </header>
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="space-y-8">
-              
-              {/* Ma Progression - ne s'affiche que si candidature */}
-              {hasApplied && (
-                <Card className="shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Trophy className="w-5 h-5 text-primary" />
-                      Ma Progression
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">
-                        Candidature pour le poste de{" "}
-                        <span className="text-primary">{candidatureStatus.poste}</span>
-                      </h3>
-                      
-                      {/* Pipeline visuelle améliorée */}
-                      <div className="relative">
-                        {/* Ligne de connexion */}
-                        <div className="absolute top-6 left-6 right-6 h-0.5 bg-gradient-to-r from-green-400 via-blue-400 to-gray-300"></div>
-                        
-                        {/* Étapes */}
-                        <div className="grid grid-cols-4 gap-4 relative z-10">
-                          {etapesPipeline.map((etape, index) => {
-                            const IconComponent = etape.icon;
-                            return (
-                              <div key={etape.numero} className="text-center">
-                                <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center border-2 transition-all ${
-                                  etape.statut === "completed"
-                                    ? "bg-green-500 border-green-500 text-white shadow-lg"
-                                    : etape.statut === "current"
-                                    ? "bg-blue-500 border-blue-500 text-white shadow-lg animate-pulse"
-                                    : "bg-white border-gray-300 text-gray-400"
-                                }`}>
-                                  <IconComponent className="w-5 h-5" />
-                                </div>
-                                <p className={`text-sm font-medium ${
-                                  etape.statut === "completed" || etape.statut === "current"
-                                    ? "text-foreground"
-                                    : "text-muted-foreground"
-                                }`}>
-                                  {etape.titre}
-                                </p>
-                                {etape.statut === "current" && (
-                                  <div className="mt-2">
-                                    <Badge variant="secondary" className="text-xs">
-                                      En cours
-                                    </Badge>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
+      {/* Corps de la page */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="space-y-8">
+          {/* Section d'Accueil */}
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">Bonjour {user?.firstName},</h2>
+            <p className="text-lg text-muted-foreground">
+              Voici le suivi de votre parcours de recrutement avec nous.
+            </p>
+          </div>
 
-                      <div className="mt-6 space-y-4">
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium">Statut actuel :</p>
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                              Étape {candidatureStatus.etapeActuelle}/{candidatureStatus.etapeTotale}
-                            </Badge>
+          {/* Section Principale : Ma Progression */}
+          {hasApplied && (
+            <Card className="shadow-lg border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-xl">
+                  Suivi de ma candidature : {candidatureStatus.poste}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Pipeline Horizontale */}
+                <div className="relative">
+                  {/* Ligne de connexion */}
+                  <div className="absolute top-6 left-6 right-6 h-1 bg-gradient-to-r from-green-400 via-blue-400 to-gray-300 rounded-full"></div>
+                  
+                  {/* Étapes */}
+                  <div className="grid grid-cols-4 gap-4 relative z-10">
+                    {etapesPipeline.map((etape) => {
+                      const IconComponent = etape.icon;
+                      return (
+                        <div key={etape.numero} className="text-center">
+                          <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center border-2 transition-all ${
+                            etape.statut === "completed"
+                              ? "bg-green-500 border-green-500 text-white shadow-lg"
+                              : etape.statut === "current"
+                              ? "bg-blue-500 border-blue-500 text-white shadow-lg animate-pulse"
+                              : "bg-white border-gray-300 text-gray-400"
+                          }`}>
+                            <IconComponent className="w-5 h-5" />
                           </div>
-                          <p className="text-sm text-blue-700">{candidatureStatus.statusText}</p>
+                          <p className={`text-sm font-medium ${
+                            etape.statut === "completed" || etape.statut === "current"
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }`}>
+                            {etape.titre}
+                          </p>
+                          {etape.statut === "current" && (
+                            <div className="mt-2">
+                              <Badge variant="secondary" className="text-xs">
+                                En cours
+                              </Badge>
+                            </div>
+                          )}
                         </div>
-                        
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">Date de dépôt :</span>
-                            <span className="font-medium">{candidatureStatus.dateDepot}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Statut Détaillé */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium">Statut actuel :</p>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                      Étape {candidatureStatus.etapeActuelle}/{candidatureStatus.etapeTotale}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-blue-700">{candidatureStatus.statusText}</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Section Secondaire : Mes Prochaines Étapes & Communications */}
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-primary" />
+                Vos prochaines étapes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Entretien planifié (conditionnel) */}
+              {prochainEntretien ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-green-800 mb-2">Entretien planifié</h3>
+                  <div className="space-y-2 text-sm">
+                    <p><strong>Date :</strong> Lundi 25 Septembre à 14:30</p>
+                    <p><strong>Avec :</strong> M. Diallo, Directeur des Ressources Humaines</p>
+                    <p><strong>Lieu :</strong> Visioconférence (Lien de connexion)</p>
+                  </div>
+                  <Button size="sm" className="mt-3">
+                    Ajouter à mon calendrier
+                  </Button>
+                </div>
+              ) : (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Aucun entretien planifié pour le moment. Nous vous tiendrons informé.
+                  </p>
+                </div>
               )}
 
-              {/* Offres d'emploi */}
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
+              {/* Centre de Messages */}
+              <div>
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  Derniers messages
+                </h3>
+                <div className="space-y-2">
+                  {messagesRecents.map((message) => (
+                    <div key={message.id} className="bg-white border rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-sm font-medium">{message.titre}</h4>
+                        <span className="text-xs text-muted-foreground">{message.date}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{message.contenu}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section Tertiaire : Opportunités (Accordéon) */}
+          <Card className="shadow-lg">
+            <Collapsible open={isOpportunityOpen} onOpenChange={setIsOpportunityOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
                       <Briefcase className="w-5 h-5 text-primary" />
-                      Nos {jobs.length} postes à pourvoir
-                    </CardTitle>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant={viewMode === 'cards' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('cards')}
-                      >
-                        <Grid className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant={viewMode === 'list' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setViewMode('list')}
-                      >
-                        <List className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                      Explorer les {otherJobs.length} autres opportunités au sein du comité de direction
+                    </span>
+                    {isOpportunityOpen ? (
+                      <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                    )}
+                  </CardTitle>
                 </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
                 <CardContent>
-                  {viewMode === 'cards' ? (
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {jobs.map((job) => (
-                        <Card key={job.id} className="border hover:shadow-md transition-shadow">
-                          <CardContent className="p-4">
-                            <div className="space-y-3">
-                              <div>
-                                <h3 className="font-semibold text-lg">{job.title}</h3>
-                                <p className="text-sm text-muted-foreground">{job.department}</p>
-                              </div>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="w-3 h-3" />
-                                  {job.location}
-                                </span>
-                                <Badge variant="outline">{job.type}</Badge>
-                              </div>
-                              <p className="text-sm line-clamp-2">{job.description}</p>
-                               <div className="flex gap-2">
-                                <Button asChild variant="outline" size="sm" className="w-full">
-                                  <Link to={`/jobs/${job.id}`}>Voir l'offre</Link>
-                                </Button>
-                              </div>
+                  <div className="space-y-2">
+                    {otherJobs.map((job) => (
+                      <div key={job.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-4">
+                            <div className="flex-1">
+                              <h3 className="font-medium">{job.title}</h3>
+                              <p className="text-sm text-muted-foreground">{job.department}</p>
                             </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {jobs.map((job) => (
-                        <div key={job.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-4">
-                              <div className="flex-1">
-                                <h3 className="font-medium">{job.title}</h3>
-                                <p className="text-sm text-muted-foreground">{job.department}</p>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <MapPin className="w-3 h-3" />
-                                {job.location}
-                              </div>
-                              <Badge variant="outline">{job.type}</Badge>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <MapPin className="w-3 h-3" />
+                              {job.location}
                             </div>
-                          </div>
-                           <div className="flex gap-2 ml-4">
-                            <Button asChild variant="outline" size="sm">
-                              <Link to={`/jobs/${job.id}`}>Voir l'offre</Link>
-                            </Button>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        <div className="flex gap-2 ml-4">
+                          <Button asChild variant="outline" size="sm">
+                            <Link to={`/jobs/${job.id}`}>Voir l'offre & Postuler</Link>
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
-              </Card>
-          </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
