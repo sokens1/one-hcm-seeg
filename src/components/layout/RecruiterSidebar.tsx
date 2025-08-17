@@ -29,11 +29,6 @@ const menuItems = [
     url: "/recruiter/candidates",
     icon: Users,
   },
-  {
-    title: "Tunnel de recrutement",
-    url: "/recruiter/pipeline",
-    icon: Workflow,
-  },
 ];
 
 export function RecruiterSidebar() {
