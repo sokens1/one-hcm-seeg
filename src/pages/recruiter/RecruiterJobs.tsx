@@ -138,15 +138,12 @@ export default function RecruiterJobs() {
 
                   <div className="mt-4 pt-4 border-t">
                     <div className="flex gap-2">
-                      <Button 
-                        variant="hero" 
-                        size="sm" 
-                        className="gap-2 w-full"
-                        onClick={() => navigate(`/recruiter/jobs/${job.id}?tab=pipeline`)}
-                      >
-                        <Eye className="w-4 h-4" />
-                        Pipeline
-                      </Button>
+                      <Link to={`/recruiter/jobs/${job.id}/pipeline`} className="flex-1">
+                        <Button variant="hero" size="sm" className="gap-2 w-full">
+                          <Eye className="w-4 h-4" />
+                          Pipeline
+                        </Button>
+                      </Link>
                       <Button 
                         variant="outline" 
                         size="sm" 
