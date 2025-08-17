@@ -34,7 +34,6 @@ const sidebarItems = [
   { title: "Catalogue des offres", url: "/candidate/jobs", icon: Briefcase },
   { title: "Mes candidatures", url: "/candidate/applications", icon: FileText },
   { title: "Mon profil", url: "/candidate/profile", icon: User },
-  { title: "Notifications", url: "/candidate/notifications", icon: Bell },
   { title: "Paramètres", url: "/candidate/settings", icon: Settings },
 ];
 

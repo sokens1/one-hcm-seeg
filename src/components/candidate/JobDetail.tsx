@@ -34,46 +34,56 @@ export function JobDetail({ job, onBack, onApply }: JobDetailProps) {
         </Button>
       </div>
 
-      {/* Hero Section - Matching /jobs style */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white rounded-xl">
+      {/* Hero Section - Exactly like /jobs page */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-40 h-40 bg-white/5 rounded-full -translate-x-20 -translate-y-20"></div>
-          <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-full translate-x-24 translate-y-24"></div>
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -translate-x-36 -translate-y-36"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-48 translate-y-48"></div>
         </div>
-        <div className="relative p-8">
-          <div className="space-y-4">
-            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium">
+        <div className="relative container mx-auto px-4 py-20">
+          <div className="text-center space-y-6">
+            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 text-sm font-medium animate-fade-in">
               Société d'Énergie et d'Eau du Gabon
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold">
+            <h1 className="text-5xl md:text-6xl font-bold animate-fade-in delay-100">
               {job.title}
             </h1>
-            <div className="flex flex-wrap gap-4 text-sm">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1">
+            <div className="flex flex-wrap justify-center gap-4 pt-6 animate-fade-in delay-300">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
                 <span className="flex items-center gap-1">
                   <Building className="w-4 h-4" />
                   {job.department}
                 </span>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
                 <span className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
                   {job.location}
                 </span>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
                 <span className="flex items-center gap-1">
                   <Briefcase className="w-4 h-4" />
                   {job.type}
                 </span>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
                   Publié récemment
                 </span>
               </div>
+            </div>
+            <div className="pt-6 animate-fade-in delay-400">
+              <Button 
+                onClick={onApply}
+                variant="secondary" 
+                size="lg"
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+              >
+                Postuler maintenant
+              </Button>
             </div>
           </div>
         </div>
