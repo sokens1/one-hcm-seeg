@@ -1,19 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCandidateAuth } from "@/hooks/useCandidateAuth";
-import { CheckCircle, Clock, Users, Trophy, Bell, Briefcase, MapPin, ChevronDown, ChevronUp, User, FileText, LogOut, Calendar, MessageSquare, Building2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { CandidateLayout } from "@/components/layout/CandidateLayout";
+import { DashboardMain } from "@/components/candidate/DashboardMain";
 
 const jobs = [
   {
