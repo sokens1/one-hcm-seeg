@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
@@ -75,7 +75,7 @@ const mockCandidate: CandidateData = {
     ]
   },
   applicationDate: "2024-01-15",
-  status: "candidature"
+  status: "incubation" // Changé pour tester le statut incubation
 };
 
 const initialProtocols: Protocol[] = [
@@ -110,11 +110,35 @@ const initialProtocols: Protocol[] = [
 export default function CandidateAnalysis() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [candidate] = useState<CandidateData>(mockCandidate);
+  const [candidate, setCandidate] = useState<CandidateData>(mockCandidate);
   const [protocols, setProtocols] = useState<Protocol[]>(initialProtocols);
   const [activeTab, setActiveTab] = useState("protocol1");
 
+  // Simuler le protocole 1 complété si le candidat est en incubation
+  useEffect(() => {
+    if (candidate.status === 'incubation') {
+      setProtocols(prev => prev.map(protocol => {
+        if (protocol.id === "protocol1") {
+          const completedTasks = protocol.tasks.map(task => ({ ...task, completed: true }));
+          return {
+            ...protocol,
+            tasks: completedTasks,
+            completed: true,
+            score: 100
+          };
+        }
+        return protocol;
+      }));
+      setActiveTab("protocol2");
+    }
+  }, [candidate.status]);
+
   const updateTaskCompletion = (protocolId: string, taskId: string, completed: boolean) => {
+    // Empêcher la modification du protocole 1 si le candidat est en incubation
+    if (candidate.status === 'incubation' && protocolId === 'protocol1') {
+      return;
+    }
+
     setProtocols(prev => prev.map(protocol => {
       if (protocol.id === protocolId) {
         const updatedTasks = protocol.tasks.map(task => 
@@ -136,6 +160,11 @@ export default function CandidateAnalysis() {
   };
 
   const updateTaskNotes = (protocolId: string, taskId: string, notes: string) => {
+    // Empêcher la modification du protocole 1 si le candidat est en incubation
+    if (candidate.status === 'incubation' && protocolId === 'protocol1') {
+      return;
+    }
+
     setProtocols(prev => prev.map(protocol => {
       if (protocol.id === protocolId) {
         const updatedTasks = protocol.tasks.map(task => 
@@ -152,9 +181,10 @@ export default function CandidateAnalysis() {
   const isProtocol2Enabled = protocol1.completed;
 
   const handleStatusChange = (newStatus: CandidateData['status']) => {
-    // Ici vous pourriez mettre à jour le statut du candidat
+    // Mettre à jour le statut du candidat localement
+    setCandidate(prev => ({ ...prev, status: newStatus }));
     console.log(`Changement de statut vers: ${newStatus}`);
-    navigate(`/recruiter/jobs/${id}/pipeline`);
+    // Pas de redirection, on reste sur la page d'évaluation
   };
 
   const downloadDocument = (documentPath: string) => {
@@ -399,7 +429,11 @@ export default function CandidateAnalysis() {
               <CardContent>
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="protocol1" className="text-sm">
+                    <TabsTrigger 
+                      value="protocol1" 
+                      className="text-sm"
+                      disabled={candidate.status === 'incubation'}
+                    >
                       PROTOCOLE 1
                     </TabsTrigger>
                     <TabsTrigger 
@@ -413,6 +447,14 @@ export default function CandidateAnalysis() {
 
                   {/* PROTOCOLE 1 */}
                   <TabsContent value="protocol1" className="space-y-6 mt-6">
+                    {candidate.status === 'incubation' && (
+                      <div className="text-center p-4 bg-muted/50 rounded-lg border border-dashed">
+                        <p className="text-sm text-muted-foreground">
+                          Le Protocole 1 a été validé et ne peut plus être modifié
+                        </p>
+                      </div>
+                    )}
+                    
                     {/* Score visuel */}
                     <div className="text-center p-6 bg-muted/30 rounded-lg">
                       <div className="text-3xl font-bold text-primary mb-2">
@@ -427,16 +469,17 @@ export default function CandidateAnalysis() {
                       <h3 className="font-semibold">Checklist des Tâches d'Évaluation</h3>
                       
                       {protocol1.tasks.map((task) => (
-                        <div key={task.id} className="space-y-3 p-4 border rounded-lg">
+                        <div key={task.id} className={`space-y-3 p-4 border rounded-lg ${candidate.status === 'incubation' ? 'opacity-60' : ''}`}>
                           <div className="flex items-center space-x-3">
                             <Checkbox
                               id={task.id}
                               checked={task.completed}
+                              disabled={candidate.status === 'incubation'}
                               onCheckedChange={(checked) => 
                                 updateTaskCompletion("protocol1", task.id, checked as boolean)
                               }
                             />
-                            <Label htmlFor={task.id} className="font-medium cursor-pointer">
+                            <Label htmlFor={task.id} className={`font-medium ${candidate.status === 'incubation' ? 'cursor-default' : 'cursor-pointer'}`}>
                               {task.name}
                             </Label>
                           </div>
@@ -447,6 +490,7 @@ export default function CandidateAnalysis() {
                               <Textarea
                                 placeholder={`Évaluez ${task.name.split(' ')[1]}...`}
                                 value={task.notes || ''}
+                                disabled={candidate.status === 'incubation'}
                                 onChange={(e) => updateTaskNotes("protocol1", task.id, e.target.value)}
                                 className="mt-1"
                                 rows={2}
@@ -546,15 +590,28 @@ export default function CandidateAnalysis() {
 
                   {candidate.status === 'incubation' && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Button 
-                        variant="default" 
-                        className="gap-2"
-                        onClick={() => handleStatusChange('embauche')}
-                        disabled={!protocol2.completed}
-                      >
-                        <UserCheck className="w-4 h-4" />
-                        Engager
-                      </Button>
+                      {/* Au protocole 2, on affiche "Engager", sinon "Déplacer en Incubation" */}
+                      {isProtocol2Enabled && activeTab === 'protocol2' ? (
+                        <Button 
+                          variant="default" 
+                          className="gap-2"
+                          onClick={() => handleStatusChange('embauche')}
+                          disabled={!protocol2.completed}
+                        >
+                          <UserCheck className="w-4 h-4" />
+                          Engager
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="default" 
+                          className="gap-2"
+                          onClick={() => handleStatusChange('incubation')}
+                          disabled
+                        >
+                          <Users2 className="w-4 h-4" />
+                          Déjà en Incubation
+                        </Button>
+                      )}
                       <Button 
                         variant="destructive" 
                         className="gap-2"
