@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Grid, List } from "lucide-react";
 import { useState } from "react";
+import { useCandidateLayout } from "@/components/layout/CandidateLayout";
+import { JobDetail } from "./JobDetail";
+import { ApplicationForm } from "@/components/forms/ApplicationForm";
 
 // Données identiques à la page /jobs
 const mockJobs = [
@@ -144,11 +147,58 @@ const mockJobs = [
 export function JobCatalog() {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const { setCurrentView } = useCandidateLayout();
 
   const filteredJobs = mockJobs.filter(job => 
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleJobClick = (jobId: number) => {
+    setSelectedJobId(jobId);
+  };
+
+  const handleApplyClick = (jobId: number) => {
+    setSelectedJobId(jobId);
+    setShowApplicationForm(true);
+  };
+
+  const handleBackToCatalog = () => {
+    setSelectedJobId(null);
+    setShowApplicationForm(false);
+  };
+
+  const handleApplicationSubmit = () => {
+    setShowApplicationForm(false);
+    setSelectedJobId(null);
+    // Ajouter la candidature aux candidatures
+    setCurrentView("applications");
+  };
+
+  // Si on affiche le formulaire de candidature
+  if (showApplicationForm && selectedJobId) {
+    const job = mockJobs.find(j => j.id === selectedJobId);
+    return (
+      <ApplicationForm 
+        jobTitle={job?.title || ""}
+        onBack={handleBackToCatalog}
+        onSubmit={handleApplicationSubmit}
+      />
+    );
+  }
+
+  // Si on affiche le détail d'un job
+  if (selectedJobId && !showApplicationForm) {
+    return (
+      <JobDetail 
+        jobId={selectedJobId}
+        onBack={handleBackToCatalog}
+        onApply={() => handleApplyClick(selectedJobId)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -223,9 +273,7 @@ export function JobCatalog() {
                   contractType={job.contractType}
                   description={job.description}
                   isPreview={true}
-                  onClick={() => {
-                    window.location.href = `/candidate/job/${job.id}`;
-                  }}
+                  onClick={() => handleJobClick(job.id)}
                 />
               </div>
             ))}
@@ -247,7 +295,7 @@ export function JobCatalog() {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => window.location.href = `/candidate/job/${job.id}`}
+                    onClick={() => handleJobClick(job.id)}
                   >
                     Voir détails
                   </Button>

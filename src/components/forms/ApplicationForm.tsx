@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 interface ApplicationFormProps {
   jobTitle: string;
   onBack: () => void;
+  onSubmit?: () => void;
 }
 
 interface FormData {
@@ -25,7 +26,7 @@ interface FormData {
   consent: boolean;
 }
 
-export function ApplicationForm({ jobTitle, onBack }: ApplicationFormProps) {
+export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -57,6 +58,10 @@ export function ApplicationForm({ jobTitle, onBack }: ApplicationFormProps) {
   const handleSubmit = () => {
     // Simulation de l'envoi
     setIsSubmitted(true);
+    // Appeler onSubmit si fourni après un délai
+    setTimeout(() => {
+      onSubmit?.();
+    }, 2000);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -12,7 +12,7 @@ import JobDetail from "./pages/candidate/JobDetail";
 import CandidateSignup from "./pages/candidate/CandidateSignup";
 import CandidateLogin from "./pages/candidate/CandidateLogin";
 import CandidateDashboard from "./pages/candidate/CandidateDashboard";
-import CandidateJobDetail from "./pages/candidate/CandidateJobDetail";
+
 import CandidateApplicationTracking from "./pages/candidate/CandidateApplicationTracking";
 import CandidateApplications from "./pages/candidate/CandidateApplications";
 import CandidateProfile from "./pages/candidate/CandidateProfile";
@@ -46,7 +46,7 @@ const App = () => (
           <Route path="/candidate/login" element={<CandidateLogin />} />
           <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
           <Route path="/candidate/jobs" element={<CandidateJobs />} />
-          <Route path="/candidate/job/:id" element={<CandidateJobDetail />} />
+          
           <Route path="/candidate/application/:id" element={<CandidateApplicationTracking />} />
           <Route path="/candidate/applications" element={<CandidateApplications />} />
           <Route path="/candidate/profile" element={<CandidateProfile />} />

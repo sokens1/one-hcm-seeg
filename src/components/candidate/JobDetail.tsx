@@ -2,8 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send } from "lucide-react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
 
 // Mock data identique à /jobs
 const mockJobDetails = {
@@ -39,21 +37,14 @@ const mockJobDetails = {
   }
 };
 
-export function JobDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const job = mockJobDetails[parseInt(id || "1") as keyof typeof mockJobDetails] || mockJobDetails[1];
+interface JobDetailProps {
+  jobId: number;
+  onBack: () => void;
+  onApply: () => void;
+}
 
-  const handleApply = () => {
-    toast({
-      title: "Candidature envoyée avec succès",
-      description: "Votre candidature a été transmise à l'équipe RH. Vous recevrez une confirmation par email.",
-    });
-    // Rediriger vers le suivi de candidature
-    navigate(`/candidate/application/${id}`);
-  };
+export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
+  const job = mockJobDetails[jobId as keyof typeof mockJobDetails] || mockJobDetails[1];
 
   return (
     <div className="space-y-8">
@@ -62,7 +53,7 @@ export function JobDetail() {
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={() => navigate(-1)}
+          onClick={onBack}
           className="gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -181,7 +172,7 @@ export function JobDetail() {
             </CardHeader>
             <CardContent className="space-y-4">
               <Button 
-                onClick={handleApply}
+                onClick={onApply}
                 className="w-full gap-2"
                 size="lg"
               >

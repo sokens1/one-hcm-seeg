@@ -17,6 +17,9 @@ import { Home, Briefcase, FileText, User, Settings } from "lucide-react";
 import { useState, createContext, useContext } from "react";
 import { DashboardMain } from "@/components/candidate/DashboardMain";
 import { JobCatalog } from "@/components/candidate/JobCatalog";
+import { CandidateApplications } from "@/components/candidate/CandidateApplications";
+import { CandidateProfile } from "@/components/candidate/CandidateProfile";
+import { CandidateSettings } from "@/components/candidate/CandidateSettings";
 
 type ViewType = "dashboard" | "jobs" | "applications" | "profile" | "settings";
 
@@ -58,7 +61,7 @@ function CandidateSidebar() {
     >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Espace candidat</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigation.map((item) => (
@@ -90,47 +93,11 @@ function CandidateMainContent() {
       case "jobs":
         return <JobCatalog />;
       case "applications":
-        return (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-2">Mes candidatures</h2>
-              <p className="text-lg text-muted-foreground">
-                Suivi détaillé de toutes vos candidatures
-              </p>
-            </div>
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Contenu des candidatures à venir</p>
-            </div>
-          </div>
-        );
+        return <CandidateApplications />;
       case "profile":
-        return (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-2">Mon profil</h2>
-              <p className="text-lg text-muted-foreground">
-                Gérez vos informations personnelles
-              </p>
-            </div>
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Gestion du profil à venir</p>
-            </div>
-          </div>
-        );
+        return <CandidateProfile />;
       case "settings":
-        return (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-2">Paramètres</h2>
-              <p className="text-lg text-muted-foreground">
-                Configurez vos préférences
-              </p>
-            </div>
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Paramètres à venir</p>
-            </div>
-          </div>
-        );
+        return <CandidateSettings />;
       default:
         return <DashboardMain />;
     }
