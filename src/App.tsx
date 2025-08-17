@@ -27,7 +27,7 @@ import EditJob from "./pages/recruiter/EditJob";
 import JobPipeline from "./pages/recruiter/JobPipeline";
 import CandidatesPage from "./pages/recruiter/CandidatesPage";
 import RecruiterJobs from "./pages/recruiter/RecruiterJobs";
-import RecruiterPipeline from "./pages/recruiter/RecruiterPipeline";
+import CandidateAnalysis from "./pages/recruiter/CandidateAnalysis";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 
 const queryClient = new QueryClient({
@@ -91,9 +91,9 @@ function App() {
                   <RecruiterJobs />
                 </ProtectedRecruiterRoute>
               } />
-              <Route path="/recruiter/pipeline" element={
+              <Route path="/recruiter/candidate/:id/analysis" element={
                 <ProtectedRecruiterRoute>
-                  <RecruiterPipeline />
+                  <CandidateAnalysis />
                 </ProtectedRecruiterRoute>
               } />
               
