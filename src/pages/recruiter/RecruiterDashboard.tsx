@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Eye, Users, TrendingUp, Clock, BarChart3, Edit } from "lucide-react";
 import { JobCard } from "@/components/ui/job-card";
 import { Link, useNavigate } from "react-router-dom";
+import { CandidatesList } from "@/components/recruiter/CandidatesList";
 
 // Mock data - à remplacer par les vraies données
 const mockRecruiterData = {
@@ -38,7 +39,17 @@ const mockRecruiterData = {
     totalJobs: 3,
     totalCandidates: 35,
     newCandidates: 9,
-    interviewsScheduled: 4
+    interviewsScheduled: 4,
+    genderStats: {
+      men: 58,
+      women: 42
+    },
+    functionStats: {
+      electricity: 35,
+      water: 28,
+      customer: 22,
+      support: 15
+    }
   }
 };
 
@@ -69,19 +80,34 @@ export default function RecruiterDashboard() {
           </Link>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           <Card className="shadow-soft hover:shadow-medium transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Offres Actives
+                Hommes
               </CardTitle>
-              <BarChart3 className="h-4 w-4 text-primary-dark" />
+              <Users className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.totalJobs}</div>
+              <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.genderStats.men}%</div>
               <p className="text-xs text-muted-foreground">
-                +1 cette semaine
+                Candidats masculins
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-soft hover:shadow-medium transition-all">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Femmes
+              </CardTitle>
+              <Users className="h-4 w-4 text-pink-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.genderStats.women}%</div>
+              <p className="text-xs text-muted-foreground">
+                Candidates féminines
               </p>
             </CardContent>
           </Card>
@@ -91,12 +117,12 @@ export default function RecruiterDashboard() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Candidats
               </CardTitle>
-              <Users className="h-4 w-4 text-ocean" />
+              <Users className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.totalCandidates}</div>
               <p className="text-xs text-muted-foreground">
-                +{mockRecruiterData.stats.newCandidates} nouveaux
+                Total absolu
               </p>
             </CardContent>
           </Card>
@@ -104,14 +130,14 @@ export default function RecruiterDashboard() {
           <Card className="shadow-soft hover:shadow-medium transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Nouveaux Candidats
+                Électricité
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-success" />
+              <BarChart3 className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.newCandidates}</div>
+              <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.functionStats.electricity}%</div>
               <p className="text-xs text-muted-foreground">
-                Dernières 24h
+                Secteur électricité
               </p>
             </CardContent>
           </Card>
@@ -119,17 +145,37 @@ export default function RecruiterDashboard() {
           <Card className="shadow-soft hover:shadow-medium transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Entretiens Planifiés
+                Eau
               </CardTitle>
-              <Clock className="h-4 w-4 text-warning" />
+              <BarChart3 className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.interviewsScheduled}</div>
+              <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.functionStats.water}%</div>
               <p className="text-xs text-muted-foreground">
-                Cette semaine
+                Secteur eau
               </p>
             </CardContent>
           </Card>
+
+          <Card className="shadow-soft hover:shadow-medium transition-all">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Support
+              </CardTitle>
+              <BarChart3 className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground">{mockRecruiterData.stats.functionStats.support}%</div>
+              <p className="text-xs text-muted-foreground">
+                Secteur support
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Candidates List Section */}
+        <div className="mb-8">
+          <CandidatesList />
         </div>
 
         {/* Active Jobs Section */}
@@ -231,12 +277,6 @@ export default function RecruiterDashboard() {
                 <Button variant="outline" className="w-full justify-start gap-2">
                   <Users className="w-4 h-4" />
                   Voir tous les candidats
-                </Button>
-              </Link>
-              <Link to="/recruiter/pipeline" className="block">
-                <Button variant="outline" className="w-full justify-start gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Tunnel de recrutement
                 </Button>
               </Link>
               <Link to="/jobs" className="block">
