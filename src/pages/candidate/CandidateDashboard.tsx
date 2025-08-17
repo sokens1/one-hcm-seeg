@@ -232,7 +232,9 @@ export default function CandidateDashboard() {
         </div>
 
         <div className="container mx-auto px-4 py-8">
-          <div className="space-y-8">
+          <div className="grid gap-8 lg:grid-cols-3">
+            {/* Colonne principale */}
+            <div className="lg:col-span-2 space-y-8">
               
               {/* Ma Progression - ne s'affiche que si candidature */}
               {hasApplied && (
@@ -396,6 +398,23 @@ export default function CandidateDashboard() {
                   )}
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Colonne latérale */}
+            <div className="space-y-6">
+              {/* Contexte entreprise */}
+              <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-lg mb-2">À propos de l'entreprise</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Découvrez la vision et les ambitions derrière cette campagne de recrutement exceptionnelle.
+                  </p>
+                  <Button variant="outline" size="sm" className="w-full" asChild>
+                    <Link to="/company-context">En savoir plus</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
