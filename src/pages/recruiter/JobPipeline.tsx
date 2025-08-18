@@ -3,13 +3,14 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Users, Eye } from "lucide-react";
+import { ArrowLeft, Users, Eye, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useRecruiterApplications } from "@/hooks/useApplications";
 import { useState } from "react";
 
 // Types pour les candidats
 interface Candidate {
-  id: number;
+  id: string;
   name: string;
   currentPosition: string;
   currentDepartment: string;
@@ -17,71 +18,8 @@ interface Candidate {
   status: 'candidature' | 'incubation' | 'embauche' | 'refuse';
   score: number;
   applicationDate: string;
+  email: string;
 }
-
-// Mock data pour le pipeline d'une offre spécifique
-const mockCandidates: Candidate[] = [
-  {
-    id: 1,
-    name: "Jean Dupont",
-    currentPosition: "Développeur Frontend",
-    currentDepartment: "IT",
-    experience: "3 ans",
-    status: "candidature",
-    score: 85,
-    applicationDate: "2024-01-15"
-  },
-  {
-    id: 2,
-    name: "Marie Claire",
-    currentPosition: "Chef de Projet",
-    currentDepartment: "Marketing",
-    experience: "5 ans",
-    status: "incubation",
-    score: 92,
-    applicationDate: "2024-01-12"
-  },
-  {
-    id: 3,
-    name: "Paul Martin",
-    currentPosition: "Analyste",
-    currentDepartment: "Finance",
-    experience: "2 ans",
-    status: "embauche",
-    score: 78,
-    applicationDate: "2024-01-10"
-  },
-  {
-    id: 4,
-    name: "Sophie Durand",
-    currentPosition: "Designer UX",
-    currentDepartment: "Design",
-    experience: "4 ans",
-    status: "refuse",
-    score: 65,
-    applicationDate: "2024-01-08"
-  },
-  {
-    id: 5,
-    name: "Ahmed Benali",
-    currentPosition: "Data Scientist",
-    currentDepartment: "Analytics",
-    experience: "4 ans",
-    status: "candidature",
-    score: 88,
-    applicationDate: "2024-01-14"
-  },
-  {
-    id: 6,
-    name: "Fatou Ndiaye",
-    currentPosition: "Product Manager",
-    currentDepartment: "Product",
-    experience: "6 ans",
-    status: "incubation",
-    score: 95,
-    applicationDate: "2024-01-11"
-  }
-];
 
 const getStatusLabel = (status: string) => {
   switch (status) {
@@ -106,10 +44,22 @@ const getStatusColor = (status: string) => {
 export default function JobPipeline() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [candidates, setCandidates] = useState<Candidate[]>(mockCandidates);
+  const { applications, isLoading, error, updateApplicationStatus } = useRecruiterApplications(id);
 
-  const jobTitle = "Développeur React.js"; // Mock data
+  // Transform applications to candidates format
+  const candidates: Candidate[] = applications.map(app => ({
+    id: app.id,
+    name: `${app.users?.first_name || ''} ${app.users?.last_name || ''}`.trim(),
+    currentPosition: app.users?.email || '',
+    currentDepartment: '',
+    experience: '',
+    status: app.status,
+    score: 0, // TODO: Calculate from evaluations
+    applicationDate: new Date(app.created_at).toISOString().split('T')[0],
+    email: app.users?.email || ''
+  }));
 
+  const jobTitle = applications[0]?.job_offers?.title || "Offre d'emploi";
   const getCandidatesByStatus = (status: string) => {
     return candidates.filter(candidate => candidate.status === status);
   };
@@ -121,9 +71,24 @@ export default function JobPipeline() {
     { key: 'refuse', label: 'Refusé', color: 'border-red-500' }
   ];
 
-  const handleAnalyzeCandidate = (candidateId: number) => {
+  const handleAnalyzeCandidate = (candidateId: string) => {
     navigate(`/recruiter/candidates/${candidateId}/analysis`);
   };
+
+  if (error) {
+    return (
+      <RecruiterLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <p className="text-red-500 mb-4">Erreur lors du chargement: {error}</p>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Réessayer
+            </Button>
+          </div>
+        </div>
+      </RecruiterLayout>
+    );
+  }
 
   return (
     <RecruiterLayout>
@@ -146,88 +111,95 @@ export default function JobPipeline() {
           </p>
         </div>
 
-        {/* Statistiques globales */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {statuses.map((status) => {
-            const count = getCandidatesByStatus(status.key).length;
-            return (
-              <Card key={status.key}>
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-foreground">{count}</div>
-                  <div className="text-sm text-muted-foreground">{status.label}</div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="ml-2">Chargement du pipeline...</span>
+          </div>
+        ) : (
+          <>
+            {/* Statistiques globales */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {statuses.map((status) => {
+                const count = getCandidatesByStatus(status.key).length;
+                return (
+                  <Card key={status.key}>
+                    <CardContent className="p-4 text-center">
+                      <div className="text-2xl font-bold text-foreground">{count}</div>
+                      <div className="text-sm text-muted-foreground">{status.label}</div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
 
-        {/* Vue Kanban */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {statuses.map((status) => {
-            const statusCandidates = getCandidatesByStatus(status.key);
-            
-            return (
-              <div key={status.key}>
-                <Card className={`border-t-4 ${status.color} h-full`}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg font-semibold">{status.label}</CardTitle>
-                      <Badge variant="secondary" className="text-sm">
-                        {statusCandidates.length}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4 min-h-[400px]">
-                    {statusCandidates.map((candidate) => (
-                      <Card key={candidate.id} className="p-4 hover:shadow-medium transition-all cursor-pointer group">
-                        <div className="space-y-3">
-                          <div>
-                            <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                              {candidate.name}
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                              Poste actuel : {candidate.currentPosition}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Département actuel : {candidate.currentDepartment}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Ancienneté : {candidate.experience}
-                            </p>
-                          </div>
-                          
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Score</span>
-                            <Badge variant="outline" className="text-sm">
-                              {candidate.score}/100
-                            </Badge>
-                          </div>
-                          
-                          <Button 
-                            size="sm" 
-                            className="w-full gap-2"
-                            variant="hero"
-                            onClick={() => handleAnalyzeCandidate(candidate.id)}
-                          >
-                            <Eye className="w-4 h-4" />
-                            Analyser
-                          </Button>
+            {/* Vue Kanban */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {statuses.map((status) => {
+                const statusCandidates = getCandidatesByStatus(status.key);
+                
+                return (
+                  <div key={status.key}>
+                    <Card className={`border-t-4 ${status.color} h-full`}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg font-semibold">{status.label}</CardTitle>
+                          <Badge variant="secondary" className="text-sm">
+                            {statusCandidates.length}
+                          </Badge>
                         </div>
-                      </Card>
-                    ))}
-                    
-                    {statusCandidates.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">Aucun candidat</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            );
-          })}
-        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4 min-h-[400px]">
+                        {statusCandidates.map((candidate) => (
+                          <Card key={candidate.id} className="p-4 hover:shadow-medium transition-all cursor-pointer group">
+                            <div className="space-y-3">
+                              <div>
+                                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                                  {candidate.name}
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Email : {candidate.email}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  Candidature : {new Date(candidate.applicationDate).toLocaleDateString('fr-FR')}
+                                </p>
+                              </div>
+                              
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">Score</span>
+                                <Badge variant="outline" className="text-sm">
+                                  {candidate.score}/100
+                                </Badge>
+                              </div>
+                              
+                              <Button 
+                                size="sm" 
+                                className="w-full gap-2"
+                                variant="hero"
+                                onClick={() => handleAnalyzeCandidate(candidate.id)}
+                              >
+                                <Eye className="w-4 h-4" />
+                                Analyser
+                              </Button>
+                            </div>
+                          </Card>
+                        ))}
+                        
+                        {statusCandidates.length === 0 && (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">Aucun candidat</p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
     </RecruiterLayout>
   );

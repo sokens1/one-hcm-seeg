@@ -1,209 +1,232 @@
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Clock, Briefcase, Building, Share2 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
-import { ApplicationFormAdvanced } from "@/components/forms/ApplicationFormAdvanced";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
-
-// Mock data pour SEEG - Postes de direction
-const mockJobDetail = {
-  id: 1,
-  title: "Directeur des Ressources Humaines",
-  location: "Libreville",
-  contractType: "CDI",
-  company: "SEEG",
-  publishedDate: "Il y a 3 jours",
-  description: `
-La SEEG recherche un Directeur des Ressources Humaines expérimenté pour piloter la stratégie des ressources humaines et accompagner le développement de nos équipes dans le cadre de notre transformation.
-
-**Vos missions principales :**
-• Définir et mettre en œuvre la stratégie RH en cohérence avec les objectifs de l'entreprise
-• Piloter la gestion des talents, du recrutement au développement des compétences
-• Accompagner les transformations organisationnelles et la conduite du changement
-• Développer la politique de rémunération et les avantages sociaux
-• Assurer la conformité réglementaire et les relations sociales
-• Manager une équipe RH de 15 personnes
-
-**Enjeux stratégiques :**
-Dans le cadre de la renaissance de la SEEG, ce poste est crucial pour accompagner la modernisation de nos pratiques RH et attirer les meilleurs talents.
-  `,
-  profile: `
-**Profil recherché :**
-• Formation supérieure en RH, Droit social ou Management (Bac+5)
-• 10+ années d'expérience en direction des RH, idéalement dans le secteur de l'énergie
-• Expertise en transformation RH et conduite du changement
-• Maîtrise des outils SIRH et des nouvelles technologies RH
-• Leadership avéré et capacité à fédérer les équipes
-• Connaissance du contexte gabonais et des enjeux sectoriels
-
-**Ce que nous offrons :**
-• Poste de Direction au sein du Comité Exécutif
-• Rémunération attractive avec avantages
-• Opportunité de contribuer à la transformation d'une entreprise stratégique
-• Environnement de travail stimulant et projets d'envergure
-• Formation continue et développement personnel
-  `
-};
+import { ArrowLeft, MapPin, Calendar, Building2, Users, DollarSign, Clock, Loader2 } from "lucide-react";
+import { ApplicationForm } from "@/components/forms/ApplicationForm";
+import { useJobOffer } from "@/hooks/useJobOffers";
 
 export default function JobDetail() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const { isAuthenticated } = useCandidateAuth();
+  const { jobOffer, isLoading, error } = useJobOffer(id || "");
+
+  const handleBackToJobs = () => {
+    navigate("/jobs");
+  };
 
   const handleApply = () => {
-    if (!isAuthenticated) {
-      window.location.href = "/candidate/signup";
-      return;
-    }
     setShowApplicationForm(true);
   };
 
-  if (showApplicationForm) {
-    return <ApplicationFormAdvanced jobTitle={mockJobDetail.title} onBack={() => setShowApplicationForm(false)} />;
+  const handleApplicationSubmit = () => {
+    setShowApplicationForm(false);
+    navigate("/jobs");
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="ml-2">Chargement de l'offre...</span>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
+  if (error || !jobOffer) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Offre non trouvée</h1>
+            <p className="text-muted-foreground mb-6">
+              {error || "Cette offre d'emploi n'existe pas ou n'est plus disponible."}
+            </p>
+            <Button variant="outline" onClick={handleBackToJobs}>
+              Retour aux offres
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (showApplicationForm) {
+    return (
+      <ApplicationForm
+        jobTitle={jobOffer.title}
+        jobId={jobOffer.id}
+        onBack={() => setShowApplicationForm(false)}
+        onSubmit={handleApplicationSubmit}
+      />
+    );
+  }
+
+  const formatSalary = (min: number | null, max: number | null) => {
+    if (!min && !max) return "Salaire à négocier";
+    if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} FCFA`;
+    if (min) return `À partir de ${min.toLocaleString()} FCFA`;
+    if (max) return `Jusqu'à ${max.toLocaleString()} FCFA`;
+    return "Salaire à négocier";
+  };
+
   return (
-    <Layout showFooter={true}>
-      <div className="container mx-auto px-4 py-8">
-        {/* Navigation */}
-        <div className="mb-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Retour aux offres
-          </Link>
+    <Layout>
+      <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8">
+          <div className="container mx-auto px-4">
+            <Button 
+              variant="ghost" 
+              onClick={handleBackToJobs}
+              className="mb-4 text-white hover:bg-white/10"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Retour aux offres
+            </Button>
+            
+            <div className="max-w-4xl">
+              <div className="flex items-center gap-2 mb-4">
+                <Building2 className="w-5 h-5" />
+                <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
+                  {jobOffer.department || "SEEG"}
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">{jobOffer.title}</h1>
+              <div className="flex flex-wrap items-center gap-4 text-lg">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5" />
+                  {jobOffer.location}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  {jobOffer.contract_type}
+                </div>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-5 h-5" />
+                  {formatSalary(jobOffer.salary_min, jobOffer.salary_max)}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-8">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Job Header */}
-              <Card className="shadow-soft">
+            <div className="lg:col-span-2 space-y-8">
+              {/* Description */}
+              <Card>
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-3">
-                      <CardTitle className="text-3xl text-foreground">{mockJobDetail.title}</CardTitle>
-                      
-                      <div className="flex items-center gap-4 text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Building className="w-4 h-4" />
-                          {mockJobDetail.company}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4" />
-                          {mockJobDetail.location}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Briefcase className="w-4 h-4" />
-                          {mockJobDetail.contractType}
-                        </div>
-                      </div>
+                  <CardTitle className="text-2xl">Description du poste</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose max-w-none">
+                    <p className="text-muted-foreground leading-relaxed">
+                      {jobOffer.description}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
 
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary">{mockJobDetail.contractType}</Badge>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Clock className="w-3 h-3" />
-                          {mockJobDetail.publishedDate}
-                        </div>
-                      </div>
+              {/* Requirements */}
+              {jobOffer.requirements && jobOffer.requirements.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl">Profil recherché</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {jobOffer.requirements.map((requirement, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
+                          <span className="text-muted-foreground">{requirement}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Benefits */}
+              {jobOffer.benefits && jobOffer.benefits.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl">Avantages</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {jobOffer.benefits.map((benefit, index) => (
+                        <Badge key={index} variant="secondary" className="justify-start p-3">
+                          {benefit}
+                        </Badge>
+                      ))}
                     </div>
-
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Job Description */}
-              <Card className="shadow-soft">
-                <CardHeader>
-                  <CardTitle>Description du poste</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="prose prose-gray max-w-none">
-                    {mockJobDetail.description.split('\n').map((paragraph, index) => (
-                      <p key={index} className="mb-4 text-foreground whitespace-pre-line">
-                        {paragraph}
-                      </p>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Profile Requirements */}
-              <Card className="shadow-soft">
-                <CardHeader>
-                  <CardTitle>Profil recherché</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="prose prose-gray max-w-none">
-                    {mockJobDetail.profile.split('\n').map((paragraph, index) => (
-                      <p key={index} className="mb-4 text-foreground whitespace-pre-line">
-                        {paragraph}
-                      </p>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Apply Card */}
-              <Card className="shadow-lg border-2 border-primary/20">
-                <CardContent className="p-8">
-                  <div className="text-center space-y-4">
-                    <div className="bg-gradient-to-r from-primary/10 to-blue-50 rounded-lg p-4 mb-4">
-                      <p className="text-lg font-semibold text-primary">
-                        Rejoignez le comité de direction de la SEEG et contribuer à sa renaissance
-                      </p>
-                    </div>
-                    <h3 className="text-2xl font-bold text-primary">Prêt à Postuler ?</h3>
-                    <p className="text-muted-foreground">
-                      {!isAuthenticated 
-                        ? "Créez votre compte candidat pour postuler à ce poste de direction."
-                        : "Soumettez votre candidature pour ce poste de direction."
+              {/* Application Card */}
+              <Card className="sticky top-6">
+                <CardHeader>
+                  <CardTitle className="text-xl">Postuler maintenant</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      {jobOffer.application_deadline 
+                        ? `Date limite: ${new Date(jobOffer.application_deadline).toLocaleDateString('fr-FR')}`
+                        : "Candidatures ouvertes"
                       }
-                    </p>
-                    <Button 
-                      size="lg" 
-                      className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-white px-8"
-                      onClick={handleApply}
-                    >
-                      {!isAuthenticated ? "Créer mon compte et postuler" : "Postuler"}
-                    </Button>
-                    <p className="text-xs text-muted-foreground">
-                      Processus simple en 4 étapes • 10 minutes maximum
-                    </p>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4" />
+                      Publié le {new Date(jobOffer.created_at).toLocaleDateString('fr-FR')}
+                    </div>
                   </div>
+                  
+                  <Button 
+                    onClick={handleApply} 
+                    className="w-full"
+                    size="lg"
+                  >
+                    Postuler à cette offre
+                  </Button>
+                  
+                  <p className="text-xs text-muted-foreground text-center">
+                    Processus de candidature en ligne sécurisé
+                  </p>
                 </CardContent>
               </Card>
 
               {/* Company Info */}
-              <Card className="shadow-soft">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">À propos de la SEEG</CardTitle>
+                  <CardTitle className="text-lg">À propos de SEEG</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    <h4 className="font-medium text-foreground">Société d'Énergie et d'Eau du Gabon</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Acteur majeur du secteur énergétique gabonais, la SEEG s'engage dans une transformation 
-                      ambitieuse pour devenir le leader des services énergétiques et hydriques en Afrique centrale.
-                    </p>
-                    <div className="pt-2">
-                      <Badge variant="outline" className="text-xs">Énergie & Eau • 1000+ employés</Badge>
-                    </div>
-                    <div className="pt-2">
-                      <Button variant="outline" size="sm" className="w-full" asChild>
-                        <a href="/company-context">En savoir plus sur la SEEG</a>
-                      </Button>
-                    </div>
-                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    La Société d'Énergie et d'Eau du Gabon (SEEG) est l'opérateur historique 
+                    des services publics d'électricité et d'eau potable au Gabon.
+                  </p>
+                  <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
+                    <a href="/company-context">
+                      En savoir plus
+                    </a>
+                  </Button>
                 </CardContent>
               </Card>
-
             </div>
           </div>
         </div>

@@ -8,14 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, Calendar as CalendarIcon, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, Calendar as CalendarIcon, X, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useApplications } from "@/hooks/useApplications";
+import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
+import { toast } from "sonner";
 
 interface ApplicationFormProps {
   jobTitle: string;
+  jobId?: string;
   onBack: () => void;
   onSubmit?: () => void;
 }
@@ -26,10 +30,10 @@ interface FormData {
   email: string;
   dateOfBirth: Date | null;
   currentPosition: string;
-  cv: File | null;
+  cv: UploadedFile | null;
   coverLetter: string;
-  certificates: File[];
-  recommendations: File[];
+  certificates: UploadedFile[];
+  recommendations: UploadedFile[];
   references: string;
   question1: string;
   question2: string;
@@ -37,9 +41,12 @@ interface FormData {
   consent: boolean;
 }
 
-export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormProps) {
+export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: ApplicationFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { submitApplication } = useApplications();
+  const { uploadFile, isUploading } = useFileUpload();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -72,25 +79,57 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
     }
   };
 
-  const handleSubmit = () => {
-    // Simulation de l'envoi
-    setIsSubmitted(true);
-    // Appeler onSubmit si fourni après un délai
-    setTimeout(() => {
-      onSubmit?.();
-    }, 2000);
+  const handleSubmit = async () => {
+    if (!jobId) {
+      toast.error("ID de l'offre d'emploi manquant");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await submitApplication({
+        job_offer_id: jobId,
+        cover_letter: formData.coverLetter,
+        motivation: formData.question1,
+        ref_contacts: formData.references
+      });
+
+      setIsSubmitted(true);
+      toast.success("Candidature envoyée avec succès!");
+      
+      // Appeler onSubmit si fourni après un délai
+      setTimeout(() => {
+        onSubmit?.();
+      }, 2000);
+    } catch (error: any) {
+      toast.error("Erreur lors de l'envoi: " + error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'certificates' | 'recommendations') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'certificates' | 'recommendations') => {
     const files = e.target.files;
-    if (files) {
+    if (!files) return;
+
+    try {
       if (type === 'cv') {
-        setFormData({ ...formData, cv: files[0] });
+        const uploadedFile = await uploadFile(files[0], 'cv');
+        setFormData({ ...formData, cv: uploadedFile });
+        toast.success("CV uploadé avec succès!");
       } else if (type === 'certificates') {
-        setFormData({ ...formData, certificates: [...formData.certificates, ...Array.from(files)] });
+        const uploadPromises = Array.from(files).map(file => uploadFile(file, 'certificates'));
+        const uploadedFiles = await Promise.all(uploadPromises);
+        setFormData({ ...formData, certificates: [...formData.certificates, ...uploadedFiles] });
+        toast.success("Certificats uploadés avec succès!");
       } else if (type === 'recommendations') {
-        setFormData({ ...formData, recommendations: [...formData.recommendations, ...Array.from(files)] });
+        const uploadPromises = Array.from(files).map(file => uploadFile(file, 'recommendations'));
+        const uploadedFiles = await Promise.all(uploadPromises);
+        setFormData({ ...formData, recommendations: [...formData.recommendations, ...uploadedFiles] });
+        toast.success("Recommandations uploadées avec succès!");
       }
+    } catch (error: any) {
+      toast.error("Erreur lors de l'upload: " + error.message);
     }
   };
 
@@ -344,10 +383,19 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
                     <Label htmlFor="cv">Votre CV *</Label>
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
-                        <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {formData.cv ? formData.cv.name : "Glissez votre CV ici ou cliquez pour parcourir"}
-                        </p>
+                        {isUploading ? (
+                          <div className="space-y-2">
+                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
+                          </div>
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {formData.cv ? formData.cv.name : "Glissez votre CV ici ou cliquez pour parcourir"}
+                            </p>
+                          </>
+                        )}
                         <input
                           type="file"
                           accept=".pdf,.doc,.docx"
@@ -359,8 +407,9 @@ export function ApplicationForm({ jobTitle, onBack, onSubmit }: ApplicationFormP
                           variant="outline" 
                           size="sm"
                           onClick={() => document.getElementById('cv-upload')?.click()}
+                          disabled={isUploading}
                         >
-                          Choisir un fichier
+                          {isUploading ? "Upload..." : "Choisir un fichier"}
                         </Button>
                       </div>
                     </div>
