@@ -4,8 +4,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./hooks/useAuth";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 
 // Import candidate pages
 import CandidateJobs from "./pages/candidate/CandidateJobs";
@@ -43,15 +46,17 @@ function App() {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <BrowserRouter>
+          <AuthProvider>
+            <BrowserRouter>
             <Routes>
               {/* Home and Candidate Routes */}
               <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
               <Route path="/jobs" element={<CandidateJobs />} />
               <Route path="/jobs/:id" element={<JobDetail />} />
               <Route path="/candidate/signup" element={<CandidateSignup />} />
               <Route path="/candidate/login" element={<CandidateLogin />} />
-              <Route path="/candidate/dashboard" element={<CandidateDashboard />} />
+              <Route path="/candidate/dashboard" element={<ProtectedRoute requiredRole="candidat"><CandidateDashboard /></ProtectedRoute>} />
               <Route path="/candidate/jobs" element={<CandidateJobs />} />
               
               <Route path="/candidate/application/:id" element={<CandidateApplicationTracking />} />
@@ -104,6 +109,7 @@ function App() {
           </BrowserRouter>
           <Toaster />
           <Sonner />
+          </AuthProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </React.StrictMode>
