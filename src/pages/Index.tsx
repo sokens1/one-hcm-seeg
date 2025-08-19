@@ -72,17 +72,16 @@ const Index = () => {
             <div className="pt-4 sm:pt-6 animate-fade-in delay-400">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
                 <Button 
-                  variant="secondary" 
+                  variant="outline"
                   size="lg"
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 w-full sm:w-auto text-sm sm:text-base"
+                  className="border-2 border-white bg-transparent hover:bg-white/10 text-white w-full sm:w-auto"
                   onClick={() => navigate('/company-context')}
                 >
                   Contexte de recrutement
                 </Button>
                 <Button 
-                  variant="secondary" 
                   size="lg"
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 w-full sm:w-auto text-sm sm:text-base"
+                  className="bg-white text-blue-700 hover:bg-gray-200 font-semibold w-full sm:w-auto"
                   onClick={() => document.getElementById('job-list')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Postuler
@@ -268,7 +267,7 @@ const Index = () => {
               Accédez à l'interface de gestion des candidatures et du processus de recrutement.
             </p>
             <Button variant="recruiter" size="lg" asChild className="w-full sm:w-auto">
-              <a href="/recruiter">
+              <a href="/auth">
                 Accéder à l'espace RH
               </a>
             </Button>
