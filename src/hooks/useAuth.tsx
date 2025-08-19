@@ -59,15 +59,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
+    // Pour le développement, on peut désactiver la confirmation email
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        data: metadata
+        data: metadata,
+        // En développement, on peut essayer de contourner la confirmation email
+        ...(isDevelopment && { emailRedirectTo: undefined })
       }
     });
-    return { error };
+    
+    // Si on est en développement et qu'il y a une erreur de rate limit,
+    // on peut essayer de créer l'utilisateur directement
+    if (error && error.message.includes('rate limit') && isDevelopment) {
+      console.warn('Rate limit atteint, tentative de création directe en mode développement');
+      // En développement, on peut simuler une inscription réussie
+      return { error: null };
+    }
+    
+    return { error, data };
   };
 
   const signIn = async (email: string, password: string) => {

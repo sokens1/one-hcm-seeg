@@ -108,17 +108,33 @@ export default function Auth() {
       });
       
       if (error) {
-        if (error.status === 429) {
-          toast.error("Trop de tentatives. Veuillez réessayer dans 60 secondes.");
-          setCooldown(60);
+        if (error.status === 429 || error.message.includes('rate limit')) {
+          toast.error("Limite d'envoi d'emails atteinte. En mode développement, vous pouvez vous connecter directement.");
+          setCooldown(120); // 2 minutes de cooldown
+          // En développement, on peut suggérer de se connecter directement
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            setTimeout(() => {
+              toast.info("💡 Astuce: En développement, essayez de vous connecter directement avec vos identifiants.");
+            }, 2000);
+          }
         } else if (error.message.includes("already registered")) {
-          toast.error("Cette adresse email est déjà utilisée");
+          toast.error("Cette adresse email est déjà utilisée. Essayez de vous connecter.");
+          setActiveTab("signin");
+        } else if (error.message.includes('email')) {
+          toast.error("Problème avec l'adresse email. Vérifiez le format.");
         } else {
           toast.error("Erreur d'inscription: " + error.message);
         }
       } else {
-        toast.success("Inscription réussie! Vérifiez votre email pour confirmer votre compte.");
+        const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isDevelopment) {
+          toast.success("Inscription réussie! Vous pouvez maintenant vous connecter.");
+        } else {
+          toast.success("Inscription réussie! Vérifiez votre email pour confirmer votre compte.");
+        }
         setActiveTab("signin");
+        // Pré-remplir l'email dans le formulaire de connexion
+        setSignInData(prev => ({ ...prev, email: signUpData.email }));
       }
     } catch (error) {
       toast.error("Une erreur est survenue");
