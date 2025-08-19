@@ -1,122 +1,67 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Mail, Eye, Phone, MapPin, Calendar, User } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Search, Eye, Phone, MapPin, Calendar, User, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useRecruiterApplications } from "@/hooks/useApplications";
 
-// Types
-interface Candidate {
-  id: number;
+// Types dérivés des applications
+type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse';
+
+interface UICandidate {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
-  location: string;
+  phone?: string;
+  location?: string;
   appliedDate: string;
-  status: 'new' | 'preselected' | 'interview' | 'offer' | 'rejected';
-  jobTitle: string;
-  experience: string;
+  status: ApplicationStatus;
+  jobTitle?: string;
 }
 
-// Mock data - tous les candidats
-const mockCandidates: Candidate[] = [
-  {
-    id: 1,
-    firstName: "Marie",
-    lastName: "Obame",
-    email: "marie.obame@email.com",
-    phone: "+241 XX XX XX XX",
-    location: "Libreville",
-    appliedDate: "2024-01-15",
-    status: "new",
-    jobTitle: "Directeur des Ressources Humaines",
-    experience: "8 ans"
-  },
-  {
-    id: 2,
-    firstName: "Jean",
-    lastName: "Ndong",
-    email: "jean.ndong@email.com",
-    phone: "+241 XX XX XX XX",
-    location: "Port-Gentil",
-    appliedDate: "2024-01-14",
-    status: "new",
-    jobTitle: "Directeur des Ressources Humaines",
-    experience: "10 ans"
-  },
-  {
-    id: 3,
-    firstName: "Sarah",
-    lastName: "Mba",
-    email: "sarah.mba@email.com",
-    phone: "+241 XX XX XX XX",
-    location: "Libreville",
-    appliedDate: "2024-01-13",
-    status: "preselected",
-    jobTitle: "Directeur Commercial",
-    experience: "12 ans"
-  },
-  {
-    id: 4,
-    firstName: "Paul",
-    lastName: "Nze",
-    email: "paul.nze@email.com",
-    phone: "+241 XX XX XX XX",
-    location: "Franceville",
-    appliedDate: "2024-01-12",
-    status: "interview",
-    jobTitle: "Directeur Technique",
-    experience: "15 ans"
-  },
-  {
-    id: 5,
-    firstName: "Lucie",
-    lastName: "Ondo",
-    email: "lucie.ondo@email.com",
-    phone: "+241 XX XX XX XX",
-    location: "Libreville",
-    appliedDate: "2024-01-10",
-    status: "offer",
-    jobTitle: "Directeur Financier",
-    experience: "9 ans"
-  },
-  {
-    id: 6,
-    firstName: "Antoine",
-    lastName: "Mvé",
-    email: "antoine.mve@email.com",
-    phone: "+241 XX XX XX XX",
-    location: "Oyem",
-    appliedDate: "2024-01-09",
-    status: "rejected",
-    jobTitle: "Directeur des Systèmes d'Information",
-    experience: "7 ans"
-  }
-];
-
-const statusConfig = {
-  new: { label: "Nouveaux", color: "bg-blue-100 text-blue-800 border-blue-200" },
-  preselected: { label: "Présélectionnés", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
-  interview: { label: "Entretien", color: "bg-purple-100 text-purple-800 border-purple-200" },
-  offer: { label: "Sélection retenus", color: "bg-green-100 text-green-800 border-green-200" },
-  rejected: { label: "Refusés", color: "bg-red-100 text-red-800 border-red-200" }
+const statusConfig: Record<ApplicationStatus, { label: string; color: string }> = {
+  candidature: { label: "Candidature", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  incubation: { label: "Incubation", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
+  embauche: { label: "Embauché", color: "bg-green-100 text-green-800 border-green-200" },
+  refuse: { label: "Refusé", color: "bg-red-100 text-red-800 border-red-200" },
 };
 
 export default function CandidatesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | ApplicationStatus>("all");
+  const { applications, isLoading, error } = useRecruiterApplications();
 
-  const filteredCandidates = mockCandidates.filter(candidate => {
-    const matchesSearch = candidate.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         candidate.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         candidate.jobTitle.toLowerCase().includes(searchTerm.toLowerCase());
-    
+  const uiCandidates: UICandidate[] = useMemo(() => {
+    return (applications || []).map(app => ({
+      id: app.id,
+      firstName: app.users?.first_name || "",
+      lastName: app.users?.last_name || "",
+      email: app.users?.email || "",
+      phone: app.users?.phone || undefined,
+      location: app.job_offers?.location || undefined,
+      appliedDate: app.created_at,
+      status: app.status as ApplicationStatus,
+      jobTitle: app.job_offers?.title || undefined,
+    }));
+  }, [applications]);
+
+  const filteredCandidates = uiCandidates.filter(candidate => {
+    const needle = searchTerm.toLowerCase();
+    const name = `${candidate.firstName} ${candidate.lastName}`.toLowerCase();
+    const jobTitle = (candidate.jobTitle || "").toLowerCase();
+    const matchesSearch =
+      name.includes(needle) ||
+      candidate.email.toLowerCase().includes(needle) ||
+      jobTitle.includes(needle);
+
     const matchesStatus = statusFilter === "all" || candidate.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -139,6 +84,19 @@ export default function CandidatesPage() {
             </Button>
           </Link>
         </div>
+
+        {/* Loading and Error States */}
+        {isLoading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+            Chargement des candidats...
+          </div>
+        )}
+        {error && (
+          <div className="text-center py-6 text-red-600">
+            Erreur lors du chargement: {(error as Error).message}
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -165,7 +123,7 @@ export default function CandidatesPage() {
                 key={status}
                 variant={statusFilter === status ? "default" : "outline"}
                 size="sm"
-                onClick={() => setStatusFilter(status)}
+                onClick={() => setStatusFilter(status as ApplicationStatus)}
               >
                 {config.label}
               </Button>
@@ -177,12 +135,12 @@ export default function CandidatesPage() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-foreground">{mockCandidates.length}</div>
+              <div className="text-2xl font-bold text-foreground">{uiCandidates.length}</div>
               <div className="text-sm text-muted-foreground">Total</div>
             </CardContent>
           </Card>
           {Object.entries(statusConfig).map(([status, config]) => {
-            const count = mockCandidates.filter(c => c.status === status).length;
+            const count = uiCandidates.filter(c => c.status === status).length;
             return (
               <Card key={status}>
                 <CardContent className="p-4 text-center">
@@ -202,7 +160,6 @@ export default function CandidatesPage() {
                 <thead className="border-b bg-muted/30">
                   <tr>
                     <th className="text-left p-4 font-medium text-foreground">Candidat</th>
-                    <th className="text-left p-4 font-medium text-foreground">Contact</th>
                     <th className="text-left p-4 font-medium text-foreground">Poste</th>
                     <th className="text-left p-4 font-medium text-foreground">Statut</th>
                     <th className="text-left p-4 font-medium text-foreground">Date</th>
@@ -221,28 +178,11 @@ export default function CandidatesPage() {
                             <div className="font-medium text-foreground">
                               {candidate.firstName} {candidate.lastName}
                             </div>
-                            <div className="text-sm text-muted-foreground">{candidate.experience} d'expérience</div>
                           </div>
                         </div>
                       </td>
                       <td className="p-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Mail className="w-4 h-4" />
-                            <span>{candidate.email}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Phone className="w-4 h-4" />
-                            <span>{candidate.phone}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <MapPin className="w-4 h-4" />
-                            <span>{candidate.location}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-sm font-medium text-foreground">{candidate.jobTitle}</div>
+                        <div className="text-sm font-medium text-foreground">{candidate.jobTitle || '-'}</div>
                       </td>
                       <td className="p-4">
                         <Badge variant="secondary" className={statusConfig[candidate.status].color}>
@@ -256,16 +196,64 @@ export default function CandidatesPage() {
                         </div>
                       </td>
                       <td className="p-4">
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <Eye className="w-4 h-4" />
-                            CV
-                          </Button>
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <Mail className="w-4 h-4" />
-                            Contact
-                          </Button>
-                        </div>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-2">
+                              <Eye className="w-4 h-4" />
+                              Détails
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Détails du candidat</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-6">
+                              {/* Informations personnelles */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-sm text-muted-foreground">Nom complet</Label>
+                                  <p className="font-medium">{candidate.firstName} {candidate.lastName}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm text-muted-foreground">Email</Label>
+                                  <p className="font-medium">{candidate.email}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm text-muted-foreground">Téléphone</Label>
+                                  <p className="font-medium">{candidate.phone || 'Non fourni'}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm text-muted-foreground">Date de candidature</Label>
+                                  <p className="font-medium">{new Date(candidate.appliedDate).toLocaleDateString('fr-FR')}</p>
+                                </div>
+                              </div>
+                              
+                              {/* Poste et statut */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-sm text-muted-foreground">Poste postulé</Label>
+                                  <p className="font-medium">{candidate.jobTitle || 'Non spécifié'}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm text-muted-foreground">Statut</Label>
+                                  <Badge variant="secondary" className={statusConfig[candidate.status].color}>
+                                    {statusConfig[candidate.status].label}
+                                  </Badge>
+                                </div>
+                              </div>
+                              
+                              {/* Actions */}
+                              <div className="flex gap-2 pt-4 border-t">
+                                <Link to={`/recruiter/candidate/${candidate.id}/analysis`} className="flex-1">
+                                  <Button variant="default" className="w-full gap-2">
+                                    <Eye className="w-4 h-4" />
+                                    Analyser le candidat
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </td>
                     </tr>
                   ))}
@@ -275,7 +263,7 @@ export default function CandidatesPage() {
           </CardContent>
         </Card>
 
-        {filteredCandidates.length === 0 && (
+        {filteredCandidates.length === 0 && !isLoading && !error && (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="w-8 h-8 text-muted-foreground" />

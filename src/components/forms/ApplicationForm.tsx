@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { useApplications } from "@/hooks/useApplications";
 import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ApplicationFormProps {
   jobTitle: string;
@@ -47,6 +50,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitApplication } = useApplications();
   const { uploadFile, isUploading } = useFileUpload();
+  const { user } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -63,6 +67,62 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
     question3: "",
     consent: false
   });
+
+  // Prefill personal info from public.users and candidate_profiles
+  useEffect(() => {
+    let isMounted = true;
+    const prefill = async () => {
+      try {
+        if (!user?.id) return;
+
+        const [{ data: dbUser, error: userError }, { data: profile, error: profileError }] = await Promise.all([
+          supabase
+            .from('users')
+            .select('first_name, last_name, email, date_of_birth')
+            .eq('id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('candidate_profiles')
+            .select('current_position')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+        ]);
+
+        if (userError) throw userError;
+        if (profileError) throw profileError;
+
+        if (!isMounted) return;
+
+        // Fallbacks depuis les métadonnées d'auth (providers):
+        const meta: any = (user as any)?.user_metadata || {};
+        // Essayer différentes clés communes
+        let metaFirst: string | undefined = meta.first_name || meta.prenom || meta.given_name;
+        let metaLast: string | undefined = meta.last_name || meta.nom || meta.family_name;
+        if ((!metaFirst || !metaLast) && typeof meta.name === 'string') {
+          const parts = meta.name.trim().split(/\s+/);
+          if (!metaFirst && parts.length > 0) metaFirst = parts[0];
+          if (!metaLast && parts.length > 1) metaLast = parts.slice(1).join(' ');
+        }
+
+        setFormData((prev) => ({
+          ...prev,
+          firstName: prev.firstName || dbUser?.first_name || metaFirst || '',
+          lastName: prev.lastName || dbUser?.last_name || metaLast || '',
+          email: prev.email || dbUser?.email || user.email || '',
+          dateOfBirth: prev.dateOfBirth || (dbUser?.date_of_birth ? new Date(dbUser.date_of_birth) : null),
+          currentPosition: prev.currentPosition || profile?.current_position || '',
+        }));
+      } catch (e: any) {
+        console.error('Prefill error:', e);
+        // Ne bloque pas l'utilisateur, informe simplement en silencieux
+      }
+    };
+
+    prefill();
+    return () => {
+      isMounted = false;
+    };
+  }, [user, user?.id, user?.email]);
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;

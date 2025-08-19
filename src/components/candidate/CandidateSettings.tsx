@@ -6,10 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Bell, Lock, Globe, Palette, LogOut } from "lucide-react";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export function CandidateSettings() {
-  const { logout } = useCandidateAuth();
+  const { signOut: logout } = useAuth();
+  const navigate = useNavigate();
   const [settings, setSettings] = useState({
     emailNotifications: true,
     smsNotifications: false,
@@ -23,9 +25,9 @@ export function CandidateSettings() {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleLogout = () => {
-    logout();
-    window.location.href = "/candidate/login";
+  const handleLogout = async () => {
+    await logout();
+    navigate("/candidate/login");
   };
 
   return (

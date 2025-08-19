@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useApplication } from "@/hooks/useApplications";
+import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,33 +53,6 @@ interface CandidateData {
   status: 'candidature' | 'incubation' | 'embauche' | 'refuse';
 }
 
-// Mock data pour le candidat
-const mockCandidate: CandidateData = {
-  id: 1,
-  name: "Jean Dupont",
-  email: "jean.dupont@email.com",
-  phone: "+241 01 23 45 67",
-  currentPosition: "Développeur Frontend Junior",
-  currentDepartment: "IT",
-  experience: "3 ans",
-  education: "Master en Informatique - Université Omar Bongo",
-  skills: ["React", "JavaScript", "TypeScript", "Node.js", "CSS", "Git"],
-  motivation: "Passionné par le développement web moderne, je souhaite contribuer à des projets innovants tout en développant mes compétences techniques.",
-  availability: "Disponible immédiatement",
-  expectedSalary: "800 000 - 1 200 000 FCFA",
-  documents: {
-    cv: "/documents/cv_jean_dupont.pdf",
-    coverLetter: "/documents/lettre_motivation_jean_dupont.pdf",
-    diploma: "/documents/diplome_jean_dupont.pdf",
-    recommendations: [
-      "/documents/recommandation_1_jean_dupont.pdf",
-      "/documents/recommandation_2_jean_dupont.pdf"
-    ]
-  },
-  applicationDate: "2024-01-15",
-  status: "candidature"
-};
-
 const initialProtocols: Protocol[] = [
   {
     id: "protocol1",
@@ -110,9 +85,62 @@ const initialProtocols: Protocol[] = [
 export default function CandidateAnalysis() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [candidate] = useState<CandidateData>(mockCandidate);
+  const { data: application, isLoading, error } = useApplication(id);
+  const { data: documents = [], isLoading: documentsLoading } = useApplicationDocuments(id);
   const [protocols, setProtocols] = useState<Protocol[]>(initialProtocols);
   const [activeTab, setActiveTab] = useState("protocol1");
+
+  // Transform application data to candidate format
+  const candidate: CandidateData | null = application ? {
+    id: parseInt(application.id),
+    name: `${application.users?.first_name || ''} ${application.users?.last_name || ''}`.trim(),
+    email: application.users?.email || '',
+    phone: application.users?.phone || 'Non fourni',
+    currentPosition: 'Non spécifié', // Placeholder
+    currentDepartment: 'Non spécifié', // Placeholder
+    experience: 'Non spécifié', // Placeholder
+    education: 'Non spécifié', // Placeholder
+    skills: [], // Placeholder
+    motivation: application.motivation || application.cover_letter || 'Non fournie',
+    availability: application.availability_start || 'Non spécifiée',
+    expectedSalary: 'Non spécifié', // Placeholder
+    documents: {
+      cv: '/documents/placeholder.pdf',
+      coverLetter: '/documents/placeholder.pdf',
+      diploma: '/documents/placeholder.pdf',
+      recommendations: []
+    },
+    applicationDate: new Date(application.created_at).toLocaleDateString('fr-FR'),
+    status: application.status
+  } : null;
+
+  if (isLoading) {
+    return (
+      <RecruiterLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center py-12">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <span>Chargement des données du candidat...</span>
+            </div>
+          </div>
+        </div>
+      </RecruiterLayout>
+    );
+  }
+
+  if (error || !candidate) {
+    return (
+      <RecruiterLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <p className="text-red-600 mb-4">Erreur lors du chargement des données du candidat.</p>
+            <Button onClick={() => navigate(-1)}>Retour</Button>
+          </div>
+        </div>
+      </RecruiterLayout>
+    );
+  }
 
   const updateTaskCompletion = (protocolId: string, taskId: string, completed: boolean) => {
     setProtocols(prev => prev.map(protocol => {
@@ -277,115 +305,45 @@ export default function CandidateAnalysis() {
                 <CardTitle className="text-lg">Documents du Candidat</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* CV */}
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">Curriculum Vitae</p>
-                      <p className="text-sm text-muted-foreground">PDF - 2.3 MB</p>
-                    </div>
+                {documentsLoading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2"></div>
+                    <span className="text-sm text-muted-foreground">Chargement des documents...</span>
                   </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => viewDocument(candidate.documents.cv)}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => downloadDocument(candidate.documents.cv)}
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Lettre de motivation */}
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">Lettre de motivation</p>
-                      <p className="text-sm text-muted-foreground">PDF - 0.8 MB</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => viewDocument(candidate.documents.coverLetter)}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => downloadDocument(candidate.documents.coverLetter)}
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Diplôme */}
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">Diplôme</p>
-                      <p className="text-sm text-muted-foreground">PDF - 1.1 MB</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => viewDocument(candidate.documents.diploma)}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => downloadDocument(candidate.documents.diploma)}
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Recommandations */}
-                {candidate.documents.recommendations.map((rec, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <FileText className="w-5 h-5 text-muted-foreground" />
-                      <div>
-                        <p className="font-medium">Recommandation {index + 1}</p>
-                        <p className="text-sm text-muted-foreground">PDF - 0.5 MB</p>
+                ) : documents.length > 0 ? (
+                  documents.map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium">{getDocumentTypeLabel(doc.document_type)}</p>
+                          <p className="text-sm text-muted-foreground">{doc.file_name} - {formatFileSize(doc.file_size)}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => viewDocument(doc.file_path)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => downloadDocument(doc.file_path)}
+                        >
+                          <Download className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => viewDocument(rec)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => downloadDocument(rec)}
-                      >
-                        <Download className="w-4 h-4" />
-                      </Button>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Aucun document téléchargé</p>
                   </div>
-                ))}
+                )}
               </CardContent>
             </Card>
           </div>

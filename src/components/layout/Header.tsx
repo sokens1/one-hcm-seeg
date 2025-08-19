@@ -1,30 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Users, Building2, LogOut, LogIn, UserPlus, ChevronDown } from "lucide-react";
+import { Building2, LogOut, LogIn, UserPlus } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useRecruiterAuth } from "@/hooks/useRecruiterAuth";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/use-toast";
 
 export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAuthenticated: isRecruiterAuth, logout: recruiterLogout } = useRecruiterAuth();
-  const { isAuthenticated: isCandidateAuth, user: candidateUser, logout: candidateLogout } = useCandidateAuth();
-  const isRecruiterSide = location.pathname.startsWith('/recruiter');
+  const { user, signOut } = useAuth();
+  const isAuthenticated = !!user;
+  const isRecruiter = user?.user_metadata?.role === 'recruiter';
+  const isCandidate = user?.user_metadata?.role === 'candidate';
 
-  const handleRecruiterLogout = () => {
-    recruiterLogout();
-    toast({
-      title: "Déconnexion réussie",
-      description: "À bientôt !",
-    });
-    navigate('/');
-  };
-
-  const handleCandidateLogout = () => {
-    candidateLogout();
+  const handleLogout = async () => {
+    await signOut();
     toast({
       title: "Déconnexion réussie",
       description: "À bientôt !",
@@ -46,54 +36,32 @@ export function Header() {
         </Link>
 
         <nav className="flex items-center gap-4">
-          {isRecruiterSide ? (
-            // Interface recruteur
+          {isAuthenticated ? (
             <>
-              {isRecruiterAuth && (
-                <Button variant="outline" size="sm" onClick={handleRecruiterLogout} className="gap-2">
-                  <LogOut className="w-4 h-4" />
-                  Déconnexion
-                </Button>
+              {isCandidate && (
+                <span className="text-sm text-muted-foreground">
+                  Bonjour {user.user_metadata?.first_name}
+                </span>
               )}
-            </>
-          ) : isCandidateAuth ? (
-            // Interface candidat connecté - redirection automatique vers dashboard
-            <>
-              <span className="text-sm text-muted-foreground">
-                Bonjour {candidateUser?.firstName}
-              </span>
-              <Button variant="outline" size="sm" onClick={handleCandidateLogout} className="gap-2">
+              {isRecruiter && (
+                <Link to="/recruiter/dashboard">
+                  <Button variant="ghost" size="sm">Espace Recruteur</Button>
+                </Link>
+              )}
+              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
                 <LogOut className="w-4 h-4" />
                 Déconnexion
               </Button>
             </>
           ) : (
-            // Interface visiteur - seulement se connecter/s'inscrire
             <>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <LogIn className="w-4 h-4" />
-                    Se connecter
-                    <ChevronDown className="w-3 h-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem asChild>
-                    <Link to="/candidate/login" className="flex items-center gap-2">
-                      <Users className="w-4 h-4" />
-                      Candidat
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/recruiter/login" className="flex items-center gap-2">
-                      <Building2 className="w-4 h-4" />
-                      Recruteur
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Link to="/candidate/signup">
+              <Link to="/auth">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <LogIn className="w-4 h-4" />
+                  Se connecter
+                </Button>
+              </Link>
+              <Link to="/auth">
                 <Button variant="default" size="sm" className="gap-2">
                   <UserPlus className="w-4 h-4" />
                   S'inscrire

@@ -4,45 +4,39 @@ import { Badge } from "@/components/ui/badge";
 import { Eye, Briefcase, Plus } from "lucide-react";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 
-// Mock data pour les candidatures
-const mockApplications = [
-  {
-    id: 1,
-    title: "Directeur des Ressources Humaines",
-    department: "Ressources Humaines",
-    location: "Libreville",
-    dateSubmission: "15 Dec 2024",
-    status: "En cours d'évaluation",
-    currentStage: "Protocole 1 - Adhérence MTP"
-  },
-  {
-    id: 2,
-    title: "Directeur des Systèmes d'Information",
-    department: "IT",
-    location: "Libreville", 
-    dateSubmission: "12 Dec 2024",
-    status: "Documents vérifiés",
-    currentStage: "Protocole 1 - Documents requis"
-  }
-];
+import { useApplications } from "@/hooks/useApplications";
+import { Loader2 } from "lucide-react";
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
+// Statuts et couleurs correspondants
+const statusConfig = {
+  candidature: { label: "Candidature reçue", color: "bg-blue-100 text-blue-800" },
+  incubation: { label: "En cours d'évaluation", color: "bg-yellow-100 text-yellow-800" },
+  embauche: { label: "Embauché", color: "bg-green-100 text-green-800" },
+  refuse: { label: "Refusé", color: "bg-red-100 text-red-800" },
+};
 
 export function CandidateApplications() {
   const { setCurrentView } = useCandidateLayout();
+  const { data: applications, isLoading, error } = useApplications();
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "En cours d'évaluation":
-        return "bg-yellow-500";
-      case "Documents vérifiés":
-        return "bg-green-500";
-      case "Candidature retenue":
-        return "bg-green-600";
-      case "Non retenue":
-        return "bg-red-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <span className="ml-2">Chargement de vos candidatures...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 text-red-600">
+        <p>Une erreur est survenue : {error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -53,46 +47,49 @@ export function CandidateApplications() {
         </p>
       </div>
 
-      {mockApplications.length > 0 ? (
+      {applications && applications.length > 0 ? (
         <div className="grid gap-6">
-          {mockApplications.map((application) => (
-            <Card key={application.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <CardTitle className="text-xl">{application.title}</CardTitle>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Briefcase className="w-4 h-4" />
-                        {application.department}
-                      </span>
-                      <span>{application.location}</span>
-                      <span>Candidature du {application.dateSubmission}</span>
+          {applications.map((application) => {
+            const statusInfo = statusConfig[application.status] || { label: application.status, color: "bg-gray-100 text-gray-800" };
+            return (
+              <Card key={application.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <CardTitle className="text-xl">{application.job_offers?.title || 'Titre non disponible'}</CardTitle>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Briefcase className="w-4 h-4" />
+                          {application.job_offers?.contract_type || 'N/A'}
+                        </span>
+                        <span>{application.job_offers?.location || 'N/A'}</span>
+                        <span>Candidature du {format(new Date(application.created_at), 'dd MMM yyyy', { locale: fr })}</span>
+                      </div>
                     </div>
+                    <Badge className={`${statusInfo.color} text-white`}>
+                      {statusInfo.label}
+                    </Badge>
                   </div>
-                  <Badge className={`${getStatusColor(application.status)} text-white`}>
-                    {application.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Étape actuelle</p>
-                    <p className="font-medium">{application.currentStage}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Disponibilité</p>
+                      <p className="font-medium">{application.availability_start ? format(new Date(application.availability_start), 'dd MMM yyyy', { locale: fr }) : 'Non spécifiée'}</p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="gap-2"
+                      onClick={() => setCurrentView("tracking")} // Note: This will need logic to pass the application ID
+                    >
+                      <Eye className="w-4 h-4" />
+                      Voir le suivi détaillé
+                    </Button>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    className="gap-2"
-                    onClick={() => setCurrentView("tracking")}
-                  >
-                    <Eye className="w-4 h-4" />
-                    Voir le suivi détaillé
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-12">

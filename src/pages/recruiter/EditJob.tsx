@@ -6,85 +6,78 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-
-// Mock data pour simuler les données de l'offre
-const mockJobData = {
-  1: {
-    title: "Développeur React.js",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Nous recherchons un développeur React.js expérimenté pour rejoindre notre équipe technique...",
-    requirements: "- 3+ années d'expérience en React.js\n- Maîtrise de TypeScript\n- Connaissance de Redux",
-    salary: "800000-1200000"
-  },
-  2: {
-    title: "Chef de Projet Digital",
-    location: "Port-Gentil", 
-    contractType: "CDI",
-    description: "Poste de chef de projet pour la transformation digitale de nos processus...",
-    requirements: "- 5+ années d'expérience en gestion de projet\n- Certifications PMP/Agile\n- Leadership",
-    salary: "1000000-1500000"
-  },
-  3: {
-    title: "Analyste Financier",
-    location: "Libreville",
-    contractType: "CDD", 
-    description: "Analyste financier pour l'équipe finance et contrôle de gestion...",
-    requirements: "- Diplôme en finance/comptabilité\n- Maîtrise d'Excel avancé\n- Rigueur analytique",
-    salary: "600000-900000"
-  }
-};
+import { useJobOffer } from "@/hooks/useJobOffers";
+import { useCreateJobOffer } from "@/hooks/useRecruiterDashboard";
 
 export default function EditJob() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
+  const { data: jobOffer, isLoading: isLoadingJob, error: errorJob } = useJobOffer(id as string);
+  const { updateJobOffer, isUpdating } = useCreateJobOffer();
+
   const [formData, setFormData] = useState({
     title: "",
     location: "",
-    contractType: "",
+    contract_type: "",
     description: "",
-    requirements: "",
-    salary: ""
+    profile: "",
   });
 
   useEffect(() => {
-    // Charger les données de l'offre à modifier
-    if (id && mockJobData[id as "1" | "2" | "3"]) {
-      const jobData = mockJobData[id as "1" | "2" | "3"];
-      setFormData(jobData);
+    if (jobOffer) {
+      setFormData({
+        title: jobOffer.title,
+        location: jobOffer.location,
+        contract_type: jobOffer.contract_type,
+        description: jobOffer.description || '',
+        profile: jobOffer.profile || '',
+      });
     }
-  }, [id]);
+  }, [jobOffer]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Ici, vous implementeriez la logique de sauvegarde
-    console.log("Modification de l'offre", id, formData);
-    
-    toast({
-      title: "Offre modifiée",
-      description: "L'offre d'emploi a été mise à jour avec succès.",
-    });
-    
-    // Redirection vers le dashboard
-    navigate("/recruiter");
+    if (!id) return;
+
+    try {
+      await updateJobOffer({ jobId: id, jobData: formData });
+      toast({
+        title: "Offre modifiée",
+        description: "L'offre d'emploi a été mise à jour avec succès.",
+        variant: "default",
+      });
+      navigate("/recruiter");
+    } catch (error) {
+      toast({
+        title: "Erreur de mise à jour",
+        description: "Une erreur est survenue. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  if (!id || !mockJobData[id as "1" | "2" | "3"]) {
-  return (
-    <RecruiterLayout>
+  if (isLoadingJob) {
+    return (
+      <RecruiterLayout>
+        <div className="container mx-auto px-4 py-8 flex justify-center items-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </RecruiterLayout>
+    );
+  }
+
+  if (errorJob || !jobOffer) {
+    return (
+      <RecruiterLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Offre non trouvée</h1>
@@ -96,7 +89,7 @@ export default function EditJob() {
             </Link>
           </div>
         </div>
-    </RecruiterLayout>
+      </RecruiterLayout>
     );
   }
 
@@ -144,6 +137,7 @@ export default function EditJob() {
                   <Select 
                     value={formData.location} 
                     onValueChange={(value) => handleInputChange("location", value)}
+                    required
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Choisir une ville" />
@@ -163,31 +157,24 @@ export default function EditJob() {
                 <div className="space-y-2">
                   <Label htmlFor="contractType">Type de contrat *</Label>
                   <Select 
-                    value={formData.contractType} 
-                    onValueChange={(value) => handleInputChange("contractType", value)}
+                    value={formData.contract_type} 
+                    onValueChange={(value) => handleInputChange("contract_type", value)}
+                    required
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Type de contrat" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="CDI">CDI - Contrat à Durée Indéterminée</SelectItem>
-                      <SelectItem value="CDD">CDD - Contrat à Durée Déterminée</SelectItem>
+                      <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
+                      <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
                       <SelectItem value="Stage">Stage</SelectItem>
-                      <SelectItem value="Freelance">Freelance/Consultation</SelectItem>
+                      <SelectItem value="Freelance">Freelance</SelectItem>
+                      <SelectItem value="Temps partiel">Temps partiel</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="salary">Fourchette salariale (FCFA)</Label>
-                  <Input
-                    id="salary"
-                    value={formData.salary}
-                    onChange={(e) => handleInputChange("salary", e.target.value)}
-                    placeholder="Ex: 800000-1200000"
-                  />
-                </div>
-              </div>
+                              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="description">Description du poste *</Label>
@@ -202,11 +189,11 @@ export default function EditJob() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="requirements">Exigences et qualifications *</Label>
+                <Label htmlFor="profile">Profil recherché *</Label>
                 <Textarea
-                  id="requirements"
-                  value={formData.requirements}
-                  onChange={(e) => handleInputChange("requirements", e.target.value)}
+                  id="profile"
+                  value={formData.profile}
+                  onChange={(e) => handleInputChange("profile", e.target.value)}
                   placeholder="Listez les compétences requises, l'expérience nécessaire, les diplômes..."
                   rows={6}
                   required
@@ -219,9 +206,13 @@ export default function EditJob() {
                     Annuler
                   </Button>
                 </Link>
-                <Button type="submit" variant="hero" className="gap-2">
-                  <Save className="w-4 h-4" />
-                  Sauvegarder les modifications
+                <Button type="submit" variant="hero" className="gap-2" disabled={isUpdating}>
+                  {isUpdating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  {isUpdating ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
                 </Button>
               </div>
             </form>

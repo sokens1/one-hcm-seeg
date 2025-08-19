@@ -6,13 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Building2, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useRecruiterAuth } from "@/hooks/useRecruiterAuth";
+import { useAuth } from "@/hooks/useAuth";
 
-// Faux compte pour simulation
-const MOCK_CREDENTIALS = {
-  email: "recruteur@onehcm.ga",
-  password: "admin123"
-};
 
 export default function RecruiterLogin() {
   const [email, setEmail] = useState("");
@@ -21,37 +16,31 @@ export default function RecruiterLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useRecruiterAuth();
+  const { signIn } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulation d'un délai de connexion
-    setTimeout(() => {
-      if (email === MOCK_CREDENTIALS.email && password === MOCK_CREDENTIALS.password) {
-        // Utiliser la fonction login du hook pour mettre à jour l'état
-        login();
-        toast({
-          title: "Connexion réussie",
-          description: "Bienvenue dans votre espace recruteur",
-        });
-        navigate("/recruiter");
-      } else {
-        toast({
-          title: "Erreur de connexion",
-          description: "Email ou mot de passe incorrect",
-          variant: "destructive",
-        });
-      }
-      setIsLoading(false);
-    }, 1000);
+    const { data, error } = await signIn(email, password);
+
+    if (error) {
+      toast({
+        title: "Erreur de connexion",
+        description: error.message || "Email ou mot de passe incorrect",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Connexion réussie",
+        description: "Bienvenue dans votre espace recruteur",
+      });
+      navigate("/recruiter/dashboard");
+    }
+
+    setIsLoading(false);
   };
 
-  const fillDemoCredentials = () => {
-    setEmail(MOCK_CREDENTIALS.email);
-    setPassword(MOCK_CREDENTIALS.password);
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5 p-4">

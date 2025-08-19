@@ -101,7 +101,7 @@ export type Database = {
         Row: {
           availability_start: string | null
           candidate_id: string | null
-          candidate_references: string | null
+          reference_contacts: string | null
           cover_letter: string | null
           created_at: string | null
           id: string
@@ -113,7 +113,7 @@ export type Database = {
         Insert: {
           availability_start?: string | null
           candidate_id?: string | null
-          candidate_references?: string | null
+          reference_contacts?: string | null
           cover_letter?: string | null
           created_at?: string | null
           id?: string
@@ -125,7 +125,7 @@ export type Database = {
         Update: {
           availability_start?: string | null
           candidate_id?: string | null
-          candidate_references?: string | null
+          reference_contacts?: string | null
           cover_letter?: string | null
           created_at?: string | null
           id?: string

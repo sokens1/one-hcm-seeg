@@ -3,7 +3,7 @@ import { RecruiterSidebar } from "./RecruiterSidebar";
 import { Header } from "./Header";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { useRecruiterAuth } from "@/hooks/useRecruiterAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 interface RecruiterLayoutProps {
@@ -12,11 +12,11 @@ interface RecruiterLayoutProps {
 }
 
 export function RecruiterLayout({ children, className = "" }: RecruiterLayoutProps) {
-  const { logout } = useRecruiterAuth();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
 

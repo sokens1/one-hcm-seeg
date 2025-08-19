@@ -12,9 +12,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { CandidateHeader } from "@/components/candidate/CandidateHeader";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Home, Briefcase, FileText, User, Settings } from "lucide-react";
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import { DashboardMain } from "@/components/candidate/DashboardMain";
 import { JobCatalog } from "@/components/candidate/JobCatalog";
 import { CandidateApplications } from "@/components/candidate/CandidateApplications";
@@ -31,6 +31,7 @@ interface CandidateLayoutContextType {
 
 const CandidateLayoutContext = createContext<CandidateLayoutContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCandidateLayout = () => {
   const context = useContext(CandidateLayoutContext);
   if (!context) {
@@ -50,10 +51,31 @@ const navigation = [
 function CandidateSidebar() {
   const { state } = useSidebar();
   const { currentView, setCurrentView } = useCandidateLayout();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const isActive = (view: ViewType) => currentView === view;
+  const isActive = (view: ViewType) => {
+    // Check if we're on a specific route that matches the view
+    if (view === "profile" && location.pathname === "/candidate/profile") return true;
+    if (view === "settings" && location.pathname === "/candidate/settings") return true;
+    return currentView === view;
+  };
+  
   const getNavCls = (view: ViewType) =>
     isActive(view) ? "bg-muted text-primary font-medium" : "hover:bg-muted/50";
+
+  const handleNavigation = (view: ViewType) => {
+    // For profile and settings, navigate to dedicated pages
+    if (view === "profile") {
+      navigate("/candidate/profile");
+    } else if (view === "settings") {
+      navigate("/candidate/settings");
+    } else {
+      // For other views, use the internal view system
+      setCurrentView(view);
+      navigate("/candidate/dashboard");
+    }
+  };
 
   return (
     <Sidebar
@@ -68,7 +90,7 @@ function CandidateSidebar() {
               {navigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    onClick={() => setCurrentView(item.view)}
+                    onClick={() => handleNavigation(item.view)}
                     className={getNavCls(item.view)}
                   >
                     <item.icon className="mr-2 h-4 w-4" />
@@ -115,6 +137,17 @@ interface CandidateLayoutProps {
 
 export function CandidateLayout({ children }: CandidateLayoutProps) {
   const [currentView, setCurrentView] = useState<ViewType>("dashboard");
+  const location = useLocation();
+
+  // Initialize view from query param if provided (e.g., /candidate/dashboard?view=jobs)
+  // Keeps existing behavior when no param is present.
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const viewParam = params.get("view") as ViewType | null;
+    if (viewParam && ["dashboard","jobs","applications","profile","settings","tracking"].includes(viewParam)) {
+      setCurrentView(viewParam);
+    }
+  }, [location.search]);
 
   return (
     <CandidateLayoutContext.Provider value={{ currentView, setCurrentView }}>

@@ -2,49 +2,44 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send } from "lucide-react";
-
-// Mock data identique à /jobs
-const mockJobDetails = {
-  1: {
-    title: "Directeur des Ressources Humaines",
-    location: "Libreville",
-    contractType: "CDI",
-    department: "Ressources Humaines",
-    description: "La SEEG recherche un Directeur RH expérimenté pour piloter la stratégie des ressources humaines et accompagner le développement de nos équipes dans un contexte de transformation et de croissance.",
-    missions: [
-      "Définir et mettre en œuvre la stratégie RH en cohérence avec les objectifs de l'entreprise",
-      "Piloter les processus de recrutement, formation et développement des compétences",
-      "Gérer les relations sociales et le dialogue avec les représentants du personnel",
-      "Superviser l'administration du personnel et la gestion de la paie",
-      "Accompagner les managers dans la gestion de leurs équipes"
-    ],
-    competences: [
-      "Master en Ressources Humaines ou équivalent",
-      "Minimum 10 années d'expérience en direction RH",
-      "Excellente connaissance du droit social gabonais",
-      "Leadership et capacités managériales confirmées",
-      "Maîtrise des outils SIRH et de gestion RH"
-    ],
-    conditions: [
-      "Poste basé à Libreville",
-      "Déplacements réguliers sur les sites de la SEEG",
-      "Rémunération attractive selon profil",
-      "Avantages sociaux (santé, transport, logement)",
-      "Opportunités d'évolution au sein du groupe"
-    ],
-    datePublication: "12 Décembre 2024",
-    dateEcheance: "15 Janvier 2025"
-  }
-};
+import { useJobOffer } from "@/hooks/useJobOffers";
 
 interface JobDetailProps {
-  jobId: number;
+  jobId: string;
   onBack: () => void;
   onApply: () => void;
 }
 
 export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
-  const job = mockJobDetails[jobId as keyof typeof mockJobDetails] || mockJobDetails[1];
+  const { data: jobOffer, isLoading, error } = useJobOffer(jobId);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 text-red-600">
+        <p>Une erreur est survenue lors du chargement de l'offre.</p>
+        <p className="text-sm">{error.message}</p>
+      </div>
+    );
+  }
+
+  if (!jobOffer) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        Offre introuvable ou non disponible.
+      </div>
+    );
+  }
+
+  const publishedAt = jobOffer.created_at ? new Date(jobOffer.created_at).toLocaleDateString() : undefined;
+  const deadline = jobOffer.application_deadline ? new Date(jobOffer.application_deadline).toLocaleDateString() : undefined;
 
   return (
     <div className="space-y-8">
@@ -66,30 +61,34 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <CardTitle className="text-2xl mb-2">{job.title}</CardTitle>
+              <CardTitle className="text-2xl mb-2">{jobOffer.title}</CardTitle>
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
-                  {job.location}
+                  {jobOffer.location}
                 </div>
                 <div className="flex items-center gap-1">
                   <Briefcase className="w-4 h-4" />
-                  {job.contractType}
+                  {jobOffer.contract_type}
                 </div>
-                <div className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  {job.department}
-                </div>
+                {jobOffer.department && (
+                  <div className="flex items-center gap-1">
+                    <Users className="w-4 h-4" />
+                    {jobOffer.department}
+                  </div>
+                )}
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  Publié le {job.datePublication}
+                  {publishedAt ? `Publié le ${publishedAt}` : ""}
                 </div>
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <Badge variant="secondary" className="text-center">
-                Candidatures ouvertes jusqu'au {job.dateEcheance}
-              </Badge>
+              {deadline && (
+                <Badge variant="secondary" className="text-center">
+                  Candidatures ouvertes jusqu'au {deadline}
+                </Badge>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -106,61 +105,49 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                {job.description}
+                {jobOffer.description}
               </p>
             </CardContent>
           </Card>
 
-          {/* Missions et responsabilités */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Missions et responsabilités</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {job.missions.map((mission, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                    <span className="text-muted-foreground">{mission}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          {/* Profil recherché / Exigences */}
+          {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Profil recherché</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {jobOffer.requirements && jobOffer.requirements.length > 0 ? (
+                  <ul className="space-y-2">
+                    {jobOffer.requirements.map((req, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
+                        <span className="text-muted-foreground">{req}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="whitespace-pre-wrap text-foreground">{jobOffer.profile}</div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Compétences requises */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Compétences requises</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {job.competences.map((competence, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                    <span className="text-muted-foreground">{competence}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Conditions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Conditions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {job.conditions.map((condition, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                    <span className="text-muted-foreground">{condition}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          {/* Avantages */}
+          {jobOffer.benefits && jobOffer.benefits.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Avantages</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {jobOffer.benefits.map((benefit, idx) => (
+                    <Badge key={idx} variant="outline">{benefit}</Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Sidebar */}
@@ -193,23 +180,25 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
             <CardContent className="space-y-3">
               <div>
                 <div className="text-sm font-medium">Lieu</div>
-                <div className="text-sm text-muted-foreground">{job.location}</div>
+                <div className="text-sm text-muted-foreground">{jobOffer.location}</div>
               </div>
               <div>
                 <div className="text-sm font-medium">Type de contrat</div>
-                <div className="text-sm text-muted-foreground">{job.contractType}</div>
+                <div className="text-sm text-muted-foreground">{jobOffer.contract_type}</div>
               </div>
-              <div>
-                <div className="text-sm font-medium">Département</div>
-                <div className="text-sm text-muted-foreground">{job.department}</div>
-              </div>
+              {jobOffer.department && (
+                <div>
+                  <div className="text-sm font-medium">Département</div>
+                  <div className="text-sm text-muted-foreground">{jobOffer.department}</div>
+                </div>
+              )}
               <div>
                 <div className="text-sm font-medium">Date de publication</div>
-                <div className="text-sm text-muted-foreground">{job.datePublication}</div>
+                <div className="text-sm text-muted-foreground">{publishedAt || ""}</div>
               </div>
               <div>
                 <div className="text-sm font-medium">Date limite</div>
-                <div className="text-sm text-muted-foreground">{job.dateEcheance}</div>
+                <div className="text-sm text-muted-foreground">{deadline || ""}</div>
               </div>
             </CardContent>
           </Card>

@@ -1,21 +1,33 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, Building2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ForgotPassword } from "@/components/auth/ForgotPassword";
+// Link already imported above
 
 export default function Auth() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signIn, signUp, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState("signin");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const searchParams = new URLSearchParams(location.search);
+  const redirectParam = searchParams.get('redirect');
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   // Sign in form state
   const [signInData, setSignInData] = useState({
@@ -30,7 +42,6 @@ export default function Auth() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    role: "candidat",
     phone: ""
   });
 
@@ -39,16 +50,34 @@ export default function Auth() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await signIn(signInData.email, signInData.password);
-      
-      if (error) {
-        toast.error("Erreur de connexion: " + error.message);
+      const { data, error } = await signIn(signInData.email, signInData.password);
+
+      if (error || !data.user) {
+        if (error && error.status === 429) {
+          toast.error("Trop de tentatives. Veuillez réessayer dans quelques instants.");
+        } else if (error && error.status === 400) {
+          toast.error("Email ou mot de passe incorrect.");
+        } else {
+          toast.error(error?.message || "Une erreur est survenue lors de la connexion.");
+        }
+        return;
+      }
+
+      toast.success("Connexion réussie !");
+      // If a redirect param is present, go there first
+      if (redirectParam) {
+        navigate(redirectParam);
       } else {
-        toast.success("Connexion réussie!");
-        navigate("/");
+        // Fallback: redirect based on user role stored in database
+        const role = data.user.user_metadata?.role || 'candidate';
+        if (role === 'recruiter') {
+          navigate('/recruiter/dashboard');
+        } else {
+          navigate('/candidate/dashboard');
+        }
       }
     } catch (error) {
-      toast.error("Une erreur est survenue");
+      toast.error("Une erreur est survenue lors de la connexion");
     } finally {
       setIsSubmitting(false);
     }
@@ -72,14 +101,17 @@ export default function Auth() {
 
     try {
       const { error } = await signUp(signUpData.email, signUpData.password, {
-        role: signUpData.role,
+        role: "candidat",
         first_name: signUpData.firstName,
         last_name: signUpData.lastName,
         phone: signUpData.phone
       });
       
       if (error) {
-        if (error.message.includes("already registered")) {
+        if (error.status === 429) {
+          toast.error("Trop de tentatives. Veuillez réessayer dans 60 secondes.");
+          setCooldown(60);
+        } else if (error.message.includes("already registered")) {
           toast.error("Cette adresse email est déjà utilisée");
         } else {
           toast.error("Erreur d'inscription: " + error.message);
@@ -135,6 +167,9 @@ export default function Auth() {
               <CardTitle className="text-2xl font-bold">Authentification</CardTitle>
             </CardHeader>
             <CardContent>
+                            {showForgotPassword ? (
+                <ForgotPassword onBack={() => setShowForgotPassword(false)} />
+              ) : (
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="signin">Connexion</TabsTrigger>
@@ -174,6 +209,17 @@ export default function Auth() {
                           required
                         />
                       </div>
+                    </div>
+
+                                        <div className="text-right text-sm">
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="p-0 h-auto font-normal"
+                        onClick={() => setShowForgotPassword(true)}
+                      >
+                        Mot de passe oublié ?
+                      </Button>
                     </div>
 
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -235,18 +281,6 @@ export default function Auth() {
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Rôle</Label>
-                      <Select value={signUpData.role} onValueChange={(value) => setSignUpData({ ...signUpData, role: value })}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez votre rôle" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="candidat">Candidat</SelectItem>
-                          <SelectItem value="recruteur">Recruteur</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="signup-password">Mot de passe</Label>
@@ -280,12 +314,17 @@ export default function Auth() {
                       </div>
                     </div>
 
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                      {isSubmitting ? "Inscription..." : "S'inscrire"}
+                    <Button type="submit" className="w-full" disabled={isSubmitting || cooldown > 0}>
+                      {isSubmitting
+                        ? "Inscription..."
+                        : cooldown > 0
+                        ? `Réessayez dans ${cooldown}s`
+                        : "S'inscrire"}
                     </Button>
                   </form>
                 </TabsContent>
-              </Tabs>
+                            </Tabs>
+              )}
             </CardContent>
           </Card>
         </div>

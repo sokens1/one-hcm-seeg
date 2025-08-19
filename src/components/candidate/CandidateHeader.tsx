@@ -13,46 +13,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
-
-// Mock notifications data
-const mockNotifications = [
-  {
-    id: 1,
-    title: "Convocation entretien",
-    message: "Vous êtes convoqué pour un entretien le 20 Décembre 2024 à 14h00",
-    time: "Il y a 2 heures",
-    read: false,
-    type: "interview"
-  },
-  {
-    id: 2,
-    title: "Candidature mise à jour",
-    message: "Votre candidature pour le poste de Directeur RH a été mise à jour",
-    time: "Il y a 5 heures",
-    read: false,
-    type: "update"
-  },
-  {
-    id: 3,
-    title: "Documents requis",
-    message: "Merci de compléter votre dossier avec les documents manquants",
-    time: "Hier",
-    read: true,
-    type: "document"
-  }
-];
+import { useNotifications } from "@/hooks/useNotifications";
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 export function CandidateHeader() {
-  const { user, logout } = useCandidateAuth();
+  const { user, signOut: logout } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [notifications, setNotifications] = useState(mockNotifications);
-
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const { 
+    notifications, 
+    unreadCount, 
+    markAsRead, 
+    markAllAsRead 
+  } = useNotifications();
 
   const handleLogout = () => {
     logout();
@@ -61,20 +38,6 @@ export function CandidateHeader() {
       description: "À bientôt !",
     });
     navigate("/");
-  };
-
-  const markAsRead = (id: number) => {
-    setNotifications(prev => 
-      prev.map(notif => 
-        notif.id === id ? { ...notif, read: true } : notif
-      )
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notif => ({ ...notif, read: true }))
-    );
   };
 
   return (
@@ -107,7 +70,7 @@ export function CandidateHeader() {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    onClick={markAllAsRead}
+                    onClick={() => markAllAsRead()}
                     className="text-xs"
                   >
                     Tout marquer comme lu
@@ -132,7 +95,7 @@ export function CandidateHeader() {
                       <div className="flex-1 space-y-1">
                         <p className="font-medium text-sm">{notification.title}</p>
                         <p className="text-sm text-muted-foreground">{notification.message}</p>
-                        <p className="text-xs text-muted-foreground">{notification.time}</p>
+                        <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: fr })}</p>
                       </div>
                     </div>
                   </div>
@@ -152,7 +115,7 @@ export function CandidateHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2">
               <User className="w-4 h-4" />
-              {user?.firstName} ▼
+              {user?.user_metadata.first_name} ▼
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
@@ -161,10 +124,10 @@ export function CandidateHeader() {
               {user?.email}
             </div>
             <div className="px-2 py-1.5 text-xs text-muted-foreground">
-              Matricule: {user?.matricule || "N/A"}
+              Matricule: {user?.user_metadata.matricule || "N/A"}
             </div>
             <div className="px-2 py-1.5 text-xs text-muted-foreground">
-              Poste: {user?.currentPosition || "N/A"}
+              Poste: {user?.user_metadata.current_position || "N/A"}
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

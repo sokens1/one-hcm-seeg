@@ -5,10 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Eye, Users, TrendingUp, Clock, BarChart3, Edit, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
+import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale/fr';
 
 export default function RecruiterDashboard() {
   const navigate = useNavigate();
   const { stats, activeJobs, isLoading, error } = useRecruiterDashboard();
+  const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   
   const handleEditJob = (jobId: string) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
@@ -242,20 +246,28 @@ export default function RecruiterDashboard() {
               <CardTitle className="text-lg">Activité récente</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <span>3 nouvelles candidatures</span>
-                  <Badge variant="outline" className="text-xs">Il y a 2h</Badge>
+              {isLoadingActivities ? (
+                <div className="flex justify-center items-center py-4">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span>Entretien programmé</span>
-                  <Badge variant="outline" className="text-xs">Hier</Badge>
+              ) : errorActivities ? (
+                <p className="text-red-500 text-sm">Erreur de chargement des activités</p>
+              ) : activities && activities.length > 0 ? (
+                <div className="space-y-3 text-sm">
+                  {activities.map((activity) => (
+                    <div key={activity.id} className="flex items-center justify-between">
+                      <span className="truncate pr-2" title={`${activity.description} pour ${activity.job_title}`}>
+                        {activity.description} pour <strong>{activity.job_title}</strong>
+                      </span>
+                      <Badge variant="outline" className="text-xs flex-shrink-0">
+                        {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true, locale: fr })}
+                      </Badge>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center justify-between">
-                  <span>Offre publiée</span>
-                  <Badge variant="outline" className="text-xs">Il y a 3j</Badge>
-                </div>
-              </div>
+              ) : (
+                <p className="text-muted-foreground text-sm text-center py-4">Aucune activité récente.</p>
+              )}
             </CardContent>
           </Card>
         </div>

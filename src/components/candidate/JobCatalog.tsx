@@ -3,177 +3,45 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Search, Filter, Grid, List, X } from "lucide-react";
-import { useState } from "react";
+import { Search, Filter, Grid, List, X, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { JobDetail } from "./JobDetail";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
-
-// Données identiques à la page /jobs
-const mockJobs = [
-  {
-    id: 1,
-    title: "Directeur des Ressources Humaines",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "La SEEG recherche un Directeur RH expérimenté pour piloter la stratégie des ressources humaines et accompagner le développement de nos équipes."
-  },
-  {
-    id: 2,
-    title: "Directeur des Systèmes d'Information",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Poste de Directeur SI pour superviser l'évolution technologique et la transformation digitale de la SEEG. Leadership technique requis."
-  },
-  {
-    id: 3,
-    title: "Directeur Financier",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Rejoignez la direction générale de la SEEG en tant que Directeur Financier pour piloter la stratégie financière et les investissements."
-  },
-  {
-    id: 4,
-    title: "Directeur Commercial",
-    location: "Port-Gentil",
-    contractType: "CDI",
-    description: "Développez et pilotez la stratégie commerciale de la SEEG pour renforcer notre position sur le marché de l'énergie et de l'eau au Gabon."
-  },
-  {
-    id: 5,
-    title: "Directeur Technique",
-    location: "Franceville",
-    contractType: "CDI",
-    description: "Supervision des opérations techniques et maintenance des infrastructures énergétiques et hydrauliques de la SEEG."
-  },
-  {
-    id: 6,
-    title: "Directeur de la Communication",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Pilotage de la stratégie de communication institutionnelle et développement de l'image de marque de la SEEG."
-  },
-  {
-    id: 7,
-    title: "Directeur Général",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Assurer la direction stratégique et opérationnelle de l'entreprise"
-  },
-  {
-    id: 8,
-    title: "Chef de Projet Digital",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Piloter les projets de transformation digitale"
-  },
-  {
-    id: 9,
-    title: "Responsable Qualité",
-    location: "Port-Gentil",
-    contractType: "CDI",
-    description: "Assurer le contrôle qualité et l'amélioration continue"
-  },
-  {
-    id: 10,
-    title: "Manager HSE",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Gérer la politique Hygiène, Sécurité et Environnement"
-  },
-  {
-    id: 11,
-    title: "Analyste Financier Senior",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Analyser les performances financières et préparer les budgets"
-  },
-  {
-    id: 12,
-    title: "Gestionnaire de Paie",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Gérer la paie et les déclarations sociales"
-  },
-  {
-    id: 13,
-    title: "Ingénieur Maintenance",
-    location: "Port-Gentil",
-    contractType: "CDI",
-    description: "Assurer la maintenance préventive et corrective"
-  },
-  {
-    id: 14,
-    title: "Responsable Achats",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Optimiser les achats et négocier avec les fournisseurs"
-  },
-  {
-    id: 15,
-    title: "Chef Comptable",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Superviser la comptabilité générale et analytique"
-  },
-  {
-    id: 16,
-    title: "Responsable Communication",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Développer la stratégie de communication interne et externe"
-  },
-  {
-    id: 17,
-    title: "Juriste d'Entreprise",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Conseiller sur les aspects juridiques et gérer les contrats"
-  },
-  {
-    id: 18,
-    title: "Data Analyst",
-    location: "Libreville",
-    contractType: "CDI",
-    description: "Analyser les données et produire des reportings"
-  },
-  {
-    id: 19,
-    title: "Responsable Logistique",
-    location: "Port-Gentil",
-    contractType: "CDI",
-    description: "Organiser et optimiser la chaîne logistique"
-  }
-];
+import { useJobOffers } from "@/hooks/useJobOffers";
 
 export function JobCatalog() {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
-  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [locationFilter, setLocationFilter] = useState("");
   const [contractFilter, setContractFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const { setCurrentView } = useCandidateLayout();
+  const location = useLocation();
 
-  const filteredJobs = mockJobs.filter(job => {
+  const { data: jobs, isLoading, error } = useJobOffers();
+
+  const filteredJobs = jobs?.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesLocation = !locationFilter || job.location === locationFilter;
-    const matchesContract = !contractFilter || job.contractType === contractFilter;
+    const matchesContract = !contractFilter || job.contract_type === contractFilter;
     
     return matchesSearch && matchesLocation && matchesContract;
-  });
+  }) || [];
 
-  const uniqueLocations = [...new Set(mockJobs.map(job => job.location))];
-  const uniqueContracts = [...new Set(mockJobs.map(job => job.contractType))];
+  const uniqueLocations = [...new Set(jobs?.map(job => job.location) || [])];
+  const uniqueContracts = [...new Set(jobs?.map(job => job.contract_type) || [])];
 
-  const handleJobClick = (jobId: number) => {
+  const handleJobClick = (jobId: string) => {
     setSelectedJobId(jobId);
   };
 
-  const handleApplyClick = (jobId: number) => {
+  const handleApplyClick = (jobId: string) => {
     setSelectedJobId(jobId);
     setShowApplicationForm(true);
   };
@@ -190,15 +58,48 @@ export function JobCatalog() {
     setCurrentView("applications");
   };
 
+  // Deep link handling: /candidate/dashboard?view=jobs&jobId=...&apply=1
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const jobIdParam = params.get("jobId");
+    const applyParam = params.get("apply");
+    if (jobIdParam) {
+      setSelectedJobId(jobIdParam);
+      if (applyParam === "1") {
+        setShowApplicationForm(true);
+      }
+    }
+    // Run only on search change
+  }, [location.search]);
+
   // Si on affiche le formulaire de candidature
   if (showApplicationForm && selectedJobId) {
-    const job = mockJobs.find(j => j.id === selectedJobId);
+    const job = jobs?.find(j => j.id === selectedJobId);
     return (
       <ApplicationForm 
         jobTitle={job?.title || ""}
+        jobId={selectedJobId}
         onBack={handleBackToCatalog}
         onSubmit={handleApplicationSubmit}
       />
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="ml-4 text-lg">Chargement des offres...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 text-red-600">
+        <p>Une erreur est survenue lors du chargement des offres.</p>
+        <p className="text-sm">{error.message}</p>
+      </div>
     );
   }
 
@@ -372,7 +273,7 @@ export function JobCatalog() {
                 <JobCard
                   title={job.title}
                   location={job.location}
-                  contractType={job.contractType}
+                  contractType={job.contract_type}
                   description={job.description}
                   isPreview={true}
                   onClick={() => handleJobClick(job.id)}
@@ -392,7 +293,7 @@ export function JobCatalog() {
               <div key={job.id} className="grid grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in" style={{ animationDelay: `${300 + index * 50}ms` }}>
                 <div className="font-medium">{job.title}</div>
                 <div className="text-muted-foreground">{job.location}</div>
-                <div className="text-muted-foreground">{job.contractType}</div>
+                <div className="text-muted-foreground">{job.contract_type}</div>
                 <div>
                   <Button 
                     variant="outline" 

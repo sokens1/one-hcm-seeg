@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { CandidateLayout } from "@/components/layout/CandidateLayout";
 import { ApplicationTracking } from "@/components/candidate/ApplicationTracking";
 
 export default function CandidateApplicationTracking() {
-  const { isAuthenticated, isLoading } = useCandidateAuth();
+  const { user, isLoading } = useAuth();
+  const isAuthenticated = !!user;
   const navigate = useNavigate();
 
   useEffect(() => {

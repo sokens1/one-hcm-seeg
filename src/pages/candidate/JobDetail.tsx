@@ -7,19 +7,31 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Building2, Users, DollarSign, Clock, Loader2 } from "lucide-react";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { useJobOffer } from "@/hooks/useJobOffers";
+import { useAuth } from "@/hooks/useAuth";
+import { useApplicationStatus } from "@/hooks/useApplications";
 
 export default function JobDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const { jobOffer, isLoading, error } = useJobOffer(id || "");
+  const { data: jobOffer, isLoading, error } = useJobOffer(id || "");
+  const { user } = useAuth();
+  const { data: applicationStatus, isLoading: isLoadingApplication } = useApplicationStatus(id || "");
 
   const handleBackToJobs = () => {
     navigate("/jobs");
   };
 
   const handleApply = () => {
-    setShowApplicationForm(true);
+    const target = `/candidate/dashboard?view=jobs&jobId=${id}&apply=1`;
+    if (!user) {
+      // Redirect to auth and then into candidate dashboard at the same job
+      const redirect = encodeURIComponent(target);
+      navigate(`/auth?redirect=${redirect}`);
+      return;
+    }
+    // If already authenticated, go to candidate dashboard at the job detail
+    navigate(target);
   };
 
   const handleApplicationSubmit = () => {
@@ -27,7 +39,7 @@ export default function JobDetail() {
     navigate("/jobs");
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingApplication) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8">
@@ -47,7 +59,7 @@ export default function JobDetail() {
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Offre non trouvée</h1>
             <p className="text-muted-foreground mb-6">
-              {error || "Cette offre d'emploi n'existe pas ou n'est plus disponible."}
+              {error?.message ?? "Cette offre d'emploi n'existe pas ou n'est plus disponible."}
             </p>
             <Button variant="outline" onClick={handleBackToJobs}>
               Retour aux offres
@@ -69,7 +81,7 @@ export default function JobDetail() {
     );
   }
 
-  const formatSalary = (min: number | null, max: number | null) => {
+  const formatSalary = (min: number | null | undefined, max: number | null | undefined) => {
     if (!min && !max) return "Salaire à négocier";
     if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} FCFA`;
     if (min) return `À partir de ${min.toLocaleString()} FCFA`;
@@ -136,21 +148,27 @@ export default function JobDetail() {
                 </CardContent>
               </Card>
 
-              {/* Requirements */}
-              {jobOffer.requirements && jobOffer.requirements.length > 0 && (
+              {/* Requirements / Profile */}
+              {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-xl">Profil recherché</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-2">
-                      {jobOffer.requirements.map((requirement, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                          <span className="text-muted-foreground">{requirement}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {jobOffer.requirements && jobOffer.requirements.length > 0 ? (
+                      <ul className="space-y-2">
+                        {jobOffer.requirements.map((requirement, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
+                            <span className="text-muted-foreground">{requirement}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="whitespace-pre-wrap text-foreground">
+                        {jobOffer.profile}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               )}
@@ -196,17 +214,45 @@ export default function JobDetail() {
                     </div>
                   </div>
                   
-                  <Button 
-                    onClick={handleApply} 
-                    className="w-full"
-                    size="lg"
-                  >
-                    Postuler à cette offre
-                  </Button>
-                  
-                  <p className="text-xs text-muted-foreground text-center">
-                    Processus de candidature en ligne sécurisé
-                  </p>
+                  {applicationStatus ? (
+                    <div className="space-y-3">
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-green-800">
+                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                            {applicationStatus.status === 'candidature' && 'Candidature envoyée'}
+                            {applicationStatus.status === 'incubation' && 'En cours d\'évaluation'}
+                            {applicationStatus.status === 'embauche' && 'Candidature retenue'}
+                            {applicationStatus.status === 'refuse' && 'Candidature non retenue'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-green-700 mt-2">
+                          Candidature envoyée le {new Date(applicationStatus.created_at).toLocaleDateString('fr-FR')}
+                        </p>
+                      </div>
+                      <Button 
+                        variant="outline"
+                        className="w-full"
+                        size="lg"
+                        onClick={() => navigate('/candidate/dashboard?view=applications')}
+                      >
+                        Voir ma candidature
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Button 
+                        onClick={handleApply} 
+                        className="w-full"
+                        size="lg"
+                      >
+                        {user ? "Postuler à cette offre" : "Se connecter pour postuler"}
+                      </Button>
+                      
+                      <p className="text-xs text-muted-foreground text-center">
+                        Processus de candidature en ligne sécurisé
+                      </p>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 

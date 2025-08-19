@@ -1,4 +1,4 @@
-import { useRecruiterAuth } from "@/hooks/useRecruiterAuth";
+import { useAuth } from "@/hooks/useAuth";
 import RecruiterLogin from "@/pages/recruiter/RecruiterLogin";
 
 interface ProtectedRecruiterRouteProps {
@@ -6,7 +6,9 @@ interface ProtectedRecruiterRouteProps {
 }
 
 export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRouteProps) {
-  const { isAuthenticated, isLoading } = useRecruiterAuth();
+  const { user, isLoading } = useAuth();
+  const isAuthenticated = !!user;
+  const isRecruiter = user?.user_metadata?.role === 'recruiter';
 
   if (isLoading) {
     return (
@@ -16,7 +18,7 @@ export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRoutePro
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isRecruiter) {
     return <RecruiterLogin />;
   }
 

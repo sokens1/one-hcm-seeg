@@ -2,44 +2,18 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Eye, Edit } from "lucide-react";
+import { Plus, Eye, Edit, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-
-// Mock data pour les offres
-const mockJobs = [
-  {
-    id: 1,
-    title: "Développeur React.js",
-    location: "Libreville",
-    contractType: "CDI",
-    candidateCount: 12,
-    newCandidates: 3,
-    status: "active"
-  },
-  {
-    id: 2,
-    title: "Chef de Projet Digital",
-    location: "Port-Gentil",
-    contractType: "CDI",
-    candidateCount: 8,
-    newCandidates: 1,
-    status: "active"
-  },
-  {
-    id: 3,
-    title: "Analyste Financier",
-    location: "Libreville",
-    contractType: "CDD",
-    candidateCount: 15,
-    newCandidates: 5,
-    status: "active"
-  }
-];
+import { useAuth } from "@/hooks/useAuth";
+import { useRecruiterJobOffers } from "@/hooks/useJobOffers";
 
 export default function RecruiterJobs() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const recruiterId = user?.id;
+  const { data: jobs = [], isLoading, error } = useRecruiterJobOffers(recruiterId);
   
-  const handleEditJob = (jobId: number) => {
+  const handleEditJob = (jobId: string | number) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
   };
 
@@ -63,7 +37,8 @@ export default function RecruiterJobs() {
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Statistiques */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card className="shadow-soft">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -71,33 +46,40 @@ export default function RecruiterJobs() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{mockJobs.length}</div>
+            <div className="text-2xl font-bold text-foreground">{jobs.filter(j => j.status === 'active').length}</div>
           </CardContent>
         </Card>
 
         <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Offres
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{jobs.length}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Offres Inactives
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{jobs.filter(j => j.status !== 'active').length}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-soft bg-primary/5">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Candidatures
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">
-              {mockJobs.reduce((sum, job) => sum + job.candidateCount, 0)}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Nouvelles Candidatures
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-foreground">
-              {mockJobs.reduce((sum, job) => sum + job.newCandidates, 0)}
-            </div>
+            <div className="text-2xl font-bold text-primary">{jobs.reduce((acc, job) => acc + (job.application_count || 0), 0)}</div>
           </CardContent>
         </Card>
       </div>
@@ -108,8 +90,18 @@ export default function RecruiterJobs() {
           <h2 className="text-2xl font-semibold text-foreground">Toutes les offres</h2>
         </div>
 
+        {isLoading ? (
+          <div className="flex items-center gap-2 py-12 justify-center">
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <span>Chargement des offres...</span>
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-600 py-8">
+            Une erreur est survenue lors du chargement des offres.
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {mockJobs.map((job, index) => (
+          {jobs.map((job, index) => (
             <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
               <Card className="hover:shadow-medium transition-all cursor-pointer group h-full">
                 <CardContent className="p-6 flex flex-col h-full">
@@ -121,18 +113,14 @@ export default function RecruiterJobs() {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>{job.location}</span>
                       <span>•</span>
-                      <span>{job.contractType}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge variant="secondary" className="bg-success-light text-success-foreground">
-                        {job.candidateCount} candidats
+                      <span>{job.contract_type}</span>
+                      <span>•</span>
+                      <Badge variant={job.status === 'active' ? 'secondary' : 'default'}>
+                        {job.status}
                       </Badge>
-                      {job.newCandidates > 0 && (
-                        <Badge variant="default" className="bg-warning text-warning-foreground animate-bounce-soft">
-                          {job.newCandidates} nouveaux
-                        </Badge>
-                      )}
+                    </div>
+                    <div className="text-sm text-foreground pt-2">
+                      <strong>{job.application_count}</strong> {job.application_count === 1 ? 'candidature' : 'candidatures'}
                     </div>
                   </div>
 
@@ -160,6 +148,7 @@ export default function RecruiterJobs() {
             </div>
           ))}
         </div>
+        )}
       </div>
       </div>
     </RecruiterLayout>

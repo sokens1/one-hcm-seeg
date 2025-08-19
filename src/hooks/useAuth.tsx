@@ -1,14 +1,28 @@
 import { useState, useEffect, createContext, useContext } from "react";
-import { User, Session } from "@supabase/supabase-js";
+import { User, Session, AuthResponse, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+
+export interface SignUpMetadata {
+  role: "candidat" | "recruteur" | "admin";
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  matricule?: string;
+  birth_date?: string;
+  current_position?: string;
+  bio?: string;
+}
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signOut: () => Promise<{ error: any }>;
+  isUpdating: boolean;
+  signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: AuthError | null }>;
+  signIn: (email: string, password: string) => Promise<AuthResponse>;
+  signOut: () => Promise<{ error: AuthError | null }>;
+  updateUser: (metadata: Partial<SignUpMetadata>) => Promise<boolean>;
+  resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   isCandidate: boolean;
   isRecruiter: boolean;
   isAdmin: boolean;
@@ -20,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -41,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, metadata?: any) => {
+  const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -56,15 +71,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    return supabase.auth.signInWithPassword({
       email,
       password
     });
-    return { error };
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
+    return { error };
+  };
+
+  const updateUser = async (metadata: Partial<SignUpMetadata>) => {
+    setIsUpdating(true);
+    const { data, error } = await supabase.auth.updateUser({
+      data: metadata,
+    });
+
+    if (error) {
+      console.error("Error updating user:", error);
+      setIsUpdating(false);
+      return false;
+    }
+
+    setUser(data.user);
+    setIsUpdating(false);
+    return true;
+  };
+
+  const resetPassword = async (email: string) => {
+    const redirectUrl = `${window.location.origin}/reset-password`;
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
+    
     return { error };
   };
 
@@ -81,9 +122,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     isLoading,
+    isUpdating,
     signUp,
     signIn,
     signOut,
+    updateUser,
+    resetPassword,
     isCandidate,
     isRecruiter,
     isAdmin
@@ -96,6 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {

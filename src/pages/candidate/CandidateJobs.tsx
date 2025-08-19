@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useJobOffers } from "@/hooks/useJobOffers";
+import { useJobOfferNotifications } from "@/hooks/useJobOfferNotifications";
 
 export default function CandidateJobs() {
+  useJobOfferNotifications();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
-  const { jobOffers, isLoading, error } = useJobOffers();
+  const { data, isLoading, error } = useJobOffers();
+  const jobOffers = data ?? [];
 
   const filteredJobs = jobOffers.filter(job => 
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -21,7 +24,7 @@ export default function CandidateJobs() {
       <Layout showFooter={true}>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <p className="text-red-500">Erreur lors du chargement des offres: {error}</p>
+            <p className="text-red-500">Erreur lors du chargement des offres: {error.message}</p>
             <Button variant="outline" onClick={() => window.location.reload()}>
               Réessayer
             </Button>

@@ -6,50 +6,74 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, Calendar, Briefcase, Edit, Save, X } from "lucide-react";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { User, Mail, Phone, Calendar, Briefcase, Edit, Save, X, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth, SignUpMetadata } from "@/hooks/useAuth";
+import { useApplications } from "@/hooks/useApplications";
 
 export function CandidateProfile() {
-  const { user, updateUser } = useCandidateAuth();
+  const { user, updateUser, isUpdating } = useAuth();
+  const { data: applications, isLoading: isLoadingApplications } = useApplications();
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
+    firstName: user?.user_metadata.first_name || "",
+    lastName: user?.user_metadata.last_name || "",
     email: user?.email || "",
-    matricule: user?.matricule || "",
-    birthDate: user?.birthDate || "",
-    currentPosition: user?.currentPosition || "",
+    matricule: user?.user_metadata.matricule || "",
+    birthDate: user?.user_metadata.birth_date || "",
+    currentPosition: user?.user_metadata.current_position || "",
     phone: "",
     bio: ""
   });
 
-  const handleSave = () => {
-    if (user) {
-      updateUser({
-        ...user,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        matricule: formData.matricule,
-        birthDate: formData.birthDate,
-        currentPosition: formData.currentPosition
+    const handleSave = async () => {
+    const { firstName, lastName, birthDate, currentPosition, phone, bio, matricule } = formData;
+    const metadataToUpdate: Partial<SignUpMetadata> = {
+      first_name: firstName,
+      last_name: lastName,
+      birth_date: birthDate,
+      current_position: currentPosition,
+      phone,
+      bio,
+      matricule,
+      role: user?.user_metadata?.role
+    };
+    const success = await updateUser(metadataToUpdate);
+
+    if (success) {
+      toast({
+        title: "Profil mis à jour",
+        description: "Vos informations ont été sauvegardées avec succès.",
+      });
+      setIsEditing(false);
+    } else {
+      toast({
+        title: "Erreur",
+        description: "La mise à jour de votre profil a échoué. Veuillez réessayer.",
+        variant: "destructive",
       });
     }
-    setIsEditing(false);
   };
 
   const handleCancel = () => {
     setFormData({
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
+      firstName: user?.user_metadata.first_name || "",
+      lastName: user?.user_metadata.last_name || "",
       email: user?.email || "",
-      matricule: user?.matricule || "",
-      birthDate: user?.birthDate || "",
-      currentPosition: user?.currentPosition || "",
-      phone: "",
-      bio: ""
+      matricule: user?.user_metadata.matricule || "",
+      birthDate: user?.user_metadata.birth_date || "",
+      currentPosition: user?.user_metadata.current_position || "",
+      phone: user?.user_metadata.phone || "",
+      bio: user?.user_metadata.bio || ""
     });
     setIsEditing(false);
+  };
+
+  const calculateProfileCompletion = () => {
+    const fields = ["firstName", "lastName", "email", "matricule", "birthDate", "currentPosition"];
+    const completedFields = fields.filter((field) => formData[field] !== "");
+    return Math.round((completedFields.length / fields.length) * 100);
   };
 
   return (
@@ -79,8 +103,12 @@ export function CandidateProfile() {
                       <X className="w-4 h-4" />
                       Annuler
                     </Button>
-                    <Button size="sm" onClick={handleSave} className="gap-2">
-                      <Save className="w-4 h-4" />
+                                        <Button size="sm" onClick={handleSave} disabled={isUpdating} className="gap-2">
+                                            {isUpdating ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Save className="w-4 h-4" />
+                      )}
                       Sauvegarder
                     </Button>
                   </div>
@@ -92,9 +120,10 @@ export function CandidateProfile() {
                 <div>
                   <Label htmlFor="firstName">Prénom</Label>
                   {isEditing ? (
-                    <Input
+                                        <Input
                       id="firstName"
                       value={formData.firstName}
+                      disabled={isUpdating}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     />
                   ) : (
@@ -107,9 +136,10 @@ export function CandidateProfile() {
                 <div>
                   <Label htmlFor="lastName">Nom</Label>
                   {isEditing ? (
-                    <Input
+                                        <Input
                       id="lastName"
                       value={formData.lastName}
+                      disabled={isUpdating}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     />
                   ) : (
@@ -124,10 +154,11 @@ export function CandidateProfile() {
               <div>
                 <Label htmlFor="email">Email</Label>
                 {isEditing ? (
-                  <Input
+                                    <Input
                     id="email"
                     type="email"
                     value={formData.email}
+                    disabled
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 ) : (
@@ -142,9 +173,10 @@ export function CandidateProfile() {
                 <div>
                   <Label htmlFor="matricule">Matricule</Label>
                   {isEditing ? (
-                    <Input
+                                        <Input
                       id="matricule"
                       value={formData.matricule}
+                      disabled={isUpdating}
                       onChange={(e) => setFormData({ ...formData, matricule: e.target.value })}
                     />
                   ) : (
@@ -157,10 +189,11 @@ export function CandidateProfile() {
                 <div>
                   <Label htmlFor="birthDate">Date de naissance</Label>
                   {isEditing ? (
-                    <Input
+                                        <Input
                       id="birthDate"
                       type="date"
                       value={formData.birthDate}
+                      disabled={isUpdating}
                       onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
                     />
                   ) : (
@@ -175,9 +208,10 @@ export function CandidateProfile() {
               <div>
                 <Label htmlFor="currentPosition">Poste actuel</Label>
                 {isEditing ? (
-                  <Input
+                                    <Input
                     id="currentPosition"
                     value={formData.currentPosition}
+                    disabled={isUpdating}
                     onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value })}
                   />
                 ) : (
@@ -200,7 +234,7 @@ export function CandidateProfile() {
                 <Avatar className="w-24 h-24 mx-auto">
                   <AvatarImage src="" />
                   <AvatarFallback className="text-xl">
-                    {formData.firstName[0]}{formData.lastName[0]}
+                    {formData.firstName?.[0]}{formData.lastName?.[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -220,13 +254,17 @@ export function CandidateProfile() {
               <CardTitle className="text-lg">Activité</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Candidatures envoyées</span>
-                <span className="font-medium">2</span>
+                {isLoadingApplications ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <span className="font-medium">{applications?.length ?? 0}</span>
+                )}
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Profil complété</span>
-                <span className="font-medium">85%</span>
+                <span className="font-medium">{calculateProfileCompletion()}%</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Dernière connexion</span>

@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, Eye, Send } from "lucide-react";
+import { ArrowLeft, Save, Eye, Send, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useCreateJobOffer } from "@/hooks/useRecruiterDashboard";
+import { useToast } from "@/components/ui/use-toast";
 
 interface JobFormData {
   title: string;
@@ -15,18 +17,19 @@ interface JobFormData {
   contractType: string;
   description: string;
   profile: string;
-  company: string;
 }
 
 export default function CreateJob() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { createJobOffer, isCreating } = useCreateJobOffer();
+
   const [formData, setFormData] = useState<JobFormData>({
     title: "",
     location: "",
     contractType: "",
     description: "",
-    profile: "",
-    company: ""
+    profile: ""
   });
 
   const [isPreview, setIsPreview] = useState(false);
@@ -35,23 +38,65 @@ export default function CreateJob() {
     setFormData({ ...formData, [field]: value });
   };
 
-  const handleSave = () => {
-    // Simulation de la sauvegarde
-    console.log("Sauvegarde:", formData);
-    // Redirection vers le dashboard
-    navigate("/recruiter");
+  const handleSave = async () => {
+    await handleSubmit('draft');
   };
 
-  const handlePublish = () => {
-    // Simulation de la publication
-    console.log("Publication:", formData);
-    // Redirection vers le dashboard avec un message de succès
-    navigate("/recruiter");
+  const handlePublish = async () => {
+    await handleSubmit('published');
+  };
+
+  const handleSubmit = async (status: 'draft' | 'published') => {
+    // Validate required fields for DB NOT NULL constraints
+    if (!formData.title || !formData.location || !formData.contractType || !formData.description) {
+      toast({
+        title: "Champs requis",
+        description: "Veuillez remplir Titre, Lieu, Type de contrat et Description avant de continuer.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate contract type against DB CHECK constraint
+    const allowedContracts = ['CDI', 'CDD', 'Stage', 'Freelance'];
+    if (!allowedContracts.includes(formData.contractType)) {
+      toast({
+        title: "Type de contrat invalide",
+        description: "Le type de contrat doit être CDI, CDD, Stage ou Freelance.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const jobData = {
+      title: formData.title,
+      location: formData.location,
+      contract_type: formData.contractType,
+      description: formData.description,
+      profile: formData.profile,
+    };
+    const mappedStatus = status === 'published' ? 'active' : 'draft';
+
+    try {
+      await createJobOffer({ jobData, status: mappedStatus });
+      toast({
+        title: "Offre d'emploi sauvegardée",
+        description: `L'offre a été ${status === 'published' ? 'publiée' : 'sauvegardée comme brouillon'} avec succès.`,
+        variant: "default",
+      });
+      navigate("/recruiter");
+    } catch (error) {
+      toast({
+        title: "Erreur lors de la sauvegarde",
+        description: "Une erreur est survenue. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isPreview) {
-  return (
-    <RecruiterLayout>
+    return (
+      <RecruiterLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Preview Header */}
@@ -65,13 +110,21 @@ export default function CreateJob() {
                 Retour à l'édition
               </Button>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={handleSave}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Sauvegarder
+                <Button variant="outline" onClick={handleSave} disabled={isCreating}>
+                  {isCreating ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-2" />
+                  )}
+                  {isCreating ? 'Sauvegarde...' : 'Sauvegarder'}
                 </Button>
                 <Button variant="success" onClick={handlePublish}>
-                  <Send className="w-4 h-4 mr-2" />
-                  Publier l'offre
+                  {isCreating ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4 mr-2" />
+                  )}
+                  {isCreating ? 'Publication...' : "Publier l'offre"}
                 </Button>
               </div>
             </div>
@@ -84,8 +137,6 @@ export default function CreateJob() {
                     <div className="space-y-3">
                       <CardTitle className="text-3xl">{formData.title || "Titre du poste"}</CardTitle>
                       <div className="flex items-center gap-4 text-muted-foreground">
-                        <span>{formData.company || "Nom de l'entreprise"}</span>
-                        <span>•</span>
                         <span>{formData.location || "Lieu"}</span>
                         <span>•</span>
                         <span>{formData.contractType || "Type de contrat"}</span>
@@ -122,7 +173,7 @@ export default function CreateJob() {
                   <CardContent className="p-6 text-center space-y-4">
                     <h3 className="text-xl font-semibold">Prêt à postuler ?</h3>
                     <p className="text-muted-foreground text-sm">
-                      Rejoignez {formData.company || "notre équipe"} et contribuez à notre succès.
+                      Rejoignez notre équipe et contribuez à notre succès.
                     </p>
                     <Button variant="hero" size="lg" className="w-full" disabled>
                       Postuler maintenant
@@ -136,7 +187,7 @@ export default function CreateJob() {
             </div>
           </div>
         </div>
-    </RecruiterLayout>
+      </RecruiterLayout>
     );
   }
 
@@ -184,15 +235,6 @@ export default function CreateJob() {
                     placeholder="Ex: Développeur React.js"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="company">Entreprise *</Label>
-                  <Input
-                    id="company"
-                    value={formData.company}
-                    onChange={(e) => handleInputChange("company", e.target.value)}
-                    placeholder="Nom de votre entreprise"
-                  />
-                </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
@@ -225,7 +267,6 @@ export default function CreateJob() {
                       <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
                       <SelectItem value="Stage">Stage</SelectItem>
                       <SelectItem value="Freelance">Freelance</SelectItem>
-                      <SelectItem value="Temps partiel">Temps partiel</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -268,17 +309,29 @@ export default function CreateJob() {
                   Aperçu
                 </Button>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleSave}>
-                    <Save className="w-4 h-4 mr-2" />
-                    Sauvegarder le brouillon
+                  <Button 
+                    variant="outline" 
+                    onClick={handleSave}
+                    disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.description}
+                  >
+                    {isCreating ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4 mr-2" />
+                    )}
+                    {isCreating ? 'Sauvegarde...' : 'Sauvegarder le brouillon'}
                   </Button>
                   <Button 
                     variant="success" 
                     onClick={handlePublish}
-                    disabled={!formData.title || !formData.location || !formData.contractType || !formData.description}
+                    disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.description}
                   >
-                    <Send className="w-4 h-4 mr-2" />
-                    Publier l'offre
+                    {isCreating ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4 mr-2" />
+                    )}
+                    {isCreating ? 'Publication...' : "Publier l'offre"}
                   </Button>
                 </div>
               </div>

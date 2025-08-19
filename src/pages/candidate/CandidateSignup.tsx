@@ -1,20 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { toast, useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function CandidateSignup() {
-  const { login } = useCandidateAuth();
-  const { toast } = useToast();
   const navigate = useNavigate();
   
+  useEffect(() => {
+    // Rediriger vers la page d'authentification unifiée
+    navigate("/auth");
+  }, [navigate]);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -218,4 +221,8 @@ export default function CandidateSignup() {
       </div>
     </Layout>
   );
+}
+
+function login(userData: { id: string; firstName: string; lastName: string; email: string; matricule: string; }) {
+  throw new Error("Function not implemented.");
 }

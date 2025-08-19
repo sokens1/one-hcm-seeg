@@ -1,15 +1,16 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { CandidateLayout } from "@/components/layout/CandidateLayout";
 
 export default function CandidateDashboard() {
-  const { isAuthenticated, isLoading } = useCandidateAuth();
+  const { user, isCandidate, isLoading } = useAuth();
+  const isAuthenticated = !!user && isCandidate;
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      navigate("/candidate/login");
+      navigate("/auth");
     }
   }, [isAuthenticated, isLoading, navigate]);
 

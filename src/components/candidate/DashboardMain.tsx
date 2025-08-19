@@ -2,42 +2,49 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
-import { FileText, MapPin, Calendar, Eye } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { FileText, MapPin, Calendar, Eye, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
-// Mock data pour les candidatures
-const mockApplications = [
-  {
-    id: 1,
-    title: "Directeur des Ressources Humaines",
-    department: "Ressources Humaines",
-    location: "Libreville",
-    dateDepot: "15 Décembre 2024",
-    status: "En cours d'analyse"
-  },
-  {
-    id: 2,
-    title: "Directeur Technique",
-    department: "Technique",
-    location: "Libreville",
-    dateDepot: "12 Décembre 2024",
-    status: "Documents vérifiés"
-  },
-];
+import { useApplications } from "@/hooks/useApplications";
+import { useJobOffers } from "@/hooks/useJobOffers";
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 export function DashboardMain() {
-  const { user } = useCandidateAuth();
-  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const { user } = useAuth();
+  const { data: applications, isLoading: isLoadingApps, error: errorApps } = useApplications();
+  const { data: jobOffers, isLoading: isLoadingJobs, error: errorJobs } = useJobOffers();
+
   const [locationFilter, setLocationFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
 
-  const filteredApplications = mockApplications.filter(app => {
-    if (departmentFilter !== "all" && app.department !== departmentFilter) return false;
-    if (locationFilter !== "all" && app.location !== locationFilter) return false;
+  const filteredApplications = applications?.filter(app => {
+    if (locationFilter !== "all" && app.job_offers?.location !== locationFilter) return false;
+    if (typeFilter !== "all" && app.job_offers?.contract_type !== typeFilter) return false;
     return true;
-  });
+  }) || [];
+
+  const uniqueLocations = [...new Set(applications?.map(app => app.job_offers?.location).filter(Boolean) as string[] || [])];
+  const uniqueContracts = [...new Set(applications?.map(app => app.job_offers?.contract_type).filter(Boolean) as string[] || [])];
+
+  if (isLoadingApps || isLoadingJobs) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="ml-4 text-lg">Chargement du tableau de bord...</p>
+      </div>
+    );
+  }
+
+  if (errorApps || errorJobs) {
+    return (
+      <div className="text-center py-12 text-red-600">
+        <p>Une erreur est survenue lors du chargement des données.</p>
+        <p className="text-sm">{errorApps?.message || errorJobs?.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -45,7 +52,7 @@ export function DashboardMain() {
       <div className="text-center">
         <h2 className="text-3xl font-bold mb-2">Tableau de bord</h2>
         <p className="text-lg text-muted-foreground">
-          Bonjour {user?.firstName}, voici le suivi de votre parcours de recrutement avec nous.
+          Bonjour {user?.user_metadata.first_name}, voici le suivi de votre parcours de recrutement avec nous.
         </p>
       </div>
 
@@ -59,9 +66,9 @@ export function DashboardMain() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-primary">{mockApplications.length}</div>
+            <div className="text-3xl font-bold text-primary">{applications?.length || 0}</div>
             <p className="text-sm text-muted-foreground">
-              {mockApplications.length > 1 ? "candidatures actives" : "candidature active"}
+              {(applications?.length || 0) > 1 ? "candidatures actives" : "candidature active"}
             </p>
           </CardContent>
         </Card>
@@ -74,9 +81,9 @@ export function DashboardMain() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-primary">17</div>
+            <div className="text-3xl font-bold text-primary">{jobOffers?.length || 0}</div>
             <p className="text-sm text-muted-foreground">
-              nouveaux postes disponibles
+              postes disponibles
             </p>
           </CardContent>
         </Card>
@@ -89,28 +96,15 @@ export function DashboardMain() {
           
           {/* Filtres */}
           <div className="flex flex-wrap gap-4 pt-4">
-            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Département" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les départements</SelectItem>
-                <SelectItem value="Ressources Humaines">Ressources Humaines</SelectItem>
-                <SelectItem value="Technique">Technique</SelectItem>
-                <SelectItem value="Finance">Finance</SelectItem>
-                <SelectItem value="Commercial">Commercial</SelectItem>
-              </SelectContent>
-            </Select>
-
             <Select value={locationFilter} onValueChange={setLocationFilter}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Lieu" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les lieux</SelectItem>
-                <SelectItem value="Libreville">Libreville</SelectItem>
-                <SelectItem value="Port-Gentil">Port-Gentil</SelectItem>
-                <SelectItem value="Franceville">Franceville</SelectItem>
+                {uniqueLocations.map(location => (
+                  <SelectItem key={location} value={location}>{location}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -120,9 +114,9 @@ export function DashboardMain() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les types</SelectItem>
-                <SelectItem value="CDI">CDI</SelectItem>
-                <SelectItem value="CDD">CDD</SelectItem>
-                <SelectItem value="Stage">Stage</SelectItem>
+                {uniqueContracts.map(contract => (
+                  <SelectItem key={contract} value={contract}>{contract}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -134,17 +128,17 @@ export function DashboardMain() {
             {filteredApplications.map((application) => (
               <Card key={application.id} className="border hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">{application.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{application.department}</p>
+                  <CardTitle className="text-lg">{application.job_offers?.title}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{application.job_offers?.contract_type}</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="w-4 h-4" />
-                    {application.location}
+                    {application.job_offers?.location}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4" />
-                    Candidature déposée le {application.dateDepot}
+                    Déposée le {format(new Date(application.created_at), 'dd/MM/yyyy', { locale: fr })}
                   </div>
                   <div className="pt-2">
                     <Badge variant="secondary" className="mb-3">
@@ -169,7 +163,6 @@ export function DashboardMain() {
                 variant="outline" 
                 className="mt-4"
                 onClick={() => {
-                  setDepartmentFilter("all");
                   setLocationFilter("all");
                   setTypeFilter("all");
                 }}

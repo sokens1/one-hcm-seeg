@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { CandidateLayout } from "@/components/layout/CandidateLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Bell, Shield, Eye, Mail, Globe } from "lucide-react";
 
 export default function CandidateSettings() {
-  const { isAuthenticated, isLoading } = useCandidateAuth();
+  const { user, isLoading } = useAuth();
+  const isAuthenticated = !!user;
   const navigate = useNavigate();
 
   useEffect(() => {

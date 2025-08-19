@@ -12,8 +12,8 @@ import { useState } from "react";
 interface Candidate {
   id: string;
   name: string;
-  currentPosition: string;
-  currentDepartment: string;
+  statusLabel: string;
+  phone: string;
   experience: string;
   status: 'candidature' | 'incubation' | 'embauche' | 'refuse';
   score: number;
@@ -50,9 +50,9 @@ export default function JobPipeline() {
   const candidates: Candidate[] = applications.map(app => ({
     id: app.id,
     name: `${app.users?.first_name || ''} ${app.users?.last_name || ''}`.trim(),
-    currentPosition: app.users?.email || '',
-    currentDepartment: '',
-    experience: '',
+    statusLabel: getStatusLabel(app.status),
+    phone: app.users?.phone || 'Non fourni',
+    experience: '', // Placeholder for future use
     status: app.status,
     score: 0, // TODO: Calculate from evaluations
     applicationDate: new Date(app.created_at).toISOString().split('T')[0],
@@ -80,7 +80,7 @@ export default function JobPipeline() {
       <RecruiterLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <p className="text-red-500 mb-4">Erreur lors du chargement: {error}</p>
+            <p className="text-red-500 mb-4">Erreur lors du chargement: {error.message}</p>
             <Button variant="outline" onClick={() => window.location.reload()}>
               Réessayer
             </Button>
@@ -158,8 +158,11 @@ export default function JobPipeline() {
                                 <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                                   {candidate.name}
                                 </h4>
+                                <p className="text-sm text-muted-foreground truncate">
+                                  {candidate.email}
+                                </p>
                                 <p className="text-sm text-muted-foreground">
-                                  Email : {candidate.email}
+                                  {candidate.phone}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
                                   Candidature : {new Date(candidate.applicationDate).toLocaleDateString('fr-FR')}

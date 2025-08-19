@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, MessageSquare } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { useCandidateAuth } from "@/hooks/useCandidateAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
 interface ApplicationFormAdvancedProps {
@@ -36,15 +36,15 @@ interface FormData {
 export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdvancedProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { user } = useCandidateAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   
   const [formData, setFormData] = useState<FormData>({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
+    firstName: user?.user_metadata.first_name || "",
+    lastName: user?.user_metadata.last_name || "",
     email: user?.email || "",
-    birthDate: user?.birthDate || "",
-    currentPosition: user?.currentPosition || "",
+    birthDate: user?.user_metadata.birth_date || "",
+    currentPosition: user?.user_metadata.current_position || "",
     cv: null,
     motivationLetter: "",
     certificates: [],
