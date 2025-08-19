@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useState } from "react";
+import seegLogo from "@/assets/images/logo-SEEG.png";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
 
@@ -54,7 +55,7 @@ const Index = () => {
             <div className="flex flex-col items-center space-y-3 sm:space-y-4 animate-fade-in">
               <div className="bg-white rounded-full p-2 sm:p-3 shadow-lg">
                 <img 
-                  src="/src/assets/images/logo-SEEG.png" 
+                  src={seegLogo} 
                   alt="Logo SEEG" 
                   className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
                 />
