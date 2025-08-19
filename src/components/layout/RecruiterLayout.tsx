@@ -2,9 +2,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { RecruiterSidebar } from "./RecruiterSidebar";
 import { Header } from "./Header";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 interface RecruiterLayoutProps {
   children: React.ReactNode;
@@ -31,10 +31,18 @@ export function RecruiterLayout({ children, className = "" }: RecruiterLayoutPro
               <SidebarTrigger className="mr-4" />
               <h1 className="text-lg font-semibold">Espace Recruteur</h1>
             </div>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
-              <LogOut className="w-4 h-4" />
-              Déconnexion
-            </Button>
+            <div className="flex items-center gap-2">
+              <Link to="/recruiter/profile">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <UserIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline">Profil</span>
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
+                <LogOut className="w-4 h-4" />
+                Déconnexion
+              </Button>
+            </div>
           </header>
           
           <main className={`flex-1 ${className}`}>

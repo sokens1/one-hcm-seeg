@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Briefcase, Plus } from "lucide-react";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
+import { useNavigate } from "react-router-dom";
 
 import { useApplications } from "@/hooks/useApplications";
 import { Loader2 } from "lucide-react";
@@ -20,6 +21,7 @@ const statusConfig = {
 export function CandidateApplications() {
   const { setCurrentView } = useCandidateLayout();
   const { data: applications, isLoading, error } = useApplications();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -80,7 +82,11 @@ export function CandidateApplications() {
                     <Button 
                       variant="outline" 
                       className="gap-2"
-                      onClick={() => setCurrentView("tracking")} // Note: This will need logic to pass the application ID
+                      onClick={() => {
+                        // Met à jour la vue et transmet l'ID via les query params
+                        setCurrentView("tracking");
+                        navigate(`/candidate/dashboard?view=tracking&id=${application.id}&from=applications`);
+                      }}
                     >
                       <Eye className="w-4 h-4" />
                       Voir le suivi détaillé

@@ -25,14 +25,14 @@ const menuItems = [
     icon: Briefcase,
   },
   {
-    title: "Mon profil",
-    url: "/recruiter/profile",
-    icon: UserIcon,
-  },
-  {
     title: "Liste des Candidats",
     url: "/recruiter/candidates",
     icon: Users,
+  },
+  {
+    title: "Mon profil",
+    url: "/recruiter/profile",
+    icon: UserIcon,
   },
 ];
 

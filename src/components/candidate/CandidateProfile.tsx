@@ -6,16 +6,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, Calendar, Briefcase, Edit, Save, X, Loader2 } from "lucide-react";
+import { User, Mail, Phone, Calendar, Briefcase, Edit, Save, X, Loader2, Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth, SignUpMetadata } from "@/hooks/useAuth";
 import { useApplications } from "@/hooks/useApplications";
+import { useCandidateDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
 
 export function CandidateProfile() {
   const { user, updateUser, isUpdating } = useAuth();
   const { data: applications, isLoading: isLoadingApplications } = useApplications();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const { data: documents = [] } = useCandidateDocuments();
   const [formData, setFormData] = useState({
     firstName: user?.user_metadata.first_name || "",
     lastName: user?.user_metadata.last_name || "",
@@ -23,8 +25,8 @@ export function CandidateProfile() {
     matricule: user?.user_metadata.matricule || "",
     birthDate: user?.user_metadata.birth_date || "",
     currentPosition: user?.user_metadata.current_position || "",
-    phone: "",
-    bio: ""
+    phone: user?.user_metadata.phone || "",
+    bio: user?.user_metadata.bio || ""
   });
 
     const handleSave = async () => {
@@ -221,6 +223,32 @@ export function CandidateProfile() {
                   </div>
                 )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Mes documents */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Mes documents</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {documents.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Vous n'avez pas encore ajouté de documents.</p>
+              ) : (
+                documents.map((doc) => (
+                  <div key={doc.id} className="flex items-center justify-between border rounded-md p-3">
+                    <div className="space-y-0.5">
+                      <div className="font-medium text-sm">{getDocumentTypeLabel(doc.document_type)}</div>
+                      <div className="text-xs text-muted-foreground">{doc.file_name} · {formatFileSize(doc.file_size)}</div>
+                    </div>
+                    <a href={doc.file_path} target="_blank" rel="noreferrer">
+                      <Button variant="outline" size="sm">
+                        <Download className="w-4 h-4 mr-2" /> Télécharger
+                      </Button>
+                    </a>
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
         </div>

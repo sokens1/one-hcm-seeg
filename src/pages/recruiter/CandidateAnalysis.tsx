@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useApplication } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
@@ -84,11 +84,16 @@ const initialProtocols: Protocol[] = [
 
 export default function CandidateAnalysis() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { data: application, isLoading, error } = useApplication(id);
   const { data: documents = [], isLoading: documentsLoading } = useApplicationDocuments(id);
   const [protocols, setProtocols] = useState<Protocol[]>(initialProtocols);
   const [activeTab, setActiveTab] = useState("protocol1");
+
+  // Determine jobId for navigation back to the correct pipeline
+  const jobIdFromQuery = searchParams.get('jobId') || undefined;
+  const jobId = jobIdFromQuery || application?.job_offers?.id || undefined;
 
   // Transform application data to candidate format
   const candidate: CandidateData | null = application ? {
@@ -182,7 +187,11 @@ export default function CandidateAnalysis() {
   const handleStatusChange = (newStatus: CandidateData['status']) => {
     // Ici vous pourriez mettre à jour le statut du candidat
     console.log(`Changement de statut vers: ${newStatus}`);
-    navigate(`/recruiter/jobs/${id}/pipeline`);
+    if (jobId) {
+      navigate(`/recruiter/jobs/${jobId}/pipeline`);
+    } else {
+      navigate(-1);
+    }
   };
 
   const downloadDocument = (documentPath: string) => {
@@ -202,7 +211,7 @@ export default function CandidateAnalysis() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <Link to={`/recruiter/jobs/${id}/pipeline`}>
+            <Link to={jobId ? `/recruiter/jobs/${jobId}/pipeline` : "#"} onClick={(e) => { if (!jobId) { e.preventDefault(); navigate(-1); } }}>
               <Button variant="outline" size="sm">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour au pipeline

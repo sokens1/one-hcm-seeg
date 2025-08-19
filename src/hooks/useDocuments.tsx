@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface Document {
   id: number;
@@ -27,6 +28,34 @@ export function useApplicationDocuments(applicationId: string | undefined) {
       return data || [];
     },
     enabled: !!applicationId,
+  });
+}
+
+// Tous les documents d'un candidat (via ses candidatures)
+export function useCandidateDocuments() {
+  const { user } = useAuth();
+  return useQuery<Document[], Error>({
+    queryKey: ['candidate-documents', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      // Récupérer les IDs des candidatures du candidat
+      const { data: apps, error: appsError } = await supabase
+        .from('applications')
+        .select('id')
+        .eq('candidate_id', user.id);
+      if (appsError) throw new Error(appsError.message);
+      const appIds = (apps || []).map(a => a.id);
+      if (appIds.length === 0) return [];
+
+      const { data, error } = await supabase
+        .from('documents')
+        .select('*')
+        .in('application_id', appIds)
+        .order('uploaded_at', { ascending: false });
+      if (error) throw new Error(error.message);
+      return data || [];
+    },
+    enabled: !!user,
   });
 }
 

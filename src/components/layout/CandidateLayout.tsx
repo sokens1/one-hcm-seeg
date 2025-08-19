@@ -14,7 +14,11 @@ import {
 import { CandidateHeader } from "@/components/candidate/CandidateHeader";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, Briefcase, FileText, User, Settings } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/hooks/useAuth";
 import { useState, createContext, useContext, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { DashboardMain } from "@/components/candidate/DashboardMain";
 import { JobCatalog } from "@/components/candidate/JobCatalog";
 import { CandidateApplications } from "@/components/candidate/CandidateApplications";
@@ -45,7 +49,7 @@ const navigation = [
   { title: "Catalogue d'offres", view: "jobs" as ViewType, icon: Briefcase },
   { title: "Mes candidatures", view: "applications" as ViewType, icon: FileText },
   { title: "Mon profil", view: "profile" as ViewType, icon: User },
-  { title: "Paramètres", view: "settings" as ViewType, icon: Settings },
+  // { title: "Paramètres", view: "settings" as ViewType, icon: Settings }, // Masqué pour développement ultérieur
 ];
 
 function CandidateSidebar() {
@@ -57,7 +61,6 @@ function CandidateSidebar() {
   const isActive = (view: ViewType) => {
     // Check if we're on a specific route that matches the view
     if (view === "profile" && location.pathname === "/candidate/profile") return true;
-    if (view === "settings" && location.pathname === "/candidate/settings") return true;
     return currentView === view;
   };
   
@@ -68,8 +71,6 @@ function CandidateSidebar() {
     // For profile and settings, navigate to dedicated pages
     if (view === "profile") {
       navigate("/candidate/profile");
-    } else if (view === "settings") {
-      navigate("/candidate/settings");
     } else {
       // For other views, use the internal view system
       setCurrentView(view);
@@ -122,7 +123,16 @@ function CandidateMainContent() {
       case "profile":
         return <CandidateProfile />;
       case "settings":
-        return <CandidateSettings />;
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Paramètres</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>La page paramètres est en cours de développement et sera disponible prochainement.</p>
+            </CardContent>
+          </Card>
+        );
       default:
         return <DashboardMain />;
     }
@@ -138,6 +148,9 @@ interface CandidateLayoutProps {
 export function CandidateLayout({ children }: CandidateLayoutProps) {
   const [currentView, setCurrentView] = useState<ViewType>("dashboard");
   const location = useLocation();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [promptedProfile, setPromptedProfile] = useState(false);
 
   // Initialize view from query param if provided (e.g., /candidate/dashboard?view=jobs)
   // Keeps existing behavior when no param is present.
@@ -148,6 +161,59 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
       setCurrentView(viewParam);
     }
   }, [location.search]);
+
+  // Notification pour inciter à compléter le profil après connexion/inscription
+  useEffect(() => {
+    if (!user || promptedProfile) return;
+    const run = async () => {
+      const meta = (user as unknown as { user_metadata?: Record<string, unknown> })?.user_metadata || {};
+      const firstName = (meta as Record<string, unknown>)["first_name"];
+      const lastName = (meta as Record<string, unknown>)["last_name"];
+      const currentPosition = (meta as Record<string, unknown>)["current_position"];
+      const isIncomplete = !firstName || !lastName || !currentPosition;
+      if (!isIncomplete) return;
+
+      const title = "Complétez votre profil";
+      // Vérifier s'il existe déjà une notification non lue de ce type
+      const { data: existing, error: fetchErr } = await supabase
+        .from('notifications')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('title', title)
+        .eq('read', false)
+        .limit(1);
+      if (fetchErr) {
+        console.warn('Notifications fetch error:', fetchErr.message);
+      }
+
+      if (!existing || existing.length === 0) {
+        // Créer la notification
+        const { error: insertErr } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: user.id,
+            title,
+            message: "Bienvenue ! Pour optimiser vos candidatures, veuillez compléter vos informations dans la page Mon profil.",
+            read: false,
+            link: '/candidate/profile',
+          });
+        if (insertErr) {
+          console.warn('Notification insert error:', insertErr.message);
+        } else {
+          toast({
+            title,
+            description: "Bienvenue ! Pour optimiser vos candidatures, veuillez compléter vos informations dans la page Mon profil.",
+            duration: 6000,
+          });
+          setPromptedProfile(true);
+        }
+      } else {
+        // Une notification non lue existe déjà; ne pas dupliquer ni toaster
+        setPromptedProfile(true);
+      }
+    };
+    void run();
+  }, [user, promptedProfile, toast]);
 
   return (
     <CandidateLayoutContext.Provider value={{ currentView, setCurrentView }}>

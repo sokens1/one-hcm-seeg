@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { User, Mail, Phone, Briefcase, Edit, Save, X, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth, SignUpMetadata } from "@/hooks/useAuth";
+import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 
 export default function RecruiterProfile() {
   const { user, updateUser, isUpdating } = useAuth();
@@ -63,7 +64,8 @@ export default function RecruiterProfile() {
   };
 
   return (
-    <div className="space-y-8">
+    <RecruiterLayout>
+    <div className="space-y-8 container mx-auto px-4 py-8">
       <div className="text-center">
         <h2 className="text-3xl font-bold mb-2">Mon profil recruteur</h2>
         <p className="text-lg text-muted-foreground">
@@ -231,5 +233,6 @@ export default function RecruiterProfile() {
         </div>
       </div>
     </div>
+    </RecruiterLayout>
   );
 }

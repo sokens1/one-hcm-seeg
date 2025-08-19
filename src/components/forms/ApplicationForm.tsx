@@ -49,7 +49,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitApplication } = useApplications();
-  const { uploadFile, isUploading } = useFileUpload();
+  const { uploadFile, isUploading, getFileUrl } = useFileUpload();
   const { user } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -147,12 +147,57 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
 
     setIsSubmitting(true);
     try {
-      await submitApplication({
+      const application = await submitApplication({
         job_offer_id: jobId,
         cover_letter: formData.coverLetter,
         motivation: formData.question1,
         ref_contacts: formData.references
       });
+      // Insérer les documents uploadés dans la table public.documents
+      try {
+        const docsPayload: Array<{ application_id: string; document_type: 'cv' | 'diploma' | 'recommendation' | 'cover_letter'; file_name: string; file_path: string; file_size: number | null; }> = [];
+        if (formData.cv) {
+          docsPayload.push({
+            application_id: application.id,
+            document_type: 'cv',
+            file_name: formData.cv.name,
+            file_path: getFileUrl(formData.cv.path),
+            file_size: formData.cv.size ?? null,
+          });
+        }
+        if (formData.certificates.length > 0) {
+          for (const cert of formData.certificates) {
+            docsPayload.push({
+              application_id: application.id,
+              document_type: 'diploma',
+              file_name: cert.name,
+              file_path: getFileUrl(cert.path),
+              file_size: cert.size ?? null,
+            });
+          }
+        }
+        if (formData.recommendations.length > 0) {
+          for (const rec of formData.recommendations) {
+            docsPayload.push({
+              application_id: application.id,
+              document_type: 'recommendation',
+              file_name: rec.name,
+              file_path: getFileUrl(rec.path),
+              file_size: rec.size ?? null,
+            });
+          }
+        }
+        if (docsPayload.length > 0) {
+          const { error: docsError } = await supabase
+            .from('documents')
+            .insert(docsPayload);
+          if (docsError) {
+            console.warn('Insertion documents échouée:', docsError.message);
+          }
+        }
+      } catch (docsEx: any) {
+        console.warn('Erreur lors de l\'insertion des documents:', docsEx?.message || docsEx);
+      }
 
       setIsSubmitted(true);
       toast.success("Candidature envoyée avec succès!");

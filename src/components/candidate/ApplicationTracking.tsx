@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle, Users, Trophy, FileText, Loader2, XCircle, Calendar } from "lucide-react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useApplication } from "@/hooks/useApplications";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -62,8 +62,12 @@ const generateTimeline = (application: Application | null | undefined): Timeline
 
 export function ApplicationTracking() {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
-  const { data: application, isLoading, error } = useApplication(id);
+  const queryId = new URLSearchParams(location.search).get('id') || undefined;
+  const effectiveId = id || queryId;
+  const from = (location.state as { from?: string } | null)?.from ?? new URLSearchParams(location.search).get('from');
+  const { data: application, isLoading, error } = useApplication(effectiveId);
 
   const timeline = generateTimeline(application);
 
@@ -99,7 +103,23 @@ export function ApplicationTracking() {
       <div className="text-center py-12 text-red-600">
         <p>Impossible de charger les informations de la candidature.</p>
         <p className="text-sm">{error?.message || "L'identifiant de la candidature est introuvable."}</p>
-        <Button variant="outline" onClick={() => navigate(-1)} className="mt-4">Retour</Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            if (id) {
+              navigate('/candidate/dashboard');
+              return;
+            }
+            if (from === 'applications') {
+              navigate('/candidate/dashboard?view=applications');
+              return;
+            }
+            navigate('/candidate/dashboard');
+          }}
+          className="mt-4"
+        >
+          Retour
+        </Button>
       </div>
     );
   }
@@ -107,7 +127,25 @@ export function ApplicationTracking() {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={() => navigate(-1)} className="gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            // Si on vient de la route paramétrée (/candidate/application/:id), retour au dashboard
+            if (id) {
+              navigate('/candidate/dashboard');
+              return;
+            }
+            // Si on vient de "Mes candidatures", retour à l'onglet applications
+            if (from === 'applications') {
+              navigate('/candidate/dashboard?view=applications');
+              return;
+            }
+            // Fallback: dashboard
+            navigate('/candidate/dashboard');
+          }}
+          className="gap-2"
+        >
           <ArrowLeft className="w-4 h-4" />
           Retour
         </Button>

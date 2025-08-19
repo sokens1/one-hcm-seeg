@@ -95,6 +95,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setUser(data.user);
+
+    // Synchroniser également la table 'users' (vue recruteur)
+    try {
+      const authUser = data.user;
+      if (authUser) {
+        const meta = (authUser as unknown as { user_metadata?: Record<string, unknown> })?.user_metadata || {};
+        const get = (k: string) => (meta as Record<string, unknown>)[k];
+        const upsertPayload: Record<string, unknown> = {
+          id: authUser.id,
+          email: authUser.email,
+        };
+        if (typeof get('first_name') === 'string') upsertPayload.first_name = get('first_name');
+        if (typeof get('last_name') === 'string') upsertPayload.last_name = get('last_name');
+        if (typeof get('phone') === 'string') upsertPayload.phone = get('phone');
+        if (typeof get('matricule') === 'string') upsertPayload.matricule = get('matricule');
+        if (typeof get('birth_date') === 'string') upsertPayload.birth_date = get('birth_date');
+        if (typeof get('current_position') === 'string') upsertPayload.current_position = get('current_position');
+        if (typeof get('bio') === 'string') upsertPayload.bio = get('bio');
+
+        const { error: upsertErr } = await supabase
+          .from('users')
+          .upsert(upsertPayload, { onConflict: 'id' });
+        if (upsertErr) {
+          console.warn('Upsert users failed (non-bloquant):', upsertErr.message);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed syncing users table:', e);
+    }
+
     setIsUpdating(false);
     return true;
   };

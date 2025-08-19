@@ -72,7 +72,9 @@ export default function JobPipeline() {
   ];
 
   const handleAnalyzeCandidate = (candidateId: string) => {
-    navigate(`/recruiter/candidates/${candidateId}/analysis`);
+    const jobId = id; // current job offer id from route params
+    const suffix = jobId ? `?jobId=${jobId}` : "";
+    navigate(`/recruiter/candidates/${candidateId}/analysis${suffix}`);
   };
 
   if (error) {

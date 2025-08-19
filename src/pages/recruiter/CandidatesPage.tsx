@@ -131,26 +131,7 @@ export default function CandidatesPage() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
-          <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-foreground">{uiCandidates.length}</div>
-              <div className="text-sm text-muted-foreground">Total</div>
-            </CardContent>
-          </Card>
-          {Object.entries(statusConfig).map(([status, config]) => {
-            const count = uiCandidates.filter(c => c.status === status).length;
-            return (
-              <Card key={status}>
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-foreground">{count}</div>
-                  <div className="text-sm text-muted-foreground">{config.label}</div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        
 
         {/* Candidates Table */}
         <Card>
@@ -242,15 +223,7 @@ export default function CandidatesPage() {
                                 </div>
                               </div>
                               
-                              {/* Actions */}
-                              <div className="flex gap-2 pt-4 border-t">
-                                <Link to={`/recruiter/candidate/${candidate.id}/analysis`} className="flex-1">
-                                  <Button variant="default" className="w-full gap-2">
-                                    <Eye className="w-4 h-4" />
-                                    Analyser le candidat
-                                  </Button>
-                                </Link>
-                              </div>
+                              
                             </div>
                           </DialogContent>
                         </Dialog>

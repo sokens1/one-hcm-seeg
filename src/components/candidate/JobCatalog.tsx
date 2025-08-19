@@ -16,8 +16,8 @@ export function JobCatalog() {
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const [locationFilter, setLocationFilter] = useState("");
-  const [contractFilter, setContractFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [contractFilter, setContractFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
   const { setCurrentView } = useCandidateLayout();
   const location = useLocation();
@@ -28,8 +28,8 @@ export function JobCatalog() {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLocation = !locationFilter || job.location === locationFilter;
-    const matchesContract = !contractFilter || job.contract_type === contractFilter;
+    const matchesLocation = locationFilter === "all" || job.location === locationFilter;
+    const matchesContract = contractFilter === "all" || job.contract_type === contractFilter;
     
     return matchesSearch && matchesLocation && matchesContract;
   }) || [];
@@ -165,9 +165,9 @@ export function JobCatalog() {
               <Button variant="outline" className="h-12 gap-2">
                 <Filter className="w-4 h-4" />
                 Filtres
-                {(locationFilter || contractFilter) && (
+                {(locationFilter !== "all" || contractFilter !== "all") && (
                   <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                    {(locationFilter ? 1 : 0) + (contractFilter ? 1 : 0)}
+                    {(locationFilter !== "all" ? 1 : 0) + (contractFilter !== "all" ? 1 : 0)}
                   </span>
                 )}
               </Button>
@@ -180,8 +180,8 @@ export function JobCatalog() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      setLocationFilter("");
-                      setContractFilter("");
+                      setLocationFilter("all");
+                      setContractFilter("all");
                     }}
                   >
                     Effacer tout
@@ -195,7 +195,7 @@ export function JobCatalog() {
                       <SelectValue placeholder="Toutes les villes" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Toutes les villes</SelectItem>
+                      <SelectItem value="all">Toutes les villes</SelectItem>
                       {uniqueLocations.map(location => (
                         <SelectItem key={location} value={location}>{location}</SelectItem>
                       ))}
@@ -210,7 +210,7 @@ export function JobCatalog() {
                       <SelectValue placeholder="Tous les contrats" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Tous les contrats</SelectItem>
+                      <SelectItem value="all">Tous les contrats</SelectItem>
                       {uniqueContracts.map(contract => (
                         <SelectItem key={contract} value={contract}>{contract}</SelectItem>
                       ))}
@@ -223,29 +223,29 @@ export function JobCatalog() {
         </div>
         
         {/* Active Filters Display */}
-        {(locationFilter || contractFilter) && (
+        {(locationFilter !== "all" || contractFilter !== "all") && (
           <div className="flex gap-2 mt-3">
-            {locationFilter && (
+            {locationFilter !== "all" && (
               <div className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
                 <span>Lieu: {locationFilter}</span>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={() => setLocationFilter("")}
+                  onClick={() => setLocationFilter("all")}
                 >
                   <X className="w-3 h-3" />
                 </Button>
               </div>
             )}
-            {contractFilter && (
+            {contractFilter !== "all" && (
               <div className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
                 <span>Contrat: {contractFilter}</span>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={() => setContractFilter("")}
+                  onClick={() => setContractFilter("all")}
                 >
                   <X className="w-3 h-3" />
                 </Button>
@@ -317,8 +317,8 @@ export function JobCatalog() {
               variant="outline"
               onClick={() => {
                 setSearchTerm("");
-                setLocationFilter("");
-                setContractFilter("");
+                setLocationFilter("all");
+                setContractFilter("all");
               }}
             >
               Effacer tous les filtres

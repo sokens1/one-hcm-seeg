@@ -16,9 +16,11 @@ export interface Application {
   created_at: string;
   updated_at: string;
   job_offers?: {
+    id: string;
     title: string;
     location: string;
     contract_type: string;
+    recruiter_id?: string;
   } | null;
   users?: {
     first_name: string;
@@ -203,7 +205,8 @@ export function useApplication(id: string | undefined) {
         .from('applications')
         .select(`
           *,
-          job_offers (*)
+          job_offers (*),
+          users (first_name, last_name, email, phone)
         `)
         .eq('id', id)
         .single();
