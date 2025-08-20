@@ -8,6 +8,7 @@ import {
   RouterProvider,
   Route,
   createRoutesFromElements,
+  Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -31,6 +32,7 @@ const CandidateApplications = lazy(() => import("./pages/candidate/CandidateAppl
 const CandidateProfile = lazy(() => import("./pages/candidate/CandidateProfile"));
 const CandidateSettings = lazy(() => import("./pages/candidate/CandidateSettings"));
 const CompanyContext = lazy(() => import("./pages/candidate/CompanyContext"));
+const EditApplication = lazy(() => import("./pages/candidate/EditApplication"));
 
 // Recruiter pages
 const RecruiterDashboard = lazy(() => import("./pages/recruiter/RecruiterDashboard"));
@@ -56,7 +58,7 @@ const router = createBrowserRouter(
       {/* Home and Candidate Routes */}
       <Route index element={<Index />} />
       <Route path="auth" element={<Auth />} />
-      <Route path="jobs" element={<CandidateJobs />} />
+      <Route path="jobs" element={<Navigate to="/" replace />} />
       <Route path="jobs/:id" element={<JobDetail />} />
       <Route path="candidate/signup" element={<CandidateSignup />} />
       <Route path="candidate/login" element={<CandidateLogin />} />
@@ -64,6 +66,7 @@ const router = createBrowserRouter(
       <Route path="candidate/jobs" element={<CandidateJobs />} />
       <Route path="candidate/application/:id" element={<CandidateApplicationTracking />} />
       <Route path="candidate/applications" element={<CandidateApplications />} />
+      <Route path="candidate/applications/:id/edit" element={<ProtectedRoute requiredRole="candidat"><EditApplication /></ProtectedRoute>} />
       <Route path="candidate/profile" element={<CandidateProfile />} />
       <Route path="candidate/settings" element={<CandidateSettings />} />
       <Route path="company-context" element={<CompanyContext />} />

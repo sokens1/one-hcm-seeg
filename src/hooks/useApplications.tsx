@@ -16,6 +16,7 @@ export interface Application {
   created_at: string;
   updated_at: string;
   job_offers?: {
+    date_limite: string;
     id: string;
     title: string;
     location: string;
@@ -71,7 +72,8 @@ export function useApplications() {
         job_offers (
           title,
           location,
-          contract_type
+          contract_type,
+          date_limite
         )
       `)
       .eq('candidate_id', user.id)
@@ -90,10 +92,12 @@ export function useApplications() {
   const submitApplicationMutation = useMutation({
     mutationFn: async (applicationData: {
       job_offer_id: string;
-      cover_letter: string;
-      motivation?: string;
-      availability_start?: string;
       ref_contacts?: string;
+      mtp_answers: {
+        metier: string[];
+        talent: string[];
+        paradigme: string[];
+      };
     }) => {
       if (!user) throw new Error("User not authenticated");
 
@@ -161,10 +165,8 @@ export function useApplications() {
       const payload: Record<string, unknown> = {
         candidate_id: user.id,
         job_offer_id: applicationData.job_offer_id,
-        cover_letter: applicationData.cover_letter,
+        mtp_answers: applicationData.mtp_answers,
       };
-      if (applicationData.motivation !== undefined) payload.motivation = applicationData.motivation;
-      if (applicationData.availability_start !== undefined) payload.availability_start = applicationData.availability_start;
       if (applicationData.ref_contacts !== undefined) payload.reference_contacts = applicationData.ref_contacts;
 
       const { data, error } = await supabase

@@ -39,7 +39,8 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   }
 
   const publishedAt = jobOffer.created_at ? new Date(jobOffer.created_at).toLocaleDateString() : undefined;
-  const deadline = jobOffer.application_deadline ? new Date(jobOffer.application_deadline).toLocaleDateString() : undefined;
+  const deadline = jobOffer.date_limite ? new Date(jobOffer.date_limite).toLocaleDateString() : 
+                   jobOffer.application_deadline ? new Date(jobOffer.application_deadline).toLocaleDateString() : undefined;
 
   return (
     <div className="space-y-8">
@@ -62,7 +63,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <CardTitle className="text-2xl mb-2">{jobOffer.title}</CardTitle>
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
                 <div className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
                   {jobOffer.location}
@@ -82,6 +83,16 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                   {publishedAt ? `Publié le ${publishedAt}` : ""}
                 </div>
               </div>
+              {jobOffer.categorie_metier && (
+                <div className="mb-2">
+                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                    {jobOffer.categorie_metier === 'metier_eau' && 'Métiers de l\'eau et assainissement'}
+                    {jobOffer.categorie_metier === 'metier_electricite' && 'Métiers de l\'électricité et énergie'}
+                    {jobOffer.categorie_metier === 'metier_clientele' && 'Métiers de la relation clientèle'}
+                    {jobOffer.categorie_metier === 'metier_support' && 'Métiers du support et maintenance'}
+                  </Badge>
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               {deadline && (

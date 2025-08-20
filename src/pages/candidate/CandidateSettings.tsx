@@ -1,24 +1,42 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, type SignUpMetadata } from "@/hooks/useAuth";
 import { CandidateLayout } from "@/components/layout/CandidateLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, Shield, Eye, Mail, Globe } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Mail, User, KeyRound } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function CandidateSettings() {
   const { user, isLoading } = useAuth();
   const isAuthenticated = !!user;
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [matricule, setMatricule] = useState<string>("");
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [saving, setSaving] = useState(false);
+  const [changingPwd, setChangingPwd] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/candidate/login");
     }
   }, [isAuthenticated, isLoading, navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+    const meta = (user.user_metadata as Partial<SignUpMetadata>) || {};
+    setFirstName(meta.first_name ?? "");
+    setLastName(meta.last_name ?? "");
+    setMatricule(meta.matricule ?? "");
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -32,176 +50,124 @@ export default function CandidateSettings() {
     return null;
   }
 
+  const handleSaveProfile = async () => {
+    try {
+      setSaving(true);
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          matricule: matricule || null,
+        },
+      });
+      if (error) throw error;
+      toast({ title: "Profil mis à jour", description: "Vos informations ont été enregistrées." });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Échec de la mise à jour";
+      toast({ variant: "destructive", title: "Erreur", description: message });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      toast({ variant: "destructive", title: "Mot de passe invalide", description: "Au moins 6 caractères." });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ variant: "destructive", title: "Incohérence", description: "Les mots de passe ne correspondent pas." });
+      return;
+    }
+    try {
+      setChangingPwd(true);
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      setNewPassword("");
+      setConfirmPassword("");
+      toast({ title: "Mot de passe modifié", description: "Votre mot de passe a été mis à jour." });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Échec du changement de mot de passe";
+      toast({ variant: "destructive", title: "Erreur", description: message });
+    } finally {
+      setChangingPwd(false);
+    }
+  };
+
   return (
     <CandidateLayout>
       <div className="space-y-8">
         <div>
           <h2 className="text-3xl font-bold mb-2">Paramètres</h2>
           <p className="text-lg text-muted-foreground">
-            Gérez vos préférences et paramètres de compte
+            Gérez vos informations de compte et votre mot de passe
           </p>
         </div>
 
-        {/* Notifications */}
+        {/* Informations de compte (issus de l'inscription) */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Bell className="w-5 h-5" />
-              Notifications
+              <User className="w-5 h-5" />
+              Informations du compte
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="email-notifications">Notifications par email</Label>
-                <p className="text-sm text-muted-foreground">
-                  Recevoir les mises à jour sur vos candidatures par email
-                </p>
+                <Label htmlFor="firstName">Prénom</Label>
+                <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
               </div>
-              <Switch id="email-notifications" defaultChecked />
+              <div>
+                <Label htmlFor="lastName">Nom</Label>
+                <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+              </div>
             </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="application-updates">Mises à jour de candidature</Label>
-                <p className="text-sm text-muted-foreground">
-                  Être notifié des changements de statut de vos candidatures
-                </p>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                <Input id="email" value={user?.email || ''} readOnly />
               </div>
-              <Switch id="application-updates" defaultChecked />
             </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="new-jobs">Nouvelles offres</Label>
-                <p className="text-sm text-muted-foreground">
-                  Recevoir des notifications pour les nouvelles offres correspondantes
-                </p>
-              </div>
-              <Switch id="new-jobs" />
+            <div>
+              <Label htmlFor="matricule">Matricule</Label>
+              <Input id="matricule" value={matricule} onChange={(e) => setMatricule(e.target.value)} />
             </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="interview-reminders">Rappels d'entretien</Label>
-                <p className="text-sm text-muted-foreground">
-                  Recevoir des rappels avant vos entretiens programmés
-                </p>
-              </div>
-              <Switch id="interview-reminders" defaultChecked />
+            <div className="flex justify-end">
+              <Button onClick={handleSaveProfile} disabled={saving}>
+                {saving ? 'Enregistrement...' : 'Enregistrer'}
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Confidentialité */}
+        {/* Changer le mot de passe */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5" />
-              Confidentialité
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="profile-visibility">Visibilité du profil</Label>
-                <p className="text-sm text-muted-foreground">
-                  Permettre aux recruteurs de voir votre profil
-                </p>
-              </div>
-              <Switch id="profile-visibility" defaultChecked />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="contact-permission">Autoriser le contact</Label>
-                <p className="text-sm text-muted-foreground">
-                  Permettre aux recruteurs de vous contacter directement
-                </p>
-              </div>
-              <Switch id="contact-permission" defaultChecked />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Préférences */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="w-5 h-5" />
-              Préférences
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <Label htmlFor="language">Langue</Label>
-              <Select defaultValue="fr">
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fr">Français</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="timezone">Fuseau horaire</Label>
-              <Select defaultValue="africa/libreville">
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="africa/libreville">Africa/Libreville (WAT)</SelectItem>
-                  <SelectItem value="utc">UTC</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="email-frequency">Fréquence des emails</Label>
-              <Select defaultValue="daily">
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="immediate">Immédiat</SelectItem>
-                  <SelectItem value="daily">Quotidien</SelectItem>
-                  <SelectItem value="weekly">Hebdomadaire</SelectItem>
-                  <SelectItem value="never">Jamais</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Sécurité */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5" />
+              <KeyRound className="w-5 h-5" />
               Sécurité
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full">
-              Changer le mot de passe
-            </Button>
-            <Button variant="outline" className="w-full">
-              Télécharger mes données
-            </Button>
-            <Button variant="destructive" className="w-full">
-              Supprimer mon compte
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={handleChangePassword} disabled={changingPwd}>
+                {changingPwd ? 'Modification...' : 'Changer le mot de passe'}
+              </Button>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Actions */}
-        <div className="flex justify-end gap-4">
-          <Button variant="outline">Réinitialiser</Button>
-          <Button>Sauvegarder les paramètres</Button>
-        </div>
       </div>
     </CandidateLayout>
   );
