@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, Building2 } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
+import { supabase } from "@/integrations/supabase/client";
 // Link already imported above
 
 export default function Auth() {
@@ -68,12 +69,27 @@ export default function Auth() {
       if (redirectParam) {
         navigate(redirectParam);
       } else {
-        // Normalize role from metadata (supports FR/EN and admin)
-        const rawRole = String(data.user.user_metadata?.role || '').toLowerCase();
-        const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter' || rawRole === 'admin';
+        // Prefer authoritative role from DB (public.users), fallback to JWT metadata
+        let roleFromDb: string | null = null;
+        try {
+          const { data: userRow, error: userRowError } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+          if (!userRowError && userRow?.role) roleFromDb = String(userRow.role);
+        } catch (e) {
+          // Ignore DB role read errors and fallback to metadata
+        }
+
+        const rawRole = String((roleFromDb ?? data.user.user_metadata?.role ?? '')).toLowerCase();
+        const isAdmin = rawRole === 'admin';
+        const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
         const isCandidate = rawRole === 'candidat' || rawRole === 'candidate';
 
-        if (isRecruiter) {
+        if (isAdmin) {
+          navigate('/admin/dashboard');
+        } else if (isRecruiter) {
           navigate('/recruiter/dashboard');
         } else if (isCandidate) {
           navigate('/candidate/dashboard');
