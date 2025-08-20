@@ -4,9 +4,12 @@ import { useAuth } from "./useAuth";
 
 export interface RecruiterStats {
   totalJobs: number;
-  totalCandidates: number;
+  totalCandidates: number; // candidats uniques
   newCandidates: number;
   interviewsScheduled: number;
+  malePercent?: number;
+  femalePercent?: number;
+  multiPostCandidates?: number;
 }
 
 export interface RecruiterJobOffer {
@@ -27,7 +30,7 @@ export function useRecruiterDashboard() {
       return { stats: null, activeJobs: [] };
     }
 
-    // Fetch job offers with application counts
+    // Fetch job offers with application counts and applicant ids
     const { data: jobsData, error: jobsError } = await supabase
       .from('job_offers')
       .select(`
@@ -36,7 +39,7 @@ export function useRecruiterDashboard() {
         location,
         contract_type,
         created_at,
-        applications(id, status, created_at)
+        applications(id, status, created_at, candidate_id, job_offer_id)
       `)
       .eq('recruiter_id', user.id)
       .eq('status', 'active');
@@ -64,9 +67,13 @@ export function useRecruiterDashboard() {
       };
     });
 
+    // Gather unique candidates across all active jobs for this recruiter
+    const allApplications = (jobsData || []).flatMap(j => (j.applications || []));
+    const candidateIds = Array.from(new Set(allApplications.map(a => a.candidate_id).filter(Boolean)));
+
     // Calculate stats
     const totalJobs = processedJobs.length;
-    const totalCandidates = processedJobs.reduce((sum, job) => sum + job.candidate_count, 0);
+    const totalCandidates = candidateIds.length; // uniques
     const newCandidates = processedJobs.reduce((sum, job) => sum + job.new_candidates, 0);
 
     // Count interviews scheduled (applications in 'incubation' status)
@@ -78,11 +85,44 @@ export function useRecruiterDashboard() {
 
     const interviewsScheduled = interviewsData?.length || 0;
 
+    // Compute multi-post applicants (candidates who applied to 2+ jobs among this recruiter's jobs)
+    const applicationsByCandidate = new Map<string, Set<string>>();
+    for (const app of allApplications) {
+      const cid = app.candidate_id as string | undefined;
+      const jid = app.job_offer_id as string | undefined;
+      if (!cid || !jid) continue;
+      if (!applicationsByCandidate.has(cid)) applicationsByCandidate.set(cid, new Set());
+      applicationsByCandidate.get(cid)!.add(jid);
+    }
+    let multiPostCandidates = 0;
+    applicationsByCandidate.forEach(set => { if (set.size > 1) multiPostCandidates++; });
+
+    // Compute gender distribution from candidate_profiles
+    // Note: the current schema (src/integrations/supabase/types.ts) does not expose a 'gender' column on candidate_profiles.
+    // To avoid 400 errors, we skip selecting a non-existent column and leave percentages undefined until the schema is updated.
+    let malePercent: number | undefined = undefined;
+    let femalePercent: number | undefined = undefined;
+    if (candidateIds.length > 0) {
+      // Attempt a minimal fetch to verify accessible rows without selecting non-existent columns.
+      const { error: profilesError } = await supabase
+        .from('candidate_profiles')
+        .select('user_id')
+        .in('user_id', candidateIds as string[]);
+      if (profilesError) {
+        // Do not throw; just skip gender computation to keep dashboard functional.
+        console.warn('[Dashboard] candidate_profiles fetch skipped:', profilesError.message || profilesError);
+      }
+      // malePercent and femalePercent remain undefined to reflect unavailable data
+    }
+
     const stats: RecruiterStats = {
       totalJobs,
       totalCandidates,
       newCandidates,
-      interviewsScheduled
+      interviewsScheduled,
+      malePercent,
+      femalePercent,
+      multiPostCandidates,
     };
 
     return { stats, activeJobs: processedJobs };
