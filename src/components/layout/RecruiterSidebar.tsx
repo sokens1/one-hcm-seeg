@@ -1,4 +1,4 @@
-import { LayoutDashboard, Briefcase, Users, User as UserIcon, Workflow } from "lucide-react";
+import { LayoutDashboard, Briefcase, Users, Settings } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -20,19 +20,19 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Postes à pourvoir",
-    url: "/recruiter/jobs",
-    icon: Briefcase,
-  },
-  {
-    title: "Liste des Candidats",
+    title: "Listes des candidats",
     url: "/recruiter/candidates",
     icon: Users,
   },
   {
-    title: "Mon profil",
-    url: "/recruiter/profile",
-    icon: UserIcon,
+    title: "Poste à pourvoir",
+    url: "/recruiter/jobs",
+    icon: Briefcase,
+  },
+  {
+    title: "Paramètres",
+    url: "/recruiter/settings",
+    icon: Settings,
   },
 ];
 
