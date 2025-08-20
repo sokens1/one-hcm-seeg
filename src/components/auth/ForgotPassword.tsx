@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Mail, CheckCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ForgotPasswordProps {
   onBack: () => void;
@@ -35,6 +36,24 @@ export function ForgotPassword({ onBack }: ForgotPasswordProps) {
 
     setIsLoading(true);
     try {
+      const emailToCheck = email.trim().toLowerCase();
+      // 1) Vérifier l'existence en appelant la fonction RPC sécurisée
+      const { data: existsRaw, error: lookupError } = await supabase
+        .rpc('email_exists', { p_email: emailToCheck });
+
+      if (lookupError) {
+        console.warn('Email lookup failed:', lookupError.message);
+        toast.error("Impossible de vérifier l'email pour le moment. Réessayez plus tard.");
+        return;
+      }
+
+      const exists = !!existsRaw;
+      if (!exists) {
+        toast.error("Aucun compte associé à cette adresse email.");
+        return;
+      }
+
+      // 2) Envoyer l'email de réinitialisation
       const { error } = await resetPassword(email.trim());
       
       if (error) {
