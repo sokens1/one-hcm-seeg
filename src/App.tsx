@@ -103,7 +103,10 @@ function App() {
         <TooltipProvider>
           <AuthProvider>
             <Suspense fallback={<LoadingFallback />}>
-              <RouterProvider router={router} />
+              <RouterProvider
+                router={router}
+                future={{ v7_startTransition: true }}
+              />
             </Suspense>
             <Toaster />
             <Sonner />
