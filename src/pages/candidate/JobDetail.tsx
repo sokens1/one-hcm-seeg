@@ -19,7 +19,7 @@ export default function JobDetail() {
   const { data: applicationStatus, isLoading: isLoadingApplication } = useApplicationStatus(id || "");
 
   const handleBackToJobs = () => {
-    navigate("/jobs");
+    navigate("/");
   };
 
   const handleApply = () => {
@@ -36,7 +36,7 @@ export default function JobDetail() {
 
   const handleApplicationSubmit = () => {
     setShowApplicationForm(false);
-    navigate("/jobs");
+    navigate("/");
   };
 
   if (isLoading || isLoadingApplication) {

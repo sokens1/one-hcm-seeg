@@ -48,6 +48,21 @@ const generateTimeline = (application: Application | null | undefined): Timeline
       description: "Entretiens avec les managers et RH.",
       date: status === 'incubation' ? 'En cours' : 'À venir',
     },
+    // --- PROTOCOLE 2 PHASES ---
+    {
+      title: "Visite physique",
+      status: status === 'incubation' ? 'current' : (isCompleted(['embauche', 'refuse']) ? 'completed' : 'pending'),
+      icon: Users,
+      description: "Rencontre sur site.",
+      date: status === 'incubation' ? 'En cours' : 'À venir',
+    },
+    {
+      title: "QCM / Mises en situation",
+      status: status === 'incubation' ? 'current' : (isCompleted(['embauche', 'refuse']) ? 'completed' : 'pending'),
+      icon: FileText,
+      description: "Évaluations techniques et comportementales.",
+      date: status === 'incubation' ? 'En cours' : 'À venir',
+    },
     {
       title: "Décision finale",
       status: status === 'embauche' ? 'completed' : (status === 'refuse' ? 'refused' : 'pending'),

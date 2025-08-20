@@ -17,6 +17,8 @@ interface JobFormData {
   contractType: string;
   description: string;
   profile: string;
+  categorieMetier: string;
+  dateLimite: string;
 }
 
 export default function CreateJob() {
@@ -29,7 +31,9 @@ export default function CreateJob() {
     location: "",
     contractType: "",
     description: "",
-    profile: ""
+    profile: "",
+    categorieMetier: "",
+    dateLimite: ""
   });
 
   const [isPreview, setIsPreview] = useState(false);
@@ -74,6 +78,8 @@ export default function CreateJob() {
       contract_type: formData.contractType,
       description: formData.description,
       profile: formData.profile,
+      categorie_metier: formData.categorieMetier || null,
+      date_limite: formData.dateLimite ? new Date(formData.dateLimite).toISOString() : null,
     };
     const mappedStatus = status === 'published' ? 'active' : 'draft';
 
@@ -269,6 +275,36 @@ export default function CreateJob() {
                       <SelectItem value="Freelance">Freelance</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="categorieMetier">Catégorie métier</Label>
+                  <Select value={formData.categorieMetier} onValueChange={(value) => handleInputChange("categorieMetier", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="metier_eau">Métiers de l'eau et assainissement</SelectItem>
+                      <SelectItem value="metier_electricite">Métiers de l'électricité et énergie</SelectItem>
+                      <SelectItem value="metier_clientele">Métiers de la relation clientèle</SelectItem>
+                      <SelectItem value="metier_support">Métiers du support et maintenance</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="dateLimite">Date limite de candidature</Label>
+                  <Input
+                    id="dateLimite"
+                    type="date"
+                    value={formData.dateLimite}
+                    onChange={(e) => handleInputChange("dateLimite", e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Date limite pour recevoir les candidatures
+                  </p>
                 </div>
               </div>
 
