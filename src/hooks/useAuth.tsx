@@ -57,10 +57,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    // Pour le développement, on peut désactiver la confirmation email
+    // Base URL selon l'environnement (dev/prod)
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
+    const redirectUrl = `${siteBaseUrl}/`;
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -68,16 +68,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       options: {
         emailRedirectTo: redirectUrl,
         data: metadata,
-        // En développement, on peut essayer de contourner la confirmation email
-        ...(isDevelopment && { emailRedirectTo: undefined })
       }
     });
     
     // Si on est en développement et qu'il y a une erreur de rate limit,
-    // on peut essayer de créer l'utilisateur directement
+    // on peut assouplir l'expérience côté UI
     if (error && error.message.includes('rate limit') && isDevelopment) {
       console.warn('Rate limit atteint, tentative de création directe en mode développement');
-      // En développement, on peut simuler une inscription réussie
+      // En développement, on peut simuler une inscription réussie côté UI
       return { error: null };
     }
     
@@ -144,7 +142,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/reset-password`;
+    // Base URL selon l'environnement (dev/prod)
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
+    const redirectUrl = `${siteBaseUrl}/reset-password`;
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
