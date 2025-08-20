@@ -83,10 +83,13 @@ export default function Auth() {
         }
 
         const rawRole = String((roleFromDb ?? data.user.user_metadata?.role ?? '')).toLowerCase();
-        const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter' || rawRole === 'admin';
+        const isAdmin = rawRole === 'admin';
+        const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
         const isCandidate = rawRole === 'candidat' || rawRole === 'candidate';
 
-        if (isRecruiter) {
+        if (isAdmin) {
+          navigate('/admin/dashboard');
+        } else if (isRecruiter) {
           navigate('/recruiter/dashboard');
         } else if (isCandidate) {
           navigate('/candidate/dashboard');

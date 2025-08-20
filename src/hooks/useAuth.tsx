@@ -17,6 +17,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  isRoleLoading: boolean;
   isUpdating: boolean;
   signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<AuthResponse>;
@@ -35,6 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [dbRole, setDbRole] = useState<string | null>(null);
+  const [isRoleLoading, setIsRoleLoading] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -55,6 +58,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Whenever the authenticated user changes, fetch the authoritative role from DB
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        if (!user?.id) {
+          setDbRole(null);
+          return;
+        }
+        setIsRoleLoading(true);
+        const { data, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        if (!error && data?.role) {
+          setDbRole(String(data.role));
+        } else {
+          setDbRole(null);
+        }
+      } catch {
+        setDbRole(null);
+      } finally {
+        setIsRoleLoading(false);
+      }
+    };
+    fetchRole();
+  }, [user?.id]);
 
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
     // Base URL selon l'environnement (dev/prod)
@@ -156,19 +187,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Helper functions to check user role (normalize FR/EN + admin)
   const getUserRole = () => {
-    return (user?.user_metadata?.role as string | undefined) || 'candidat';
+    return (dbRole ?? (user?.user_metadata?.role as string | undefined) ?? 'candidat');
   };
 
   const normalizedRole = String(getUserRole()).toLowerCase();
   const isCandidate = normalizedRole === 'candidat' || normalizedRole === 'candidate';
   const isAdmin = normalizedRole === 'admin';
-  // Allow admins to access recruiter area as well
-  const isRecruiter = normalizedRole === 'recruteur' || normalizedRole === 'recruiter' || isAdmin;
+  // Allow admins to access recruiter area as well; but keep recruiter check pure here
+  const isRecruiter = normalizedRole === 'recruteur' || normalizedRole === 'recruiter';
 
   const value = {
     user,
     session,
     isLoading,
+    isRoleLoading,
     isUpdating,
     signUp,
     signIn,
