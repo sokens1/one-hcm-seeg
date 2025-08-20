@@ -154,14 +154,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
-  // Helper functions to check user role
+  // Helper functions to check user role (normalize FR/EN + admin)
   const getUserRole = () => {
-    return user?.user_metadata?.role || 'candidat';
+    return (user?.user_metadata?.role as string | undefined) || 'candidat';
   };
 
-  const isCandidate = getUserRole() === 'candidat';
-  const isRecruiter = getUserRole() === 'recruteur';
-  const isAdmin = getUserRole() === 'admin';
+  const normalizedRole = String(getUserRole()).toLowerCase();
+  const isCandidate = normalizedRole === 'candidat' || normalizedRole === 'candidate';
+  const isAdmin = normalizedRole === 'admin';
+  // Allow admins to access recruiter area as well
+  const isRecruiter = normalizedRole === 'recruteur' || normalizedRole === 'recruiter' || isAdmin;
 
   const value = {
     user,

@@ -68,11 +68,17 @@ export default function Auth() {
       if (redirectParam) {
         navigate(redirectParam);
       } else {
-        // Fallback: redirect based on user role stored in database
-        const role = data.user.user_metadata?.role || 'candidate';
-        if (role === 'recruiter') {
+        // Normalize role from metadata (supports FR/EN and admin)
+        const rawRole = String(data.user.user_metadata?.role || '').toLowerCase();
+        const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter' || rawRole === 'admin';
+        const isCandidate = rawRole === 'candidat' || rawRole === 'candidate';
+
+        if (isRecruiter) {
           navigate('/recruiter/dashboard');
+        } else if (isCandidate) {
+          navigate('/candidate/dashboard');
         } else {
+          // Default fallback
           navigate('/candidate/dashboard');
         }
       }

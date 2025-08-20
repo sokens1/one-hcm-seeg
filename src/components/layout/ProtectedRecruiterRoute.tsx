@@ -6,9 +6,9 @@ interface ProtectedRecruiterRouteProps {
 }
 
 export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRouteProps) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isRecruiter, isAdmin } = useAuth();
   const isAuthenticated = !!user;
-  const isRecruiter = user?.user_metadata?.role === 'recruiter';
+  // Allow recruiters and admins; role helpers already normalize 'recruteur'
 
   if (isLoading) {
     return (
@@ -18,7 +18,7 @@ export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRoutePro
     );
   }
 
-  if (!isAuthenticated || !isRecruiter) {
+  if (!isAuthenticated || !(isRecruiter || isAdmin)) {
     return <RecruiterLogin />;
   }
 

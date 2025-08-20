@@ -8,10 +8,9 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isRecruiter, isCandidate, isAdmin } = useAuth();
   const isAuthenticated = !!user;
-  const isRecruiter = user?.user_metadata?.role === 'recruiter';
-  const isCandidate = user?.user_metadata?.role === 'candidate';
+  // Roles are handled in FR ('candidat', 'recruteur') by useAuth; keep helpers as source of truth
 
   const handleLogout = async () => {
     await signOut();
@@ -43,7 +42,7 @@ export function Header() {
                   Bonjour {user.user_metadata?.first_name}
                 </span>
               )}
-              {isRecruiter && (
+              {(isRecruiter || isAdmin) && (
                 <Link to="/recruiter/dashboard">
                   <Button variant="ghost" size="sm">Espace Recruteur</Button>
                 </Link>
