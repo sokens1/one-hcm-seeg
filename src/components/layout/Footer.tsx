@@ -11,10 +11,6 @@ export function Footer() {
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-white flex items-center justify-center">
                 <img src="/LOGO HCM4.png" alt="Logo OneHCM" className="w-8 h-7 sm:w-10 sm:h-9 object-contain" />
               </div>
-              {/* <div>
-                <h3 className="text-base sm:text-lg font-bold text-white">OneHCM</h3>
-                <p className="text-xs text-white/80">Talent Flow Gabon</p>
-              </div> */}
             </div>
             <p className="text-sm sm:text-base text-white/90 leading-relaxed">
               Plateforme de recrutement dédiée aux talents gabonais. 

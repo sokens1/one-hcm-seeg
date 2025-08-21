@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useJobOffers, type JobOffer } from "@/hooks/useJobOffers";
 import { Layout } from "@/components/layout/Layout";
 import { JobCard } from "@/components/ui/job-card";
+import { ApplicationDeadlineCounter } from "@/components/ApplicationDeadlineCounter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
@@ -92,6 +93,10 @@ const Index = () => {
         </div>
       </div>
 
+      {jobOffers.length > 0 && (
+        <ApplicationDeadlineCounter jobOffers={jobOffers} />
+      )}
+      
       <div className="container mx-auto px-4 py-8" id="job-list">
         {/* Sélecteur de vue */}
         <div className="flex justify-center mb-4 sm:mb-6 px-4">
