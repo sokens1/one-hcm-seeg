@@ -177,17 +177,32 @@ export default function Auth() {
     const ok = await verifyMatricule();
     if (!ok) {
       toast.error("Vérifiez votre matricule pour continuer.");
+
       setIsSubmitting(false);
       return;
     }
 
     try {
+      // Vérification via RPC sécurisée (ne révèle pas la table)
+      const { data: isValid, error: rpcErr } = await supabase.rpc('verify_seeg_matricule', { p_matricule: matricule });
+      if (rpcErr) {
+        toast.error("Impossible de vérifier le matricule. Réessayez.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (!isValid) {
+        toast.error("Matricule invalide: l'inscription est réservée aux agents SEEG.");
+        setIsSubmitting(false);
+        return;
+      }
+
       const { error } = await signUp(signUpData.email, signUpData.password, {
         role: "candidat",
         first_name: signUpData.firstName,
         last_name: signUpData.lastName,
         phone: signUpData.phone,
         matricule: signUpData.matricule
+
       });
       
       if (error) {
@@ -413,6 +428,17 @@ export default function Auth() {
                         value={signUpData.phone}
                         onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
                         disabled={!isMatriculeValid}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="matricule">Matricule SEEG</Label>
+                      <Input
+                        id="matricule"
+                        placeholder="Ex: SEEG-12345"
+                        value={signUpData.matricule}
+                        onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
                         required
                       />
                     </div>
