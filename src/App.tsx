@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,37 +8,41 @@ import {
   RouterProvider,
   Route,
   createRoutesFromElements,
+  Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./hooks/useAuth";
+import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import Auth from "./pages/Auth";
-
-// Import candidate pages
-import CandidateJobs from "./pages/candidate/CandidateJobs";
-import JobDetail from "./pages/candidate/JobDetail";
-import CandidateSignup from "./pages/candidate/CandidateSignup";
-import CandidateLogin from "./pages/candidate/CandidateLogin";
-import CandidateDashboard from "./pages/candidate/CandidateDashboard";
-
-import CandidateApplicationTracking from "./pages/candidate/CandidateApplicationTracking";
-import CandidateApplications from "./pages/candidate/CandidateApplications";
-import CandidateProfile from "./pages/candidate/CandidateProfile";
-import CandidateSettings from "./pages/candidate/CandidateSettings";
-import CompanyContext from "./pages/candidate/CompanyContext";
-import { ResetPassword } from "./pages/ResetPassword";
-
-// Import recruiter pages
-import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
-import CreateJob from "./pages/recruiter/CreateJob";
-import EditJob from "./pages/recruiter/EditJob";
-import JobPipeline from "./pages/recruiter/JobPipeline";
-import CandidatesPage from "./pages/recruiter/CandidatesPage";
-import RecruiterJobs from "./pages/recruiter/RecruiterJobs";
-import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
-import CandidateAnalysis from "./pages/recruiter/CandidateAnalysis";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
+import { Loader2 } from 'lucide-react';
+
+// Lazily load page components
+const Index = lazy(() => import("./pages/Index"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Auth = lazy(() => import("./pages/Auth"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword").then(module => ({ default: module.ResetPassword })));
+
+// Candidate pages
+const CandidateJobs = lazy(() => import("./pages/candidate/CandidateJobs"));
+const JobDetail = lazy(() => import("./pages/candidate/JobDetail"));
+const CandidateSignup = lazy(() => import("./pages/candidate/CandidateSignup"));
+const CandidateLogin = lazy(() => import("./pages/candidate/CandidateLogin"));
+const CandidateDashboard = lazy(() => import("./pages/candidate/CandidateDashboard"));
+const CandidateApplicationTracking = lazy(() => import("./pages/candidate/CandidateApplicationTracking"));
+const CandidateApplications = lazy(() => import("./pages/candidate/CandidateApplications"));
+const CandidateProfile = lazy(() => import("./pages/candidate/CandidateProfile"));
+const CandidateSettings = lazy(() => import("./pages/candidate/CandidateSettings"));
+const CompanyContext = lazy(() => import("./pages/candidate/CompanyContext"));
+const EditApplication = lazy(() => import("./pages/candidate/EditApplication"));
+
+// Recruiter pages
+const RecruiterDashboard = lazy(() => import("./pages/recruiter/RecruiterDashboard"));
+const CreateJob = lazy(() => import("./pages/recruiter/CreateJob"));
+const EditJob = lazy(() => import("./pages/recruiter/EditJob"));
+const JobPipeline = lazy(() => import("./pages/recruiter/JobPipeline"));
+const CandidatesPage = lazy(() => import("./pages/recruiter/CandidatesPage"));
+const RecruiterJobs = lazy(() => import("./pages/recruiter/RecruiterJobs"));
+const RecruiterProfile = lazy(() => import("./pages/recruiter/RecruiterProfile"));
+const CandidateAnalysis = lazy(() => import("./pages/recruiter/CandidateAnalysis"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,7 +58,7 @@ const router = createBrowserRouter(
       {/* Home and Candidate Routes */}
       <Route index element={<Index />} />
       <Route path="auth" element={<Auth />} />
-      <Route path="jobs" element={<CandidateJobs />} />
+      <Route path="jobs" element={<Navigate to="/" replace />} />
       <Route path="jobs/:id" element={<JobDetail />} />
       <Route path="candidate/signup" element={<CandidateSignup />} />
       <Route path="candidate/login" element={<CandidateLogin />} />
@@ -62,6 +66,7 @@ const router = createBrowserRouter(
       <Route path="candidate/jobs" element={<CandidateJobs />} />
       <Route path="candidate/application/:id" element={<CandidateApplicationTracking />} />
       <Route path="candidate/applications" element={<CandidateApplications />} />
+      <Route path="candidate/applications/:id/edit" element={<ProtectedRoute requiredRole="candidat"><EditApplication /></ProtectedRoute>} />
       <Route path="candidate/profile" element={<CandidateProfile />} />
       <Route path="candidate/settings" element={<CandidateSettings />} />
       <Route path="company-context" element={<CompanyContext />} />
@@ -85,13 +90,21 @@ const router = createBrowserRouter(
   )
 );
 
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center h-screen w-screen">
+    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+  </div>
+);
+
 function App() {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <AuthProvider>
-            <RouterProvider router={router} />
+            <Suspense fallback={<LoadingFallback />}>
+              <RouterProvider router={router} />
+            </Suspense>
             <Toaster />
             <Sonner />
           </AuthProvider>

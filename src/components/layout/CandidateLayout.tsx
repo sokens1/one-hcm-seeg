@@ -48,8 +48,7 @@ const navigation = [
   { title: "Tableau de bord", view: "dashboard" as ViewType, icon: Home },
   { title: "Catalogue d'offres", view: "jobs" as ViewType, icon: Briefcase },
   { title: "Mes candidatures", view: "applications" as ViewType, icon: FileText },
-  { title: "Mon profil", view: "profile" as ViewType, icon: User },
-  // { title: "Paramètres", view: "settings" as ViewType, icon: Settings }, // Masqué pour développement ultérieur
+  { title: "Paramètres", view: "settings" as ViewType, icon: Settings },
 ];
 
 function CandidateSidebar() {
@@ -59,23 +58,28 @@ function CandidateSidebar() {
   const location = useLocation();
 
   const isActive = (view: ViewType) => {
-    // Check if we're on a specific route that matches the view
-    if (view === "profile" && location.pathname === "/candidate/profile") return true;
+    // Dedicated pages override the internal view state
+    if (location.pathname.startsWith("/candidate/settings")) {
+      return view === "settings";
+    }
+    if (location.pathname.startsWith("/candidate/profile")) {
+      return view === "settings"; // legacy profile treated as settings
+    }
     return currentView === view;
   };
-  
+
   const getNavCls = (view: ViewType) =>
     isActive(view) ? "bg-muted text-primary font-medium" : "hover:bg-muted/50";
 
   const handleNavigation = (view: ViewType) => {
-    // For profile and settings, navigate to dedicated pages
-    if (view === "profile") {
-      navigate("/candidate/profile");
-    } else {
-      // For other views, use the internal view system
-      setCurrentView(view);
-      navigate("/candidate/dashboard");
+    // Settings is a dedicated page
+    if (view === "settings") {
+      navigate("/candidate/settings");
+      return;
     }
+    // For other views, use the internal view system
+    setCurrentView(view);
+    navigate("/candidate/dashboard");
   };
 
   return (
@@ -150,7 +154,6 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
   const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
-  const [promptedProfile, setPromptedProfile] = useState(false);
 
   // Initialize view from query param if provided (e.g., /candidate/dashboard?view=jobs)
   // Keeps existing behavior when no param is present.
@@ -162,58 +165,6 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
     }
   }, [location.search]);
 
-  // Notification pour inciter à compléter le profil après connexion/inscription
-  useEffect(() => {
-    if (!user || promptedProfile) return;
-    const run = async () => {
-      const meta = (user as unknown as { user_metadata?: Record<string, unknown> })?.user_metadata || {};
-      const firstName = (meta as Record<string, unknown>)["first_name"];
-      const lastName = (meta as Record<string, unknown>)["last_name"];
-      const currentPosition = (meta as Record<string, unknown>)["current_position"];
-      const isIncomplete = !firstName || !lastName || !currentPosition;
-      if (!isIncomplete) return;
-
-      const title = "Complétez votre profil";
-      // Vérifier s'il existe déjà une notification non lue de ce type
-      const { data: existing, error: fetchErr } = await supabase
-        .from('notifications')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('title', title)
-        .eq('read', false)
-        .limit(1);
-      if (fetchErr) {
-        console.warn('Notifications fetch error:', fetchErr.message);
-      }
-
-      if (!existing || existing.length === 0) {
-        // Créer la notification
-        const { error: insertErr } = await supabase
-          .from('notifications')
-          .insert({
-            user_id: user.id,
-            title,
-            message: "Bienvenue ! Pour optimiser vos candidatures, veuillez compléter vos informations dans la page Mon profil.",
-            read: false,
-            link: '/candidate/profile',
-          });
-        if (insertErr) {
-          console.warn('Notification insert error:', insertErr.message);
-        } else {
-          toast({
-            title,
-            description: "Bienvenue ! Pour optimiser vos candidatures, veuillez compléter vos informations dans la page Mon profil.",
-            duration: 6000,
-          });
-          setPromptedProfile(true);
-        }
-      } else {
-        // Une notification non lue existe déjà; ne pas dupliquer ni toaster
-        setPromptedProfile(true);
-      }
-    };
-    void run();
-  }, [user, promptedProfile, toast]);
 
   return (
     <CandidateLayoutContext.Provider value={{ currentView, setCurrentView }}>

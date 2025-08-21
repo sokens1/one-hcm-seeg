@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Building2, LogOut, LogIn, UserPlus } from "lucide-react";
+import { LogOut, LogIn, UserPlus } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/use-toast";
@@ -25,13 +25,9 @@ export function Header() {
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-10 h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
-            <Building2 className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">OneHCM</h1>
-            <p className="text-xs text-muted-foreground">Talent Flow Gabon</p>
+        <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <div className="w-19 h-19 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+            <img src="/LOGO HCM4.png" alt="Logo" className="w-20 h-35 object-contain" />
           </div>
         </Link>
 

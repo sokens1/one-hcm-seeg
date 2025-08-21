@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,6 +15,7 @@ type JobOfferRow = {
 type RealtimePayload = {
   new: JobOfferRow;
   old: JobOfferRow;
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
 };
 
 /**
@@ -30,8 +32,12 @@ export function useJobOfferNotifications() {
     const channel = supabase
       .channel('job_offers_notifications')
       .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'job_offers' },
+        'postgres_changes' as any,
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'job_offers' 
+        },
         (payload: RealtimePayload) => {
           const row = payload.new;
           if (row?.status === 'active') {
@@ -44,8 +50,12 @@ export function useJobOfferNotifications() {
         }
       )
       .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'job_offers' },
+        'postgres_changes' as any,
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'job_offers' 
+        },
         (payload: RealtimePayload) => {
           const prev = payload.old;
           const next = payload.new;

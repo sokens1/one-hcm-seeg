@@ -1,14 +1,14 @@
 import { useAuth } from "@/hooks/useAuth";
-import RecruiterLogin from "@/pages/recruiter/RecruiterLogin";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface ProtectedRecruiterRouteProps {
   children: React.ReactNode;
 }
 
 export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRouteProps) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isRecruiter } = useAuth();
   const isAuthenticated = !!user;
-  const isRecruiter = user?.user_metadata?.role === 'recruiter';
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -19,7 +19,7 @@ export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRoutePro
   }
 
   if (!isAuthenticated || !isRecruiter) {
-    return <RecruiterLogin />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

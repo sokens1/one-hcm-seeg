@@ -50,13 +50,9 @@ export function JobCard({
 
             {candidateCount !== undefined && (
               <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-success-light text-success-foreground">
+                <Badge variant="secondary" className="bg-success-light text-success-foreground px-4 py-1">
                   {candidateCount} {candidateCount === 1 ? 'candidat' : 'candidats'}
                 </Badge>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="w-3 h-3" />
-                  Publié il y a 2 jours
-                </div>
               </div>
             )}
           </div>

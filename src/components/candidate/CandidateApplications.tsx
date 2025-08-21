@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Briefcase, Plus } from "lucide-react";
+import { Eye, Briefcase, Plus, Edit, LayoutGrid, List } from "lucide-react";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 import { useApplications } from "@/hooks/useApplications";
 import { Loader2 } from "lucide-react";
@@ -13,12 +14,13 @@ import { fr } from 'date-fns/locale';
 // Statuts et couleurs correspondants
 const statusConfig = {
   candidature: { label: "Candidature reçue", color: "bg-blue-100 text-blue-800" },
-  incubation: { label: "En cours d'évaluation", color: "bg-yellow-100 text-yellow-800" },
+  incubation: { label: "En évaluation", color: "bg-yellow-100 text-yellow-800" },
   embauche: { label: "Embauché", color: "bg-green-100 text-green-800" },
   refuse: { label: "Refusé", color: "bg-red-100 text-red-800" },
 };
 
 export function CandidateApplications() {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { setCurrentView } = useCandidateLayout();
   const { data: applications, isLoading, error } = useApplications();
   const navigate = useNavigate();
@@ -42,17 +44,32 @@ export function CandidateApplications() {
 
   return (
     <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold mb-2">Mes candidatures</h2>
-        <p className="text-lg text-muted-foreground">
-          Suivi détaillé de toutes vos candidatures
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold">Mes candidatures</h2>
+          <p className="text-muted-foreground">
+            Suivi détaillé de toutes vos candidatures
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant={viewMode === 'grid' ? 'default' : 'outline'} size="icon" onClick={() => setViewMode('grid')}>
+            <LayoutGrid className="w-5 h-5" />
+            <span className="sr-only">Grid View</span>
+          </Button>
+          <Button variant={viewMode === 'list' ? 'default' : 'outline'} size="icon" onClick={() => setViewMode('list')}>
+            <List className="w-5 h-5" />
+            <span className="sr-only">List View</span>
+          </Button>
+        </div>
       </div>
 
       {applications && applications.length > 0 ? (
-        <div className="grid gap-6">
+        <div className={viewMode === 'grid' ? "grid gap-6 md:grid-cols-2" : "flex flex-col gap-4"}>
           {applications.map((application) => {
             const statusInfo = statusConfig[application.status] || { label: application.status, color: "bg-gray-100 text-gray-800" };
+            const deadline = application.job_offers?.date_limite;
+            const canModify = deadline ? new Date(deadline) > new Date() : false;
+
             return (
               <Card key={application.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -68,29 +85,36 @@ export function CandidateApplications() {
                         <span>Candidature du {format(new Date(application.created_at), 'dd MMM yyyy', { locale: fr })}</span>
                       </div>
                     </div>
-                    <Badge className={`${statusInfo.color} text-white`}>
+                    <Badge className={statusInfo.color}>
                       {statusInfo.label}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Disponibilité</p>
-                      <p className="font-medium">{application.availability_start ? format(new Date(application.availability_start), 'dd MMM yyyy', { locale: fr }) : 'Non spécifiée'}</p>
+                  <div className="flex items-center justify-end">
+                    <div className="flex items-center gap-2">
+                      {canModify && (
+                        <Button
+                          variant="secondary"
+                          className="gap-2"
+                          onClick={() => navigate(`/candidate/applications/${application.id}/edit?step=4`)}
+                        >
+                          <Edit className="w-4 h-4" />
+                          Modifier
+                        </Button>
+                      )}
+                      <Button 
+                        variant="outline" 
+                        className="gap-2"
+                        onClick={() => {
+                          setCurrentView("tracking");
+                          navigate(`/candidate/dashboard?view=tracking&id=${application.id}&from=applications`);
+                        }}
+                      >
+                        <Eye className="w-4 h-4" />
+                        Voir le suivi détaillé
+                      </Button>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      className="gap-2"
-                      onClick={() => {
-                        // Met à jour la vue et transmet l'ID via les query params
-                        setCurrentView("tracking");
-                        navigate(`/candidate/dashboard?view=tracking&id=${application.id}&from=applications`);
-                      }}
-                    >
-                      <Eye className="w-4 h-4" />
-                      Voir le suivi détaillé
-                    </Button>
                   </div>
                 </CardContent>
               </Card>

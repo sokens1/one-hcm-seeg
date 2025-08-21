@@ -2,10 +2,11 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Eye, Users, TrendingUp, Clock, BarChart3, Edit, Loader2 } from "lucide-react";
+import { Eye, Users, Edit, Loader2, Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
+
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
@@ -44,12 +45,7 @@ export default function RecruiterDashboard() {
               Gérez vos offres d'emploi et suivez vos candidatures en temps réel
             </p>
           </div>
-          <Link to="/recruiter/jobs/new">
-            <Button variant="hero" size="lg" className="gap-2">
-              <Plus className="w-5 h-5" />
-              Créer une offre d'emploi
-            </Button>
-          </Link>
+          {/* Bouton bleu de création d'offre retiré selon la demande */}
         </div>
 
         {/* Loading State */}
@@ -60,65 +56,54 @@ export default function RecruiterDashboard() {
           </div>
         ) : (
           <>
-            {/* Stats Cards */}
+            {/* Stats Cards - version demandée */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Card className="shadow-soft hover:shadow-medium transition-all">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Offres Actives
-                  </CardTitle>
-                  <BarChart3 className="h-4 w-4 text-primary-dark" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{stats.totalJobs}</div>
-                  <p className="text-xs text-muted-foreground">
-                    +1 cette semaine
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-soft hover:shadow-medium transition-all">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Total Candidats
+                    Total candidats
                   </CardTitle>
                   <Users className="h-4 w-4 text-ocean" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-foreground">{stats.totalCandidates}</div>
-                  <p className="text-xs text-muted-foreground">
-                    +{stats.newCandidates} nouveaux
-                  </p>
+                  <p className="text-xs text-muted-foreground">+{stats.newCandidates} nouveaux (24h)</p>
                 </CardContent>
               </Card>
 
               <Card className="shadow-soft hover:shadow-medium transition-all">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Nouveaux Candidats
+                    % Hommes candidats
                   </CardTitle>
-                  <TrendingUp className="h-4 w-4 text-success" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{stats.newCandidates}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Dernières 24h
-                  </p>
+                  <div className="text-2xl font-bold text-foreground">{(stats.malePercent ?? 0).toFixed(1)}%</div>
+                  <p className="text-xs text-muted-foreground">parmi les candidats uniques</p>
                 </CardContent>
               </Card>
 
               <Card className="shadow-soft hover:shadow-medium transition-all">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Entretiens Planifiés
+                    % Femmes candidates
                   </CardTitle>
-                  <Clock className="h-4 w-4 text-warning" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{stats.interviewsScheduled}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Cette semaine
-                  </p>
+                  <div className="text-2xl font-bold text-foreground">{(stats.femalePercent ?? 0).toFixed(1)}%</div>
+                  <p className="text-xs text-muted-foreground">parmi les candidats uniques</p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-soft hover:shadow-medium transition-all">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    Candidats multi-postes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{stats.multiPostCandidates ?? 0}</div>
+                  <p className="text-xs text-muted-foreground">ont postulé à plusieurs postes</p>
                 </CardContent>
               </Card>
             </div>
