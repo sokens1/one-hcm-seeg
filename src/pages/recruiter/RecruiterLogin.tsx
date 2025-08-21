@@ -43,21 +43,21 @@ export default function RecruiterLogin() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4">
-            <Building2 className="w-8 h-8 text-white" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5 p-3 sm:p-4">
+      <Card className="w-full max-w-sm sm:max-w-md">
+        <CardHeader className="text-center px-4 sm:px-6">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-3 sm:mb-4">
+            <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Espace Recruteur</CardTitle>
-          <p className="text-muted-foreground">
+          <CardTitle className="text-xl sm:text-2xl font-bold">Espace Recruteur</CardTitle>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Connectez-vous pour accéder à votre tableau de bord
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -65,11 +65,12 @@ export default function RecruiterLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="text-sm sm:text-base h-10 sm:h-11"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password" className="text-sm sm:text-base">Mot de passe</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -78,18 +79,19 @@ export default function RecruiterLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="text-sm sm:text-base h-10 sm:h-11 pr-10"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-10 sm:h-11 px-2 sm:px-3 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className="h-3 w-3 sm:h-4 sm:w-4" />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
                   )}
                 </Button>
               </div>
@@ -97,7 +99,7 @@ export default function RecruiterLogin() {
 
             <Button 
               type="submit" 
-              className="w-full" 
+              className="w-full text-sm sm:text-base h-10 sm:h-11" 
               disabled={isLoading}
             >
               {isLoading ? "Connexion..." : "Se connecter"}

@@ -114,8 +114,8 @@ export function CandidateProfile() {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-2">Mon profil</h2>
-        <p className="text-lg text-muted-foreground">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Mon profil</h2>
+        <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
           Gérez vos informations personnelles
         </p>
       </div>

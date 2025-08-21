@@ -61,6 +61,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   const [currentStep, setCurrentStep] = useState<number>(
     typeof initialStep === 'number' && initialStep >= 1 ? initialStep : (mode === 'edit' ? 4 : 1)
   );
+  const [activeTab, setActiveTab] = useState<'metier' | 'talent' | 'paradigme'>('metier');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitApplication } = useApplications();
@@ -326,7 +327,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_path: string; file_size: number | null; }> = [];
         
-        const isPublicUrl = (p: string) => p.startsWith('http://') || p.startsWith('https://');
         const toFileUrl = (p: string) => (isPublicUrl(p)) ? p : getFileUrl(p);
 
         const filesToUpload: { file: UploadedFile | null, type: string }[] = [
@@ -466,21 +466,21 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   if (isSubmitted) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-lg mx-auto text-center space-y-6">
-            <div className="w-20 h-20 bg-success rounded-full flex items-center justify-center mx-auto animate-bounce-soft">
-              <CheckCircle className="w-10 h-10 text-white" />
+        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 lg:py-12">
+          <div className="max-w-md sm:max-w-lg mx-auto text-center space-y-4 sm:space-y-6">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-success rounded-full flex items-center justify-center mx-auto animate-bounce-soft">
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground">Candidature envoyée !</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Candidature envoyée !</h1>
+            <p className="text-sm sm:text-base text-muted-foreground px-2 sm:px-4 leading-relaxed">
               Merci, <strong>{formData.firstName}</strong> ! Nous avons bien reçu votre candidature pour le poste de{" "}
               <strong>{jobTitle}</strong> et nous reviendrons vers vous très prochainement.
             </p>
-            <div className="space-y-3">
-              <Button variant="hero" onClick={onBack} className="w-full">
+            <div className="space-y-2 sm:space-y-3 px-2 sm:px-4">
+              <Button variant="hero" onClick={onBack} className="w-full text-sm sm:text-base py-2 sm:py-3">
                 Retour aux offres
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full text-sm sm:text-base py-2 sm:py-3">
                 Postuler à une autre offre
               </Button>
             </div>
@@ -494,23 +494,24 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Header with gradient background */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6 sm:py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-3 sm:px-4">
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-4 text-white hover:bg-white/10"
+            className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-sm sm:text-base"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour à l'offre
+            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Retour à l'offre</span>
+            <span className="sm:hidden">Retour</span>
           </Button>
           
-          <div className="text-center space-y-4">
-            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm">
+          <div className="text-center space-y-3 sm:space-y-4 px-4">
+            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
               Plateforme de Recrutement Nouvelle Génération
             </div>
-            <h1 className="text-2xl sm:text-4xl font-bold">Rejoignez l'Excellence</h1>
-            <h2 className="text-lg sm:text-2xl font-light">{jobTitle}</h2>
-            <p className="text-sm sm:text-base opacity-90 max-w-2xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Rejoignez l'Excellence</h1>
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-light break-words">{jobTitle}</h2>
+            <p className="text-sm sm:text-base lg:text-lg opacity-90 max-w-2xl mx-auto">
               Découvrez un processus de candidature révolutionnaire qui valorise vos compétences, 
               votre potentiel et votre ambition.
             </p>
@@ -518,35 +519,35 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Progress Bar with modern design */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
+        <div className="max-w-4xl mx-auto mb-6 sm:mb-8">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4 overflow-x-auto">
               {[1, 2, 3, 4].map((step) => (
-                <div key={step} className="flex items-center">
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                <div key={step} className="flex items-center flex-shrink-0">
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${
                     step <= currentStep 
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg' 
                       : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
                   }`}>
-                    {step <= currentStep ? <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" /> : step}
+                    {step <= currentStep ? <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> : step}
                   </div>
                   {step < 4 && (
-                    <div className={`h-1 w-12 sm:w-16 mx-2 rounded-full transition-all ${
+                    <div className={`h-1 w-8 sm:w-12 lg:w-16 mx-1 sm:mx-2 rounded-full transition-all ${
                       step < currentStep ? 'bg-gradient-to-r from-blue-600 to-blue-700' : 'bg-gray-200'
                     }`} />
                   )}
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-4 gap-2 text-xs font-medium text-gray-600 text-center">
-              <span>Infos Personnelles</span>
-              <span>Parcours & Documents</span>
-              <span>Adhérence MTP</span>
-              <span>Finalisation</span>
+            <div className="grid grid-cols-4 gap-1 sm:gap-2 text-xs font-medium text-gray-600 text-center">
+              <span className="truncate">Infos Personnelles</span>
+              <span className="truncate">Parcours & Documents</span>
+              <span className="truncate">Adhérence MTP</span>
+              <span className="truncate">Finalisation</span>
             </div>
-            <div className="mt-4 bg-gray-200 rounded-full h-2">
+            <div className="mt-3 sm:mt-4 bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-gradient-to-r from-blue-600 to-blue-700 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }}
@@ -558,22 +559,22 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         {/* Form Content with modern layout */}
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
             {/* Left side - Progress info */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-lg p-6 lg:sticky lg:top-8">
-                <div className="space-y-6">
+            <div className="xl:col-span-1 order-2 xl:order-1">
+              <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 xl:sticky xl:top-8">
+                <div className="space-y-4 sm:space-y-6">
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle className="w-8 h-8 text-white" />
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                      <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs sm:text-sm text-muted-foreground">
                       Étape <span className="font-semibold text-foreground">{currentStep}</span> / {totalSteps}
                     </div>
                   </div>
-                  <div className="space-y-3 text-center">
-                    <h3 className="font-semibold text-gray-900">Guide de Candidature</h3>
-                    <p className="text-sm text-gray-600">
+                  <div className="space-y-2 sm:space-y-3 text-center">
+                    <h3 className="text-sm sm:text-base font-semibold text-gray-900">Guide de Candidature</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
                       Ce formulaire se déroule en 4 étapes: renseignez vos informations, ajoutez vos
                       documents clés, indiquez votre adhérence MTP (Métier, Talent, Paradigme), puis
                       vérifiez et soumettez votre candidature.
@@ -584,94 +585,94 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             </div>
 
             {/* Right side - Form */}
-            <div className="lg:col-span-2">
+            <div className="xl:col-span-2 order-1 xl:order-2">
               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-3 text-lg sm:text-xl">
-                    {currentStep === 1 && <><User className="w-5 h-5 sm:w-6 sm:h-6" /> Informations Personnelles</>}
-                    {currentStep === 2 && <><FileText className="w-5 h-5 sm:w-6 sm:h-6" /> Parcours & Documents</>}
-                    {currentStep === 3 && <><CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" /> Adhérence MTP</>}
-                    {currentStep === 4 && <><Send className="w-5 h-5 sm:w-6 sm:h-6" /> Finalisation</>}
+                  <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl">
+                    {currentStep === 1 && <><User className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> Informations Personnelles</>}
+                    {currentStep === 2 && <><FileText className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> Parcours & Documents</>}
+                    {currentStep === 3 && <><CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> Adhérence MTP</>}
+                    {currentStep === 4 && <><Send className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> Finalisation</>}
                   </CardTitle>
                 </CardHeader>
 
-                <CardContent className="space-y-6">
-                  {/* Step 1: Personal Info */}
-                  {currentStep === 1 && (
-                    <div className="space-y-4 animate-fade-in">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="firstName">Prénom *</Label>
-                          <Input
-                            id="firstName"
-                            value={formData.firstName}
-                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                            placeholder="Votre prénom"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="lastName">Nom *</Label>
-                          <Input
-                            id="lastName"
-                            value={formData.lastName}
-                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                            placeholder="Votre nom"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          placeholder="votre.email@exemple.com"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="dateOfBirth">Date de naissance *</Label>
-                        <Input
-                          id="dateOfBirth"
-                          type="date"
-                          value={formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString().slice(0, 10) : ""}
-                          max={new Date().toISOString().slice(0, 10)}
-                          min="1900-01-01"
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setFormData({ ...formData, dateOfBirth: val ? new Date(val) : null });
-                          }}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="gender">Sexe *</Label>
-                        <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionnez votre sexe" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="homme">Homme</SelectItem>
-                            <SelectItem value="femme">Femme</SelectItem>
-                            <SelectItem value="autre">Autre</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="currentPosition">Poste actuel *</Label>
-                        <Input
-                          id="currentPosition"
-                          value={formData.currentPosition}
-                          onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value })}
-                          placeholder="Votre poste actuel"
-                          required
-                        />
-                      </div>
+            <CardContent className="space-y-6">
+              {/* Step 1: Personal Info */}
+              {currentStep === 1 && (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="firstName">Prénom *</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        placeholder="Votre prénom"
+                        required
+                      />
                     </div>
-                  )}
+                    <div>
+                      <Label htmlFor="lastName">Nom *</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        placeholder="Votre nom"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="votre.email@exemple.com"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="dateOfBirth">Date de naissance *</Label>
+                    <Input
+                      id="dateOfBirth"
+                      type="date"
+                      value={formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString().slice(0, 10) : ""}
+                      max={new Date().toISOString().slice(0, 10)}
+                      min="1900-01-01"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, dateOfBirth: val ? new Date(val) : null });
+                      }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="gender">Sexe *</Label>
+                    <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez votre sexe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="homme">Homme</SelectItem>
+                        <SelectItem value="femme">Femme</SelectItem>
+                        <SelectItem value="autre">Autre</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="currentPosition">Poste actuel *</Label>
+                    <Input
+                      id="currentPosition"
+                      value={formData.currentPosition}
+                      onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value })}
+                      placeholder="Votre poste actuel"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Step 2: Experience & Documents */}
               {currentStep === 2 && (
@@ -990,147 +991,199 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
               {/* Step 3: Adhérence MTP au poste */}
               {currentStep === 3 && (
-                <div className="space-y-8 animate-fade-in">
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl font-semibold mb-2">Adhérence MTP au poste</h3>
-                    <p className="text-muted-foreground">Évaluez votre adéquation avec le poste selon les dimensions Métier, Talent et Paradigme.</p>
-                  </div>
-
-                  {/* Partie Métier */}
-                  <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-                    <h4 className="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">M</div>
-                      Partie Métier
-                    </h4>
+                <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in">
+                  <div className="text-center mb-2">
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2">Adhérence MTP au poste</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">Évaluez votre adéquation avec le poste selon les dimensions Métier, Talent et Paradigme.</p>
                     
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="metier1">1. Quelles sont vos principales compétences techniques dans ce domaine ?</Label>
-                        <Textarea
-                          id="metier1"
-                          value={formData.metier1}
-                          onChange={(e) => setFormData({ ...formData, metier1: e.target.value })}
-                          placeholder="Décrivez vos compétences techniques..."
-                          className="min-h-[80px] mt-2"
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="metier2">2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?</Label>
-                        <Textarea
-                          id="metier2"
-                          value={formData.metier2}
-                          onChange={(e) => setFormData({ ...formData, metier2: e.target.value })}
-                          placeholder="Expliquez la pertinence de votre expérience..."
-                          className="min-h-[80px] mt-2"
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="metier3">3. Quels défis techniques de ce métier vous motivent le plus ?</Label>
-                        <Textarea
-                          id="metier3"
-                          value={formData.metier3}
-                          onChange={(e) => setFormData({ ...formData, metier3: e.target.value })}
-                          placeholder="Partagez vos motivations techniques..."
-                          className="min-h-[80px] mt-2"
-                        />
-                      </div>
+                    {/* Navigation par onglets */}
+                    <div className="flex justify-center border-b border-gray-200 w-full mb-4 sm:mb-6">
+                      <nav className="-mb-px flex space-x-2 sm:space-x-4 lg:space-x-8 overflow-x-auto" aria-label="Navigation MTP">
+                        <button
+                          onClick={() => setActiveTab('metier')}
+                          className={`${activeTab === 'metier' 
+                            ? 'border-blue-500 text-blue-600' 
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
+                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                        >
+                          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'metier' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
+                            M
+                          </div>
+                          <span className="hidden sm:inline">Métier</span>
+                        </button>
+                        
+                        <button
+                          onClick={() => setActiveTab('talent')}
+                          className={`${activeTab === 'talent' 
+                            ? 'border-green-500 text-green-600' 
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
+                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                        >
+                          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'talent' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800'}`}>
+                            T
+                          </div>
+                          <span className="hidden sm:inline">Talent</span>
+                        </button>
+                        
+                        <button
+                          onClick={() => setActiveTab('paradigme')}
+                          className={`${activeTab === 'paradigme' 
+                            ? 'border-purple-500 text-purple-600' 
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
+                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                        >
+                          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'paradigme' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'}`}>
+                            P
+                          </div>
+                          <span className="hidden sm:inline">Paradigme</span>
+                        </button>
+                      </nav>
                     </div>
                   </div>
+                  
+                  {/* Contenu des onglets */}
+                  <div className="mt-2 sm:mt-4">
+                    {/* Onglet Métier */}
+                    {activeTab === 'metier' && (
+                      <div className="bg-blue-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-blue-200 animate-fade-in">
+                        <h4 className="text-base sm:text-lg font-semibold text-blue-800 mb-3 sm:mb-4 flex items-center gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">M</div>
+                          Partie Métier
+                        </h4>
+                        <div className="space-y-3 sm:space-y-4">
+                          <div>
+                            <Label htmlFor="metier1" className="text-sm sm:text-base">1. Quelles sont vos principales compétences techniques dans ce domaine ?</Label>
+                            <Textarea
+                              id="metier1"
+                              value={formData.metier1}
+                              onChange={(e) => setFormData({ ...formData, metier1: e.target.value })}
+                              placeholder="Décrivez vos compétences techniques..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
 
-                  {/* Partie Talent */}
-                  <div className="bg-green-50 rounded-lg p-6 border border-green-200">
-                    <h4 className="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">T</div>
-                      Partie Talent
-                    </h4>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="talent1">1. Quel est votre talent naturel le plus distinctif ?</Label>
-                        <Textarea
-                          id="talent1"
-                          value={formData.talent1}
-                          onChange={(e) => setFormData({ ...formData, talent1: e.target.value })}
-                          placeholder="Décrivez votre talent unique..."
-                          className="min-h-[80px] mt-2"
-                        />
-                      </div>
+                          <div>
+                            <Label htmlFor="metier2" className="text-sm sm:text-base">2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?</Label>
+                            <Textarea
+                              id="metier2"
+                              value={formData.metier2}
+                              onChange={(e) => setFormData({ ...formData, metier2: e.target.value })}
+                              placeholder="Expliquez la pertinence de votre expérience..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
 
-                      <div>
-                        <Label htmlFor="talent2">2. Comment ce talent vous aide-t-il à exceller dans votre travail ?</Label>
-                        <Textarea
-                          id="talent2"
-                          value={formData.talent2}
-                          onChange={(e) => setFormData({ ...formData, talent2: e.target.value })}
-                          placeholder="Expliquez l'impact de votre talent..."
-                          className="min-h-[80px] mt-2"
-                        />
+                          <div>
+                            <Label htmlFor="metier3" className="text-sm sm:text-base">3. Quels défis techniques de ce métier vous motivent le plus ?</Label>
+                            <Textarea
+                              id="metier3"
+                              value={formData.metier3}
+                              onChange={(e) => setFormData({ ...formData, metier3: e.target.value })}
+                              placeholder="Partagez vos motivations techniques..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+                        </div>
                       </div>
+                    )}
 
-                      <div>
-                        <Label htmlFor="talent3">3. Donnez un exemple concret où votre talent a fait la différence.</Label>
-                        <Textarea
-                          id="talent3"
-                          value={formData.talent3}
-                          onChange={(e) => setFormData({ ...formData, talent3: e.target.value })}
-                          placeholder="Racontez un exemple précis..."
-                          className="min-h-[80px] mt-2"
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    {/* Onglet Talent */}
+                    {activeTab === 'talent' && (
+                      <div className="bg-green-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-green-200 animate-fade-in">
+                        <h4 className="text-base sm:text-lg font-semibold text-green-800 mb-3 sm:mb-4 flex items-center gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">T</div>
+                          Partie Talent
+                        </h4>
+                        
+                        <div className="space-y-3 sm:space-y-4">
+                          <div>
+                            <Label htmlFor="talent1" className="text-sm sm:text-base">1. Quel est votre talent naturel le plus distinctif ?</Label>
+                            <Textarea
+                              id="talent1"
+                              value={formData.talent1}
+                              onChange={(e) => setFormData({ ...formData, talent1: e.target.value })}
+                              placeholder="Décrivez votre talent unique..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
 
-                  {/* Partie Paradigme */}
-                  <div className="bg-purple-50 rounded-lg p-6 border border-purple-200">
-                    <h4 className="text-lg font-semibold text-purple-800 mb-4 flex items-center gap-2">
-                      <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">P</div>
-                      Partie Paradigme/Valeurs
-                    </h4>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="paradigme1">1. Quelles valeurs guident vos décisions professionnelles ?</Label>
-                        <Textarea
-                          id="paradigme1"
-                          value={formData.paradigme1}
-                          onChange={(e) => setFormData({ ...formData, paradigme1: e.target.value })}
-                          placeholder="Partagez vos valeurs professionnelles..."
-                          className="min-h-[80px] mt-2"
-                        />
-                      </div>
+                          <div>
+                            <Label htmlFor="talent2" className="text-sm sm:text-base">2. Comment ce talent vous aide-t-il à exceller dans votre travail ?</Label>
+                            <Textarea
+                              id="talent2"
+                              value={formData.talent2}
+                              onChange={(e) => setFormData({ ...formData, talent2: e.target.value })}
+                              placeholder="Expliquez l'impact de votre talent..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
 
-                      <div>
-                        <Label htmlFor="paradigme2">2. Comment votre vision s'aligne-t-elle avec la mission de OneHCM ?</Label>
-                        <Textarea
-                          id="paradigme2"
-                          value={formData.paradigme2}
-                          onChange={(e) => setFormData({ ...formData, paradigme2: e.target.value })}
-                          placeholder="Expliquez votre alignement avec notre mission..."
-                          className="min-h-[80px] mt-2"
-                        />
+                          <div>
+                            <Label htmlFor="talent3" className="text-sm sm:text-base">3. Donnez un exemple concret où votre talent a fait la différence.</Label>
+                            <Textarea
+                              id="talent3"
+                              value={formData.talent3}
+                              onChange={(e) => setFormData({ ...formData, talent3: e.target.value })}
+                              placeholder="Racontez un exemple précis..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+                        </div>
                       </div>
+                    )}
 
-                      <div>
-                        <Label htmlFor="paradigme3">3. Décrivez une situation où vous avez remis en question une approche traditionnelle.</Label>
-                        <Textarea
-                          id="paradigme3"
-                          value={formData.paradigme3}
-                          onChange={(e) => setFormData({ ...formData, paradigme3: e.target.value })}
-                          placeholder="Racontez votre exemple d'innovation..."
-                          className="min-h-[80px] mt-2"
-                        />
+                    {/* Onglet Paradigme */}
+                    {activeTab === 'paradigme' && (
+                      <div className="bg-purple-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-purple-200 animate-fade-in">
+                        <h4 className="text-base sm:text-lg font-semibold text-purple-800 mb-3 sm:mb-4 flex items-center gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">P</div>
+                          Partie Paradigme/Valeurs
+                        </h4>
+                        
+                        <div className="space-y-3 sm:space-y-4">
+                          <div>
+                            <Label htmlFor="paradigme1" className="text-sm sm:text-base">1. Quelles valeurs guident vos décisions professionnelles ?</Label>
+                            <Textarea
+                              id="paradigme1"
+                              value={formData.paradigme1}
+                              onChange={(e) => setFormData({ ...formData, paradigme1: e.target.value })}
+                              placeholder="Partagez vos valeurs professionnelles..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="paradigme2" className="text-sm sm:text-base">2. Comment votre vision s'aligne-t-elle avec la mission de OneHCM ?</Label>
+                            <Textarea
+                              id="paradigme2"
+                              value={formData.paradigme2}
+                              onChange={(e) => setFormData({ ...formData, paradigme2: e.target.value })}
+                              placeholder="Expliquez l'alignement avec notre mission..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="paradigme3" className="text-sm sm:text-base">3. Comment contribueriez-vous à notre culture d'entreprise ?</Label>
+                            <Textarea
+                              id="paradigme3"
+                              value={formData.paradigme3}
+                              onChange={(e) => setFormData({ ...formData, paradigme3: e.target.value })}
+                              placeholder="Décrivez votre contribution potentielle..."
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    )}
+                </div>
                 </div>
               )}
 
               {/* Step 4: Review */}
               {currentStep === 4 && (
                 <div className="space-y-6 animate-fade-in">
-                  <h4 className="text-xl font-semibold text-center mb-6">Récapitulatif de votre candidature</h4>
+                  <h4 className="text-lg sm:text-xl font-semibold text-center mb-6">Récapitulatif de votre candidature</h4>
                   
                   <div className="space-y-4">
                     <div className="bg-muted rounded-lg p-4">
@@ -1138,7 +1191,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <h5 className="font-medium">Informations Personnelles</h5>
                         <Button variant="outline" size="sm" onClick={() => setCurrentStep(1)}>Modifier</Button>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Nom complet:</span>
                           <p>{formData.firstName} {formData.lastName}</p>
@@ -1234,12 +1287,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               )}
 
               {/* Navigation Buttons */}
-              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-0 justify-between pt-6 border-t">
+              <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-6 border-t">
                 <Button
                   variant="outline"
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
                   className="w-full sm:w-auto"
+                  
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Précédent
@@ -1255,6 +1309,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       (currentStep === 2 && (!formData.cv || !formData.coverLetter || !formData.integrityLetter || !formData.projectIdea)) ||
                       (currentStep === 3 && (!formData.metier1 || !formData.metier2 || !formData.metier3 || !formData.talent1 || !formData.talent2 || !formData.talent3 || !formData.paradigme1 || !formData.paradigme2 || !formData.paradigme3))
                     }
+                    
                   >
                     Suivant
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -1266,7 +1321,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     className="w-full sm:w-auto"
                     disabled={!formData.consent}
                   >
-                    Envoyer ma candidature
+                    <span className="hidden sm:inline">Envoyer ma candidature</span>
+                    <span className="sm:hidden">Envoyer</span>
                     <Send className="w-4 h-4 ml-2" />
                   </Button>
                 )}
@@ -1274,10 +1330,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
             </CardContent>
           </Card>
-            </div>
-          </div>
         </div>
       </div>
+      {/* Close max-w-4xl form container */}
     </div>
+    {/* Close main container */}
+  </div>
+  {/* Close root wrapper */}
+</div>
   );
 }

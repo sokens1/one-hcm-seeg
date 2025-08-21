@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useJobOffers, type JobOffer } from "@/hooks/useJobOffers";
 import { Layout } from "@/components/layout/Layout";
 import { JobCard } from "@/components/ui/job-card";
+import { ApplicationDeadlineCounter } from "@/components/ApplicationDeadlineCounter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
@@ -92,6 +93,10 @@ const Index = () => {
         </div>
       </div>
 
+      {jobOffers.length > 0 && (
+        <ApplicationDeadlineCounter jobOffers={jobOffers} />
+      )}
+      
       <div className="container mx-auto px-4 py-8" id="job-list">
         {/* Sélecteur de vue */}
         <div className="flex justify-center mb-4 sm:mb-6 px-4">
@@ -149,19 +154,19 @@ const Index = () => {
         </div>
 
         {/* Job Listings */}
-        <div className="max-w-7xl mx-auto mb-12">
+        <div className="max-w-7xl mx-auto mb-8 sm:mb-12">
           {isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              <span className="text-muted-foreground">Chargement des offres...</span>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 py-8 sm:py-12">
+              <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-primary" />
+              <span className="text-sm sm:text-base text-muted-foreground">Chargement des offres...</span>
             </div>
           ) : error ? (
-            <div className="text-center text-red-600 py-12">
-              <p>Une erreur est survenue lors du chargement des offres d'emploi.</p>
-              <p className="text-sm">Veuillez réessayer plus tard.</p>
+            <div className="text-center text-red-600 py-8 sm:py-12 px-4">
+              <p className="text-sm sm:text-base">Une erreur est survenue lors du chargement des offres d'emploi.</p>
+              <p className="text-xs sm:text-sm">Veuillez réessayer plus tard.</p>
             </div>
           ) : viewMode === "cards" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredJobs.map((job, index) => (
                 <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                   <JobCard
@@ -188,7 +193,7 @@ const Index = () => {
                 <div key={job.id} className="border-b hover:bg-gray-50 transition-colors animate-fade-in" style={{ animationDelay: `${300 + index * 50}ms` }}>
                   {/* Version mobile - empilée */}
                   <div className="sm:hidden p-4 space-y-3">
-                    <div className="font-medium text-lg">{job.title}</div>
+                    <div className="font-medium text-base sm:text-lg">{job.title}</div>
                     <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                       <span className="bg-gray-100 px-2 py-1 rounded">{job.location}</span>
                       <span className="bg-gray-100 px-2 py-1 rounded">{job.contract_type}</span>

@@ -94,42 +94,45 @@ export default function JobPipeline() {
 
   return (
     <RecruiterLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
             <Link to="/recruiter/jobs">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Retour aux postes
+              <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Retour aux postes</span>
+                <span className="sm:hidden">Retour</span>
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2 break-words">
             Pipeline pour : {jobTitle}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-xs sm:text-sm lg:text-base text-muted-foreground">
             Gérez le flux de tous les candidats pour ce poste de manière visuelle et interactive
           </p>
         </div>
 
         {/* Loading State */}
         {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-2">Chargement du pipeline...</span>
+          <div className="flex flex-col sm:flex-row justify-center items-center py-8 sm:py-12 gap-2 sm:gap-4">
+            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
+            <span className="text-sm sm:text-base">Chargement du pipeline...</span>
           </div>
         ) : (
           <>
             {/* Statistiques globales */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {statuses.map((status) => {
                 const count = getCandidatesByStatus(status.key).length;
                 return (
-                  <Card key={status.key}>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-foreground">{count}</div>
-                      <div className="text-sm text-muted-foreground">{status.label}</div>
+                  <Card key={status.key} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-3 sm:p-4 text-center">
+                      <div className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">{count}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground truncate" title={status.label}>
+                        {status.label}
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -137,64 +140,65 @@ export default function JobPipeline() {
             </div>
 
             {/* Vue Kanban */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
               {statuses.map((status) => {
                 const statusCandidates = getCandidatesByStatus(status.key);
                 
                 return (
                   <div key={status.key}>
                     <Card className={`border-t-4 ${status.color} h-full`}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg font-semibold">{status.label}</CardTitle>
-                          <Badge variant="secondary" className="text-sm">
+                      <CardHeader className="pb-2 sm:pb-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <CardTitle className="text-base sm:text-lg font-semibold truncate">{status.label}</CardTitle>
+                          <Badge variant="secondary" className="text-xs sm:text-sm flex-shrink-0">
                             {statusCandidates.length}
                           </Badge>
                         </div>
                       </CardHeader>
-                      <CardContent className="space-y-4 min-h-[400px]">
+                      <CardContent className="space-y-3 sm:space-y-4 min-h-[300px] sm:min-h-[400px]">
                         {statusCandidates.map((candidate) => (
-                          <Card key={candidate.id} className="p-4 hover:shadow-medium transition-all cursor-pointer group">
-                            <div className="space-y-3">
-                              <div>
-                                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          <Card key={candidate.id} className="p-3 sm:p-4 hover:shadow-medium transition-all cursor-pointer group">
+                            <div className="space-y-2 sm:space-y-3">
+                              <div className="space-y-1">
+                                <h4 className="text-sm sm:text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                                   {candidate.name}
                                 </h4>
-                                <p className="text-sm text-muted-foreground truncate">
+                                <p className="text-xs sm:text-sm text-muted-foreground truncate" title={candidate.email}>
                                   {candidate.email}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-xs sm:text-sm text-muted-foreground">
                                   {candidate.phone}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-xs sm:text-sm text-muted-foreground">
                                   Candidature : {new Date(candidate.applicationDate).toLocaleDateString('fr-FR')}
                                 </p>
                               </div>
                               
                               <div className="flex items-center justify-between">
-                                <span className="text-sm text-muted-foreground">Score</span>
-                                <Badge variant="outline" className="text-sm">
+                                <span className="text-xs sm:text-sm text-muted-foreground">Score</span>
+                                <Badge variant="outline" className="text-xs sm:text-sm">
                                   {candidate.score}/100
                                 </Badge>
                               </div>
                               
                               <Button 
                                 size="sm" 
-                                className="w-full gap-2"
+                                className="w-full gap-1 sm:gap-2 text-xs sm:text-sm"
                                 variant="hero"
                                 onClick={() => handleAnalyzeCandidate(candidate.id)}
                               >
-                                <Eye className="w-4 h-4" />
-                                Analyser
+                                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">Analyser</span>
+                                <span className="sm:hidden">Voir</span>
                               </Button>
                             </div>
                           </Card>
                         ))}
                         
                         {statusCandidates.length === 0 && (
-                          <div className="text-center py-8 text-muted-foreground">
-                            <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                            <p className="text-sm">Aucun candidat</p>
+                          <div className="text-center py-6 sm:py-8 text-muted-foreground">
+                            <Users className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-xs sm:text-sm">Aucun candidat</p>
                           </div>
                         )}
                       </CardContent>

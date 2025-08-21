@@ -84,22 +84,27 @@ function CandidateSidebar() {
 
   return (
     <Sidebar
-      className={state === "collapsed" ? "w-14" : "w-60"}
+      className={state === "collapsed" ? "w-12 sm:w-14" : "w-48 sm:w-56 lg:w-60"}
       collapsible="icon"
     >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Espace candidat</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-sm sm:text-base font-medium px-2 sm:px-3 ${state === "collapsed" ? "sr-only" : ""}`}>
+            Espace candidat
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     onClick={() => handleNavigation(item.view)}
-                    className={getNavCls(item.view)}
+                    className={`${getNavCls(item.view)} text-xs sm:text-sm lg:text-base py-2 sm:py-3`}
+                    tooltip={state === "collapsed" ? item.title : undefined}
                   >
-                    <item.icon className="mr-2 h-4 w-4" />
-                    {state !== "collapsed" && <span>{item.title}</span>}
+                    <item.icon className="h-4 w-4 flex-shrink-0" />
+                    {state !== "collapsed" && (
+                      <span className="ml-2 truncate">{item.title}</span>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -168,20 +173,20 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
 
   return (
     <CandidateLayoutContext.Provider value={{ currentView, setCurrentView }}>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={true} variant="sidebar">
         <div className="min-h-screen flex w-full">
           {/* Header avec SidebarTrigger */}
-          <div className="flex flex-col w-full">
-            <header className="h-16 flex items-center border-b bg-background">
-              <SidebarTrigger className="ml-4" />
-              <div className="flex-1">
+          <div className="flex flex-col w-full min-w-0">
+            <header className="h-14 sm:h-16 flex items-center border-b bg-background">
+              <SidebarTrigger className="ml-2 sm:ml-4 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
                 <CandidateHeader />
               </div>
             </header>
 
-            <div className="flex flex-1">
+            <div className="flex flex-1 min-h-0">
               <CandidateSidebar />
-              <main className="flex-1 p-6 bg-background">
+              <main className="flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-hidden">
                 {children ? children : <CandidateMainContent />}
               </main>
             </div>

@@ -33,54 +33,49 @@ export function Header() {
 
   return (
     <>
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] bg-primary text-white px-3 py-2 rounded">
-        Aller au contenu principal
-      </a>
-      <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
-            <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg sm:text-xl font-bold text-foreground">OneHCM</h1>
-            <p className="hidden sm:block text-xs text-muted-foreground">Talent Flow Gabon</p>
+    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-2 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
+        <Link to="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-19 lg:h-19 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+            <img src="/LOGO HCM4.png" alt="Logo" className="w-14 h-12 sm:w-16 sm:h-14 lg:w-20 lg:h-35 object-contain" />
           </div>
         </Link>
 
-        <nav className="flex items-center gap-2 sm:gap-4">
-          <Button variant="ghost" size="sm" className="hidden xs:inline-flex" onClick={handleGoToOffers}>
-            Offres
-          </Button>
+        <nav className="flex items-center gap-1 sm:gap-2 md:gap-4">
           {isAuthenticated ? (
             <>
               {isCandidate && (
-                <span className="text-xs sm:text-sm text-muted-foreground">
+                <span className="hidden md:block text-xs sm:text-sm text-muted-foreground truncate max-w-32">
                   Bonjour {user.user_metadata?.first_name}
                 </span>
               )}
-              {(isRecruiter || isAdmin) && (
-                <Link to="/recruiter/dashboard">
-                  <Button variant="ghost" size="sm">Espace Recruteur</Button>
+              {isRecruiter && (
+                <Link to="/recruiter/dashboard" className="hidden sm:block">
+                  <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+                    Espace Recruteur
+                  </Button>
                 </Link>
               )}
-              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 px-3">
-                <LogOut className="w-4 h-4" />
-                Déconnexion
+              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Déconnexion</span>
+                <span className="sm:hidden">Sortir</span>
               </Button>
             </>
           ) : (
             <>
               <Link to="/auth">
-                <Button variant="outline" size="sm" className="gap-2 px-3">
-                  <LogIn className="w-4 h-4" />
-                  Se connecter
+                <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                  <LogIn className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Se connecter</span>
+                  <span className="sm:hidden">Connexion</span>
                 </Button>
               </Link>
               <Link to="/auth">
-                <Button variant="default" size="sm" className="gap-2 px-3">
-                  <UserPlus className="w-4 h-4" />
-                  S'inscrire
+                <Button variant="default" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                  <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">S'inscrire</span>
+                  <span className="sm:hidden">Inscription</span>
                 </Button>
               </Link>
             </>

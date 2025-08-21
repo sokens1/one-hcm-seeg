@@ -15,33 +15,33 @@ export function Footer() {
     }
   };
   return (
-    <footer className="bg-primary-dark text-white mt-10 sm:mt-16">
-      <div className="container mx-auto px-4 py-8 sm:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+    <footer className="bg-primary-dark text-white mt-16">
+      <div className="container mx-auto px-4 py-12">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-12 max-w-6xl mx-auto px-4 w-full">
           {/* Company Info */}
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <div className="flex-1 min-w-[300px] space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-19 lg:h-19 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+                <img src="/LOGO HCM4.png" alt="Logo" className="w-14 h-12 sm:w-16 sm:h-14 lg:w-20 lg:h-35 object-contain" />
               </div>
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-white">OneHCM</h3>
-                <p className="text-[11px] sm:text-xs text-white/80">Talent Flow Gabon</p>
-              </div>
+              {/* <div>
+                <h3 className="text-lg font-bold text-white">OneHCM</h3>
+                <p className="text-xs text-white/80">Sourcing Talents</p>
+              </div> */}
             </div>
-            <p className="text-sm sm:text-base text-white/90">
-              Plateforme de recrutement dédiée aux talents gabonais. 
+            <p className="text-sm text-white/90">
+              Plateforme de recrutement dédiée aux talents gabonais.<br/>
               Connectons les entreprises aux meilleurs candidats du Gabon.
             </p>
           </div>
 
-          {/* Contact Info */}
-          <div className="space-y-3 sm:space-y-4">
-            <h4 className="font-semibold text-white text-sm sm:text-base">Contact</h4>
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex items-center gap-2 text-[13px] sm:text-sm text-white/90">
-                <Mail className="w-4 h-4 flex-shrink-0" />
-                contact@onehcm.ga
+          {/* Contact Info
+          <div className="space-y-4">
+            <h4 className="font-semibold text-white">Contact</h4>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-white/90">
+                <Mail className="w-4 h-4" />
+                cnxonehcm@gmail.com
               </div>
               <div className="flex items-center gap-2 text-[13px] sm:text-sm text-white/90">
                 <Phone className="w-4 h-4 flex-shrink-0" />
@@ -52,13 +52,13 @@ export function Footer() {
                 Libreville, Gabon
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Quick Links */}
-          <div className="space-y-3 sm:space-y-4">
-            <h4 className="font-semibold text-white text-sm sm:text-base">Liens rapides</h4>
-            <div className="space-y-1.5 sm:space-y-2">
-              <Link to="/" onClick={handleOffersClick} className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
+          <div className="flex-1 min-w-[200px] space-y-4 md:text-right">
+            <h4 className="font-semibold text-white">Liens rapides</h4>
+            <div className="space-y-2">
+              <Link to="/" className="block text-sm text-white/90 hover:text-white transition-colors">
                 Offres d'emploi
               </Link>
               <Link to="/recruiter" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
@@ -73,20 +73,20 @@ export function Footer() {
             </div>
           </div>
 
-          {/* About */}
-          <div className="space-y-3 sm:space-y-4">
-            <h4 className="font-semibold text-white text-sm sm:text-base">OneHCM</h4>
-            <p className="text-sm sm:text-base text-white/90">
+          {/* About
+          <div className="space-y-4">
+            <h4 className="font-semibold text-white">OneHCM</h4>
+            <p className="text-sm text-white/90">
               Notre mission est de faciliter la rencontre entre les talents gabonais 
               et les opportunités professionnelles, contribuant ainsi au développement 
               économique du Gabon.
             </p>
-          </div>
+          </div> */}
         </div>
 
-        <div className="border-t border-white/20 mt-6 sm:mt-8 pt-6 sm:pt-8">
-          <div className="text-center text-[13px] sm:text-sm text-white/90">
-            <p>&copy; 2024 OneHCM - Talent Flow Gabon. Tous droits réservés.</p>
+        <div className="border-t border-white/20 mt-8 pt-8">
+          <div className="text-center text-sm text-white/90">
+            <p>&copy; {new Date().getFullYear()} OneHCM - Sourcing Talents. Tous droits réservés.</p>
           </div>
         </div>
       </div>

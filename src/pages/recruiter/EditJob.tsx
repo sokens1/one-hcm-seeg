@@ -215,19 +215,19 @@ export default function EditJob() {
 
   return (
     <RecruiterLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Link to="/recruiter">
-            <Button variant="outline" size="icon">
-              <ArrowLeft className="w-4 h-4" />
+            <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-tight">
               Modifier l'offre d'emploi
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Modifiez les détails de votre offre d'emploi
             </p>
           </div>
@@ -235,28 +235,28 @@ export default function EditJob() {
 
         {/* Form */}
         <Card className="max-w-4xl">
-          <CardHeader>
-            <CardTitle>Informations de l'offre</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg">Informations de l'offre</CardTitle>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-8">
+          <CardContent className="p-4 sm:p-6">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
               {/* Informations de base */}
               {/* Première ligne - Intitulé du poste */}
               <div className="space-y-2">
-                <Label htmlFor="title">Intitulé du poste *</Label>
-                <Input id="title" value={formData.title} onChange={(e) => handleInputChange("title", e.target.value)} placeholder="Ex: Développeur Full-Stack" required />
+                <Label htmlFor="title" className="text-sm sm:text-base">Intitulé du poste *</Label>
+                <Input id="title" value={formData.title} onChange={(e) => handleInputChange("title", e.target.value)} placeholder="Ex: Développeur Full-Stack" required className="text-sm sm:text-base" />
               </div>
 
               {/* Deuxième ligne - Ligne hiérarchique et Type de contrat */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="reportingLine">Ligne hiérarchique directe</Label>
-                  <Input id="reportingLine" value={formData.reportingLine} onChange={(e) => handleInputChange("reportingLine", e.target.value)} placeholder="Ex: Chef de Département Support" />
+                  <Label htmlFor="reportingLine" className="text-sm sm:text-base">Ligne hiérarchique directe</Label>
+                  <Input id="reportingLine" value={formData.reportingLine} onChange={(e) => handleInputChange("reportingLine", e.target.value)} placeholder="Ex: Chef de Département Support" className="text-sm sm:text-base" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="contractType">Type de contrat *</Label>
+                  <Label htmlFor="contractType" className="text-sm sm:text-base">Type de contrat *</Label>
                   <Select value={formData.contractType} onValueChange={(value) => handleInputChange("contractType", value)} required>
-                    <SelectTrigger><SelectValue placeholder="Type de contrat" /></SelectTrigger>
+                    <SelectTrigger className="text-sm sm:text-base"><SelectValue placeholder="Type de contrat" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
                       <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>

@@ -31,28 +31,28 @@ export function CandidateSettings() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 px-3 sm:px-0">
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-2">Paramètres</h2>
-        <p className="text-lg text-muted-foreground">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Paramètres</h2>
+        <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
           Configurez vos préférences
         </p>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
         {/* Notifications */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
               Notifications
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="email-notifications">Notifications par email</Label>
-                <p className="text-sm text-muted-foreground">
+          <CardContent className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="space-y-0.5 flex-1">
+                <Label htmlFor="email-notifications" className="text-sm sm:text-base">Notifications par email</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Recevez des notifications par email pour les mises à jour importantes
                 </p>
               </div>
@@ -60,15 +60,16 @@ export function CandidateSettings() {
                 id="email-notifications"
                 checked={settings.emailNotifications}
                 onCheckedChange={(checked) => handleSettingChange("emailNotifications", checked)}
+                className="self-start sm:self-center"
               />
             </div>
             
             <Separator />
             
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="sms-notifications">Notifications SMS</Label>
-                <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="space-y-0.5 flex-1">
+                <Label htmlFor="sms-notifications" className="text-sm sm:text-base">Notifications SMS</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Recevez des SMS pour les étapes critiques de votre candidature
                 </p>
               </div>
@@ -76,15 +77,16 @@ export function CandidateSettings() {
                 id="sms-notifications"
                 checked={settings.smsNotifications}
                 onCheckedChange={(checked) => handleSettingChange("smsNotifications", checked)}
+                className="self-start sm:self-center"
               />
             </div>
             
             <Separator />
             
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="application-updates">Mises à jour de candidature</Label>
-                <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="space-y-0.5 flex-1">
+                <Label htmlFor="application-updates" className="text-sm sm:text-base">Mises à jour de candidature</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Soyez informé des changements de statut de vos candidatures
                 </p>
               </div>
@@ -92,15 +94,16 @@ export function CandidateSettings() {
                 id="application-updates"
                 checked={settings.applicationUpdates}
                 onCheckedChange={(checked) => handleSettingChange("applicationUpdates", checked)}
+                className="self-start sm:self-center"
               />
             </div>
             
             <Separator />
             
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="marketing-emails">Emails marketing</Label>
-                <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="space-y-0.5 flex-1">
+                <Label htmlFor="marketing-emails" className="text-sm sm:text-base">Emails marketing</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Recevez des informations sur de nouvelles opportunités
                 </p>
               </div>
@@ -108,6 +111,7 @@ export function CandidateSettings() {
                 id="marketing-emails"
                 checked={settings.marketingEmails}
                 onCheckedChange={(checked) => handleSettingChange("marketingEmails", checked)}
+                className="self-start sm:self-center"
               />
             </div>
           </CardContent>
@@ -116,21 +120,21 @@ export function CandidateSettings() {
         {/* Préférences d'affichage */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Palette className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Palette className="w-4 h-4 sm:w-5 sm:h-5" />
               Apparence
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="language">Langue</Label>
-                <p className="text-sm text-muted-foreground">
+          <CardContent className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="space-y-0.5 flex-1">
+                <Label htmlFor="language" className="text-sm sm:text-base">Langue</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Choisissez votre langue préférée
                 </p>
               </div>
               <Select value={settings.language} onValueChange={(value) => handleSettingChange("language", value)}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -142,15 +146,15 @@ export function CandidateSettings() {
             
             <Separator />
             
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="theme">Thème</Label>
-                <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="space-y-0.5 flex-1">
+                <Label htmlFor="theme" className="text-sm sm:text-base">Thème</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Sélectionnez votre thème d'affichage
                 </p>
               </div>
               <Select value={settings.theme} onValueChange={(value) => handleSettingChange("theme", value)}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -166,19 +170,19 @@ export function CandidateSettings() {
         {/* Sécurité */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
               Sécurité
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full justify-start">
+          <CardContent className="space-y-3 sm:space-y-4">
+            <Button variant="outline" className="w-full justify-start text-sm sm:text-base">
               Changer le mot de passe
             </Button>
-            <Button variant="outline" className="w-full justify-start">
+            <Button variant="outline" className="w-full justify-start text-sm sm:text-base">
               Historique des connexions
             </Button>
-            <Button variant="outline" className="w-full justify-start">
+            <Button variant="outline" className="w-full justify-start text-sm sm:text-base">
               Gérer les sessions actives
             </Button>
           </CardContent>
@@ -187,22 +191,22 @@ export function CandidateSettings() {
         {/* Actions du compte */}
         <Card>
           <CardHeader>
-            <CardTitle>Actions du compte</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Actions du compte</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full justify-start">
+          <CardContent className="space-y-3 sm:space-y-4">
+            <Button variant="outline" className="w-full justify-start text-sm sm:text-base">
               Télécharger mes données
             </Button>
-            <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700">
+            <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 text-sm sm:text-base">
               Supprimer mon compte
             </Button>
             <Separator />
             <Button 
               variant="destructive" 
               onClick={handleLogout}
-              className="w-full gap-2"
+              className="w-full gap-2 text-sm sm:text-base"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
               Se déconnecter
             </Button>
           </CardContent>
