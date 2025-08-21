@@ -71,51 +71,34 @@ export default function Auth() {
       if (redirectParam) {
         navigate(redirectParam);
       } else {
-<<<<<<< HEAD
-        // Prefer role from DB for accurate redirection
-        try {
-          const { data: profile } = await supabase
-=======
         // Prefer authoritative role from DB (public.users), fallback to JWT metadata
-        let roleFromDb: string | null = null;
         try {
           const { data: userRow, error: userRowError } = await supabase
->>>>>>> c3a7aff202634f83da4895a90398cc56d79edfd0
             .from('users')
             .select('role')
             .eq('id', data.user.id)
             .single();
-<<<<<<< HEAD
 
-          const dbRole = (profile as { role?: string } | null)?.role;
-          const role = dbRole || data.user.user_metadata?.role || 'candidat';
-          const isRecruiter = role === 'recruiter' || role === 'recruteur';
-          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+          const rawRole = String((!userRowError && (userRow as { role?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
+          const isAdmin = rawRole === 'admin';
+          const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
+
+          if (isAdmin) {
+            navigate('/admin/dashboard');
+          } else if (isRecruiter) {
+            navigate('/recruiter/dashboard');
+          } else {
+            navigate('/candidate/dashboard?view=jobs');
+          }
         } catch {
-          const role = data.user.user_metadata?.role || 'candidat';
-          const isRecruiter = role === 'recruiter' || role === 'recruteur';
-          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
-=======
-          if (!userRowError && userRow?.role) roleFromDb = String(userRow.role);
-        } catch (e) {
-          // Ignore DB role read errors and fallback to metadata
-        }
-
-        const rawRole = String((roleFromDb ?? data.user.user_metadata?.role ?? '')).toLowerCase();
-        const isAdmin = rawRole === 'admin';
-        const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
-        const isCandidate = rawRole === 'candidat' || rawRole === 'candidate';
-
-        if (isAdmin) {
-          navigate('/admin/dashboard');
-        } else if (isRecruiter) {
-          navigate('/recruiter/dashboard');
-        } else if (isCandidate) {
-          navigate('/candidate/dashboard');
-        } else {
-          // Default fallback
-          navigate('/candidate/dashboard');
->>>>>>> c3a7aff202634f83da4895a90398cc56d79edfd0
+          const rawRole = String(data.user.user_metadata?.role ?? '').toLowerCase();
+          if (rawRole === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (rawRole === 'recruteur' || rawRole === 'recruiter') {
+            navigate('/recruiter/dashboard');
+          } else {
+            navigate('/candidate/dashboard?view=jobs');
+          }
         }
       }
     } catch (error) {
