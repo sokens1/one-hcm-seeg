@@ -22,7 +22,7 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info
           <div className="space-y-4">
             <h4 className="font-semibold text-white">Contact</h4>
             <div className="space-y-2">
@@ -39,7 +39,7 @@ export function Footer() {
                 Libreville, Gabon
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Quick Links */}
           <div className="space-y-4">
@@ -60,7 +60,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* About */}
+          {/* About
           <div className="space-y-4">
             <h4 className="font-semibold text-white">OneHCM</h4>
             <p className="text-sm text-white/90">
@@ -68,12 +68,12 @@ export function Footer() {
               et les opportunités professionnelles, contribuant ainsi au développement 
               économique du Gabon.
             </p>
-          </div>
+          </div> */}
         </div>
 
         <div className="border-t border-white/20 mt-8 pt-8">
           <div className="text-center text-sm text-white/90">
-            <p>&copy; 2024 OneHCM - Talent Flow Gabon. Tous droits réservés.</p>
+          <p>&copy; {new Date().getFullYear()} OneHCM - Talent Flow Gabon. Tous droits réservés.</p>
           </div>
         </div>
       </div>
