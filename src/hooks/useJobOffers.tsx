@@ -14,20 +14,27 @@ export interface JobOffer {
   requirements?: string[] | null;
   benefits?: string[] | null;
   status: string;
-  application_deadline: string | null;
+  application_deadline?: string | null;
   created_at: string;
   updated_at: string;
   recruiter_id: string;
   categorie_metier?: string | null;
   date_limite?: string | null;
-  application_count?: number;
+  // New job post detail fields
+  reporting_line?: string | null;
+  job_grade?: string | null;
+  salary_note?: string | null;
+  start_date?: string | null;
+  responsibilities?: string[] | null;
+  candidate_count: number;
+  new_candidates: number;
 }
 
 const fetchJobOffers = async () => {
   // 1. Fetch all active job offers
   const { data: offers, error } = await supabase
     .from('job_offers')
-    .select('id,title,description,location,contract_type,profile,department,salary_min,salary_max,requirements,benefits,status,application_deadline,created_at,updated_at,recruiter_id,categorie_metier,date_limite')
+    .select('id,title,description,location,contract_type,requirements,status,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities')
     .eq('status', 'active')
     .order('created_at', { ascending: false });
 
@@ -36,24 +43,33 @@ const fetchJobOffers = async () => {
 
   const offerIds = offers.map(o => o.id);
 
-  // 2. Fetch all applications for those job offers
+  // 2. Fetch all applications for those job offers, including creation date
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
   const { data: applications, error: applicationsError } = await supabase
     .from('applications')
-    .select('job_offer_id')
+    .select('job_offer_id, created_at')
     .in('job_offer_id', offerIds);
 
   if (applicationsError) throw new Error(applicationsError.message);
 
-  // 3. Count applications for each offer
-  const applicationCounts = (applications || []).reduce((acc, app) => {
-    acc[app.job_offer_id] = (acc[app.job_offer_id] || 0) + 1;
+  // 3. Count total and new applications for each offer
+  const applicationStats = (applications || []).reduce((acc, app) => {
+    if (!acc[app.job_offer_id]) {
+      acc[app.job_offer_id] = { total: 0, new: 0 };
+    }
+    acc[app.job_offer_id].total += 1;
+    if (new Date(app.created_at) > new Date(twentyFourHoursAgo)) {
+      acc[app.job_offer_id].new += 1;
+    }
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as Record<string, { total: number; new: number }>);
 
   // 4. Combine offers with their application counts
   return offers.map(offer => ({
     ...offer,
-    application_count: applicationCounts[offer.id] || 0,
+    candidate_count: applicationStats[offer.id]?.total || 0,
+    new_candidates: applicationStats[offer.id]?.new || 0,
   }));
 };
 
@@ -64,23 +80,47 @@ export function useJobOffers() {
   });
 }
 
-const fetchJobOffer = async (id: string) => {
+const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
   if (!id) return null;
 
-  const { data, error } = await supabase
+  // 1. Fetch the single job offer
+  const { data: offer, error } = await supabase
     .from('job_offers')
-    .select('id,title,description,location,contract_type,profile,department,salary_min,salary_max,requirements,benefits,status,application_deadline,created_at,updated_at,recruiter_id,categorie_metier,date_limite')
+    .select('*')
     .eq('id', id)
     .single();
 
   if (error) throw error;
-  return data;
+  if (!offer) return null;
+
+  // 2. Fetch applications for this offer
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { data: applications, error: applicationsError } = await supabase
+    .from('applications')
+    .select('created_at')
+    .eq('job_offer_id', id);
+
+  if (applicationsError) throw new Error(applicationsError.message);
+
+  // 3. Calculate counts
+  const candidate_count = applications?.length || 0;
+  const new_candidates = (applications || []).filter(app => new Date(app.created_at) > new Date(twentyFourHoursAgo)).length;
+
+  // 4. Combine and return
+  return {
+    ...offer,
+    candidate_count,
+    new_candidates,
+  };
 };
 
-export function useJobOffer(id: string) {
+export function useJobOffer(id: string | undefined) {
   return useQuery<JobOffer | null, Error>({
     queryKey: ['jobOffer', id],
-    queryFn: () => fetchJobOffer(id),
+    queryFn: () => {
+      if (!id) return Promise.resolve(null);
+      return fetchJobOffer(id);
+    },
     enabled: !!id, // The query will not run until the job ID exists
   });
 }
@@ -98,24 +138,33 @@ const fetchRecruiterJobOffers = async (recruiterId: string): Promise<JobOffer[]>
 
   const offerIds = offers.map(o => o.id);
 
-  // 2. Fetch all applications for those job offers
+  // 2. Fetch all applications for those job offers, including creation date
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
   const { data: applications, error: applicationsError } = await supabase
     .from('applications')
-    .select('job_offer_id')
+    .select('job_offer_id, created_at')
     .in('job_offer_id', offerIds);
 
   if (applicationsError) throw new Error(applicationsError.message);
 
-  // 3. Count applications for each offer
-  const applicationCounts = applications.reduce((acc, app) => {
-    acc[app.job_offer_id] = (acc[app.job_offer_id] || 0) + 1;
+  // 3. Count total and new applications for each offer
+  const applicationStats = (applications || []).reduce((acc, app) => {
+    if (!acc[app.job_offer_id]) {
+      acc[app.job_offer_id] = { total: 0, new: 0 };
+    }
+    acc[app.job_offer_id].total += 1;
+    if (new Date(app.created_at) > new Date(twentyFourHoursAgo)) {
+      acc[app.job_offer_id].new += 1;
+    }
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as Record<string, { total: number; new: number }>);
 
   // 4. Combine offers with their application counts
   return offers.map(offer => ({
     ...offer,
-    application_count: applicationCounts[offer.id] || 0,
+    candidate_count: applicationStats[offer.id]?.total || 0,
+    new_candidates: applicationStats[offer.id]?.new || 0,
   }));
 };
 

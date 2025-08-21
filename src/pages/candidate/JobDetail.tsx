@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
@@ -81,6 +82,19 @@ export default function JobDetail() {
     );
   }
 
+  // Normalize category label from possible shapes (string or object)
+  const categoryLabel = (() => {
+    const cat: unknown = (jobOffer as any).categorie_metier;
+    if (!cat) return null;
+    if (typeof cat === 'string') return cat.trim();
+    if (typeof cat === 'object') {
+      const obj = cat as Record<string, unknown>;
+      const candidate = (obj.label || obj.name || obj.title || obj.categorie || obj.category) as string | undefined;
+      return candidate?.trim() || null;
+    }
+    return null;
+  })();
+
   const formatSalary = (min: number | null | undefined, max: number | null | undefined) => {
     if (!min && !max) return "Salaire à négocier";
     if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} FCFA`;
@@ -148,7 +162,7 @@ export default function JobDetail() {
                 </CardContent>
               </Card>
 
-              {/* Requirements / Profile */}
+              {/* Connaissances savoir et requis */}
               {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
                 <Card>
                   <CardHeader>
@@ -201,10 +215,16 @@ export default function JobDetail() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
+                    {jobOffer.start_date && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        Date d'embauche: {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="w-4 h-4" />
-                      {jobOffer.application_deadline 
-                        ? `Date limite: ${new Date(jobOffer.application_deadline).toLocaleDateString('fr-FR')}`
+                      {jobOffer.date_limite 
+                        ? `Date limite: ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
                         : "Candidatures ouvertes"
                       }
                     </div>
@@ -273,6 +293,8 @@ export default function JobDetail() {
                   </Button>
                 </CardContent>
               </Card>
+
+              
             </div>
           </div>
         </div>

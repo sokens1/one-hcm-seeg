@@ -121,6 +121,25 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
             </CardContent>
           </Card>
 
+          {/* Missions principales */}
+          {jobOffer.responsibilities && jobOffer.responsibilities.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Missions principales</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {jobOffer.responsibilities.map((mission, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="text-muted-foreground">{mission}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Profil recherché / Exigences */}
           {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
             <Card>
@@ -211,6 +230,30 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 <div className="text-sm font-medium">Date limite</div>
                 <div className="text-sm text-muted-foreground">{deadline || ""}</div>
               </div>
+              {jobOffer.start_date && (
+                <div>
+                  <div className="text-sm font-medium">Date d'entrée souhaitée</div>
+                  <div className="text-sm text-muted-foreground">{new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</div>
+                </div>
+              )}
+              {jobOffer.reporting_line && (
+                <div>
+                  <div className="text-sm font-medium">Ligne hiérarchique</div>
+                  <div className="text-sm text-muted-foreground">{jobOffer.reporting_line}</div>
+                </div>
+              )}
+              {jobOffer.job_grade && (
+                <div>
+                  <div className="text-sm font-medium">Catégorie / Niveau</div>
+                  <div className="text-sm text-muted-foreground">{jobOffer.job_grade}</div>
+                </div>
+              )}
+              {jobOffer.salary_note && (
+                <div>
+                  <div className="text-sm font-medium">Rémunération / Avantages (note)</div>
+                  <div className="text-sm text-muted-foreground whitespace-pre-wrap">{jobOffer.salary_note}</div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

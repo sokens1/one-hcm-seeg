@@ -276,7 +276,7 @@ export function JobCatalog() {
                   contractType={job.contract_type}
                   description={job.description}
                   isPreview={true}
-                  candidateCount={job.application_count}
+                  candidateCount={job.candidate_count}
                   onClick={() => handleJobClick(job.id)}
                 />
               </div>

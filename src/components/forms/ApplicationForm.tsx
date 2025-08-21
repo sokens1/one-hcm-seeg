@@ -64,7 +64,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitApplication } = useApplications();
-  const { uploadFile, isUploading, getFileUrl } = useFileUpload();
+  const { uploadFile, isUploading, getFileUrl, deleteFile } = useFileUpload();
   const { user } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -110,7 +110,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             .maybeSingle(),
           supabase
             .from('candidate_profiles')
-            .select('current_position')
+            .select('current_position, gender')
             .eq('user_id', user.id)
             .maybeSingle(),
         ]);
@@ -138,6 +138,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           email: prev.email || dbUser?.email || user.email || '',
           dateOfBirth: prev.dateOfBirth || (dbUser?.date_of_birth ? new Date(dbUser.date_of_birth) : null),
           currentPosition: prev.currentPosition || profile?.current_position || '',
+          gender: prev.gender || profile?.gender || '',
         }));
       } catch (e: any) {
         console.error('Prefill error:', e);
@@ -159,25 +160,56 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       try {
         const { data, error } = await supabase
           .from('applications')
-          .select('reference_contacts, mtp_answers')
+          .select(`
+            reference_contacts, 
+            mtp_answers,
+            candidate_id
+          `)
           .eq('id', applicationId)
           .single();
         if (error) throw error;
         if (aborted || !data) return;
-        const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
-        setFormData(prev => ({
-          ...prev,
-          references: (data as any).reference_contacts ?? prev.references,
-          metier1: mtp?.metier?.[0] ?? prev.metier1,
-          metier2: mtp?.metier?.[1] ?? prev.metier2,
-          metier3: mtp?.metier?.[2] ?? prev.metier3,
-          talent1: mtp?.talent?.[0] ?? prev.talent1,
-          talent2: mtp?.talent?.[1] ?? prev.talent2,
-          talent3: mtp?.talent?.[2] ?? prev.talent3,
-          paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
-          paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
-          paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
-        }));
+        
+        // Récupérer les informations utilisateur et profil séparément
+        const candidateId = (data as any).candidate_id;
+        if (candidateId) {
+          const [{ data: userData }, { data: profileData }] = await Promise.all([
+            supabase
+              .from('users')
+              .select('first_name, last_name, email, date_of_birth')
+              .eq('id', candidateId)
+              .maybeSingle(),
+            supabase
+              .from('candidate_profiles')
+              .select('current_position, gender')
+              .eq('user_id', candidateId)
+              .maybeSingle()
+          ]);
+          
+          const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
+          
+          setFormData(prev => ({
+            ...prev,
+            // Informations personnelles depuis la candidature existante
+            firstName: userData?.first_name || prev.firstName,
+            lastName: userData?.last_name || prev.lastName,
+            email: userData?.email || prev.email,
+            dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
+            gender: profileData?.gender || prev.gender,
+            currentPosition: profileData?.current_position || prev.currentPosition,
+            // Références et MTP
+            references: (data as any).reference_contacts ?? prev.references,
+            metier1: mtp?.metier?.[0] ?? prev.metier1,
+            metier2: mtp?.metier?.[1] ?? prev.metier2,
+            metier3: mtp?.metier?.[2] ?? prev.metier3,
+            talent1: mtp?.talent?.[0] ?? prev.talent1,
+            talent2: mtp?.talent?.[1] ?? prev.talent2,
+            talent3: mtp?.talent?.[2] ?? prev.talent3,
+            paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
+            paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
+            paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
+          }));
+        }
       } catch (e) {
         console.warn('Chargement de la candidature (édition) échoué:', (e as any)?.message || e);
       }
@@ -282,8 +314,16 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         applicationIdForDocs = application.id;
       }
 
-      // Insérer les documents uploadés dans la table public.documents
+      // Gérer les documents lors de l'édition ou création
       try {
+        if (mode === 'edit' && applicationIdForDocs) {
+          // En mode édition, supprimer d'abord tous les anciens documents
+          await supabase
+            .from('documents')
+            .delete()
+            .eq('application_id', applicationIdForDocs);
+        }
+
         const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_path: string; file_size: number | null; }> = [];
         
         const isPublicUrl = (p: string) => p.startsWith('http://') || p.startsWith('https://');
@@ -297,7 +337,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         ];
 
         for (const { file, type } of filesToUpload) {
-          if (file && !isPublicUrl(file.path)) { // only insert newly uploaded files
+          if (file) {
             docsPayload.push({
               application_id: applicationIdForDocs as string,
               document_type: type,
@@ -309,27 +349,23 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         }
 
         for (const cert of formData.certificates) {
-          if (!isPublicUrl(cert.path)) {
-            docsPayload.push({
-              application_id: applicationIdForDocs as string,
-              document_type: 'diploma',
-              file_name: cert.name,
-              file_path: toFileUrl(cert.path),
-              file_size: cert.size ?? null,
-            });
-          }
+          docsPayload.push({
+            application_id: applicationIdForDocs as string,
+            document_type: 'diploma',
+            file_name: cert.name,
+            file_path: toFileUrl(cert.path),
+            file_size: cert.size ?? null,
+          });
         }
 
         for (const rec of formData.recommendations) {
-          if (!isPublicUrl(rec.path)) {
-            docsPayload.push({
-              application_id: applicationIdForDocs as string,
-              document_type: 'recommendation',
-              file_name: rec.name,
-              file_path: toFileUrl(rec.path),
-              file_size: rec.size ?? null,
-            });
-          }
+          docsPayload.push({
+            application_id: applicationIdForDocs as string,
+            document_type: 'recommendation',
+            file_name: rec.name,
+            file_path: toFileUrl(rec.path),
+            file_size: rec.size ?? null,
+          });
         }
 
         if (docsPayload.length > 0) {
@@ -341,7 +377,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           }
         }
       } catch (docsEx: any) {
-        console.warn('Erreur lors de l\'insertion des documents:', docsEx?.message || docsEx);
+        console.warn('Erreur lors de la gestion des documents:', docsEx?.message || docsEx);
       }
 
       // Sync profile with form data, do not block on this
@@ -376,6 +412,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       toast.error("Erreur lors de l'envoi: " + error.message);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Helpers pour suppression de fichiers du stockage si nécessaire
+  const isPublicUrl = (p: string) => p.startsWith('http://') || p.startsWith('https://');
+  const safeDeleteStorageFile = async (path?: string) => {
+    try {
+      if (!path || isPublicUrl(path)) return;
+      await deleteFile(path);
+    } catch (e) {
+      console.warn('Suppression stockage échouée (non-bloquant):', (e as any)?.message || e);
     }
   };
 
@@ -528,8 +575,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <h3 className="font-semibold text-gray-900">Guide de Candidature</h3>
                     <p className="text-sm text-gray-600">
                       Ce formulaire se déroule en 4 étapes: renseignez vos informations, ajoutez vos
-                      documents clés, indiquez votre adhérence MTP, puis vérifiez et soumettez votre
-                      candidature.
+                      documents clés, indiquez votre adhérence MTP (Métier, Talent, Paradigme), puis
+                      vérifiez et soumettez votre candidature.
                     </p>
                   </div>
                 </div>
@@ -662,10 +709,24 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         >
                           {isUploading ? "Upload..." : "Choisir un fichier"}
                         </Button>
+                        {formData.cv && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.cv.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.cv?.path);
+                                setFormData({ ...formData, cv: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                  
                   <div>
                     <Label htmlFor="coverLetter">Lettre de motivation *</Label>
                     <div className="mt-2">
@@ -699,10 +760,24 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         >
                           {isUploading ? "Upload..." : "Choisir un fichier"}
                         </Button>
+                        {formData.coverLetter && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.coverLetter.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.coverLetter?.path);
+                                setFormData({ ...formData, coverLetter: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-
                   <div>
                     <Label htmlFor="certificates">Certificat(s) (facultatif)</Label>
                     <div className="mt-2">
@@ -736,7 +811,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => {
+                                onClick={async () => {
+                                  await safeDeleteStorageFile(formData.certificates[index]?.path);
                                   const newCertificates = formData.certificates.filter((_, i) => i !== index);
                                   setFormData({ ...formData, certificates: newCertificates });
                                 }}
@@ -749,7 +825,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       )}
                     </div>
                   </div>
-
                   <div>
                     <Label htmlFor="integrityLetter">Lettre d'intégrité professionnelle *</Label>
                     <div className="mt-2">
@@ -783,10 +858,24 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         >
                           {isUploading ? "Upload..." : "Choisir un fichier"}
                         </Button>
+                        {formData.integrityLetter && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.integrityLetter.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.integrityLetter?.path);
+                                setFormData({ ...formData, integrityLetter: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-
                   <div>
                     <Label htmlFor="projectIdea">Idée de projet (3 pages max) *</Label>
                     <div className="mt-2">
@@ -820,10 +909,24 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         >
                           {isUploading ? "Upload..." : "Choisir un fichier"}
                         </Button>
+                        {formData.projectIdea && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.projectIdea.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.projectIdea?.path);
+                                setFormData({ ...formData, projectIdea: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-
                   <div>
                     <Label htmlFor="recommendations">Lettre(s) de recommandation (facultatif)</Label>
                     <div className="mt-2">
@@ -857,7 +960,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => {
+                                onClick={async () => {
+                                  await safeDeleteStorageFile(formData.recommendations[index]?.path);
                                   const newRecommendations = formData.recommendations.filter((_, i) => i !== index);
                                   setFormData({ ...formData, recommendations: newRecommendations });
                                 }}
@@ -1094,19 +1198,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       </div>
                       <div className="space-y-3 text-sm">
                         <div>
-                          <span className="text-muted-foreground font-medium">Partie Métier:</span>
+                          <span className="text-muted-foreground font-medium">Métier:</span>
                           <p className="text-xs">
                             {[formData.metier1, formData.metier2, formData.metier3].filter(Boolean).length}/3 questions répondues
                           </p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground font-medium">Partie Talent:</span>
+                          <span className="text-muted-foreground font-medium">Talent:</span>
                           <p className="text-xs">
                             {[formData.talent1, formData.talent2, formData.talent3].filter(Boolean).length}/3 questions répondues
                           </p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground font-medium">Partie Paradigme:</span>
+                          <span className="text-muted-foreground font-medium">Paradigme:</span>
                           <p className="text-xs">
                             {[formData.paradigme1, formData.paradigme2, formData.paradigme3].filter(Boolean).length}/3 questions répondues
                           </p>

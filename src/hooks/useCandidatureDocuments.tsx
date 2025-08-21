@@ -51,7 +51,7 @@ export function useCandidatureDocuments() {
   };
 
   const deleteDocument = async (documentId: string): Promise<void> => {
-    await api.delete(`/documents/${documentId}`);
+    await api.delete<void>(`/documents/${documentId}`);
   };
 
   return { uploadDocument, listDocuments, downloadDocument, deleteDocument };

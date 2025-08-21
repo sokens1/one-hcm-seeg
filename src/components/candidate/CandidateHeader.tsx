@@ -1,4 +1,4 @@
-import { User, LogOut, Building2 } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,9 +33,10 @@ export function CandidateHeader() {
   return (
     <div className="flex items-center justify-between px-4">
       {/* Logo SEEG */}
-      <div className="flex items-center gap-3">
-        <Building2 className="w-8 h-8 text-primary" />
-        <h1 className="text-2xl font-bold text-primary">SEEG</h1>
+      <div className="flex items-center">
+        <div className="w-12 h-12 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+          <img src="/logo-SEEG.png" alt="Logo SEEG" className="w-10 h-10 object-contain" />
+        </div>
       </div>
 
       {/* Actions à droite */}
