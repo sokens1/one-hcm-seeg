@@ -70,7 +70,7 @@ export default function Auth() {
 
     try {
       setIsVerifyingMatricule(true);
-      const { data: isValid, error } = await supabase.rpc('verify_matricule', {
+      const { data: isValid, error } = await supabase.rpc('verify_seeg_matricule', {
         p_matricule: matricule,
       });
 
@@ -195,19 +195,6 @@ export default function Auth() {
     }
 
     try {
-      // Vérification via RPC sécurisée (ne révèle pas la table)
-      const { data: isValid, error: rpcErr } = await supabase.rpc('verify_seeg_matricule', { p_matricule: matricule });
-      if (rpcErr) {
-        toast.error("Impossible de vérifier le matricule. Réessayez.");
-        setIsSubmitting(false);
-        return;
-      }
-      if (!isValid) {
-        toast.error("Matricule invalide: l'inscription est réservée aux agents SEEG.");
-        setIsSubmitting(false);
-        return;
-      }
-
       const { error } = await signUp(signUpData.email, signUpData.password, {
         role: "candidat",
         first_name: signUpData.firstName,
