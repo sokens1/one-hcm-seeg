@@ -83,7 +83,7 @@ export function DashboardMain() {
           <CardContent>
             <div className="text-3xl font-bold text-primary">{jobOffers?.length || 0}</div>
             <p className="text-sm text-muted-foreground">
-              postes disponibles
+              {jobOffers?.length === 1 ? 'poste disponible' : 'postes disponibles'}
             </p>
           </CardContent>
         </Card>

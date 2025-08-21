@@ -1,9 +1,28 @@
+import { useEffect, useState } from 'react';
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function CompanyContext() {
+  const [jobCount, setJobCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchJobCount = async () => {
+      const { count, error } = await supabase
+        .from('job_offers')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active');
+
+      if (!error && count !== null) {
+        setJobCount(count);
+      }
+    };
+
+    fetchJobCount();
+  }, []);
+
   return (
     <Layout showFooter={true}>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -137,7 +156,7 @@ export default function CompanyContext() {
                       Prêt à Rejoindre cette Aventure ?
                     </h2>
                     <p className="mb-6 opacity-90">
-                      Découvrez nos 19 postes de direction et contribuez à la renaissance de la SEEG
+                      Découvrez nos {jobCount} poste{jobCount > 1 ? 's' : ''} disponible{jobCount > 1 ? 's' : ''} et contribuez à la renaissance de la SEEG
                     </p>
                     <Button variant="secondary" size="lg" asChild>
                       <a href="/jobs">

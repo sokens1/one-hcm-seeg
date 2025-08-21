@@ -4,9 +4,9 @@ export function Footer() {
   return (
     <footer className="bg-primary-dark text-white mt-16">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-12 max-w-6xl mx-auto px-4 w-full">
           {/* Company Info */}
-          <div className="space-y-4">
+          <div className="flex-1 min-w-[300px] space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-30 h-10 rounded-lg flex items-center justify-center">
                 <img src="/LOGO HCM4.png" alt="Logo" className="w-20 h-35 object-contain" />
@@ -17,7 +17,7 @@ export function Footer() {
               </div> */}
             </div>
             <p className="text-sm text-white/90">
-              Plateforme de recrutement dédiée aux talents gabonais.
+              Plateforme de recrutement dédiée aux talents gabonais.<br/>
               Connectons les entreprises aux meilleurs candidats du Gabon.
             </p>
           </div>
@@ -42,7 +42,7 @@ export function Footer() {
           </div> */}
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="flex-1 min-w-[200px] space-y-4 md:text-right">
             <h4 className="font-semibold text-white">Liens rapides</h4>
             <div className="space-y-2">
               <a href="/" className="block text-sm text-white/90 hover:text-white transition-colors">
