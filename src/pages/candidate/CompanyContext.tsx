@@ -1,9 +1,28 @@
+import { useEffect, useState } from 'react';
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function CompanyContext() {
+  const [jobCount, setJobCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchJobCount = async () => {
+      const { count, error } = await supabase
+        .from('job_offers')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active');
+
+      if (!error && count !== null) {
+        setJobCount(count);
+      }
+    };
+
+    fetchJobCount();
+  }, []);
+
   return (
     <Layout showFooter={true}>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -23,7 +42,7 @@ export default function CompanyContext() {
                 Vision SEEG 2025 2035
               </h1>
               <p className="text-xl md:text-2xl opacity-90">
-                Contenu officiel de la vision et du contexte de la campagne SEEG
+                Contenu officiel de la Vision et du contexte de la campagne SEEG
               </p>
             </div>
           </div>
@@ -65,51 +84,51 @@ export default function CompanyContext() {
                   <h3 className="text-xl font-semibold mt-8 mb-3">Vision Stratégique pour la SEEG</h3>
 
                   <h4 className="font-semibold mt-6 mb-2">Thème 1 : Réorganisation</h4>
-                  <ul className="list-disc pl-6 space-y-2">
+                  {/* <ul className="list-disc pl-6 space-y-2">
                     <li>Ramener les charges salariales de 26% à 15% du CA soit une réduction de 23 milliards/an ;</li>
                     <li>Se conformer à un split des effectifs Techniques vs Support à 65/35 au lieu de 46/54 ;</li>
                     <li>Resculpter la pyramide organisationnelle faisant sens (15 Directeurs max., Managers 30%, Ingénieurs et techniciens 60%, Admin et Supports 20%, contractuels et temporaires) ;</li>
                     <li>Coût estimé du plan social en fin 2025 circa 40 milliards (18-24 mois de salaires + droits).</li>
-                  </ul>
+                  </ul> */}
 
                   <h4 className="font-semibold mt-6 mb-2">Thème 2 : Réhabilitation/modernisation des Infrastructures et Investissements durables par</h4>
-                  <ul className="list-disc pl-6 space-y-2">
+                  {/* <ul className="list-disc pl-6 space-y-2">
                     <li>Un plan d'investissement ambitieux de 500 milliards XAF pour la réhabilitation et l'extension des réseaux de distribution d'eau et d'électricité ;</li>
                     <li>Des partenariats techniques (ex : contrat SUEZ pour eau potable, EDF, et autres) jusqu'à la compétence avérée locale ;</li>
                     <li>Suivi des travaux et réception pour exploitation de nouvelles centrales électriques (Boué, Fe2, etc) et la maintenance rigoureuse des existantes ;</li>
                     <li>Suivi des travaux et réception du Réseau Interconnecté National.</li>
-                  </ul>
+                  </ul> */}
 
                   <h4 className="font-semibold mt-6 mb-2">Thème 3 : Gouvernance renforcée et Transparence</h4>
-                  <ul className="list-disc pl-6 space-y-2">
+                  {/* <ul className="list-disc pl-6 space-y-2">
                     <li>Mise en place d'un système de contrôle indépendant impliquant l'Agence de Régulation (ARSEE) ;</li>
                     <li>Audit Régulier des comptes et procédures ;</li>
                     <li>Digitalisation des processus pour limiter les interférences humaines dans la facturation et la collecte ;</li>
                     <li>Revues Trimestrielle et Annuelle de la Performance SEEG et Responsabilisation à charge des dirigeants.</li>
-                  </ul>
+                  </ul> */}
 
                   <h4 className="font-semibold mt-6 mb-2">Thème 4: Modèle Economique Viable</h4>
-                  <ul className="list-disc pl-6 space-y-2">
+                  {/* <ul className="list-disc pl-6 space-y-2">
                     <li>Résolution des impayés pesant sur la trésorerie (ex : Etat, dignitaires) ;</li>
                     <li>Facturation de tous les clients bénéficiant des services (ex : Kango, Ntoum) ;</li>
                     <li>Tarification sociale mais réaliste ;</li>
                     <li>Achat électricité chez les Producteurs Indépendants seulement à un prix de revient acceptable ;</li>
                     <li>Réduire/Eradiquer la production permanente au Gasoil.</li>
-                  </ul>
+                  </ul> */}
 
                   <h4 className="font-semibold mt-6 mb-2">Thème 5 : Implication des parties prenantes</h4>
-                  <ul className="list-disc pl-6 space-y-2">
+                  {/* <ul className="list-disc pl-6 space-y-2">
                     <li>Participation active des associations de consommateurs dans le contrôle qualité ;</li>
                     <li>Formation et motivation des employés ;</li>
                     <li>Dialogue constructif entre l'Etat, la SEEG et les partenaires techniques.</li>
-                  </ul>
+                  </ul> */}
 
                   <h4 className="font-semibold mt-6 mb-2">Thème 6 : Transition Energétique et Innovation</h4>
-                  <ul className="list-disc pl-6 space-y-2">
+                  {/* <ul className="list-disc pl-6 space-y-2">
                     <li>Intégration progressive des énergies renouvelables (ex : solaire) ;</li>
                     <li>Solutions décentralisées pour les zones rurales éloignées ;</li>
                     <li>Adoption de technologies intelligentes (compteurs connectés, gestion algorithmique des réseaux).</li>
-                  </ul>
+                  </ul> */}
 
                   <h3 className="text-xl font-semibold mt-8 mb-3">Conclusion</h3>
                   <p>
@@ -137,7 +156,7 @@ export default function CompanyContext() {
                       Prêt à Rejoindre cette Aventure ?
                     </h2>
                     <p className="mb-6 opacity-90">
-                      Découvrez nos 19 postes de direction et contribuez à la renaissance de la SEEG
+                      Découvrez nos {jobCount} poste{jobCount > 1 ? 's' : ''} disponible{jobCount > 1 ? 's' : ''} et contribuez à la renaissance de la SEEG
                     </p>
                     <Button variant="secondary" size="lg" asChild>
                       <a href="/jobs">
