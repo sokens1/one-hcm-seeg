@@ -10,6 +10,14 @@ export interface CandidatureDocument {
 }
 
 export function useCandidatureDocuments() {
+  // Normalize APIs that sometimes return `{ data: T }` and sometimes raw `T`
+  const unwrap = <T,>(payload: T | { data: T } | null): T | null => {
+    if (payload && typeof payload === "object" && "data" in (payload as object)) {
+      return (payload as { data: T }).data;
+    }
+    return payload as T | null;
+  };
+
   const uploadDocument = async (
     candidatureId: string,
     file: File,
@@ -18,20 +26,28 @@ export function useCandidatureDocuments() {
     const form = new FormData();
     form.append("fichier", file);
     if (type) form.append("type", type);
-    const { data } = await api.post(`/candidatures/${candidatureId}/documents`, form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return (data?.data || data) as CandidatureDocument;
+    const { data } = await api.post<CandidatureDocument | { data: CandidatureDocument } | null>(
+      `/candidatures/${candidatureId}/documents`,
+      form,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+    return unwrap<CandidatureDocument>(data)!;
   };
 
   const listDocuments = async (candidatureId: string): Promise<CandidatureDocument[]> => {
-    const { data } = await api.get(`/candidatures/${candidatureId}/documents`);
-    return (data?.data || data || []) as CandidatureDocument[];
+    const { data } = await api.get<
+      CandidatureDocument[] | { data: CandidatureDocument[] } | null
+    >(`/candidatures/${candidatureId}/documents`);
+    return unwrap<CandidatureDocument[]>(data) ?? [];
   };
 
   const downloadDocument = async (documentId: string): Promise<Blob> => {
-    const { data } = await api.get(`/documents/${documentId}/download`, { responseType: "blob" });
-    return data as Blob;
+    const { data } = await api.get<Blob>(`/documents/${documentId}/download`, {
+      responseType: "blob",
+    });
+    return data;
   };
 
   const deleteDocument = async (documentId: string): Promise<void> => {

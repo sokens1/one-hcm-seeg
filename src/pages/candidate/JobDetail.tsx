@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +42,7 @@ export default function JobDetail() {
   if (isLoading || isLoadingApplication) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8" aria-live="polite">
           <div className="flex justify-center items-center min-h-[400px]">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
             <span className="ml-2">Chargement de l'offre...</span>
@@ -93,36 +93,36 @@ export default function JobDetail() {
     <Layout>
       <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6 sm:py-8">
           <div className="container mx-auto px-4">
             <Button 
               variant="ghost" 
               onClick={handleBackToJobs}
-              className="mb-4 text-white hover:bg-white/10"
+              className="mb-3 sm:mb-4 text-white hover:bg-white/10"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Retour aux offres
             </Button>
             
             <div className="max-w-4xl">
-              <div className="flex items-center gap-2 mb-4">
-                <Building2 className="w-5 h-5" />
-                <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <Building2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-xs sm:text-sm bg-white/20 px-3 py-1 rounded-full">
                   {jobOffer.department || "SEEG"}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">{jobOffer.title}</h1>
-              <div className="flex flex-wrap items-center gap-4 text-lg">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">{jobOffer.title}</h1>
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm sm:text-base">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5" />
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                   {jobOffer.location}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                   {jobOffer.contract_type}
                 </div>
                 <div className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
+                  <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
                   {formatSalary(jobOffer.salary_min, jobOffer.salary_max)}
                 </div>
               </div>
@@ -130,18 +130,18 @@ export default function JobDetail() {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="container mx-auto px-4 py-6 sm:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-6 sm:space-y-8">
               {/* Description */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-2xl">Description du poste</CardTitle>
+                  <CardTitle className="text-xl sm:text-2xl">Description du poste</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="prose max-w-none">
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
                       {jobOffer.description}
                     </p>
                   </div>
@@ -152,7 +152,7 @@ export default function JobDetail() {
               {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl">Profil recherché</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">Profil recherché</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {jobOffer.requirements && jobOffer.requirements.length > 0 ? (
@@ -160,12 +160,12 @@ export default function JobDetail() {
                         {jobOffer.requirements.map((requirement, index) => (
                           <li key={index} className="flex items-start gap-2">
                             <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                            <span className="text-muted-foreground">{requirement}</span>
+                            <span className="text-muted-foreground text-sm sm:text-base">{requirement}</span>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <div className="whitespace-pre-wrap text-foreground">
+                      <div className="whitespace-pre-wrap text-foreground text-sm sm:text-base">
                         {jobOffer.profile}
                       </div>
                     )}
@@ -177,12 +177,12 @@ export default function JobDetail() {
               {jobOffer.benefits && jobOffer.benefits.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl">Avantages</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">Avantages</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {jobOffer.benefits.map((benefit, index) => (
-                        <Badge key={index} variant="secondary" className="justify-start p-3">
+                        <Badge key={index} variant="secondary" className="justify-start p-2.5 sm:p-3 text-xs sm:text-sm">
                           {benefit}
                         </Badge>
                       ))}
@@ -267,9 +267,9 @@ export default function JobDetail() {
                     des services publics d'électricité et d'eau potable au Gabon.
                   </p>
                   <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
-                    <a href="/company-context">
+                    <Link to="/company-context">
                       En savoir plus
-                    </a>
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
