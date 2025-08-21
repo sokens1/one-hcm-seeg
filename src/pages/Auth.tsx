@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, Building2 } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
+import { supabase } from "@/integrations/supabase/client";
 // Link already imported above
 
 export default function Auth() {
@@ -20,7 +21,8 @@ export default function Auth() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const searchParams = new URLSearchParams(location.search);
-  const redirectParam = searchParams.get('redirect');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -68,12 +70,22 @@ export default function Auth() {
       if (redirectParam) {
         navigate(redirectParam);
       } else {
-        // Fallback: redirect based on user role stored in database
-        const role = data.user.user_metadata?.role || 'candidate';
-        if (role === 'recruiter') {
-          navigate('/recruiter/dashboard');
-        } else {
-          navigate('/candidate/dashboard');
+        // Prefer role from DB for accurate redirection
+        try {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+
+          const dbRole = (profile as { role?: string } | null)?.role;
+          const role = dbRole || data.user.user_metadata?.role || 'candidat';
+          const isRecruiter = role === 'recruiter' || role === 'recruteur';
+          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+        } catch {
+          const role = data.user.user_metadata?.role || 'candidat';
+          const isRecruiter = role === 'recruiter' || role === 'recruteur';
+          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
         }
       }
     } catch (error) {
@@ -108,17 +120,33 @@ export default function Auth() {
       });
       
       if (error) {
-        if (error.status === 429) {
-          toast.error("Trop de tentatives. Veuillez réessayer dans 60 secondes.");
-          setCooldown(60);
+        if (error.status === 429 || error.message.includes('rate limit')) {
+          toast.error("Limite d'envoi d'emails atteinte. En mode développement, vous pouvez vous connecter directement.");
+          setCooldown(120); // 2 minutes de cooldown
+          // En développement, on peut suggérer de se connecter directement
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            setTimeout(() => {
+              toast.info("💡 Astuce: En développement, essayez de vous connecter directement avec vos identifiants.");
+            }, 2000);
+          }
         } else if (error.message.includes("already registered")) {
-          toast.error("Cette adresse email est déjà utilisée");
+          toast.error("Cette adresse email est déjà utilisée. Essayez de vous connecter.");
+          setActiveTab("signin");
+        } else if (error.message.includes('email')) {
+          toast.error("Problème avec l'adresse email. Vérifiez le format.");
         } else {
           toast.error("Erreur d'inscription: " + error.message);
         }
       } else {
-        toast.success("Inscription réussie! Vérifiez votre email pour confirmer votre compte.");
+        const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isDevelopment) {
+          toast.success("Inscription réussie! Vous pouvez maintenant vous connecter.");
+        } else {
+          toast.success("Inscription réussie! Vérifiez votre email pour confirmer votre compte.");
+        }
         setActiveTab("signin");
+        // Pré-remplir l'email dans le formulaire de connexion
+        setSignInData(prev => ({ ...prev, email: signUpData.email }));
       }
     } catch (error) {
       toast.error("Une erreur est survenue");

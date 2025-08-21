@@ -35,18 +35,11 @@ const generateTimeline = (application: Application | null | undefined): Timeline
       date: createdAt,
     },
     {
-      title: "Analyse du dossier",
-      status: status === 'candidature' ? 'current' : (isCompleted(['incubation', 'embauche', 'refuse']) ? 'completed' : 'pending'),
-      icon: FileText,
-      description: "Nos équipes examinent votre dossier.",
-      date: status === 'candidature' ? 'En cours' : (isCompleted(['incubation', 'embauche', 'refuse']) ? createdAt : 'À venir'),
-    },
-    {
-      title: "Processus d'entretiens",
+      title: "Entretien (évaluation physique MTP)",
       status: status === 'incubation' ? 'current' : (isCompleted(['embauche', 'refuse']) ? 'completed' : 'pending'),
       icon: Users,
-      description: "Entretiens avec les managers et RH.",
-      date: status === 'incubation' ? 'En cours' : 'À venir',
+      description: "Entretien et évaluation MTP (Metier, Talent, Paradigme) avec l'équipe.",
+      date: status === 'incubation' ? 'En cours' : (isCompleted(['embauche', 'refuse']) ? createdAt : 'À venir'),
     },
     {
       title: "Décision finale",

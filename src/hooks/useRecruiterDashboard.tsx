@@ -4,9 +4,12 @@ import { useAuth } from "./useAuth";
 
 export interface RecruiterStats {
   totalJobs: number;
-  totalCandidates: number;
+  totalCandidates: number; // candidats uniques
   newCandidates: number;
   interviewsScheduled: number;
+  malePercent?: number;
+  femalePercent?: number;
+  multiPostCandidates?: number;
 }
 
 export interface RecruiterJobOffer {
@@ -27,7 +30,7 @@ export function useRecruiterDashboard() {
       return { stats: null, activeJobs: [] };
     }
 
-    // Fetch job offers with application counts
+    // Fetch job offers with application counts and applicant ids
     const { data: jobsData, error: jobsError } = await supabase
       .from('job_offers')
       .select(`
@@ -36,7 +39,7 @@ export function useRecruiterDashboard() {
         location,
         contract_type,
         created_at,
-        applications(id, status, created_at)
+        applications(id, status, created_at, candidate_id, job_offer_id)
       `)
       .eq('recruiter_id', user.id)
       .eq('status', 'active');
@@ -64,9 +67,13 @@ export function useRecruiterDashboard() {
       };
     });
 
+    // Gather unique candidates across all active jobs for this recruiter
+    const allApplications = (jobsData || []).flatMap(j => (j.applications || []));
+    const candidateIds = Array.from(new Set(allApplications.map(a => a.candidate_id).filter(Boolean)));
+
     // Calculate stats
     const totalJobs = processedJobs.length;
-    const totalCandidates = processedJobs.reduce((sum, job) => sum + job.candidate_count, 0);
+    const totalCandidates = candidateIds.length; // uniques
     const newCandidates = processedJobs.reduce((sum, job) => sum + job.new_candidates, 0);
 
     // Count interviews scheduled (applications in 'incubation' status)
@@ -78,11 +85,70 @@ export function useRecruiterDashboard() {
 
     const interviewsScheduled = interviewsData?.length || 0;
 
+    // Compute multi-post applicants (candidates who applied to 2+ jobs among this recruiter's jobs)
+    const applicationsByCandidate = new Map<string, Set<string>>();
+    for (const app of allApplications) {
+      const cid = app.candidate_id as string | undefined;
+      const jid = app.job_offer_id as string | undefined;
+      if (!cid || !jid) continue;
+      if (!applicationsByCandidate.has(cid)) applicationsByCandidate.set(cid, new Set());
+      applicationsByCandidate.get(cid)!.add(jid);
+    }
+    let multiPostCandidates = 0;
+    applicationsByCandidate.forEach(set => { if (set.size > 1) multiPostCandidates++; });
+
+    // Compute gender distribution from candidate_profiles (robust normalization)
+    let malePercent: number | undefined = 0;
+    let femalePercent: number | undefined = 0;
+
+    // Helper to normalize various inputs to 'Homme' | 'Femme' | null
+    const normalizeGender = (g?: string | null): 'Homme' | 'Femme' | null => {
+      if (!g) return null;
+      const s = g.trim().toLowerCase();
+      const maleSet = new Set(['h', 'm', 'homme', 'masculin', 'male', 'mâle']);
+      const femaleSet = new Set(['f', 'femme', 'feminin', 'féminin', 'female']);
+      if (maleSet.has(s)) return 'Homme';
+      if (femaleSet.has(s)) return 'Femme';
+      return null;
+    };
+
+    if (candidateIds.length > 0) {
+      const { data: profiles, error: profilesError } = await supabase
+        .from('candidate_profiles')
+        .select('user_id, gender')
+        .in('user_id', candidateIds as string[]);
+
+      if (profilesError) {
+        console.warn('[Dashboard] Could not fetch candidate profiles for gender stats:', profilesError.message);
+      } else if (profiles) {
+        // Ensure unique candidates and normalized genders
+        const normalized: Array<{ user_id: string; gender: 'Homme' | 'Femme' | null }> = profiles.map(p => ({
+          user_id: (p as any).user_id,
+          gender: normalizeGender((p as any).gender)
+        }));
+
+        const withGender = normalized.filter(p => p.gender !== null);
+        const totalWithGender = withGender.length;
+        if (totalWithGender > 0) {
+          const maleCount = withGender.filter(p => p.gender === 'Homme').length;
+          const femaleCount = withGender.filter(p => p.gender === 'Femme').length;
+          malePercent = (maleCount / totalWithGender) * 100;
+          femalePercent = (femaleCount / totalWithGender) * 100;
+        } else {
+          malePercent = 0;
+          femalePercent = 0;
+        }
+      }
+    }
+
     const stats: RecruiterStats = {
       totalJobs,
       totalCandidates,
       newCandidates,
-      interviewsScheduled
+      interviewsScheduled,
+      malePercent,
+      femalePercent,
+      multiPostCandidates,
     };
 
     return { stats, activeJobs: processedJobs };
@@ -103,6 +169,8 @@ export function useRecruiterDashboard() {
   };
 }
 
+
+
 export function useCreateJobOffer() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -122,6 +190,14 @@ export function useCreateJobOffer() {
     requirements?: string[] | null;
     benefits?: string[] | null;
     application_deadline?: string | null;
+    // New columns
+    categorie_metier?: string | null;
+    date_limite?: string | null;
+    reporting_line?: string | null;
+    job_grade?: string | null;
+    salary_note?: string | null;
+    start_date?: string | null;
+    responsibilities?: string[] | null;
   };
   type JobOffersUpdate = Partial<Omit<JobOffersInsert, 'recruiter_id' | 'status'>> & {
     status?: 'active' | 'draft' | string;
@@ -208,10 +284,42 @@ export function useCreateJobOffer() {
     },
   });
 
+  interface DeleteJobOfferVariables {
+    jobId: string;
+    onSuccess?: () => void;
+    onError?: (error: unknown) => void;
+  }
+
+  const deleteJobOfferMutation = useMutation<null, Error, DeleteJobOfferVariables>({
+    mutationFn: async ({ jobId }) => {
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase
+        .from('job_offers')
+        .update({ status: 'closed' })
+        .eq('id', jobId)
+        .eq('recruiter_id', user.id);
+
+      if (error) throw error;
+      return null;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['recruiterDashboard', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['jobOffers'] });
+      queryClient.invalidateQueries({ queryKey: ['jobOffer', variables.jobId] });
+      variables.onSuccess?.();
+    },
+    onError: (error, variables) => {
+      variables.onError?.(error);
+    },
+  });
+
   return {
     createJobOffer: createJobOfferMutation.mutateAsync,
     isCreating: createJobOfferMutation.isPending,
     updateJobOffer: updateJobOfferMutation.mutateAsync,
     isUpdating: updateJobOfferMutation.isPending,
+    deleteJobOffer: deleteJobOfferMutation.mutate,
+    isDeleting: deleteJobOfferMutation.isPending,
   };
 }

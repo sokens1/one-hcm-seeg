@@ -39,7 +39,8 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   }
 
   const publishedAt = jobOffer.created_at ? new Date(jobOffer.created_at).toLocaleDateString() : undefined;
-  const deadline = jobOffer.application_deadline ? new Date(jobOffer.application_deadline).toLocaleDateString() : undefined;
+  const deadline = jobOffer.date_limite ? new Date(jobOffer.date_limite).toLocaleDateString() : 
+                   jobOffer.application_deadline ? new Date(jobOffer.application_deadline).toLocaleDateString() : undefined;
 
   return (
     <div className="space-y-8">
@@ -62,7 +63,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <CardTitle className="text-2xl mb-2">{jobOffer.title}</CardTitle>
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
                 <div className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
                   {jobOffer.location}
@@ -82,6 +83,16 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                   {publishedAt ? `Publié le ${publishedAt}` : ""}
                 </div>
               </div>
+              {jobOffer.categorie_metier && (
+                <div className="mb-2">
+                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                    {jobOffer.categorie_metier === 'metier_eau' && 'Métiers de l\'eau et assainissement'}
+                    {jobOffer.categorie_metier === 'metier_electricite' && 'Métiers de l\'électricité et énergie'}
+                    {jobOffer.categorie_metier === 'metier_clientele' && 'Métiers de la relation clientèle'}
+                    {jobOffer.categorie_metier === 'metier_support' && 'Métiers du support et maintenance'}
+                  </Badge>
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               {deadline && (
@@ -109,6 +120,25 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
               </p>
             </CardContent>
           </Card>
+
+          {/* Missions principales */}
+          {jobOffer.responsibilities && jobOffer.responsibilities.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Missions principales</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {jobOffer.responsibilities.map((mission, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="text-muted-foreground">{mission}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Profil recherché / Exigences */}
           {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
@@ -200,6 +230,30 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 <div className="text-sm font-medium">Date limite</div>
                 <div className="text-sm text-muted-foreground">{deadline || ""}</div>
               </div>
+              {jobOffer.start_date && (
+                <div>
+                  <div className="text-sm font-medium">Date d'entrée souhaitée</div>
+                  <div className="text-sm text-muted-foreground">{new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</div>
+                </div>
+              )}
+              {jobOffer.reporting_line && (
+                <div>
+                  <div className="text-sm font-medium">Ligne hiérarchique</div>
+                  <div className="text-sm text-muted-foreground">{jobOffer.reporting_line}</div>
+                </div>
+              )}
+              {jobOffer.job_grade && (
+                <div>
+                  <div className="text-sm font-medium">Catégorie / Niveau</div>
+                  <div className="text-sm text-muted-foreground">{jobOffer.job_grade}</div>
+                </div>
+              )}
+              {jobOffer.salary_note && (
+                <div>
+                  <div className="text-sm font-medium">Rémunération / Avantages (note)</div>
+                  <div className="text-sm text-muted-foreground whitespace-pre-wrap">{jobOffer.salary_note}</div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

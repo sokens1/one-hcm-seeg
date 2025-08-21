@@ -2,69 +2,96 @@
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, Calendar as CalendarIcon, X, Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import { useApplications } from "@/hooks/useApplications";
 import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface ApplicationFormProps {
   jobTitle: string;
-  jobId?: string;
+  jobId?: string; // required for create
   onBack: () => void;
   onSubmit?: () => void;
+  applicationId?: string; // used in edit mode
+  mode?: 'create' | 'edit';
+  initialStep?: number;
 }
 
 interface FormData {
   firstName: string;
   lastName: string;
   email: string;
+  gender: string;
   dateOfBirth: Date | null;
   currentPosition: string;
   cv: UploadedFile | null;
-  coverLetter: string;
+  coverLetter: UploadedFile | null;
+  integrityLetter: UploadedFile | null;
+  projectIdea: UploadedFile | null;
   certificates: UploadedFile[];
   recommendations: UploadedFile[];
   references: string;
-  question1: string;
-  question2: string;
-  question3: string;
+  // Partie Métier
+  metier1: string;
+  metier2: string;
+  metier3: string;
+  // Partie Talent
+  talent1: string;
+  talent2: string;
+  talent3: string;
+  // Partie Paradigme
+  paradigme1: string;
+  paradigme2: string;
+  paradigme3: string;
   consent: boolean;
 }
 
-export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: ApplicationFormProps) {
-  const [currentStep, setCurrentStep] = useState(1);
+export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
+  const [currentStep, setCurrentStep] = useState<number>(
+    typeof initialStep === 'number' && initialStep >= 1 ? initialStep : (mode === 'edit' ? 4 : 1)
+  );
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitApplication } = useApplications();
-  const { uploadFile, isUploading, getFileUrl } = useFileUpload();
+  const { uploadFile, isUploading, getFileUrl, deleteFile } = useFileUpload();
   const { user } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     email: "",
+    gender: "",
     dateOfBirth: null,
     currentPosition: "",
     cv: null,
-    coverLetter: "",
+    coverLetter: null,
+    integrityLetter: null,
+    projectIdea: null,
     certificates: [],
     recommendations: [],
     references: "",
-    question1: "",
-    question2: "",
-    question3: "",
+    // Partie Métier
+    metier1: "",
+    metier2: "",
+    metier3: "",
+    // Partie Talent
+    talent1: "",
+    talent2: "",
+    talent3: "",
+    // Partie Paradigme
+    paradigme1: "",
+    paradigme2: "",
+    paradigme3: "",
     consent: false
   });
 
@@ -83,7 +110,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
             .maybeSingle(),
           supabase
             .from('candidate_profiles')
-            .select('current_position')
+            .select('current_position, gender')
             .eq('user_id', user.id)
             .maybeSingle(),
         ]);
@@ -111,6 +138,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
           email: prev.email || dbUser?.email || user.email || '',
           dateOfBirth: prev.dateOfBirth || (dbUser?.date_of_birth ? new Date(dbUser.date_of_birth) : null),
           currentPosition: prev.currentPosition || profile?.current_position || '',
+          gender: prev.gender || profile?.gender || '',
         }));
       } catch (e: any) {
         console.error('Prefill error:', e);
@@ -123,6 +151,116 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
       isMounted = false;
     };
   }, [user, user?.id, user?.email]);
+
+  // Prefill from existing application when editing
+  useEffect(() => {
+    let aborted = false;
+    const loadExisting = async () => {
+      if (mode !== 'edit' || !applicationId) return;
+      try {
+        const { data, error } = await supabase
+          .from('applications')
+          .select(`
+            reference_contacts, 
+            mtp_answers,
+            candidate_id
+          `)
+          .eq('id', applicationId)
+          .single();
+        if (error) throw error;
+        if (aborted || !data) return;
+        
+        // Récupérer les informations utilisateur et profil séparément
+        const candidateId = (data as any).candidate_id;
+        if (candidateId) {
+          const [{ data: userData }, { data: profileData }] = await Promise.all([
+            supabase
+              .from('users')
+              .select('first_name, last_name, email, date_of_birth')
+              .eq('id', candidateId)
+              .maybeSingle(),
+            supabase
+              .from('candidate_profiles')
+              .select('current_position, gender')
+              .eq('user_id', candidateId)
+              .maybeSingle()
+          ]);
+          
+          const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
+          
+          setFormData(prev => ({
+            ...prev,
+            // Informations personnelles depuis la candidature existante
+            firstName: userData?.first_name || prev.firstName,
+            lastName: userData?.last_name || prev.lastName,
+            email: userData?.email || prev.email,
+            dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
+            gender: profileData?.gender || prev.gender,
+            currentPosition: profileData?.current_position || prev.currentPosition,
+            // Références et MTP
+            references: (data as any).reference_contacts ?? prev.references,
+            metier1: mtp?.metier?.[0] ?? prev.metier1,
+            metier2: mtp?.metier?.[1] ?? prev.metier2,
+            metier3: mtp?.metier?.[2] ?? prev.metier3,
+            talent1: mtp?.talent?.[0] ?? prev.talent1,
+            talent2: mtp?.talent?.[1] ?? prev.talent2,
+            talent3: mtp?.talent?.[2] ?? prev.talent3,
+            paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
+            paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
+            paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
+          }));
+        }
+      } catch (e) {
+        console.warn('Chargement de la candidature (édition) échoué:', (e as any)?.message || e);
+      }
+    };
+    loadExisting();
+    return () => { aborted = true; };
+  }, [mode, applicationId]);
+
+  // Prefill documents from existing application when editing
+  useEffect(() => {
+    let cancelled = false;
+    const loadDocuments = async () => {
+      if (mode !== 'edit' || !applicationId) return;
+      try {
+        const { data, error } = await supabase
+          .from('documents')
+          .select('document_type, file_name, file_path, file_size')
+          .eq('application_id', applicationId);
+        if (error) throw error;
+        if (cancelled || !data) return;
+
+        const makeUploaded = (d: any): UploadedFile => ({
+          path: d.file_path, // may already be a public URL
+          name: d.file_name,
+          size: d.file_size ?? 0,
+          type: ''
+        });
+
+        const cv = data.find(d => d.document_type === 'cv');
+        const cover = data.find(d => d.document_type === 'cover_letter');
+        const integrity = data.find(d => d.document_type === 'integrity_letter');
+        const project = data.find(d => d.document_type === 'project_idea');
+        const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
+        const recommendations = data.filter(d => d.document_type === 'recommendation').map(makeUploaded);
+
+        setFormData(prev => ({
+          ...prev,
+          cv: cv ? makeUploaded(cv) : prev.cv,
+          coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
+          integrityLetter: integrity ? makeUploaded(integrity) : prev.integrityLetter,
+          projectIdea: project ? makeUploaded(project) : prev.projectIdea,
+          certificates: certificates.length ? certificates : prev.certificates,
+          recommendations: recommendations.length ? recommendations : prev.recommendations,
+        }));
+      } catch (e) {
+        console.warn('Chargement des documents échoué:', (e as any)?.message || e);
+      }
+    };
+    loadDocuments();
+    return () => { cancelled = true; };
+  }, [mode, applicationId]);
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
@@ -140,53 +278,96 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
   };
 
   const handleSubmit = async () => {
-    if (!jobId) {
+    if (mode !== 'edit' && !jobId) {
       toast.error("ID de l'offre d'emploi manquant");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const application = await submitApplication({
-        job_offer_id: jobId,
-        cover_letter: formData.coverLetter,
-        motivation: formData.question1,
-        ref_contacts: formData.references
-      });
-      // Insérer les documents uploadés dans la table public.documents
+      let applicationIdForDocs: string | null = null;
+      if (mode === 'edit' && applicationId) {
+        const { error: updError } = await supabase
+          .from('applications')
+          .update({
+            reference_contacts: formData.references,
+            mtp_answers: {
+              metier: [formData.metier1, formData.metier2, formData.metier3],
+              talent: [formData.talent1, formData.talent2, formData.talent3],
+              paradigme: [formData.paradigme1, formData.paradigme2, formData.paradigme3],
+            },
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', applicationId);
+        if (updError) throw updError;
+        applicationIdForDocs = applicationId;
+      } else {
+        const application = await submitApplication({
+          job_offer_id: jobId as string,
+          ref_contacts: formData.references,
+          mtp_answers: {
+            metier: [formData.metier1, formData.metier2, formData.metier3],
+            talent: [formData.talent1, formData.talent2, formData.talent3],
+            paradigme: [formData.paradigme1, formData.paradigme2, formData.paradigme3],
+          },
+        });
+        applicationIdForDocs = application.id;
+      }
+
+      // Gérer les documents lors de l'édition ou création
       try {
-        const docsPayload: Array<{ application_id: string; document_type: 'cv' | 'diploma' | 'recommendation' | 'cover_letter'; file_name: string; file_path: string; file_size: number | null; }> = [];
-        if (formData.cv) {
+        if (mode === 'edit' && applicationIdForDocs) {
+          // En mode édition, supprimer d'abord tous les anciens documents
+          await supabase
+            .from('documents')
+            .delete()
+            .eq('application_id', applicationIdForDocs);
+        }
+
+        const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_path: string; file_size: number | null; }> = [];
+        
+        const isPublicUrl = (p: string) => p.startsWith('http://') || p.startsWith('https://');
+        const toFileUrl = (p: string) => (isPublicUrl(p)) ? p : getFileUrl(p);
+
+        const filesToUpload: { file: UploadedFile | null, type: string }[] = [
+          { file: formData.cv, type: 'cv' },
+          { file: formData.coverLetter, type: 'cover_letter' },
+          { file: formData.integrityLetter, type: 'integrity_letter' },
+          { file: formData.projectIdea, type: 'project_idea' },
+        ];
+
+        for (const { file, type } of filesToUpload) {
+          if (file) {
+            docsPayload.push({
+              application_id: applicationIdForDocs as string,
+              document_type: type,
+              file_name: file.name,
+              file_path: toFileUrl(file.path),
+              file_size: file.size ?? null,
+            });
+          }
+        }
+
+        for (const cert of formData.certificates) {
           docsPayload.push({
-            application_id: application.id,
-            document_type: 'cv',
-            file_name: formData.cv.name,
-            file_path: getFileUrl(formData.cv.path),
-            file_size: formData.cv.size ?? null,
+            application_id: applicationIdForDocs as string,
+            document_type: 'diploma',
+            file_name: cert.name,
+            file_path: toFileUrl(cert.path),
+            file_size: cert.size ?? null,
           });
         }
-        if (formData.certificates.length > 0) {
-          for (const cert of formData.certificates) {
-            docsPayload.push({
-              application_id: application.id,
-              document_type: 'diploma',
-              file_name: cert.name,
-              file_path: getFileUrl(cert.path),
-              file_size: cert.size ?? null,
-            });
-          }
+
+        for (const rec of formData.recommendations) {
+          docsPayload.push({
+            application_id: applicationIdForDocs as string,
+            document_type: 'recommendation',
+            file_name: rec.name,
+            file_path: toFileUrl(rec.path),
+            file_size: rec.size ?? null,
+          });
         }
-        if (formData.recommendations.length > 0) {
-          for (const rec of formData.recommendations) {
-            docsPayload.push({
-              application_id: application.id,
-              document_type: 'recommendation',
-              file_name: rec.name,
-              file_path: getFileUrl(rec.path),
-              file_size: rec.size ?? null,
-            });
-          }
-        }
+
         if (docsPayload.length > 0) {
           const { error: docsError } = await supabase
             .from('documents')
@@ -196,7 +377,28 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
           }
         }
       } catch (docsEx: any) {
-        console.warn('Erreur lors de l\'insertion des documents:', docsEx?.message || docsEx);
+        console.warn('Erreur lors de la gestion des documents:', docsEx?.message || docsEx);
+      }
+
+      // Sync profile with form data, do not block on this
+      if (user?.id) {
+        Promise.allSettled([
+          supabase.from('users').update({ 
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            date_of_birth: formData.dateOfBirth ? formData.dateOfBirth.toISOString() : null,
+          }).eq('id', user.id),
+          supabase.from('candidate_profiles').update({ 
+            current_position: formData.currentPosition,
+            gender: formData.gender,
+          }).eq('user_id', user.id),
+        ]).then(results => {
+          results.forEach(result => {
+            if (result.status === 'rejected') {
+              console.warn('Profile sync failed for a field:', result.reason);
+            }
+          });
+        });
       }
 
       setIsSubmitted(true);
@@ -213,7 +415,18 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'certificates' | 'recommendations') => {
+  // Helpers pour suppression de fichiers du stockage si nécessaire
+  const isPublicUrl = (p: string) => p.startsWith('http://') || p.startsWith('https://');
+  const safeDeleteStorageFile = async (path?: string) => {
+    try {
+      if (!path || isPublicUrl(path)) return;
+      await deleteFile(path);
+    } catch (e) {
+      console.warn('Suppression stockage échouée (non-bloquant):', (e as any)?.message || e);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'coverLetter' | 'integrityLetter' | 'projectIdea' | 'certificates' | 'recommendations') => {
     const files = e.target.files;
     if (!files) return;
 
@@ -222,6 +435,18 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
         const uploadedFile = await uploadFile(files[0], 'cv');
         setFormData({ ...formData, cv: uploadedFile });
         toast.success("CV uploadé avec succès!");
+      } else if (type === 'coverLetter') {
+        const uploadedFile = await uploadFile(files[0], 'cover-letters');
+        setFormData({ ...formData, coverLetter: uploadedFile });
+        toast.success("Lettre de motivation uploadée avec succès!");
+      } else if (type === 'integrityLetter') {
+        const uploadedFile = await uploadFile(files[0], 'integrity-letters');
+        setFormData({ ...formData, integrityLetter: uploadedFile });
+        toast.success("Lettre d'intégrité professionnelle uploadée avec succès!");
+      } else if (type === 'projectIdea') {
+        const uploadedFile = await uploadFile(files[0], 'project-ideas');
+        setFormData({ ...formData, projectIdea: uploadedFile });
+        toast.success("Idée de projet uploadée avec succès!");
       } else if (type === 'certificates') {
         const uploadPromises = Array.from(files).map(file => uploadFile(file, 'certificates'));
         const uploadedFiles = await Promise.all(uploadPromises);
@@ -318,7 +543,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
             <div className="grid grid-cols-4 gap-2 text-xs font-medium text-gray-600 text-center">
               <span>Infos Personnelles</span>
               <span>Parcours & Documents</span>
-              <span>Questionnaire MTP</span>
+              <span>Adhérence MTP</span>
               <span>Finalisation</span>
             </div>
             <div className="mt-4 bg-gray-200 rounded-full h-2">
@@ -327,6 +552,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                 style={{ width: `${progress}%` }}
               />
             </div>
+            {/* Top guide text removed to avoid duplication; sidebar guide remains */}
           </div>
         </div>
 
@@ -341,46 +567,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                     <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                       <CheckCircle className="w-8 h-8 text-white" />
                     </div>
-                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                      Étape {currentStep}/4 complétée
+                    <div className="text-sm text-muted-foreground">
+                      Étape <span className="font-semibold text-foreground">{currentStep}</span> / {totalSteps}
                     </div>
                   </div>
-                  
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900">Évaluation 360°</h3>
-                    <p className="text-sm text-gray-600">Analyse complète des compétences</p>
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Compétences Techniques</span>
-                          <span className="font-medium">85%</span>
-                        </div>
-                        <div className="bg-gray-200 rounded-full h-2">
-                          <div className="bg-blue-600 h-2 rounded-full" style={{width: '85%'}}></div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Leadership</span>
-                          <span className="font-medium">78%</span>
-                        </div>
-                        <div className="bg-gray-200 rounded-full h-2">
-                          <div className="bg-blue-600 h-2 rounded-full" style={{width: '78%'}}></div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Adaptabilité</span>
-                          <span className="font-medium">92%</span>
-                        </div>
-                        <div className="bg-gray-200 rounded-full h-2">
-                          <div className="bg-blue-600 h-2 rounded-full" style={{width: '92%'}}></div>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="space-y-3 text-center">
+                    <h3 className="font-semibold text-gray-900">Guide de Candidature</h3>
+                    <p className="text-sm text-gray-600">
+                      Ce formulaire se déroule en 4 étapes: renseignez vos informations, ajoutez vos
+                      documents clés, indiquez votre adhérence MTP (Métier, Talent, Paradigme), puis
+                      vérifiez et soumettez votre candidature.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -393,7 +590,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                   <CardTitle className="flex items-center gap-3 text-xl">
                     {currentStep === 1 && <><User className="w-6 h-6" /> Informations Personnelles</>}
                     {currentStep === 2 && <><FileText className="w-6 h-6" /> Parcours & Documents</>}
-                    {currentStep === 3 && <><CheckCircle className="w-6 h-6" /> Questionnaire MTP</>}
+                    {currentStep === 3 && <><CheckCircle className="w-6 h-6" /> Adhérence MTP</>}
                     {currentStep === 4 && <><Send className="w-6 h-6" /> Finalisation</>}
                   </CardTitle>
                 </CardHeader>
@@ -437,36 +634,31 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                   </div>
                   <div>
                     <Label htmlFor="dateOfBirth">Date de naissance *</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !formData.dateOfBirth && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {formData.dateOfBirth ? (
-                            format(formData.dateOfBirth, "PPP", { locale: fr })
-                          ) : (
-                            <span>Choisir une date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={formData.dateOfBirth || undefined}
-                          onSelect={(date) => setFormData({ ...formData, dateOfBirth: date || null })}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                          className="p-3 pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Input
+                      id="dateOfBirth"
+                      type="date"
+                      value={formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString().slice(0, 10) : ""}
+                      max={new Date().toISOString().slice(0, 10)}
+                      min="1900-01-01"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, dateOfBirth: val ? new Date(val) : null });
+                      }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="gender">Sexe *</Label>
+                    <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez votre sexe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="homme">Homme</SelectItem>
+                        <SelectItem value="femme">Femme</SelectItem>
+                        <SelectItem value="autre">Autre</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label htmlFor="currentPosition">Poste actuel *</Label>
@@ -516,22 +708,74 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                         >
                           {isUploading ? "Upload..." : "Choisir un fichier"}
                         </Button>
+                        {formData.cv && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.cv.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.cv?.path);
+                                setFormData({ ...formData, cv: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                  
                   <div>
                     <Label htmlFor="coverLetter">Lettre de motivation *</Label>
-                    <Textarea
-                      id="coverLetter"
-                      value={formData.coverLetter}
-                      onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
-                      placeholder="Expliquez votre motivation pour ce poste..."
-                      className="min-h-[120px]"
-                      required
-                    />
+                    <div className="mt-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                        {isUploading ? (
+                          <div className="space-y-2">
+                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
+                          </div>
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {formData.coverLetter ? formData.coverLetter.name : "Glissez votre lettre de motivation ici ou cliquez pour parcourir"}
+                            </p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => handleFileUpload(e, 'coverLetter')}
+                          className="hidden"
+                          id="coverLetter-upload"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => document.getElementById('coverLetter-upload')?.click()}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? "Upload..." : "Choisir un fichier"}
+                        </Button>
+                        {formData.coverLetter && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.coverLetter.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.coverLetter?.path);
+                                setFormData({ ...formData, coverLetter: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-
                   <div>
                     <Label htmlFor="certificates">Certificat(s) (facultatif)</Label>
                     <div className="mt-2">
@@ -564,7 +808,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => {
+                                onClick={async () => {
+                                  await safeDeleteStorageFile(formData.certificates[index]?.path);
                                   const newCertificates = formData.certificates.filter((_, i) => i !== index);
                                   setFormData({ ...formData, certificates: newCertificates });
                                 }}
@@ -577,7 +822,106 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                       )}
                     </div>
                   </div>
-
+                  <div>
+                    <Label htmlFor="integrityLetter">Lettre d'intégrité professionnelle *</Label>
+                    <div className="mt-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                        {isUploading ? (
+                          <div className="space-y-2">
+                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
+                          </div>
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {formData.integrityLetter ? formData.integrityLetter.name : "Glissez votre lettre d'intégrité professionnelle ici ou cliquez pour parcourir"}
+                            </p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => handleFileUpload(e, 'integrityLetter')}
+                          className="hidden"
+                          id="integrityLetter-upload"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => document.getElementById('integrityLetter-upload')?.click()}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? "Upload..." : "Choisir un fichier"}
+                        </Button>
+                        {formData.integrityLetter && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.integrityLetter.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.integrityLetter?.path);
+                                setFormData({ ...formData, integrityLetter: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="projectIdea">Idée de projet (3 pages max) *</Label>
+                    <div className="mt-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                        {isUploading ? (
+                          <div className="space-y-2">
+                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
+                          </div>
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {formData.projectIdea ? formData.projectIdea.name : "Glissez votre idée de projet ici ou cliquez pour parcourir (3 pages max)"}
+                            </p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => handleFileUpload(e, 'projectIdea')}
+                          className="hidden"
+                          id="projectIdea-upload"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => document.getElementById('projectIdea-upload')?.click()}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? "Upload..." : "Choisir un fichier"}
+                        </Button>
+                        {formData.projectIdea && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.projectIdea.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.projectIdea?.path);
+                                setFormData({ ...formData, projectIdea: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                   <div>
                     <Label htmlFor="recommendations">Lettre(s) de recommandation (facultatif)</Label>
                     <div className="mt-2">
@@ -610,7 +954,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => {
+                                onClick={async () => {
+                                  await safeDeleteStorageFile(formData.recommendations[index]?.path);
                                   const newRecommendations = formData.recommendations.filter((_, i) => i !== index);
                                   setFormData({ ...formData, recommendations: newRecommendations });
                                 }}
@@ -637,45 +982,141 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                 </div>
               )}
 
-              {/* Step 3: Questionnaire MTP */}
+              {/* Step 3: Adhérence MTP au poste */}
               {currentStep === 3 && (
-                <div className="space-y-6 animate-fade-in">
+                <div className="space-y-8 animate-fade-in">
                   <div className="text-center mb-6">
-                    <h3 className="text-xl font-semibold mb-2">Questionnaire : Métier, Talent et Paradigme</h3>
-                    <p className="text-muted-foreground">Quelques questions pour mieux comprendre vos aspirations et votre vision.</p>
+                    <h3 className="text-xl font-semibold mb-2">Adhérence MTP au poste</h3>
+                    <p className="text-muted-foreground">Évaluez votre adéquation avec le poste selon les dimensions Métier, Talent et Paradigme.</p>
                   </div>
 
-                  <div>
-                    <Label htmlFor="question1">Question 1 : Décrivez ce qui vous passionne le plus dans votre métier</Label>
-                    <Textarea
-                      id="question1"
-                      value={formData.question1}
-                      onChange={(e) => setFormData({ ...formData, question1: e.target.value })}
-                      placeholder="Partagez votre passion..."
-                      className="min-h-[100px]"
-                    />
+                  {/* Partie Métier */}
+                  <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+                    <h4 className="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                      <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">M</div>
+                      Partie Métier
+                    </h4>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="metier1">1. Quelles sont vos principales compétences techniques dans ce domaine ?</Label>
+                        <Textarea
+                          id="metier1"
+                          value={formData.metier1}
+                          onChange={(e) => setFormData({ ...formData, metier1: e.target.value })}
+                          placeholder="Décrivez vos compétences techniques..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="metier2">2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?</Label>
+                        <Textarea
+                          id="metier2"
+                          value={formData.metier2}
+                          onChange={(e) => setFormData({ ...formData, metier2: e.target.value })}
+                          placeholder="Expliquez la pertinence de votre expérience..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="metier3">3. Quels défis techniques de ce métier vous motivent le plus ?</Label>
+                        <Textarea
+                          id="metier3"
+                          value={formData.metier3}
+                          onChange={(e) => setFormData({ ...formData, metier3: e.target.value })}
+                          placeholder="Partagez vos motivations techniques..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor="question2">Question 2 : Quel est le talent unique que vous apporteriez à la SEEG ?</Label>
-                    <Textarea
-                      id="question2"
-                      value={formData.question2}
-                      onChange={(e) => setFormData({ ...formData, question2: e.target.value })}
-                      placeholder="Décrivez votre talent unique..."
-                      className="min-h-[100px]"
-                    />
+                  {/* Partie Talent */}
+                  <div className="bg-green-50 rounded-lg p-6 border border-green-200">
+                    <h4 className="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
+                      <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">T</div>
+                      Partie Talent
+                    </h4>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="talent1">1. Quel est votre talent naturel le plus distinctif ?</Label>
+                        <Textarea
+                          id="talent1"
+                          value={formData.talent1}
+                          onChange={(e) => setFormData({ ...formData, talent1: e.target.value })}
+                          placeholder="Décrivez votre talent unique..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="talent2">2. Comment ce talent vous aide-t-il à exceller dans votre travail ?</Label>
+                        <Textarea
+                          id="talent2"
+                          value={formData.talent2}
+                          onChange={(e) => setFormData({ ...formData, talent2: e.target.value })}
+                          placeholder="Expliquez l'impact de votre talent..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="talent3">3. Donnez un exemple concret où votre talent a fait la différence.</Label>
+                        <Textarea
+                          id="talent3"
+                          value={formData.talent3}
+                          onChange={(e) => setFormData({ ...formData, talent3: e.target.value })}
+                          placeholder="Racontez un exemple précis..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor="question3">Question 3 : Partagez un exemple où vous avez changé de paradigme pour résoudre un problème complexe</Label>
-                    <Textarea
-                      id="question3"
-                      value={formData.question3}
-                      onChange={(e) => setFormData({ ...formData, question3: e.target.value })}
-                      placeholder="Racontez votre exemple..."
-                      className="min-h-[100px]"
-                    />
+                  {/* Partie Paradigme */}
+                  <div className="bg-purple-50 rounded-lg p-6 border border-purple-200">
+                    <h4 className="text-lg font-semibold text-purple-800 mb-4 flex items-center gap-2">
+                      <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">P</div>
+                      Partie Paradigme/Valeurs
+                    </h4>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="paradigme1">1. Quelles valeurs guident vos décisions professionnelles ?</Label>
+                        <Textarea
+                          id="paradigme1"
+                          value={formData.paradigme1}
+                          onChange={(e) => setFormData({ ...formData, paradigme1: e.target.value })}
+                          placeholder="Partagez vos valeurs professionnelles..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="paradigme2">2. Comment votre vision s'aligne-t-elle avec la mission de OneHCM ?</Label>
+                        <Textarea
+                          id="paradigme2"
+                          value={formData.paradigme2}
+                          onChange={(e) => setFormData({ ...formData, paradigme2: e.target.value })}
+                          placeholder="Expliquez votre alignement avec notre mission..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="paradigme3">3. Décrivez une situation où vous avez remis en question une approche traditionnelle.</Label>
+                        <Textarea
+                          id="paradigme3"
+                          value={formData.paradigme3}
+                          onChange={(e) => setFormData({ ...formData, paradigme3: e.target.value })}
+                          placeholder="Racontez votre exemple d'innovation..."
+                          className="min-h-[80px] mt-2"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -723,7 +1164,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                         </div>
                         <div>
                           <span className="text-muted-foreground">Lettre de motivation:</span>
-                          <p>{formData.coverLetter ? "Fournie" : "Non fournie"}</p>
+                          <p>{formData.coverLetter ? formData.coverLetter.name : "Non fournie"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Lettre d'intégrité professionnelle:</span>
+                          <p>{formData.integrityLetter ? formData.integrityLetter.name : "Non fournie"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Idée de projet:</span>
+                          <p>{formData.projectIdea ? formData.projectIdea.name : "Non fournie"}</p>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Certificats:</span>
@@ -738,21 +1187,27 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
 
                     <div className="bg-muted rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-medium">Questionnaire MTP</h5>
+                        <h5 className="font-medium">Adhérence MTP au poste</h5>
                         <Button variant="outline" size="sm" onClick={() => setCurrentStep(3)}>Modifier</Button>
                       </div>
-                      <div className="space-y-2 text-sm">
+                      <div className="space-y-3 text-sm">
                         <div>
-                          <span className="text-muted-foreground">Question 1:</span>
-                          <p>{formData.question1 ? "Répondue" : "Non répondue"}</p>
+                          <span className="text-muted-foreground font-medium">Métier:</span>
+                          <p className="text-xs">
+                            {[formData.metier1, formData.metier2, formData.metier3].filter(Boolean).length}/3 questions répondues
+                          </p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Question 2:</span>
-                          <p>{formData.question2 ? "Répondue" : "Non répondue"}</p>
+                          <span className="text-muted-foreground font-medium">Talent:</span>
+                          <p className="text-xs">
+                            {[formData.talent1, formData.talent2, formData.talent3].filter(Boolean).length}/3 questions répondues
+                          </p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Question 3:</span>
-                          <p>{formData.question3 ? "Répondue" : "Non répondue"}</p>
+                          <span className="text-muted-foreground font-medium">Paradigme:</span>
+                          <p className="text-xs">
+                            {[formData.paradigme1, formData.paradigme2, formData.paradigme3].filter(Boolean).length}/3 questions répondues
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -788,9 +1243,9 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit }: Applicati
                     variant="hero"
                     onClick={handleNext}
                     disabled={
-                      (currentStep === 1 && (!formData.firstName || !formData.lastName || !formData.email || !formData.dateOfBirth || !formData.currentPosition)) ||
-                      (currentStep === 2 && (!formData.cv || !formData.coverLetter)) ||
-                      (currentStep === 3 && (!formData.question1 || !formData.question2 || !formData.question3))
+                      (currentStep === 1 && (!formData.firstName || !formData.lastName || !formData.email || !formData.gender || !formData.dateOfBirth || !formData.currentPosition)) ||
+                      (currentStep === 2 && (!formData.cv || !formData.coverLetter || !formData.integrityLetter || !formData.projectIdea)) ||
+                      (currentStep === 3 && (!formData.metier1 || !formData.metier2 || !formData.metier3 || !formData.talent1 || !formData.talent2 || !formData.talent3 || !formData.paradigme1 || !formData.paradigme2 || !formData.paradigme3))
                     }
                   >
                     Suivant
