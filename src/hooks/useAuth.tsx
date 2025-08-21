@@ -19,6 +19,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  isRoleLoading: boolean;
   isUpdating: boolean;
   signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<AuthResponse>;
@@ -37,6 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isRoleLoading, setIsRoleLoading] = useState(false);
   const [dbRole, setDbRole] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
@@ -101,11 +103,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Whenever the authenticated user changes, fetch the authoritative role from DB
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        if (!user?.id) {
+          setDbRole(null);
+          return;
+        }
+        setIsRoleLoading(true);
+        const { data, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        if (!error && data?.role) {
+          setDbRole(String(data.role));
+        } else {
+          setDbRole(null);
+        }
+      } catch {
+        setDbRole(null);
+      } finally {
+        setIsRoleLoading(false);
+      }
+    };
+    fetchRole();
+  }, [user?.id]);
+
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    // Pour le développement, on peut désactiver la confirmation email
+    // Base URL selon l'environnement (dev/prod)
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
+    const redirectUrl = `${siteBaseUrl}/`;
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -113,16 +143,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       options: {
         emailRedirectTo: redirectUrl,
         data: metadata,
-        // En développement, on peut essayer de contourner la confirmation email
-        ...(isDevelopment && { emailRedirectTo: undefined })
       }
     });
     
     // Si on est en développement et qu'il y a une erreur de rate limit,
-    // on peut essayer de créer l'utilisateur directement
+    // on peut assouplir l'expérience côté UI
     if (error && error.message.includes('rate limit') && isDevelopment) {
       console.warn('Rate limit atteint, tentative de création directe en mode développement');
-      // En développement, on peut simuler une inscription réussie
+      // En développement, on peut simuler une inscription réussie côté UI
       return { error: null };
     }
     
@@ -231,7 +259,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/reset-password`;
+    // Base URL selon l'environnement (dev/prod)
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
+    const redirectUrl = `${siteBaseUrl}/reset-password`;
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
@@ -240,7 +271,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
-  // Helper functions to check user role
+  // Helper functions to check user role (normalize FR/EN + admin)
   const getUserRole = () => {
     // Prefer DB role for dynamic behavior; fallback to auth metadata; default 'candidat'
     return dbRole || (user?.user_metadata?.role as string | undefined) || 'candidat';
@@ -255,6 +286,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     isLoading,
+    isRoleLoading,
     isUpdating,
     signUp,
     signIn,

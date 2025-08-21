@@ -13,6 +13,7 @@ import {
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
+import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
 import { Loader2 } from 'lucide-react';
 
 // Lazily load page components
@@ -43,6 +44,10 @@ const CandidatesPage = lazy(() => import("./pages/recruiter/CandidatesPage"));
 const RecruiterJobs = lazy(() => import("./pages/recruiter/RecruiterJobs"));
 const RecruiterProfile = lazy(() => import("./pages/recruiter/RecruiterProfile"));
 const CandidateAnalysis = lazy(() => import("./pages/recruiter/CandidateAnalysis"));
+
+// Admin pages
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +88,11 @@ const router = createBrowserRouter(
       <Route path="recruiter/jobs" element={<ProtectedRecruiterRoute><RecruiterJobs /></ProtectedRecruiterRoute>} />
       <Route path="recruiter/candidates/:id/analysis" element={<ProtectedRecruiterRoute><CandidateAnalysis /></ProtectedRecruiterRoute>} />
       
+      {/* Admin Routes */}
+      <Route path="admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
+      <Route path="admin/dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
+      <Route path="admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
+      
       {/* Fallback routes */}
       <Route path="index" element={<Index />} />
       <Route path="*" element={<NotFound />} />
@@ -103,7 +113,10 @@ function App() {
         <TooltipProvider>
           <AuthProvider>
             <Suspense fallback={<LoadingFallback />}>
-              <RouterProvider router={router} />
+              <RouterProvider
+                router={router}
+                future={{ v7_startTransition: true }}
+              />
             </Suspense>
             <Toaster />
             <Sonner />
