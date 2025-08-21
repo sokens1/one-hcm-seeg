@@ -4,20 +4,20 @@ export function Footer() {
   return (
     <footer className="bg-primary-dark text-white mt-16">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-white" />
+              <div className="w-30 h-10 rounded-lg flex items-center justify-center">
+                <img src="/LOGO HCM4.png" alt="Logo" className="w-20 h-35 object-contain" />
               </div>
-              <div>
+              {/* <div>
                 <h3 className="text-lg font-bold text-white">OneHCM</h3>
                 <p className="text-xs text-white/80">Sourcing Talents</p>
-              </div>
+              </div> */}
             </div>
             <p className="text-sm text-white/90">
-              Plateforme de recrutement dédiée aux talents gabonais. 
+              Plateforme de recrutement dédiée aux talents gabonais.
               Connectons les entreprises aux meilleurs candidats du Gabon.
             </p>
           </div>
@@ -73,7 +73,7 @@ export function Footer() {
 
         <div className="border-t border-white/20 mt-8 pt-8">
           <div className="text-center text-sm text-white/90">
-          <p>&copy; {new Date().getFullYear()} OneHCM - Sourcing Talents. Tous droits réservés.</p>
+            <p>&copy; {new Date().getFullYear()} OneHCM - Sourcing Talents. Tous droits réservés.</p>
           </div>
         </div>
       </div>
