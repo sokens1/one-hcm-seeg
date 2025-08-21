@@ -985,25 +985,25 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
               {/* Step 3: Adhérence MTP au poste */}
               {currentStep === 3 && (
-                <div className="space-y-8 animate-fade-in">
+                <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in">
                   <div className="text-center mb-2">
-                    <h3 className="text-xl font-semibold mb-2">Adhérence MTP au poste</h3>
-                    <p className="text-muted-foreground mb-6">Évaluez votre adéquation avec le poste selon les dimensions Métier, Talent et Paradigme.</p>
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2">Adhérence MTP au poste</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2">Évaluez votre adéquation avec le poste selon les dimensions Métier, Talent et Paradigme.</p>
                     
                     {/* Navigation par onglets */}
-                    <div className="flex justify-center border-b border-gray-200 w-full mb-6">
-                      <nav className="-mb-px flex space-x-8" aria-label="Navigation MTP">
+                    <div className="flex justify-center border-b border-gray-200 w-full mb-4 sm:mb-6">
+                      <nav className="-mb-px flex space-x-2 sm:space-x-4 lg:space-x-8 overflow-x-auto" aria-label="Navigation MTP">
                         <button
                           onClick={() => setActiveTab('metier')}
                           className={`${activeTab === 'metier' 
                             ? 'border-blue-500 text-blue-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
+                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
                         >
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'metier' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
+                          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'metier' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
                             M
                           </div>
-                          Métier
+                          <span className="hidden sm:inline">Métier</span>
                         </button>
                         
                         <button
@@ -1011,12 +1011,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           className={`${activeTab === 'talent' 
                             ? 'border-green-500 text-green-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
+                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
                         >
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'talent' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800'}`}>
+                          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'talent' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800'}`}>
                             T
                           </div>
-                          Talent
+                          <span className="hidden sm:inline">Talent</span>
                         </button>
                         
                         <button
@@ -1024,57 +1024,57 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           className={`${activeTab === 'paradigme' 
                             ? 'border-purple-500 text-purple-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
+                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
                         >
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'paradigme' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'}`}>
+                          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'paradigme' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'}`}>
                             P
                           </div>
-                          Paradigme
+                          <span className="hidden sm:inline">Paradigme</span>
                         </button>
                       </nav>
                     </div>
                   </div>
                   
                   {/* Contenu des onglets */}
-                  <div className="mt-4">
+                  <div className="mt-2 sm:mt-4">
                     {/* Onglet Métier */}
                     {activeTab === 'metier' && (
-                      <div className="bg-blue-50 rounded-lg p-6 border border-blue-200 animate-fade-in">
-                        <h4 className="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
-                          <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">M</div>
+                      <div className="bg-blue-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-blue-200 animate-fade-in">
+                        <h4 className="text-base sm:text-lg font-semibold text-blue-800 mb-3 sm:mb-4 flex items-center gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">M</div>
                           Partie Métier
                         </h4>
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                           <div>
-                            <Label htmlFor="metier1">1. Quelles sont vos principales compétences techniques dans ce domaine ?</Label>
+                            <Label htmlFor="metier1" className="text-sm sm:text-base">1. Quelles sont vos principales compétences techniques dans ce domaine ?</Label>
                             <Textarea
                               id="metier1"
                               value={formData.metier1}
                               onChange={(e) => setFormData({ ...formData, metier1: e.target.value })}
                               placeholder="Décrivez vos compétences techniques..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="metier2">2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?</Label>
+                            <Label htmlFor="metier2" className="text-sm sm:text-base">2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?</Label>
                             <Textarea
                               id="metier2"
                               value={formData.metier2}
                               onChange={(e) => setFormData({ ...formData, metier2: e.target.value })}
                               placeholder="Expliquez la pertinence de votre expérience..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="metier3">3. Quels défis techniques de ce métier vous motivent le plus ?</Label>
+                            <Label htmlFor="metier3" className="text-sm sm:text-base">3. Quels défis techniques de ce métier vous motivent le plus ?</Label>
                             <Textarea
                               id="metier3"
                               value={formData.metier3}
                               onChange={(e) => setFormData({ ...formData, metier3: e.target.value })}
                               placeholder="Partagez vos motivations techniques..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
                         </div>
@@ -1083,43 +1083,43 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
                     {/* Onglet Talent */}
                     {activeTab === 'talent' && (
-                      <div className="bg-green-50 rounded-lg p-6 border border-green-200 animate-fade-in">
-                        <h4 className="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
-                          <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">T</div>
+                      <div className="bg-green-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-green-200 animate-fade-in">
+                        <h4 className="text-base sm:text-lg font-semibold text-green-800 mb-3 sm:mb-4 flex items-center gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">T</div>
                           Partie Talent
                         </h4>
                         
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                           <div>
-                            <Label htmlFor="talent1">1. Quel est votre talent naturel le plus distinctif ?</Label>
+                            <Label htmlFor="talent1" className="text-sm sm:text-base">1. Quel est votre talent naturel le plus distinctif ?</Label>
                             <Textarea
                               id="talent1"
                               value={formData.talent1}
                               onChange={(e) => setFormData({ ...formData, talent1: e.target.value })}
                               placeholder="Décrivez votre talent unique..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="talent2">2. Comment ce talent vous aide-t-il à exceller dans votre travail ?</Label>
+                            <Label htmlFor="talent2" className="text-sm sm:text-base">2. Comment ce talent vous aide-t-il à exceller dans votre travail ?</Label>
                             <Textarea
                               id="talent2"
                               value={formData.talent2}
                               onChange={(e) => setFormData({ ...formData, talent2: e.target.value })}
                               placeholder="Expliquez l'impact de votre talent..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="talent3">3. Donnez un exemple concret où votre talent a fait la différence.</Label>
+                            <Label htmlFor="talent3" className="text-sm sm:text-base">3. Donnez un exemple concret où votre talent a fait la différence.</Label>
                             <Textarea
                               id="talent3"
                               value={formData.talent3}
                               onChange={(e) => setFormData({ ...formData, talent3: e.target.value })}
                               placeholder="Racontez un exemple précis..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
                         </div>
@@ -1128,43 +1128,43 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
                     {/* Onglet Paradigme */}
                     {activeTab === 'paradigme' && (
-                      <div className="bg-purple-50 rounded-lg p-6 border border-purple-200 animate-fade-in">
-                        <h4 className="text-lg font-semibold text-purple-800 mb-4 flex items-center gap-2">
-                          <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">P</div>
+                      <div className="bg-purple-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-purple-200 animate-fade-in">
+                        <h4 className="text-base sm:text-lg font-semibold text-purple-800 mb-3 sm:mb-4 flex items-center gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">P</div>
                           Partie Paradigme/Valeurs
                         </h4>
                         
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                           <div>
-                            <Label htmlFor="paradigme1">1. Quelles valeurs guident vos décisions professionnelles ?</Label>
+                            <Label htmlFor="paradigme1" className="text-sm sm:text-base">1. Quelles valeurs guident vos décisions professionnelles ?</Label>
                             <Textarea
                               id="paradigme1"
                               value={formData.paradigme1}
                               onChange={(e) => setFormData({ ...formData, paradigme1: e.target.value })}
                               placeholder="Partagez vos valeurs professionnelles..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="paradigme2">2. Comment votre vision s'aligne-t-elle avec la mission de OneHCM ?</Label>
+                            <Label htmlFor="paradigme2" className="text-sm sm:text-base">2. Comment votre vision s'aligne-t-elle avec la mission de OneHCM ?</Label>
                             <Textarea
                               id="paradigme2"
                               value={formData.paradigme2}
                               onChange={(e) => setFormData({ ...formData, paradigme2: e.target.value })}
                               placeholder="Expliquez l'alignement avec notre mission..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="paradigme3">3. Comment contribueriez-vous à notre culture d'entreprise ?</Label>
+                            <Label htmlFor="paradigme3" className="text-sm sm:text-base">3. Comment contribueriez-vous à notre culture d'entreprise ?</Label>
                             <Textarea
                               id="paradigme3"
                               value={formData.paradigme3}
                               onChange={(e) => setFormData({ ...formData, paradigme3: e.target.value })}
                               placeholder="Décrivez votre contribution potentielle..."
-                              className="min-h-[80px] mt-2"
+                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
                         </div>

@@ -268,7 +268,7 @@ export function JobCatalog() {
       {/* Job Listings - Présentation identique à /jobs */}
       <div className="max-w-7xl mx-auto px-4">
         {viewMode === "cards" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {filteredJobs.map((job, index) => (
               <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                 <JobCard
@@ -285,21 +285,23 @@ export function JobCatalog() {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-            <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
+            {/* Header - Hidden on mobile, visible on tablet+ */}
+            <div className="hidden md:grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
               <div>Titre du poste</div>
               <div>Lieu</div>
               <div>Type de contrat</div>
               <div>Action</div>
             </div>
             {filteredJobs.map((job, index) => (
-              <div key={job.id} className="grid grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in" style={{ animationDelay: `${300 + index * 50}ms` }}>
-                <div className="font-medium">{job.title}</div>
-                <div className="text-muted-foreground">{job.location}</div>
-                <div className="text-muted-foreground">{job.contract_type}</div>
-                <div>
+              <div key={job.id} className="md:grid md:grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in flex flex-col md:flex-none space-y-2 md:space-y-0" style={{ animationDelay: `${300 + index * 50}ms` }}>
+                <div className="font-medium text-sm md:text-base">{job.title}</div>
+                <div className="text-muted-foreground text-xs md:text-sm">{job.location}</div>
+                <div className="text-muted-foreground text-xs md:text-sm">{job.contract_type}</div>
+                <div className="flex justify-start md:justify-center">
                   <Button 
                     variant="outline" 
                     size="sm"
+                    className="text-xs md:text-sm h-8 md:h-9"
                     onClick={() => handleJobClick(job.id)}
                   >
                     Voir détails
