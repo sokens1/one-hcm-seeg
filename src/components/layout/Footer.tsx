@@ -28,11 +28,11 @@ export function Footer() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-white/90">
                 <Mail className="w-4 h-4" />
-                contact@onehcm.ga
+                cnxonehcm@gmail.com
               </div>
               <div className="flex items-center gap-2 text-sm text-white/90">
                 <Phone className="w-4 h-4" />
-                +241 XX XX XX XX
+                +241 76 40 40 86
               </div>
               <div className="flex items-center gap-2 text-sm text-white/90">
                 <MapPin className="w-4 h-4" />
@@ -73,7 +73,7 @@ export function Footer() {
 
         <div className="border-t border-white/20 mt-8 pt-8">
           <div className="text-center text-sm text-white/90">
-            <p>&copy; 2024 OneHCM - Talent Flow Gabon. Tous droits réservés.</p>
+            <p>&copy; 2025 OneHCM - Talent Flow Gabon. Tous droits réservés.</p>
           </div>
         </div>
       </div>

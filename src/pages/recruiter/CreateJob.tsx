@@ -6,19 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, Eye, Send, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Send, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateJobOffer } from "@/hooks/useRecruiterDashboard";
 import { useToast } from "@/components/ui/use-toast";
 
 interface JobFormData {
   title: string;
-  location: string;
+  reportingLine: string;
   contractType: string;
-  description: string;
-  profile: string;
   categorieMetier: string;
+  salaryNote: string;
+  startDate: string;
+  location: string;
   dateLimite: string;
+  responsibilities: string;
+  requirements: string;
 }
 
 export default function CreateJob() {
@@ -28,15 +31,18 @@ export default function CreateJob() {
 
   const [formData, setFormData] = useState<JobFormData>({
     title: "",
-    location: "",
+    reportingLine: "",
     contractType: "",
-    description: "",
-    profile: "",
     categorieMetier: "",
-    dateLimite: ""
+    salaryNote: "",
+    startDate: "",
+    location: "",
+    dateLimite: "",
+    responsibilities: "",
+    requirements: ""
   });
 
-  const [isPreview, setIsPreview] = useState(false);
+  // Aperçu supprimé
 
   const handleInputChange = (field: keyof JobFormData, value: string) => {
     setFormData({ ...formData, [field]: value });
@@ -52,10 +58,10 @@ export default function CreateJob() {
 
   const handleSubmit = async (status: 'draft' | 'published') => {
     // Validate required fields for DB NOT NULL constraints
-    if (!formData.title || !formData.location || !formData.contractType || !formData.description) {
+    if (!formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements) {
       toast({
         title: "Champs requis",
-        description: "Veuillez remplir Titre, Lieu, Type de contrat et Description avant de continuer.",
+        description: "Veuillez remplir tous les champs obligatoires avant de continuer.",
         variant: "destructive",
       });
       return;
@@ -72,14 +78,25 @@ export default function CreateJob() {
       return;
     }
 
+    const toList = (text: string) =>
+      text
+        .split(/\r?\n|\u2022|-/) // newline or bullet separators
+        .map(s => s.trim())
+        .filter(Boolean);
+
     const jobData = {
       title: formData.title,
       location: formData.location,
       contract_type: formData.contractType,
-      description: formData.description,
-      profile: formData.profile,
+      description: formData.responsibilities, // MISSIONS PRINCIPALES devient la description
+      profile: formData.requirements, // CONNAISSANCES SAVOIR ET REQUIS devient le profil
       categorie_metier: formData.categorieMetier || null,
       date_limite: formData.dateLimite ? new Date(formData.dateLimite).toISOString() : null,
+      reporting_line: formData.reportingLine || undefined,
+      salary_note: formData.salaryNote || undefined,
+      start_date: formData.startDate || undefined,
+      responsibilities: formData.responsibilities ? toList(formData.responsibilities) : undefined,
+      requirements: formData.requirements ? toList(formData.requirements) : undefined,
     };
     const mappedStatus = status === 'published' ? 'active' : 'draft';
 
@@ -100,102 +117,7 @@ export default function CreateJob() {
     }
   };
 
-  if (isPreview) {
-    return (
-      <RecruiterLayout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
-            {/* Preview Header */}
-            <div className="flex items-center justify-between mb-6">
-              <Button 
-                variant="outline" 
-                onClick={() => setIsPreview(false)}
-                className="gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Retour à l'édition
-              </Button>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleSave} disabled={isCreating}>
-                  {isCreating ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4 mr-2" />
-                  )}
-                  {isCreating ? 'Sauvegarde...' : 'Sauvegarder'}
-                </Button>
-                <Button variant="success" onClick={handlePublish}>
-                  {isCreating ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4 mr-2" />
-                  )}
-                  {isCreating ? 'Publication...' : "Publier l'offre"}
-                </Button>
-              </div>
-            </div>
-
-            {/* Preview Content */}
-            <div className="grid lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <div className="space-y-3">
-                      <CardTitle className="text-3xl">{formData.title || "Titre du poste"}</CardTitle>
-                      <div className="flex items-center gap-4 text-muted-foreground">
-                        <span>{formData.location || "Lieu"}</span>
-                        <span>•</span>
-                        <span>{formData.contractType || "Type de contrat"}</span>
-                      </div>
-                    </div>
-                  </CardHeader>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Description du poste</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="whitespace-pre-wrap text-foreground">
-                      {formData.description || "Description du poste à définir..."}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Profil recherché</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="whitespace-pre-wrap text-foreground">
-                      {formData.profile || "Profil recherché à définir..."}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div>
-                <Card className="border-primary-dark/20">
-                  <CardContent className="p-6 text-center space-y-4">
-                    <h3 className="text-xl font-semibold">Prêt à postuler ?</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Rejoignez notre équipe et contribuez à notre succès.
-                    </p>
-                    <Button variant="hero" size="lg" className="w-full" disabled>
-                      Postuler maintenant
-                    </Button>
-                    <p className="text-xs text-muted-foreground">
-                      Aperçu - Le bouton sera actif après publication
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </div>
-      </RecruiterLayout>
-    );
-  }
+  // Aperçu supprimé
 
   return (
     <RecruiterLayout>
@@ -216,12 +138,7 @@ export default function CreateJob() {
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setIsPreview(true)}>
-                <Eye className="w-4 h-4 mr-2" />
-                Aperçu
-              </Button>
-            </div>
+            {/* Bouton Aperçu supprimé */}
           </div>
 
           {/* Form */}
@@ -229,26 +146,87 @@ export default function CreateJob() {
             <CardHeader>
               <CardTitle>Informations de l'offre</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Basic Info */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="title">Titre du poste *</Label>
+            <CardContent>
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
+                {/* Première ligne - Intitulé du poste */}
+                <div className="space-y-2">
+                  <Label htmlFor="title">Intitulé du poste *</Label>
                   <Input
                     id="title"
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}
-                    placeholder="Ex: Développeur React.js"
+                    placeholder="Ex: Développeur Full-Stack"
+                    required
+                  />
+                </div>
+                {/* Deuxième ligne - Ligne hiérarchique et Type de contrat */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="reportingLine">Ligne hiérarchique directe</Label>
+                    <Input
+                      id="reportingLine"
+                      value={formData.reportingLine}
+                      onChange={(e) => handleInputChange("reportingLine", e.target.value)}
+                      placeholder="Ex: Chef de Département Support"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contractType">Type de contrat *</Label>
+                    <Select value={formData.contractType} onValueChange={(value) => handleInputChange("contractType", value)} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Type de contrat" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
+                        <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
+                        <SelectItem value="Stage">Stage</SelectItem>
+                        <SelectItem value="Freelance">Freelance</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+              {/* Troisième ligne - Catégorie et Salaire brut */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="categorieMetier">Catégorie *</Label>
+                  <Select value={formData.categorieMetier} onValueChange={(value) => handleInputChange("categorieMetier", value)} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Cadre">Cadre</SelectItem>
+                      <SelectItem value="Cadre directeur">Cadre directeur</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="salaryNote">Salaire brut</Label>
+                  <Input
+                    id="salaryNote"
+                    value={formData.salaryNote}
+                    onChange={(e) => handleInputChange("salaryNote", e.target.value)}
+                    placeholder="Ex: Selon grille salariale SEEG"
                   />
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="location">Lieu *</Label>
-                  <Select value={formData.location} onValueChange={(value) => handleInputChange("location", value)}>
+              {/* Quatrième ligne - Date d'embauche et Lieu de travail */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="startDate">Date d'embauche</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={formData.startDate}
+                    onChange={(e) => handleInputChange("startDate", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">Lieu de travail *</Label>
+                  <Select value={formData.location} onValueChange={(value) => handleInputChange("location", value)} required>
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez une ville" />
+                      <SelectValue placeholder="Choisir une ville" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Libreville">Libreville</SelectItem>
@@ -256,99 +234,56 @@ export default function CreateJob() {
                       <SelectItem value="Franceville">Franceville</SelectItem>
                       <SelectItem value="Oyem">Oyem</SelectItem>
                       <SelectItem value="Moanda">Moanda</SelectItem>
-                      <SelectItem value="Lambaréné">Lambaréné</SelectItem>
-                      <SelectItem value="Télétravail">Télétravail</SelectItem>
-                      <SelectItem value="Hybride">Hybride</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="contractType">Type de contrat *</Label>
-                  <Select value={formData.contractType} onValueChange={(value) => handleInputChange("contractType", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez le type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
-                      <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
-                      <SelectItem value="Stage">Stage</SelectItem>
-                      <SelectItem value="Freelance">Freelance</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="categorieMetier">Catégorie métier</Label>
-                  <Select value={formData.categorieMetier} onValueChange={(value) => handleInputChange("categorieMetier", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez une catégorie" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="metier_eau">Métiers de l'eau et assainissement</SelectItem>
-                      <SelectItem value="metier_electricite">Métiers de l'électricité et énergie</SelectItem>
-                      <SelectItem value="metier_clientele">Métiers de la relation clientèle</SelectItem>
-                      <SelectItem value="metier_support">Métiers du support et maintenance</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="dateLimite">Date limite de candidature</Label>
-                  <Input
-                    id="dateLimite"
-                    type="date"
-                    value={formData.dateLimite}
-                    onChange={(e) => handleInputChange("dateLimite", e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                  />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Date limite pour recevoir les candidatures
-                  </p>
-                </div>
-              </div>
-
-              {/* Job Description */}
-              <div>
-                <Label htmlFor="description">Description du poste *</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Décrivez le poste, les missions principales, l'environnement de travail..."
-                  className="min-h-[200px]"
+              {/* Cinquième ligne - Date limite */}
+              <div className="space-y-2">
+                <Label htmlFor="dateLimite">Date limite de candidature</Label>
+                <Input
+                  id="dateLimite"
+                  type="date"
+                  value={formData.dateLimite}
+                  onChange={(e) => handleInputChange("dateLimite", e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
                 />
-                <p className="text-sm text-muted-foreground mt-2">
-                  Décrivez les missions, responsabilités et l'environnement de travail
-                </p>
               </div>
 
-              {/* Profile Requirements */}
-              <div>
-                <Label htmlFor="profile">Profil recherché *</Label>
+              {/* Missions principales */}
+              <div className="space-y-2">
+                <Label htmlFor="responsibilities">Missions principales *</Label>
                 <Textarea
-                  id="profile"
-                  value={formData.profile}
-                  onChange={(e) => handleInputChange("profile", e.target.value)}
-                  placeholder="Expérience requise, compétences techniques, qualités personnelles..."
-                  className="min-h-[200px]"
+                  id="responsibilities"
+                  value={formData.responsibilities}
+                  onChange={(e) => handleInputChange("responsibilities", e.target.value)}
+                  placeholder={"Saisissez une mission par ligne\nEx:\n- Définir et piloter la politique RH\n- Élaborer et superviser la gestion administrative du personnel"}
+                  className="min-h-[180px]"
+                  required
                 />
-                <p className="text-sm text-muted-foreground mt-2">
-                  Précisez l'expérience, les compétences techniques et les qualités recherchées
-                </p>
+              </div>
+
+              {/* Connaissance savoir et requis */}
+              <div className="space-y-2">
+                <Label htmlFor="requirements">Connaissance savoir et requis *</Label>
+                <Textarea
+                  id="requirements"
+                  value={formData.requirements}
+                  onChange={(e) => handleInputChange("requirements", e.target.value)}
+                  placeholder={"Saisissez un requis par ligne\nEx:\n- Bac+5 en RH, Droit social, Psychologie du travail\n- Expérience managériale de X années"}
+                  className="min-h-[180px]"
+                  required
+                />
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-between pt-6 border-t">
-                <Button variant="outline" onClick={() => setIsPreview(true)}>
-                  <Eye className="w-4 h-4 mr-2" />
-                  Aperçu
-                </Button>
+              <div className="flex justify-end pt-6 border-t">
                 <div className="flex gap-2">
                   <Button 
                     variant="outline" 
                     onClick={handleSave}
-                    disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.description}
+                    disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements}
                   >
                     {isCreating ? (
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -360,7 +295,7 @@ export default function CreateJob() {
                   <Button 
                     variant="success" 
                     onClick={handlePublish}
-                    disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.description}
+                    disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements}
                   >
                     {isCreating ? (
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -371,6 +306,7 @@ export default function CreateJob() {
                   </Button>
                 </div>
               </div>
+            </form>
             </CardContent>
           </Card>
         </div>

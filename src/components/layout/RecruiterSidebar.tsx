@@ -31,7 +31,7 @@ const menuItems = [
   },
   {
     title: "Paramètres",
-    url: "/recruiter/settings",
+    url: "/recruiter/profile",
     icon: Settings,
   },
 ];

@@ -1,14 +1,14 @@
 import { useAuth } from "@/hooks/useAuth";
-import RecruiterLogin from "@/pages/recruiter/RecruiterLogin";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface ProtectedRecruiterRouteProps {
   children: React.ReactNode;
 }
 
 export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRouteProps) {
-  const { user, isLoading, isRecruiter, isAdmin } = useAuth();
+  const { user, isLoading, isRecruiter } = useAuth();
   const isAuthenticated = !!user;
-  // Allow recruiters and admins; role helpers already normalize 'recruteur'
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -18,8 +18,8 @@ export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRoutePro
     );
   }
 
-  if (!isAuthenticated || !(isRecruiter || isAdmin)) {
-    return <RecruiterLogin />;
+  if (!isAuthenticated || !isRecruiter) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

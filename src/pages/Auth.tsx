@@ -21,7 +21,8 @@ export default function Auth() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const searchParams = new URLSearchParams(location.search);
-  const redirectParam = searchParams.get('redirect');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -43,7 +44,8 @@ export default function Auth() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    phone: ""
+    phone: "",
+    matricule: ""
   });
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -69,14 +71,31 @@ export default function Auth() {
       if (redirectParam) {
         navigate(redirectParam);
       } else {
+<<<<<<< HEAD
+        // Prefer role from DB for accurate redirection
+        try {
+          const { data: profile } = await supabase
+=======
         // Prefer authoritative role from DB (public.users), fallback to JWT metadata
         let roleFromDb: string | null = null;
         try {
           const { data: userRow, error: userRowError } = await supabase
+>>>>>>> c3a7aff202634f83da4895a90398cc56d79edfd0
             .from('users')
             .select('role')
             .eq('id', data.user.id)
             .single();
+<<<<<<< HEAD
+
+          const dbRole = (profile as { role?: string } | null)?.role;
+          const role = dbRole || data.user.user_metadata?.role || 'candidat';
+          const isRecruiter = role === 'recruiter' || role === 'recruteur';
+          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+        } catch {
+          const role = data.user.user_metadata?.role || 'candidat';
+          const isRecruiter = role === 'recruiter' || role === 'recruteur';
+          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+=======
           if (!userRowError && userRow?.role) roleFromDb = String(userRow.role);
         } catch (e) {
           // Ignore DB role read errors and fallback to metadata
@@ -96,6 +115,7 @@ export default function Auth() {
         } else {
           // Default fallback
           navigate('/candidate/dashboard');
+>>>>>>> c3a7aff202634f83da4895a90398cc56d79edfd0
         }
       }
     } catch (error) {
@@ -121,12 +141,34 @@ export default function Auth() {
       return;
     }
 
+    // Exiger un matricule et le valider côté base (liste blanche SEEG)
+    const matricule = signUpData.matricule?.trim();
+    if (!matricule) {
+      toast.error("Le matricule SEEG est obligatoire pour vous inscrire.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Vérification via RPC sécurisée (ne révèle pas la table)
+      const { data: isValid, error: rpcErr } = await supabase.rpc('verify_seeg_matricule', { p_matricule: matricule });
+      if (rpcErr) {
+        toast.error("Impossible de vérifier le matricule. Réessayez.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (!isValid) {
+        toast.error("Matricule invalide: l'inscription est réservée aux agents SEEG.");
+        setIsSubmitting(false);
+        return;
+      }
+
       const { error } = await signUp(signUpData.email, signUpData.password, {
         role: "candidat",
         first_name: signUpData.firstName,
         last_name: signUpData.lastName,
-        phone: signUpData.phone
+        phone: signUpData.phone,
+        matricule
       });
       
       if (error) {
@@ -316,6 +358,17 @@ export default function Auth() {
                         placeholder="+241 01 23 45 67"
                         value={signUpData.phone}
                         onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="matricule">Matricule SEEG</Label>
+                      <Input
+                        id="matricule"
+                        placeholder="Ex: SEEG-12345"
+                        value={signUpData.matricule}
+                        onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
+                        required
                       />
                     </div>
 

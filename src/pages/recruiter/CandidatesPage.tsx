@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
@@ -6,9 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Eye, Phone, MapPin, Calendar, User, Loader2 } from "lucide-react";
+import { Search, Eye, Phone, MapPin, Calendar, User, Loader2, FileText, Download } from "lucide-react";
 import { Link } from "react-router-dom";
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { useRecruiterApplications } from "@/hooks/useApplications";
+import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
+import { useFileUpload } from "@/hooks/useFileUpload";
 
 // Types dérivés des applications
 type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse';
@@ -19,10 +24,105 @@ interface UICandidate {
   lastName: string;
   email: string;
   phone?: string;
+  gender?: string;
+  birthDate?: string;
+  currentPosition?: string;
   location?: string;
   appliedDate: string;
   status: ApplicationStatus;
   jobTitle?: string;
+}
+
+function CandidateDetails({ candidate }: { candidate: UICandidate }) {
+  const { data: documents = [], isLoading, error } = useApplicationDocuments(candidate.id);
+  const { getFileUrl } = useFileUpload();
+
+  const toUrl = (p: string) => (p.startsWith('http://') || p.startsWith('https://')) ? p : getFileUrl(p);
+
+  return (
+    <div className="space-y-6">
+      {/* Informations personnelles */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label className="text-sm text-muted-foreground">Nom complet</Label>
+          <p className="font-medium">{candidate.firstName} {candidate.lastName}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Email</Label>
+          <p className="font-medium">{candidate.email}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Téléphone</Label>
+          <p className="font-medium">{candidate.phone || 'Non fourni'}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Sexe</Label>
+          <p className="font-medium">{candidate.gender || 'Non renseigné'}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Date de naissance</Label>
+          <p className="font-medium">{candidate.birthDate ? format(new Date(candidate.birthDate), 'PPP', { locale: fr }) : 'Non renseignée'}</p>
+        </div>
+      </div>
+
+      {/* Poste et statut */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label className="text-sm text-muted-foreground">Poste postulé</Label>
+          <p className="font-medium">{candidate.jobTitle || 'Non spécifié'}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Statut</Label>
+          <Badge variant="secondary" className={statusConfig[candidate.status].color}>
+            {statusConfig[candidate.status].label}
+          </Badge>
+        </div>
+        <div className="md:col-span-2">
+          <Label className="text-sm text-muted-foreground">Poste actuel</Label>
+          <p className="font-medium">{candidate.currentPosition || 'Non renseigné'}</p>
+        </div>
+      </div>
+
+      {/* Documents */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4" />
+          <Label className="text-sm text-muted-foreground">Documents fournis</Label>
+        </div>
+        {isLoading && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" /> Chargement des documents...</div>
+        )}
+        {error && (
+          <div className="text-sm text-red-600">Erreur de chargement: {(error as any).message}</div>
+        )}
+        {!isLoading && !error && (
+          documents.length > 0 ? (
+            <ul className="space-y-2">
+              {documents.map(doc => (
+                <li key={doc.id} className="flex items-center justify-between rounded border p-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{getDocumentTypeLabel(doc.document_type)} — {doc.file_name}</p>
+                    <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
+                  </div>
+                  <a
+                    href={toUrl(doc.file_path)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                  >
+                    <Download className="w-4 h-4" />
+                    Ouvrir
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">Aucun document fourni.</p>
+          )
+        )}
+      </div>
+    </div>
+  );
 }
 
 const statusConfig: Record<ApplicationStatus, { label: string; color: string }> = {
@@ -38,17 +138,25 @@ export default function CandidatesPage() {
   const { applications, isLoading, error } = useRecruiterApplications();
 
   const uiCandidates: UICandidate[] = useMemo(() => {
-    return (applications || []).map(app => ({
-      id: app.id,
-      firstName: app.users?.first_name || "",
-      lastName: app.users?.last_name || "",
-      email: app.users?.email || "",
-      phone: app.users?.phone || undefined,
-      location: app.job_offers?.location || undefined,
-      appliedDate: app.created_at,
-      status: app.status as ApplicationStatus,
-      jobTitle: app.job_offers?.title || undefined,
-    }));
+    return (applications || []).map(app => {
+      const profile = (app.users as any)?.candidate_profiles as
+        | { gender?: string; current_position?: string; date_of_birth?: string }
+        | undefined;
+      return {
+        id: app.id,
+        firstName: app.users?.first_name || "",
+        lastName: app.users?.last_name || "",
+        email: app.users?.email || "",
+        phone: app.users?.phone || undefined,
+        gender: profile?.gender || undefined,
+        birthDate: app.users?.date_of_birth || profile?.date_of_birth || undefined,
+        currentPosition: profile?.current_position || undefined,
+        location: app.job_offers?.location || undefined,
+        appliedDate: app.created_at,
+        status: app.status as ApplicationStatus,
+        jobTitle: app.job_offers?.title || undefined,
+      };
+    });
   }, [applications]);
 
   const filteredCandidates = uiCandidates.filter(candidate => {
@@ -188,43 +296,7 @@ export default function CandidatesPage() {
                             <DialogHeader>
                               <DialogTitle>Détails du candidat</DialogTitle>
                             </DialogHeader>
-                            <div className="space-y-6">
-                              {/* Informations personnelles */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <Label className="text-sm text-muted-foreground">Nom complet</Label>
-                                  <p className="font-medium">{candidate.firstName} {candidate.lastName}</p>
-                                </div>
-                                <div>
-                                  <Label className="text-sm text-muted-foreground">Email</Label>
-                                  <p className="font-medium">{candidate.email}</p>
-                                </div>
-                                <div>
-                                  <Label className="text-sm text-muted-foreground">Téléphone</Label>
-                                  <p className="font-medium">{candidate.phone || 'Non fourni'}</p>
-                                </div>
-                                <div>
-                                  <Label className="text-sm text-muted-foreground">Date de candidature</Label>
-                                  <p className="font-medium">{new Date(candidate.appliedDate).toLocaleDateString('fr-FR')}</p>
-                                </div>
-                              </div>
-                              
-                              {/* Poste et statut */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <Label className="text-sm text-muted-foreground">Poste postulé</Label>
-                                  <p className="font-medium">{candidate.jobTitle || 'Non spécifié'}</p>
-                                </div>
-                                <div>
-                                  <Label className="text-sm text-muted-foreground">Statut</Label>
-                                  <Badge variant="secondary" className={statusConfig[candidate.status].color}>
-                                    {statusConfig[candidate.status].label}
-                                  </Badge>
-                                </div>
-                              </div>
-                              
-                              
-                            </div>
+                            <CandidateDetails candidate={candidate} />
                           </DialogContent>
                         </Dialog>
                       </td>

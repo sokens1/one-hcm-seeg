@@ -1,9 +1,12 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { User, Mail, Phone, Calendar, Briefcase, Edit, Save, X, Loader2, Download } from "lucide-react";
@@ -11,6 +14,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAuth, SignUpMetadata } from "@/hooks/useAuth";
 import { useApplications } from "@/hooks/useApplications";
 import { useCandidateDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
+import { supabase } from "@/integrations/supabase/client";
 
 export function CandidateProfile() {
   const { user, updateUser, isUpdating } = useAuth();
@@ -26,21 +30,49 @@ export function CandidateProfile() {
     birthDate: user?.user_metadata.birth_date || "",
     currentPosition: user?.user_metadata.current_position || "",
     phone: user?.user_metadata.phone || "",
+    gender: (user?.user_metadata as any)?.gender || "",
     bio: user?.user_metadata.bio || ""
   });
 
-    const handleSave = async () => {
-    const { firstName, lastName, birthDate, currentPosition, phone, bio, matricule } = formData;
+  // Merge missing fields from DB (users and candidate_profiles)
+  useEffect(() => {
+    const loadFromDb = async () => {
+      if (!user) return;
+      try {
+        const [{ data: userRow }, { data: profileRow }] = await Promise.all([
+          supabase.from('users').select('phone, date_of_birth, current_position').eq('id', user.id).maybeSingle(),
+          supabase.from('candidate_profiles').select('gender, birth_date, current_position').eq('user_id', user.id).maybeSingle(),
+        ]);
+
+        setFormData(prev => ({
+          ...prev,
+          phone: prev.phone || (userRow?.phone ?? ""),
+          birthDate: prev.birthDate || (userRow?.date_of_birth || profileRow?.birth_date || ""),
+          currentPosition: prev.currentPosition || (userRow?.current_position || profileRow?.current_position || ""),
+          gender: prev.gender || (profileRow?.gender || ""),
+        }));
+      } catch {
+        // silencieux: ne bloque pas l'affichage si RLS empêche la lecture
+      }
+    };
+    loadFromDb();
+    // re-run if user changes
+  }, [user]);
+
+  const handleSave = async () => {
+    const { firstName, lastName, birthDate, currentPosition, phone, bio, matricule, gender } = formData;
     const metadataToUpdate: Partial<SignUpMetadata> = {
       first_name: firstName,
       last_name: lastName,
       birth_date: birthDate,
       current_position: currentPosition,
       phone,
+      gender,
       bio,
       matricule,
       role: user?.user_metadata?.role
     };
+
     const success = await updateUser(metadataToUpdate);
 
     if (success) {
@@ -67,13 +99,14 @@ export function CandidateProfile() {
       birthDate: user?.user_metadata.birth_date || "",
       currentPosition: user?.user_metadata.current_position || "",
       phone: user?.user_metadata.phone || "",
+      gender: (user?.user_metadata as any)?.gender || "",
       bio: user?.user_metadata.bio || ""
     });
     setIsEditing(false);
   };
 
   const calculateProfileCompletion = () => {
-    const fields = ["firstName", "lastName", "email", "matricule", "birthDate", "currentPosition"];
+    const fields = ["firstName", "lastName", "email", "matricule", "birthDate", "currentPosition", "phone", "gender"];
     const completedFields = fields.filter((field) => formData[field] !== "");
     return Math.round((completedFields.length / fields.length) * 100);
   };
@@ -105,8 +138,8 @@ export function CandidateProfile() {
                       <X className="w-4 h-4" />
                       Annuler
                     </Button>
-                                        <Button size="sm" onClick={handleSave} disabled={isUpdating} className="gap-2">
-                                            {isUpdating ? (
+                    <Button size="sm" onClick={handleSave} disabled={isUpdating} className="gap-2">
+                      {isUpdating ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <Save className="w-4 h-4" />
@@ -122,7 +155,7 @@ export function CandidateProfile() {
                 <div>
                   <Label htmlFor="firstName">Prénom</Label>
                   {isEditing ? (
-                                        <Input
+                    <Input
                       id="firstName"
                       value={formData.firstName}
                       disabled={isUpdating}
@@ -138,7 +171,7 @@ export function CandidateProfile() {
                 <div>
                   <Label htmlFor="lastName">Nom</Label>
                   {isEditing ? (
-                                        <Input
+                    <Input
                       id="lastName"
                       value={formData.lastName}
                       disabled={isUpdating}
@@ -156,7 +189,7 @@ export function CandidateProfile() {
               <div>
                 <Label htmlFor="email">Email</Label>
                 {isEditing ? (
-                                    <Input
+                  <Input
                     id="email"
                     type="email"
                     value={formData.email}
@@ -175,7 +208,7 @@ export function CandidateProfile() {
                 <div>
                   <Label htmlFor="matricule">Matricule</Label>
                   {isEditing ? (
-                                        <Input
+                    <Input
                       id="matricule"
                       value={formData.matricule}
                       disabled={isUpdating}
@@ -191,7 +224,7 @@ export function CandidateProfile() {
                 <div>
                   <Label htmlFor="birthDate">Date de naissance</Label>
                   {isEditing ? (
-                                        <Input
+                    <Input
                       id="birthDate"
                       type="date"
                       value={formData.birthDate}
@@ -207,10 +240,55 @@ export function CandidateProfile() {
                 </div>
               </div>
 
+              {/* Téléphone et Sexe */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="phone">Téléphone</Label>
+                  {isEditing ? (
+                    <Input
+                      id="phone"
+                      type="tel"
+                      inputMode="tel"
+                      value={formData.phone}
+                      disabled={isUpdating}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="Ex: +241 06 00 00 00"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 h-10 px-3 py-2 border rounded-md bg-gray-50">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
+                      <span>{formData.phone || "Non renseigné"}</span>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <Label>Sexe</Label>
+                  {isEditing ? (
+                    <Select
+                      value={formData.gender}
+                      onValueChange={(value) => setFormData({ ...formData, gender: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Homme">Homme</SelectItem>
+                        <SelectItem value="Femme">Femme</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="flex items-center gap-2 h-10 px-3 py-2 border rounded-md bg-gray-50">
+                      <User className="w-4 h-4 text-muted-foreground" />
+                      <span>{formData.gender || "Non renseigné"}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="currentPosition">Poste actuel</Label>
                 {isEditing ? (
-                                    <Input
+                  <Input
                     id="currentPosition"
                     value={formData.currentPosition}
                     disabled={isUpdating}

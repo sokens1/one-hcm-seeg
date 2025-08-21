@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 export interface Document {
   id: number;
   application_id: string;
-  document_type: 'cv' | 'cover_letter' | 'diploma' | 'recommendation';
+  document_type: 'cv' | 'cover_letter' | 'diploma' | 'recommendation' | 'integrity_letter' | 'project_idea';
   file_name: string;
   file_path: string;
   file_size: number | null;
@@ -61,10 +61,12 @@ export function useCandidateDocuments() {
 
 export function getDocumentTypeLabel(type: string): string {
   switch (type) {
-    case 'cv': return 'Curriculum Vitae';
+    case 'cv': return 'CV';
     case 'cover_letter': return 'Lettre de motivation';
-    case 'diploma': return 'Diplôme';
-    case 'recommendation': return 'Recommandation';
+    case 'diploma': return 'Certificat';
+    case 'recommendation': return 'Lettre de recommandation';
+    case 'integrity_letter': return 'Lettre d\'intégrité professionnelle';
+    case 'project_idea': return 'Idée de projet';
     default: return type;
   }
 }

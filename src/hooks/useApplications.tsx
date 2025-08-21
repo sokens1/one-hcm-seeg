@@ -1,7 +1,45 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { useState, useEffect, useCallback } from "react"; // Keep for useRecruiterApplications
+
+export interface Experience {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  start_date: string;
+  end_date: string | null;
+  description: string;
+}
+
+export interface Education {
+  id: string;
+  institution: string;
+  degree: string;
+  field_of_study: string;
+  start_date: string;
+  end_date: string | null;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+}
+
+export interface CandidateProfile {
+  id: string;
+  gender: string;
+  date_of_birth: string;
+  current_position: string;
+  address: string;
+  linkedin_profile: string;
+  portfolio_url: string;
+  experiences: Experience[];
+  educations: Education[];
+  skills: Skill[];
+}
 
 export interface Application {
   id: string;
@@ -13,21 +51,27 @@ export interface Application {
   availability_start: string | null;
   reference_contacts?: string | null; // Database column name
   ref_contacts?: string | null; // API compatibility alias used by UI
+  mtp_answers?: {
+    metier?: string[];
+    talent?: string[];
+    paradigme?: string[];
+  } | null;
   created_at: string;
   updated_at: string;
   job_offers?: {
     date_limite: string;
-    id: string;
     title: string;
     location: string;
     contract_type: string;
     recruiter_id?: string;
   } | null;
-  users?: {
+  users: {
     first_name: string;
     last_name: string;
     email: string;
-    phone?: string | null;
+    phone?: string;
+    date_of_birth?: string;
+    candidate_profiles?: CandidateProfile;
   } | null;
 }
 
@@ -207,18 +251,75 @@ export function useApplication(id: string | undefined) {
         .from('applications')
         .select(`
           *,
+          mtp_answers,
           job_offers (*),
-          users (first_name, last_name, email, phone)
+          users!inner (
+            first_name, 
+            last_name, 
+            email, 
+            phone,
+            date_of_birth
+          )
         `)
         .eq('id', id)
         .single();
 
       if (error) {
+        console.error('Erreur requête application:', error);
         throw new Error(error.message);
       }
       return data as Application;
     },
-    enabled: !!id, // La requête ne s'exécutera que si l'ID est fourni
+    enabled: !!id,
+    retry: 1,
+  });
+}
+
+export function useCandidateExperiences(profileId: string | undefined) {
+  return useQuery({
+    queryKey: ['experiences', profileId],
+    queryFn: async () => {
+      if (!profileId) return [];
+      const { data, error } = await supabase
+        .from('experiences')
+        .select('*')
+        .eq('profile_id', profileId);
+      if (error) throw new Error(error.message);
+      return data as Experience[];
+    },
+    enabled: !!profileId,
+  });
+}
+
+export function useCandidateEducations(profileId: string | undefined) {
+  return useQuery({
+    queryKey: ['educations', profileId],
+    queryFn: async () => {
+      if (!profileId) return [];
+      const { data, error } = await supabase
+        .from('educations')
+        .select('*')
+        .eq('profile_id', profileId);
+      if (error) throw new Error(error.message);
+      return data as Education[];
+    },
+    enabled: !!profileId,
+  });
+}
+
+export function useCandidateSkills(profileId: string | undefined) {
+  return useQuery({
+    queryKey: ['skills', profileId],
+    queryFn: async () => {
+      if (!profileId) return [];
+      const { data, error } = await supabase
+        .from('skills')
+        .select('*')
+        .eq('profile_id', profileId);
+      if (error) throw new Error(error.message);
+      return data as Skill[];
+    },
+    enabled: !!profileId,
   });
 }
 
@@ -246,7 +347,7 @@ export function useRecruiterApplications(jobOfferId?: string) {
       .select(`
         *,
         job_offers (title, location, contract_type, recruiter_id),
-        users (first_name, last_name, email, phone)
+        users (first_name, last_name, email, phone, date_of_birth)
       `)
       .in('job_offer_id', jobOfferIds);
 
@@ -257,7 +358,43 @@ export function useRecruiterApplications(jobOfferId?: string) {
     const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) throw new Error(error.message);
-    return data as Application[];
+
+    const apps = (data as Application[]) || [];
+    // Enrichir avec candidate_profiles (gender, current_position, birth_date)
+    const candidateIds = Array.from(new Set(apps.map(a => a.candidate_id).filter(Boolean)));
+    if (candidateIds.length > 0) {
+      const { data: profiles, error: profilesError } = await supabase
+        .from('candidate_profiles')
+        .select('user_id, gender, current_position, birth_date')
+        .in('user_id', candidateIds as string[]);
+
+      if (!profilesError && profiles) {
+        const byUser: Record<string, { user_id: string; gender?: string; current_position?: string; birth_date?: string | null }> = {};
+        for (const p of profiles as any[]) byUser[p.user_id] = p;
+        apps.forEach(app => {
+          const p = byUser[app.candidate_id];
+          if (p) {
+            const mappedProfile: CandidateProfile = {
+              id: p.user_id,
+              gender: p.gender || '',
+              date_of_birth: p.birth_date || '',
+              current_position: p.current_position || '',
+              address: '',
+              linkedin_profile: '',
+              portfolio_url: '',
+              experiences: [],
+              educations: [],
+              skills: [],
+            };
+            if (app.users) {
+              (app.users as any).candidate_profiles = mappedProfile;
+            }
+          }
+        });
+      }
+    }
+
+    return apps;
   };
 
   const query = useQuery({
