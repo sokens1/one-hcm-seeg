@@ -493,7 +493,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Header with gradient background */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6 sm:py-8">
         <div className="container mx-auto px-4">
           <Button 
             variant="ghost" 
@@ -508,9 +508,9 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm">
               Plateforme de Recrutement Nouvelle Génération
             </div>
-            <h1 className="text-4xl font-bold">Rejoignez l'Excellence</h1>
-            <h2 className="text-2xl font-light">{jobTitle}</h2>
-            <p className="text-lg opacity-90 max-w-2xl mx-auto">
+            <h1 className="text-2xl sm:text-4xl font-bold">Rejoignez l'Excellence</h1>
+            <h2 className="text-lg sm:text-2xl font-light">{jobTitle}</h2>
+            <p className="text-sm sm:text-base opacity-90 max-w-2xl mx-auto">
               Découvrez un processus de candidature révolutionnaire qui valorise vos compétences, 
               votre potentiel et votre ambition.
             </p>
@@ -525,15 +525,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             <div className="flex items-center justify-between mb-4">
               {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
                     step <= currentStep 
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg' 
                       : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
                   }`}>
-                    {step <= currentStep ? <CheckCircle className="w-6 h-6" /> : step}
+                    {step <= currentStep ? <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" /> : step}
                   </div>
                   {step < 4 && (
-                    <div className={`h-1 w-16 mx-2 rounded-full transition-all ${
+                    <div className={`h-1 w-12 sm:w-16 mx-2 rounded-full transition-all ${
                       step < currentStep ? 'bg-gradient-to-r from-blue-600 to-blue-700' : 'bg-gray-200'
                     }`} />
                   )}
@@ -558,10 +558,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         {/* Form Content with modern layout */}
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Left side - Progress info */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-lg p-6 sticky top-8">
+              <div className="bg-white rounded-xl shadow-lg p-6 lg:sticky lg:top-8">
                 <div className="space-y-6">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -587,91 +587,91 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             <div className="lg:col-span-2">
               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-3 text-xl">
-                    {currentStep === 1 && <><User className="w-6 h-6" /> Informations Personnelles</>}
-                    {currentStep === 2 && <><FileText className="w-6 h-6" /> Parcours & Documents</>}
-                    {currentStep === 3 && <><CheckCircle className="w-6 h-6" /> Adhérence MTP</>}
-                    {currentStep === 4 && <><Send className="w-6 h-6" /> Finalisation</>}
+                  <CardTitle className="flex items-center gap-3 text-lg sm:text-xl">
+                    {currentStep === 1 && <><User className="w-5 h-5 sm:w-6 sm:h-6" /> Informations Personnelles</>}
+                    {currentStep === 2 && <><FileText className="w-5 h-5 sm:w-6 sm:h-6" /> Parcours & Documents</>}
+                    {currentStep === 3 && <><CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" /> Adhérence MTP</>}
+                    {currentStep === 4 && <><Send className="w-5 h-5 sm:w-6 sm:h-6" /> Finalisation</>}
                   </CardTitle>
                 </CardHeader>
 
-            <CardContent className="space-y-6">
-              {/* Step 1: Personal Info */}
-              {currentStep === 1 && (
-                <div className="space-y-4 animate-fade-in">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="firstName">Prénom *</Label>
-                      <Input
-                        id="firstName"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        placeholder="Votre prénom"
-                        required
-                      />
+                <CardContent className="space-y-6">
+                  {/* Step 1: Personal Info */}
+                  {currentStep === 1 && (
+                    <div className="space-y-4 animate-fade-in">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="firstName">Prénom *</Label>
+                          <Input
+                            id="firstName"
+                            value={formData.firstName}
+                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                            placeholder="Votre prénom"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName">Nom *</Label>
+                          <Input
+                            id="lastName"
+                            value={formData.lastName}
+                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                            placeholder="Votre nom"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="votre.email@exemple.com"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="dateOfBirth">Date de naissance *</Label>
+                        <Input
+                          id="dateOfBirth"
+                          type="date"
+                          value={formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString().slice(0, 10) : ""}
+                          max={new Date().toISOString().slice(0, 10)}
+                          min="1900-01-01"
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setFormData({ ...formData, dateOfBirth: val ? new Date(val) : null });
+                          }}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="gender">Sexe *</Label>
+                        <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionnez votre sexe" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="homme">Homme</SelectItem>
+                            <SelectItem value="femme">Femme</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="currentPosition">Poste actuel *</Label>
+                        <Input
+                          id="currentPosition"
+                          value={formData.currentPosition}
+                          onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value })}
+                          placeholder="Votre poste actuel"
+                          required
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Label htmlFor="lastName">Nom *</Label>
-                      <Input
-                        id="lastName"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        placeholder="Votre nom"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="votre.email@exemple.com"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="dateOfBirth">Date de naissance *</Label>
-                    <Input
-                      id="dateOfBirth"
-                      type="date"
-                      value={formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString().slice(0, 10) : ""}
-                      max={new Date().toISOString().slice(0, 10)}
-                      min="1900-01-01"
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setFormData({ ...formData, dateOfBirth: val ? new Date(val) : null });
-                      }}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="gender">Sexe *</Label>
-                    <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionnez votre sexe" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="homme">Homme</SelectItem>
-                        <SelectItem value="femme">Femme</SelectItem>
-                        <SelectItem value="autre">Autre</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="currentPosition">Poste actuel *</Label>
-                    <Input
-                      id="currentPosition"
-                      value={formData.currentPosition}
-                      onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value })}
-                      placeholder="Votre poste actuel"
-                      required
-                    />
-                  </div>
-                </div>
-              )}
+                  )}
 
               {/* Step 2: Experience & Documents */}
               {currentStep === 2 && (
@@ -679,15 +679,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <div>
                     <Label htmlFor="cv">Votre CV *</Label>
                     <div className="mt-2">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <div className="space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
                             <p className="text-sm text-muted-foreground">Upload en cours...</p>
                           </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.cv ? formData.cv.name : "Glissez votre CV ici ou cliquez pour parcourir"}
                             </p>
@@ -703,6 +703,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('cv-upload')?.click()}
                           disabled={isUploading}
                         >
@@ -729,15 +730,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <div>
                     <Label htmlFor="coverLetter">Lettre de motivation *</Label>
                     <div className="mt-2">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <div className="space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
                             <p className="text-sm text-muted-foreground">Upload en cours...</p>
                           </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.coverLetter ? formData.coverLetter.name : "Glissez votre lettre de motivation ici ou cliquez pour parcourir"}
                             </p>
@@ -753,6 +754,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('coverLetter-upload')?.click()}
                           disabled={isUploading}
                         >
@@ -795,6 +797,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('certificates-upload')?.click()}
                         >
                           Choisir des fichiers
@@ -825,15 +828,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <div>
                     <Label htmlFor="integrityLetter">Lettre d'intégrité professionnelle *</Label>
                     <div className="mt-2">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <div className="space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
                             <p className="text-sm text-muted-foreground">Upload en cours...</p>
                           </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.integrityLetter ? formData.integrityLetter.name : "Glissez votre lettre d'intégrité professionnelle ici ou cliquez pour parcourir"}
                             </p>
@@ -849,6 +852,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('integrityLetter-upload')?.click()}
                           disabled={isUploading}
                         >
@@ -875,15 +879,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <div>
                     <Label htmlFor="projectIdea">Idée de projet (3 pages max) *</Label>
                     <div className="mt-2">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <div className="space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
                             <p className="text-sm text-muted-foreground">Upload en cours...</p>
                           </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.projectIdea ? formData.projectIdea.name : "Glissez votre idée de projet ici ou cliquez pour parcourir (3 pages max)"}
                             </p>
@@ -899,6 +903,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('projectIdea-upload')?.click()}
                           disabled={isUploading}
                         >
@@ -926,7 +931,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <Label htmlFor="recommendations">Lettre(s) de recommandation (facultatif)</Label>
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary transition-colors">
-                        <Upload className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
+                        <Upload className="w-4 h-4 mx-auto text-muted-foreground mb-2" />
                         <p className="text-sm text-muted-foreground mb-2">
                           {formData.recommendations.length > 0 ? `${formData.recommendations.length} fichier(s) sélectionné(s)` : "Ajouter des lettres de recommandation"}
                         </p>
@@ -941,6 +946,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('recommendations-upload')?.click()}
                         >
                           Choisir des fichiers
@@ -1228,11 +1234,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               )}
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between pt-6 border-t">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-0 justify-between pt-6 border-t">
                 <Button
                   variant="outline"
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
+                  className="w-full sm:w-auto"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Précédent
@@ -1242,6 +1249,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <Button
                     variant="hero"
                     onClick={handleNext}
+                    className="w-full sm:w-auto"
                     disabled={
                       (currentStep === 1 && (!formData.firstName || !formData.lastName || !formData.email || !formData.gender || !formData.dateOfBirth || !formData.currentPosition)) ||
                       (currentStep === 2 && (!formData.cv || !formData.coverLetter || !formData.integrityLetter || !formData.projectIdea)) ||
@@ -1255,6 +1263,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <Button
                     variant="success"
                     onClick={handleSubmit}
+                    className="w-full sm:w-auto"
                     disabled={!formData.consent}
                   >
                     Envoyer ma candidature
@@ -1262,6 +1271,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   </Button>
                 )}
               </div>
+
             </CardContent>
           </Card>
             </div>

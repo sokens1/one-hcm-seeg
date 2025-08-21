@@ -10,8 +10,13 @@ export interface CandidatureDocument {
 }
 
 export function useCandidatureDocuments() {
-  const hasDataProp = <T,>(obj: unknown): obj is { data: T } =>
-    typeof obj === "object" && obj !== null && "data" in obj;
+  // Normalize APIs that sometimes return `{ data: T }` and sometimes raw `T`
+  const unwrap = <T,>(payload: T | { data: T } | null): T | null => {
+    if (payload && typeof payload === "object" && "data" in (payload as object)) {
+      return (payload as { data: T }).data;
+    }
+    return payload as T | null;
+  };
 
   const uploadDocument = async (
     candidatureId: string,
@@ -21,26 +26,27 @@ export function useCandidatureDocuments() {
     const form = new FormData();
     form.append("fichier", file);
     if (type) form.append("type", type);
-    const { data } = await api.post<CandidatureDocument | { data: CandidatureDocument }>(
+    const { data } = await api.post<CandidatureDocument | { data: CandidatureDocument } | null>(
       `/candidatures/${candidatureId}/documents`,
       form,
       {
         headers: { "Content-Type": "multipart/form-data" },
       }
     );
-    return (hasDataProp<CandidatureDocument>(data) ? data.data : data) as CandidatureDocument;
+    return unwrap<CandidatureDocument>(data)!;
   };
 
   const listDocuments = async (candidatureId: string): Promise<CandidatureDocument[]> => {
-    const { data } = await api.get<CandidatureDocument[] | { data: CandidatureDocument[] }>(
-      `/candidatures/${candidatureId}/documents`
-    );
-    const unwrapped = hasDataProp<CandidatureDocument[]>(data) ? data.data : data;
-    return (unwrapped || []) as CandidatureDocument[];
+    const { data } = await api.get<
+      CandidatureDocument[] | { data: CandidatureDocument[] } | null
+    >(`/candidatures/${candidatureId}/documents`);
+    return unwrap<CandidatureDocument[]>(data) ?? [];
   };
 
   const downloadDocument = async (documentId: string): Promise<Blob> => {
-    const { data } = await api.get<Blob>(`/documents/${documentId}/download`, { responseType: "blob" });
+    const { data } = await api.get<Blob>(`/documents/${documentId}/download`, {
+      responseType: "blob",
+    });
     return data;
   };
 
