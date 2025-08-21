@@ -10,6 +10,9 @@ export interface CandidatureDocument {
 }
 
 export function useCandidatureDocuments() {
+  const hasDataProp = <T,>(obj: unknown): obj is { data: T } =>
+    typeof obj === "object" && obj !== null && "data" in obj;
+
   const uploadDocument = async (
     candidatureId: string,
     file: File,
@@ -18,24 +21,31 @@ export function useCandidatureDocuments() {
     const form = new FormData();
     form.append("fichier", file);
     if (type) form.append("type", type);
-    const { data } = await api.post(`/candidatures/${candidatureId}/documents`, form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return (data?.data || data) as CandidatureDocument;
+    const { data } = await api.post<CandidatureDocument | { data: CandidatureDocument }>(
+      `/candidatures/${candidatureId}/documents`,
+      form,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+    return (hasDataProp<CandidatureDocument>(data) ? data.data : data) as CandidatureDocument;
   };
 
   const listDocuments = async (candidatureId: string): Promise<CandidatureDocument[]> => {
-    const { data } = await api.get(`/candidatures/${candidatureId}/documents`);
-    return (data?.data || data || []) as CandidatureDocument[];
+    const { data } = await api.get<CandidatureDocument[] | { data: CandidatureDocument[] }>(
+      `/candidatures/${candidatureId}/documents`
+    );
+    const unwrapped = hasDataProp<CandidatureDocument[]>(data) ? data.data : data;
+    return (unwrapped || []) as CandidatureDocument[];
   };
 
   const downloadDocument = async (documentId: string): Promise<Blob> => {
-    const { data } = await api.get(`/documents/${documentId}/download`, { responseType: "blob" });
-    return data as Blob;
+    const { data } = await api.get<Blob>(`/documents/${documentId}/download`, { responseType: "blob" });
+    return data;
   };
 
   const deleteDocument = async (documentId: string): Promise<void> => {
-    await api.delete(`/documents/${documentId}`);
+    await api.delete<void>(`/documents/${documentId}`);
   };
 
   return { uploadDocument, listDocuments, downloadDocument, deleteDocument };
