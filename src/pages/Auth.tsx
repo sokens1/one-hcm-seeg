@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { ArrowLeft, Mail, Lock, User, Building2 } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Building2, AlertCircle, Loader2 } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
 import { supabase } from "@/integrations/supabase/client";
 // Link already imported above
@@ -47,6 +47,67 @@ export default function Auth() {
     phone: "",
     matricule: ""
   });
+
+  // Matricule validation state
+  const [matriculeError, setMatriculeError] = useState<string>("");
+  const [isMatriculeValid, setIsMatriculeValid] = useState<boolean>(false);
+  const [isVerifyingMatricule, setIsVerifyingMatricule] = useState<boolean>(false);
+
+  // Reset matricule validation when matricule changes
+  useEffect(() => {
+    setIsMatriculeValid(false);
+    setMatriculeError("");
+  }, [signUpData.matricule]);
+
+  // Verify matricule against database (secure RPC, matricule only)
+  const verifyMatricule = async (): Promise<boolean> => {
+    const matricule = signUpData.matricule.trim();
+    if (!matricule) {
+      setMatriculeError("Le matricule est requis.");
+      setIsMatriculeValid(false);
+      return false;
+    }
+
+    try {
+      setIsVerifyingMatricule(true);
+      const { data: isValid, error } = await supabase.rpc('verify_matricule', {
+        p_matricule: matricule,
+      });
+
+      if (error) {
+        setMatriculeError("Erreur lors de la vérification du matricule.");
+        setIsMatriculeValid(false);
+        return false;
+      }
+
+      if (!isValid) {
+        setMatriculeError("Matricule non valide.");
+        setIsMatriculeValid(false);
+        return false;
+      }
+
+      setMatriculeError("");
+      setIsMatriculeValid(true);
+      return true;
+    } catch (e) {
+      setMatriculeError("Erreur lors de la vérification du matricule.");
+      setIsMatriculeValid(false);
+      return false;
+    }
+    finally {
+      setIsVerifyingMatricule(false);
+    }
+  };
+
+  // Debounced automatic verification on matricule changes
+  useEffect(() => {
+    if (!signUpData.matricule) return;
+    const timer = setTimeout(() => {
+      verifyMatricule();
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signUpData.matricule]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,10 +185,11 @@ export default function Auth() {
       return;
     }
 
-    // Exiger un matricule et le valider côté base (liste blanche SEEG)
-    const matricule = signUpData.matricule?.trim();
-    if (!matricule) {
-      toast.error("Le matricule SEEG est obligatoire pour vous inscrire.");
+    // Ensure matricule is valid before proceeding
+    const ok = await verifyMatricule();
+    if (!ok) {
+      toast.error("Vérifiez votre matricule pour continuer.");
+
       setIsSubmitting(false);
       return;
     }
@@ -151,11 +213,14 @@ export default function Auth() {
         first_name: signUpData.firstName,
         last_name: signUpData.lastName,
         phone: signUpData.phone,
-        matricule
+        matricule: signUpData.matricule
+
       });
       
       if (error) {
-        if (error.status === 429 || error.message.includes('rate limit')) {
+        if (error.status === 429) {
+          toast.error("Trop de tentatives. Veuillez réessayer dans 60 secondes.");
+        } else if (error.message.includes('rate limit')) {
           toast.error("Limite d'envoi d'emails atteinte. En mode développement, vous pouvez vous connecter directement.");
           setCooldown(120); // 2 minutes de cooldown
           // En développement, on peut suggérer de se connecter directement
@@ -333,6 +398,39 @@ export default function Auth() {
                       </div>
                     </div>
 
+                    {/* Matricule field (required, gates the rest of the form) */}
+                    <div className="space-y-2">
+                      <Label htmlFor="matricule">Matricule</Label>
+                      <div className="relative">
+                        <Input
+                          id="matricule"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="\\d+"
+                          placeholder="4517"
+                          value={signUpData.matricule}
+                          onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
+                          onBlur={verifyMatricule}
+                          required
+                          className="pr-10"
+                        />
+                        {isVerifyingMatricule && (
+                          <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+                        )}
+                      </div>
+                      {matriculeError && (
+                        <Card className="border-red-200 bg-red-50">
+                          <CardContent className="py-3 flex items-start gap-2 text-red-700">
+                            <AlertCircle className="w-4 h-4 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-medium">Vérification du matricule</p>
+                              <p className="text-sm">{matriculeError}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="phone">Téléphone</Label>
                       <Input
@@ -341,6 +439,8 @@ export default function Auth() {
                         placeholder="+241 01 23 45 67"
                         value={signUpData.phone}
                         onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
+                        disabled={!isMatriculeValid}
+                        required
                       />
                     </div>
 
@@ -359,6 +459,7 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                           className="pl-10"
                           required
+                          disabled={!isMatriculeValid}
                         />
                       </div>
                     </div>
@@ -375,11 +476,12 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                           className="pl-10"
                           required
+                          disabled={!isMatriculeValid}
                         />
                       </div>
                     </div>
 
-                    <Button type="submit" className="w-full" disabled={isSubmitting || cooldown > 0}>
+                    <Button type="submit" className="w-full" disabled={isSubmitting || cooldown > 0 || !isMatriculeValid}>
                       {isSubmitting
                         ? "Inscription..."
                         : cooldown > 0
