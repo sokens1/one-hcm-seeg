@@ -44,7 +44,8 @@ export default function Auth() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    phone: ""
+    phone: "",
+    matricule: ""
   });
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -111,12 +112,34 @@ export default function Auth() {
       return;
     }
 
+    // Exiger un matricule et le valider côté base (liste blanche SEEG)
+    const matricule = signUpData.matricule?.trim();
+    if (!matricule) {
+      toast.error("Le matricule SEEG est obligatoire pour vous inscrire.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Vérification via RPC sécurisée (ne révèle pas la table)
+      const { data: isValid, error: rpcErr } = await supabase.rpc('verify_seeg_matricule', { p_matricule: matricule });
+      if (rpcErr) {
+        toast.error("Impossible de vérifier le matricule. Réessayez.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (!isValid) {
+        toast.error("Matricule invalide: l'inscription est réservée aux agents SEEG.");
+        setIsSubmitting(false);
+        return;
+      }
+
       const { error } = await signUp(signUpData.email, signUpData.password, {
         role: "candidat",
         first_name: signUpData.firstName,
         last_name: signUpData.lastName,
-        phone: signUpData.phone
+        phone: signUpData.phone,
+        matricule
       });
       
       if (error) {
@@ -306,6 +329,17 @@ export default function Auth() {
                         placeholder="+241 01 23 45 67"
                         value={signUpData.phone}
                         onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="matricule">Matricule SEEG</Label>
+                      <Input
+                        id="matricule"
+                        placeholder="Ex: SEEG-12345"
+                        value={signUpData.matricule}
+                        onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
+                        required
                       />
                     </div>
 
