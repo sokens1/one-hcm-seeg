@@ -43,7 +43,7 @@ export default function CandidateJobs() {
           <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -translate-x-36 -translate-y-36"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-48 translate-y-48"></div>
         </div>
-        <div className="relative container mx-auto px-4 py-20">
+        <div className="relative container mx-auto px-4 py-12 sm:py-20">
           <div className="text-center space-y-6">
             <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 text-sm font-medium animate-fade-in">
               Société d'Énergie et d'Eau du Gabon
@@ -51,10 +51,10 @@ export default function CandidateJobs() {
             <h1 className="text-5xl md:text-6xl font-bold animate-fade-in delay-100">
               Nos {jobOffers.length} poste{jobOffers.length > 1 ? 's' : ''} à pourvoir
             </h1>
-            <h2 className="text-2xl md:text-3xl font-semibold opacity-90 animate-fade-in delay-150">
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold opacity-90 animate-fade-in delay-150">
               au sein du comité de direction
             </h2>
-            <p className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in delay-200">
+            <p className="text-base sm:text-lg md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in delay-200">
               Rejoignez l'équipe dirigeante de la SEEG et participez au développement énergétique du Gabon
             </p>
             <div className="flex flex-wrap justify-center gap-4 pt-6 animate-fade-in delay-300">
@@ -111,15 +111,15 @@ export default function CandidateJobs() {
         <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-200">
           <div className="relative flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-2.5 sm:top-3 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Rechercher un poste ou une ville..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-12"
+                className="pl-10 h-11 sm:h-12"
               />
             </div>
-            <Button variant="outline" size="icon" className="h-12 w-12">
+            <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12">
               <Filter className="w-4 h-4" />
             </Button>
           </div>
@@ -142,7 +142,7 @@ export default function CandidateJobs() {
               <span className="ml-2">Chargement des offres...</span>
             </div>
           ) : viewMode === "cards" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredJobs.map((job, index) => (
                 <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                   <JobCard
@@ -159,15 +159,15 @@ export default function CandidateJobs() {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-              <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
+            <div className="bg-white rounded-lg shadow-sm border overflow-x-auto">
+              <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm min-w-[640px]">
                 <div>Titre du poste</div>
                 <div>Lieu</div>
                 <div>Type de contrat</div>
                 <div>Action</div>
               </div>
               {filteredJobs.map((job, index) => (
-                <div key={job.id} className="grid grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in" style={{ animationDelay: `${300 + index * 50}ms` }}>
+                <div key={job.id} className="grid grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in min-w-[640px]" style={{ animationDelay: `${300 + index * 50}ms` }}>
                   <div className="font-medium">{job.title}</div>
                   <div className="text-muted-foreground">{job.location}</div>
                   <div className="text-muted-foreground">{job.contract_type}</div>
@@ -188,13 +188,13 @@ export default function CandidateJobs() {
 
         {/* Section Contexte */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl p-8 shadow-lg">
+          <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl p-6 sm:p-8 shadow-lg">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <Building className="w-6 h-6" />
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-3">
+                <h2 className="text-xl sm:text-2xl font-bold mb-3">
                   À propos de l'entreprise : Contexte du recrutement
                 </h2>
                 <p className="text-sm sm:text-base lg:text-lg opacity-90 mb-6">
@@ -225,7 +225,7 @@ export default function CandidateJobs() {
         )}
 
         {/* CTA Section */}
-        <div className="text-center py-16 mt-16">
+        <div className="text-center py-12 sm:py-16 mt-12 sm:mt-16">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-4">
               Équipe RH SEEG ?

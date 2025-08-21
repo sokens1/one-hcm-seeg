@@ -680,15 +680,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <div>
                     <Label htmlFor="cv">Votre CV *</Label>
                     <div className="mt-2">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <div className="space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
                             <p className="text-sm text-muted-foreground">Upload en cours...</p>
                           </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.cv ? formData.cv.name : "Glissez votre CV ici ou cliquez pour parcourir"}
                             </p>
@@ -704,6 +704,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('cv-upload')?.click()}
                           disabled={isUploading}
                         >
@@ -730,15 +731,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <div>
                     <Label htmlFor="coverLetter">Lettre de motivation *</Label>
                     <div className="mt-2">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <div className="space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
                             <p className="text-sm text-muted-foreground">Upload en cours...</p>
                           </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.coverLetter ? formData.coverLetter.name : "Glissez votre lettre de motivation ici ou cliquez pour parcourir"}
                             </p>
@@ -754,6 +755,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('coverLetter-upload')?.click()}
                           disabled={isUploading}
                         >
@@ -796,6 +798,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('certificates-upload')?.click()}
                         >
                           Choisir des fichiers
@@ -826,15 +829,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <div>
                     <Label htmlFor="integrityLetter">Lettre d'intégrité professionnelle *</Label>
                     <div className="mt-2">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <div className="space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
                             <p className="text-sm text-muted-foreground">Upload en cours...</p>
                           </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.integrityLetter ? formData.integrityLetter.name : "Glissez votre lettre d'intégrité professionnelle ici ou cliquez pour parcourir"}
                             </p>
@@ -850,6 +853,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('integrityLetter-upload')?.click()}
                           disabled={isUploading}
                         >
@@ -876,15 +880,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <div>
                     <Label htmlFor="projectIdea">Idée de projet (3 pages max) *</Label>
                     <div className="mt-2">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <div className="space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-primary animate-spin" />
+                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
                             <p className="text-sm text-muted-foreground">Upload en cours...</p>
                           </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.projectIdea ? formData.projectIdea.name : "Glissez votre idée de projet ici ou cliquez pour parcourir (3 pages max)"}
                             </p>
@@ -900,6 +904,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('projectIdea-upload')?.click()}
                           disabled={isUploading}
                         >
@@ -927,7 +932,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <Label htmlFor="recommendations">Lettre(s) de recommandation (facultatif)</Label>
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary transition-colors">
-                        <Upload className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
+                        <Upload className="w-4 h-4 mx-auto text-muted-foreground mb-2" />
                         <p className="text-sm text-muted-foreground mb-2">
                           {formData.recommendations.length > 0 ? `${formData.recommendations.length} fichier(s) sélectionné(s)` : "Ajouter des lettres de recommandation"}
                         </p>
@@ -942,6 +947,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <Button 
                           variant="outline" 
                           size="sm"
+                          className="w-full sm:w-auto"
                           onClick={() => document.getElementById('recommendations-upload')?.click()}
                         >
                           Choisir des fichiers
@@ -1287,6 +1293,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
                   className="w-full sm:w-auto"
+                  
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Précédent
@@ -1296,12 +1303,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <Button
                     variant="hero"
                     onClick={handleNext}
+                    className="w-full sm:w-auto"
                     disabled={
                       (currentStep === 1 && (!formData.firstName || !formData.lastName || !formData.email || !formData.gender || !formData.dateOfBirth || !formData.currentPosition)) ||
                       (currentStep === 2 && (!formData.cv || !formData.coverLetter || !formData.integrityLetter || !formData.projectIdea)) ||
                       (currentStep === 3 && (!formData.metier1 || !formData.metier2 || !formData.metier3 || !formData.talent1 || !formData.talent2 || !formData.talent3 || !formData.paradigme1 || !formData.paradigme2 || !formData.paradigme3))
                     }
-                    className="w-full sm:w-auto"
+                    
                   >
                     Suivant
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -1310,8 +1318,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   <Button
                     variant="success"
                     onClick={handleSubmit}
-                    disabled={!formData.consent}
                     className="w-full sm:w-auto"
+                    disabled={!formData.consent}
                   >
                     <span className="hidden sm:inline">Envoyer ma candidature</span>
                     <span className="sm:hidden">Envoyer</span>
@@ -1319,6 +1327,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   </Button>
                 )}
               </div>
+
             </CardContent>
           </Card>
         </div>

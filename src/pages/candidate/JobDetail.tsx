@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,7 +43,7 @@ export default function JobDetail() {
   if (isLoading || isLoadingApplication) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8" aria-live="polite">
           <div className="flex justify-center items-center min-h-[400px]">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
             <span className="ml-2">Chargement de l'offre...</span>
@@ -213,6 +213,7 @@ export default function JobDetail() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg sm:text-xl">Avantages</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">Avantages</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 gap-2 sm:gap-3">
@@ -311,9 +312,9 @@ export default function JobDetail() {
                     des services publics d'électricité et d'eau potable au Gabon.
                   </p>
                   <Button variant="outline" size="sm" className="mt-3 sm:mt-4 w-full text-xs sm:text-sm" asChild>
-                    <a href="/company-context">
+                    <Link to="/company-context">
                       En savoir plus
-                    </a>
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>

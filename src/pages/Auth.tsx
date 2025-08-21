@@ -70,7 +70,7 @@ export default function Auth() {
 
     try {
       setIsVerifyingMatricule(true);
-      const { data: isValid, error } = await supabase.rpc('verify_matricule', {
+      const { data: isValid, error } = await supabase.rpc('verify_seeg_matricule', {
         p_matricule: matricule,
       });
 
@@ -132,22 +132,34 @@ export default function Auth() {
       if (redirectParam) {
         navigate(redirectParam);
       } else {
-        // Prefer role from DB for accurate redirection
+        // Prefer authoritative role from DB (public.users), fallback to JWT metadata
         try {
-          const { data: profile } = await supabase
+          const { data: userRow, error: userRowError } = await supabase
             .from('users')
             .select('role')
             .eq('id', data.user.id)
             .single();
 
-          const dbRole = (profile as { role?: string } | null)?.role;
-          const role = dbRole || data.user.user_metadata?.role || 'candidat';
-          const isRecruiter = role === 'recruiter' || role === 'recruteur';
-          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+          const rawRole = String((!userRowError && (userRow as { role?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
+          const isAdmin = rawRole === 'admin';
+          const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
+
+          if (isAdmin) {
+            navigate('/admin/dashboard');
+          } else if (isRecruiter) {
+            navigate('/recruiter/dashboard');
+          } else {
+            navigate('/candidate/dashboard?view=jobs');
+          }
         } catch {
-          const role = data.user.user_metadata?.role || 'candidat';
-          const isRecruiter = role === 'recruiter' || role === 'recruteur';
-          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+          const rawRole = String(data.user.user_metadata?.role ?? '').toLowerCase();
+          if (rawRole === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (rawRole === 'recruteur' || rawRole === 'recruiter') {
+            navigate('/recruiter/dashboard');
+          } else {
+            navigate('/candidate/dashboard?view=jobs');
+          }
         }
       }
     } catch (error) {
@@ -183,19 +195,6 @@ export default function Auth() {
     }
 
     try {
-      // Vérification via RPC sécurisée (ne révèle pas la table)
-      const { data: isValid, error: rpcErr } = await supabase.rpc('verify_seeg_matricule', { p_matricule: matricule });
-      if (rpcErr) {
-        toast.error("Impossible de vérifier le matricule. Réessayez.");
-        setIsSubmitting(false);
-        return;
-      }
-      if (!isValid) {
-        toast.error("Matricule invalide: l'inscription est réservée aux agents SEEG.");
-        setIsSubmitting(false);
-        return;
-      }
-
       const { error } = await signUp(signUpData.email, signUpData.password, {
         role: "candidat",
         first_name: signUpData.firstName,
@@ -435,16 +434,7 @@ export default function Auth() {
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="matricule">Matricule SEEG</Label>
-                      <Input
-                        id="matricule"
-                        placeholder="Ex: SEEG-12345"
-                        value={signUpData.matricule}
-                        onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
-                        required
-                      />
-                    </div>
+                    
 
 
                     <div className="space-y-2">

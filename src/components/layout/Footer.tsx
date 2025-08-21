@@ -1,6 +1,19 @@
 import { Building2, Mail, Phone, MapPin } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export function Footer() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleOffersClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      document.getElementById("job-list")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/");
+      setTimeout(() => document.getElementById("job-list")?.scrollIntoView({ behavior: "smooth" }), 50);
+    }
+  };
   return (
     <footer className="bg-primary-dark text-white mt-16">
       <div className="container mx-auto px-4 py-12">
@@ -30,12 +43,12 @@ export function Footer() {
                 <Mail className="w-4 h-4" />
                 cnxonehcm@gmail.com
               </div>
-              <div className="flex items-center gap-2 text-sm text-white/90">
-                <Phone className="w-4 h-4" />
-                +241 76 40 40 86
+              <div className="flex items-center gap-2 text-[13px] sm:text-sm text-white/90">
+                <Phone className="w-4 h-4 flex-shrink-0" />
+                +241 XX XX XX XX
               </div>
-              <div className="flex items-center gap-2 text-sm text-white/90">
-                <MapPin className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-[13px] sm:text-sm text-white/90">
+                <MapPin className="w-4 h-4 flex-shrink-0" />
                 Libreville, Gabon
               </div>
             </div>
@@ -45,16 +58,16 @@ export function Footer() {
           <div className="flex-1 min-w-[200px] space-y-4 md:text-right">
             <h4 className="font-semibold text-white">Liens rapides</h4>
             <div className="space-y-2">
-              <a href="/" className="block text-sm text-white/90 hover:text-white transition-colors">
+              <Link to="/" className="block text-sm text-white/90 hover:text-white transition-colors">
                 Offres d'emploi
-              </a>
-              <a href="/recruiter" className="block text-sm text-white/90 hover:text-white transition-colors">
+              </Link>
+              <Link to="/recruiter" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
                 Espace recruteur
-              </a>
-              <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
+              </Link>
+              <a href="#" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
                 À propos
               </a>
-              <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
+              <a href="#" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
                 Politique de confidentialité
               </a>
             </div>
