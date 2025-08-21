@@ -10,7 +10,7 @@ import {
   createRoutesFromElements,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./hooks/useAuth";
+import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 import { Loader2 } from 'lucide-react';

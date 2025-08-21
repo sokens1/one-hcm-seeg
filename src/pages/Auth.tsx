@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, Building2 } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
+import { supabase } from "@/integrations/supabase/client";
 // Link already imported above
 
 export default function Auth() {
@@ -20,7 +21,8 @@ export default function Auth() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const searchParams = new URLSearchParams(location.search);
-  const redirectParam = searchParams.get('redirect');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -68,12 +70,22 @@ export default function Auth() {
       if (redirectParam) {
         navigate(redirectParam);
       } else {
-        // Fallback: redirect based on user role stored in database
-        const role = data.user.user_metadata?.role || 'candidate';
-        if (role === 'recruiter') {
-          navigate('/recruiter/dashboard');
-        } else {
-          navigate('/candidate/dashboard');
+        // Prefer role from DB for accurate redirection
+        try {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+
+          const dbRole = (profile as { role?: string } | null)?.role;
+          const role = dbRole || data.user.user_metadata?.role || 'candidat';
+          const isRecruiter = role === 'recruiter' || role === 'recruteur';
+          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+        } catch {
+          const role = data.user.user_metadata?.role || 'candidat';
+          const isRecruiter = role === 'recruiter' || role === 'recruteur';
+          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
         }
       }
     } catch (error) {

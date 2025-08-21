@@ -1,5 +1,6 @@
-import { useState, useEffect, createContext, useContext } from "react";
-import { User, Session, AuthResponse, AuthError } from "@supabase/supabase-js";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, createContext, useContext, useRef } from "react";
+import { User, Session, AuthResponse, AuthError, type RealtimeChannel } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SignUpMetadata {
@@ -11,6 +12,7 @@ export interface SignUpMetadata {
   birth_date?: string;
   current_position?: string;
   bio?: string;
+  gender?: string; // 'Homme' | 'Femme' | autres valeurs
 }
 
 interface AuthContextType {
@@ -35,6 +37,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [dbRole, setDbRole] = useState<string | null>(null);
+  const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -43,17 +47,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
+
+        // When auth state changes, fetch role from DB and bind realtime
+        const uid = session?.user?.id;
+        if (uid) {
+          // Remove previous channel if any
+          if (channelRef.current) {
+            try { supabase.removeChannel(channelRef.current); } catch { /* empty */ }
+            channelRef.current = null;
+          }
+          // Initial fetch
+          (async () => {
+            try {
+              const { data } = await supabase
+                .from('users')
+                .select('role')
+                .eq('id', uid)
+                .single();
+              setDbRole((data as { role?: string } | null)?.role ?? null);
+            } catch {
+              setDbRole(null);
+            }
+          })();
+
+          // Realtime subscription on own row
+          const channel = supabase.channel(`users-role-${uid}`)
+            .on('postgres_changes', {
+              event: '*',
+              schema: 'public',
+              table: 'users',
+              filter: `id=eq.${uid}`,
+            }, (payload) => {
+              // payload.new may be undefined on DELETE; guard it
+              const nextRole = (payload as any)?.new?.role as string | undefined;
+              if (typeof nextRole === 'string') setDbRole(nextRole);
+            })
+            .subscribe();
+          channelRef.current = channel;
+        } else {
+          setDbRole(null);
+        }
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
+    // The onAuthStateChange listener handles the initial session check automatically.
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (channelRef.current) {
+        try { supabase.removeChannel(channelRef.current); } catch { /* empty */ }
+        channelRef.current = null;
+      }
+    };
   }, []);
 
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
@@ -93,6 +138,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
+    // Proactively clear local state to avoid stale role/guards during redirect
+    try {
+      if (channelRef.current) {
+        try { supabase.removeChannel(channelRef.current); } catch { /* empty */ }
+        channelRef.current = null;
+      }
+      setUser(null);
+      setSession(null);
+      setDbRole(null);
+    } catch { /* empty */ }
     return { error };
   };
 
@@ -124,19 +179,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (typeof get('last_name') === 'string') upsertPayload.last_name = get('last_name');
         if (typeof get('phone') === 'string') upsertPayload.phone = get('phone');
         if (typeof get('matricule') === 'string') upsertPayload.matricule = get('matricule');
-        if (typeof get('birth_date') === 'string') upsertPayload.birth_date = get('birth_date');
+        // Map auth metadata birth_date -> users.date_of_birth (DB column)
+        if (typeof get('birth_date') === 'string') upsertPayload.date_of_birth = get('birth_date');
         if (typeof get('current_position') === 'string') upsertPayload.current_position = get('current_position');
         if (typeof get('bio') === 'string') upsertPayload.bio = get('bio');
+        // Facultatif: si 'gender' existe aussi côté users (probablement non), on pourrait le mapper ici
 
-        const { error: upsertErr } = await supabase
+        // IMPORTANT: do not change role from frontend. Only update non-role fields.
+        // Also, avoid creating the row here to prevent default role from being applied.
+        const { error: updateErr } = await supabase
           .from('users')
-          .upsert(upsertPayload, { onConflict: 'id' });
-        if (upsertErr) {
-          console.warn('Upsert users failed (non-bloquant):', upsertErr.message);
+          .update(upsertPayload)
+          .eq('id', authUser.id);
+        if (updateErr) {
+          console.warn('Update users failed (non-bloquant):', updateErr.message);
         }
       }
     } catch (e) {
       console.warn('Failed syncing users table:', e);
+    }
+
+    // Synchroniser le profil candidat (pour les stats genre et infos profil)
+    try {
+      const authUser = data.user;
+      if (authUser) {
+        const meta = (authUser as unknown as { user_metadata?: Record<string, unknown> })?.user_metadata || {};
+        const get = (k: string) => (meta as Record<string, unknown>)[k];
+        const upsertProfile: Record<string, unknown> = { user_id: authUser.id };
+        if (typeof get('gender') === 'string') upsertProfile.gender = get('gender');
+        if (typeof get('phone') === 'string') upsertProfile.phone = get('phone');
+        if (typeof get('birth_date') === 'string') upsertProfile.birth_date = get('birth_date');
+        if (typeof get('current_position') === 'string') upsertProfile.current_position = get('current_position');
+
+        // N'upsert que si au moins un champ utile est présent
+        const hasUseful = Object.keys(upsertProfile).length > 1;
+        if (hasUseful) {
+          const { error: cpErr } = await supabase
+            .from('candidate_profiles')
+            .upsert(upsertProfile, { onConflict: 'user_id' });
+          if (cpErr) {
+            console.warn('Upsert candidate_profiles failed (non-bloquant):', cpErr.message);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Failed syncing candidate_profiles:', e);
     }
 
     setIsUpdating(false);
@@ -155,12 +242,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Helper functions to check user role
   const getUserRole = () => {
-    return user?.user_metadata?.role || 'candidat';
+    // Prefer DB role for dynamic behavior; fallback to auth metadata; default 'candidat'
+    return dbRole || (user?.user_metadata?.role as string | undefined) || 'candidat';
   };
 
-  const isCandidate = getUserRole() === 'candidat';
-  const isRecruiter = getUserRole() === 'recruteur';
-  const isAdmin = getUserRole() === 'admin';
+  const roleValue = getUserRole();
+  const isCandidate = roleValue === 'candidat' || roleValue === 'candidate';
+  const isRecruiter = roleValue === 'recruteur' || roleValue === 'recruiter';
+  const isAdmin = roleValue === 'admin';
 
   const value = {
     user,

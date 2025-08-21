@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
@@ -81,6 +82,19 @@ export default function JobDetail() {
     );
   }
 
+  // Normalize category label from possible shapes (string or object)
+  const categoryLabel = (() => {
+    const cat: unknown = (jobOffer as any).categorie_metier;
+    if (!cat) return null;
+    if (typeof cat === 'string') return cat.trim();
+    if (typeof cat === 'object') {
+      const obj = cat as Record<string, unknown>;
+      const candidate = (obj.label || obj.name || obj.title || obj.categorie || obj.category) as string | undefined;
+      return candidate?.trim() || null;
+    }
+    return null;
+  })();
+
   const formatSalary = (min: number | null | undefined, max: number | null | undefined) => {
     if (!min && !max) return "Salaire à négocier";
     if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} FCFA`;
@@ -111,6 +125,13 @@ export default function JobDetail() {
                   {jobOffer.department || "SEEG"}
                 </span>
               </div>
+              {categoryLabel && (
+                <div className="mb-3">
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                    {categoryLabel}
+                  </Badge>
+                </div>
+              )}
               <h1 className="text-4xl md:text-5xl font-bold mb-4">{jobOffer.title}</h1>
               <div className="flex flex-wrap items-center gap-4 text-lg">
                 <div className="flex items-center gap-2">
@@ -121,10 +142,18 @@ export default function JobDetail() {
                   <Users className="w-5 h-5" />
                   {jobOffer.contract_type}
                 </div>
-                <div className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
-                  {formatSalary(jobOffer.salary_min, jobOffer.salary_max)}
-                </div>
+                {jobOffer.salary_note && (
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-5 h-5" />
+                    {jobOffer.salary_note}
+                  </div>
+                )}
+                {jobOffer.reporting_line && (
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-5 h-5" />
+                    {jobOffer.reporting_line}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -134,25 +163,30 @@ export default function JobDetail() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Description */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl">Description du poste</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="prose max-w-none">
-                    <p className="text-muted-foreground leading-relaxed">
-                      {jobOffer.description}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Missions principales */}
+              {jobOffer.responsibilities && jobOffer.responsibilities.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl">MISSIONS PRINCIPALES</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {jobOffer.responsibilities.map((mission, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
+                          <span className="text-muted-foreground">{mission}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Requirements / Profile */}
+              {/* Connaissances savoir et requis */}
               {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl">Profil recherché</CardTitle>
+                    <CardTitle className="text-xl">CONNAISSANCE SAVOIR ET REQUIS</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {jobOffer.requirements && jobOffer.requirements.length > 0 ? (
@@ -201,10 +235,16 @@ export default function JobDetail() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
+                    {jobOffer.start_date && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        Date d'embauche: {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="w-4 h-4" />
-                      {jobOffer.application_deadline 
-                        ? `Date limite: ${new Date(jobOffer.application_deadline).toLocaleDateString('fr-FR')}`
+                      {jobOffer.date_limite 
+                        ? `Date limite: ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
                         : "Candidatures ouvertes"
                       }
                     </div>
@@ -273,6 +313,8 @@ export default function JobDetail() {
                   </Button>
                 </CardContent>
               </Card>
+
+              
             </div>
           </div>
         </div>

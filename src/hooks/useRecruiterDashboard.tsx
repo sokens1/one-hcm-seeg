@@ -97,22 +97,48 @@ export function useRecruiterDashboard() {
     let multiPostCandidates = 0;
     applicationsByCandidate.forEach(set => { if (set.size > 1) multiPostCandidates++; });
 
-    // Compute gender distribution from candidate_profiles
-    // Note: the current schema (src/integrations/supabase/types.ts) does not expose a 'gender' column on candidate_profiles.
-    // To avoid 400 errors, we skip selecting a non-existent column and leave percentages undefined until the schema is updated.
-    let malePercent: number | undefined = undefined;
-    let femalePercent: number | undefined = undefined;
+    // Compute gender distribution from candidate_profiles (robust normalization)
+    let malePercent: number | undefined = 0;
+    let femalePercent: number | undefined = 0;
+
+    // Helper to normalize various inputs to 'Homme' | 'Femme' | null
+    const normalizeGender = (g?: string | null): 'Homme' | 'Femme' | null => {
+      if (!g) return null;
+      const s = g.trim().toLowerCase();
+      const maleSet = new Set(['h', 'm', 'homme', 'masculin', 'male', 'mâle']);
+      const femaleSet = new Set(['f', 'femme', 'feminin', 'féminin', 'female']);
+      if (maleSet.has(s)) return 'Homme';
+      if (femaleSet.has(s)) return 'Femme';
+      return null;
+    };
+
     if (candidateIds.length > 0) {
-      // Attempt a minimal fetch to verify accessible rows without selecting non-existent columns.
-      const { error: profilesError } = await supabase
+      const { data: profiles, error: profilesError } = await supabase
         .from('candidate_profiles')
-        .select('user_id')
+        .select('user_id, gender')
         .in('user_id', candidateIds as string[]);
+
       if (profilesError) {
-        // Do not throw; just skip gender computation to keep dashboard functional.
-        console.warn('[Dashboard] candidate_profiles fetch skipped:', profilesError.message || profilesError);
+        console.warn('[Dashboard] Could not fetch candidate profiles for gender stats:', profilesError.message);
+      } else if (profiles) {
+        // Ensure unique candidates and normalized genders
+        const normalized: Array<{ user_id: string; gender: 'Homme' | 'Femme' | null }> = profiles.map(p => ({
+          user_id: (p as any).user_id,
+          gender: normalizeGender((p as any).gender)
+        }));
+
+        const withGender = normalized.filter(p => p.gender !== null);
+        const totalWithGender = withGender.length;
+        if (totalWithGender > 0) {
+          const maleCount = withGender.filter(p => p.gender === 'Homme').length;
+          const femaleCount = withGender.filter(p => p.gender === 'Femme').length;
+          malePercent = (maleCount / totalWithGender) * 100;
+          femalePercent = (femaleCount / totalWithGender) * 100;
+        } else {
+          malePercent = 0;
+          femalePercent = 0;
+        }
       }
-      // malePercent and femalePercent remain undefined to reflect unavailable data
     }
 
     const stats: RecruiterStats = {
@@ -143,6 +169,8 @@ export function useRecruiterDashboard() {
   };
 }
 
+
+
 export function useCreateJobOffer() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -162,6 +190,14 @@ export function useCreateJobOffer() {
     requirements?: string[] | null;
     benefits?: string[] | null;
     application_deadline?: string | null;
+    // New columns
+    categorie_metier?: string | null;
+    date_limite?: string | null;
+    reporting_line?: string | null;
+    job_grade?: string | null;
+    salary_note?: string | null;
+    start_date?: string | null;
+    responsibilities?: string[] | null;
   };
   type JobOffersUpdate = Partial<Omit<JobOffersInsert, 'recruiter_id' | 'status'>> & {
     status?: 'active' | 'draft' | string;
@@ -248,10 +284,42 @@ export function useCreateJobOffer() {
     },
   });
 
+  interface DeleteJobOfferVariables {
+    jobId: string;
+    onSuccess?: () => void;
+    onError?: (error: unknown) => void;
+  }
+
+  const deleteJobOfferMutation = useMutation<null, Error, DeleteJobOfferVariables>({
+    mutationFn: async ({ jobId }) => {
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase
+        .from('job_offers')
+        .update({ status: 'closed' })
+        .eq('id', jobId)
+        .eq('recruiter_id', user.id);
+
+      if (error) throw error;
+      return null;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['recruiterDashboard', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['jobOffers'] });
+      queryClient.invalidateQueries({ queryKey: ['jobOffer', variables.jobId] });
+      variables.onSuccess?.();
+    },
+    onError: (error, variables) => {
+      variables.onError?.(error);
+    },
+  });
+
   return {
     createJobOffer: createJobOfferMutation.mutateAsync,
     isCreating: createJobOfferMutation.isPending,
     updateJobOffer: updateJobOfferMutation.mutateAsync,
     isUpdating: updateJobOfferMutation.isPending,
+    deleteJobOffer: deleteJobOfferMutation.mutate,
+    isDeleting: deleteJobOfferMutation.isPending,
   };
 }
