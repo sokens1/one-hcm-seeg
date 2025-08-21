@@ -344,16 +344,7 @@ export default function Auth() {
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="matricule">Matricule SEEG</Label>
-                      <Input
-                        id="matricule"
-                        placeholder="Ex: SEEG-12345"
-                        value={signUpData.matricule}
-                        onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
-                        required
-                      />
-                    </div>
+                    
 
 
                     <div className="space-y-2">
