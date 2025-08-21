@@ -37,8 +37,7 @@ const menuItems = [
 ];
 
 export function RecruiterSidebar() {
-  const sidebar = useSidebar();
-  const collapsed = sidebar.state === "collapsed";
+  const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -56,13 +55,13 @@ export function RecruiterSidebar() {
 
   return (
     <Sidebar
-      className={collapsed ? "w-14" : "w-60"}
+      className={state === "collapsed" ? "w-12 sm:w-14" : "w-48 sm:w-56 lg:w-60"}
       collapsible="icon"
     >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-lg font-semibold mb-4">
-            {!collapsed && "Recruteur"}
+          <SidebarGroupLabel className={`text-sm sm:text-base font-medium px-2 sm:px-3 ${state === "collapsed" ? "sr-only" : ""}`}>
+            Recruteur
           </SidebarGroupLabel>
           
           <SidebarGroupContent>
@@ -70,9 +69,15 @@ export function RecruiterSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={getNavCls(item.url)}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                    <NavLink 
+                      to={item.url} 
+                      className={`${getNavCls(item.url)} text-xs sm:text-sm lg:text-base py-2 sm:py-3`}
+                      title={state === "collapsed" ? item.title : undefined}
+                    >
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {state !== "collapsed" && (
+                        <span className="ml-2 truncate">{item.title}</span>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

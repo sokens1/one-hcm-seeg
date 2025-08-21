@@ -8,8 +8,8 @@ export function Footer() {
           {/* Company Info */}
           <div className="flex-1 min-w-[300px] space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-30 h-10 rounded-lg flex items-center justify-center">
-                <img src="/LOGO HCM4.png" alt="Logo" className="w-20 h-35 object-contain" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-19 lg:h-19 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+                <img src="/LOGO HCM4.png" alt="Logo" className="w-14 h-12 sm:w-16 sm:h-14 lg:w-20 lg:h-35 object-contain" />
               </div>
               {/* <div>
                 <h3 className="text-lg font-bold text-white">OneHCM</h3>

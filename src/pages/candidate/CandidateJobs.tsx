@@ -197,7 +197,7 @@ export default function CandidateJobs() {
                 <h2 className="text-2xl font-bold mb-3">
                   À propos de l'entreprise : Contexte du recrutement
                 </h2>
-                <p className="text-lg opacity-90 mb-6">
+                <p className="text-sm sm:text-base lg:text-lg opacity-90 mb-6">
                   Découvrez la vision et les ambitions derrière cette campagne de recrutement 
                   exceptionnelle pour la renaissance de la SEEG.
                 </p>
@@ -227,7 +227,7 @@ export default function CandidateJobs() {
         {/* CTA Section */}
         <div className="text-center py-16 mt-16">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-4">
               Équipe RH SEEG ?
             </h2>
             <p className="text-muted-foreground mb-6">

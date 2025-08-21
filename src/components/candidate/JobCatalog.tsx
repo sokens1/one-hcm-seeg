@@ -87,17 +87,17 @@ export function JobCatalog() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Chargement des offres...</p>
+      <div className="flex flex-col sm:flex-row justify-center items-center h-48 sm:h-64 gap-2 sm:gap-4">
+        <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
+        <p className="text-sm sm:text-base lg:text-lg">Chargement des offres...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-600">
-        <p>Une erreur est survenue lors du chargement des offres.</p>
+      <div className="text-center py-8 sm:py-12 text-red-600 px-4">
+        <p className="text-sm sm:text-base">Une erreur est survenue lors du chargement des offres.</p>
         <p className="text-sm">{error.message}</p>
       </div>
     );
@@ -115,58 +115,59 @@ export function JobCatalog() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8">
       {/* En-tête */}
-      <div className="text-center">
-        <h2 className="text-3xl font-bold mb-2">Catalogue des offres</h2>
-        <p className="text-lg text-muted-foreground">
+      <div className="text-center px-3 sm:px-4">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Catalogue des offres</h2>
+        <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Découvrez toutes les opportunités disponibles au sein du comité de direction
         </p>
       </div>
 
       {/* Sélecteur de vue */}
-      <div className="flex justify-center">
-        <div className="bg-white rounded-lg p-1 shadow-sm border">
+      <div className="flex justify-center px-3 sm:px-4">
+        <div className="bg-white rounded-lg p-1 shadow-sm border w-full sm:w-auto">
           <Button
             variant={viewMode === "cards" ? "default" : "ghost"}
             size="sm"
             onClick={() => setViewMode("cards")}
-            className="gap-2"
+            className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-none"
           >
-            <Grid className="w-4 h-4" />
-            Vue Cartes
+            <Grid className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">Vue </span>Cartes
           </Button>
           <Button
             variant={viewMode === "list" ? "default" : "ghost"}
             size="sm"
             onClick={() => setViewMode("list")}
-            className="gap-2"
+            className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-none"
           >
-            <List className="w-4 h-4" />
-            Vue Liste
+            <List className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">Vue </span>Liste
           </Button>
         </div>
       </div>
 
       {/* Search Bar with Filters */}
-      <div className="max-w-4xl mx-auto">
-        <div className="relative flex gap-2">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4">
+        <div className="relative flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher un poste, une ville ou une description..."
+              placeholder="Rechercher un poste, une ville..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12"
+              className="pl-8 sm:pl-10 h-10 sm:h-12 text-sm sm:text-base"
             />
           </div>
           <Popover open={showFilters} onOpenChange={setShowFilters}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="h-12 gap-2">
-                <Filter className="w-4 h-4" />
-                Filtres
+              <Button variant="outline" className="h-10 sm:h-12 gap-1 sm:gap-2 w-full sm:w-auto justify-center text-xs sm:text-sm">
+                <Filter className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Filtres</span>
+                <span className="sm:hidden">Filtres</span>
                 {(locationFilter !== "all" || contractFilter !== "all") && (
-                  <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                  <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 sm:w-5 sm:h-5 text-xs flex items-center justify-center">
                     {(locationFilter !== "all" ? 1 : 0) + (contractFilter !== "all" ? 1 : 0)}
                   </span>
                 )}
@@ -224,30 +225,30 @@ export function JobCatalog() {
         
         {/* Active Filters Display */}
         {(locationFilter !== "all" || contractFilter !== "all") && (
-          <div className="flex gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mt-3">
             {locationFilter !== "all" && (
-              <div className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
+              <div className="flex items-center gap-1 bg-primary/10 text-primary px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
                 <span>Lieu: {locationFilter}</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  className="h-3 w-3 sm:h-4 sm:w-4 p-0 hover:bg-transparent"
                   onClick={() => setLocationFilter("all")}
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-2 h-2 sm:w-3 sm:h-3" />
                 </Button>
               </div>
             )}
             {contractFilter !== "all" && (
-              <div className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
+              <div className="flex items-center gap-1 bg-primary/10 text-primary px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
                 <span>Contrat: {contractFilter}</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  className="h-3 w-3 sm:h-4 sm:w-4 p-0 hover:bg-transparent"
                   onClick={() => setContractFilter("all")}
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-2 h-2 sm:w-3 sm:h-3" />
                 </Button>
               </div>
             )}
@@ -256,18 +257,18 @@ export function JobCatalog() {
       </div>
 
       {/* Stats Bar */}
-      <div className="flex justify-center">
-        <div className="bg-card rounded-lg border p-4 shadow-soft">
-          <p className="text-sm text-muted-foreground">
+      <div className="flex justify-center px-4">
+        <div className="bg-card rounded-lg border p-3 sm:p-4 shadow-soft">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             <span className="font-semibold text-primary">{filteredJobs.length}</span> offres disponibles
           </p>
         </div>
       </div>
 
       {/* Job Listings - Présentation identique à /jobs */}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4">
         {viewMode === "cards" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {filteredJobs.map((job, index) => (
               <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                 <JobCard
@@ -284,21 +285,23 @@ export function JobCatalog() {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-            <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
+            {/* Header - Hidden on mobile, visible on tablet+ */}
+            <div className="hidden md:grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
               <div>Titre du poste</div>
               <div>Lieu</div>
               <div>Type de contrat</div>
               <div>Action</div>
             </div>
             {filteredJobs.map((job, index) => (
-              <div key={job.id} className="grid grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in" style={{ animationDelay: `${300 + index * 50}ms` }}>
-                <div className="font-medium">{job.title}</div>
-                <div className="text-muted-foreground">{job.location}</div>
-                <div className="text-muted-foreground">{job.contract_type}</div>
-                <div>
+              <div key={job.id} className="md:grid md:grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in flex flex-col md:flex-none space-y-2 md:space-y-0" style={{ animationDelay: `${300 + index * 50}ms` }}>
+                <div className="font-medium text-sm md:text-base">{job.title}</div>
+                <div className="text-muted-foreground text-xs md:text-sm">{job.location}</div>
+                <div className="text-muted-foreground text-xs md:text-sm">{job.contract_type}</div>
+                <div className="flex justify-start md:justify-center">
                   <Button 
                     variant="outline" 
                     size="sm"
+                    className="text-xs md:text-sm h-8 md:h-9"
                     onClick={() => handleJobClick(job.id)}
                   >
                     Voir détails

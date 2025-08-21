@@ -93,26 +93,26 @@ export function ResetPassword() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-xl">
-          <CardHeader className="text-center space-y-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-3 sm:p-4">
+        <Card className="w-full max-w-sm sm:max-w-md shadow-xl">
+          <CardHeader className="text-center space-y-3 sm:space-y-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900">
               Mot de passe mis à jour !
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <p className="text-gray-600">
+          <CardContent className="text-center space-y-3 sm:space-y-4">
+            <p className="text-sm sm:text-base text-gray-600">
               Votre mot de passe a été mis à jour avec succès.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500">
               Vous allez être redirigé vers la page de connexion...
             </p>
             <Button 
               variant="outline" 
-              className="w-full"
+              className="w-full text-sm sm:text-base"
               onClick={() => navigate('/login')}
             >
               Aller à la connexion
@@ -124,24 +124,24 @@ export function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="text-center space-y-4">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-            <Lock className="w-8 h-8 text-blue-600" />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-3 sm:p-4">
+      <Card className="w-full max-w-sm sm:max-w-md shadow-xl">
+        <CardHeader className="text-center space-y-3 sm:space-y-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+            <Lock className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900">
             Nouveau mot de passe
           </CardTitle>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600 px-2">
             Choisissez un nouveau mot de passe sécurisé pour votre compte.
           </p>
         </CardHeader>
         
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="password">Nouveau mot de passe</Label>
+              <Label htmlFor="password" className="text-sm sm:text-base">Nouveau mot de passe</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -151,26 +151,26 @@ export function ResetPassword() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-12 pr-12"
+                  className="h-10 sm:h-12 pr-10 sm:pr-12 text-sm sm:text-base"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-12 px-3 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-10 sm:h-12 px-2 sm:px-3 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="w-4 h-4 text-gray-500" />
+                    <EyeOff className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
                   ) : (
-                    <Eye className="w-4 h-4 text-gray-500" />
+                    <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
                   )}
                 </Button>
               </div>
-              <div className="text-xs text-gray-500 space-y-1">
+              <div className="text-xs sm:text-sm text-gray-500 space-y-1">
                 <p>Le mot de passe doit contenir :</p>
-                <ul className="list-disc list-inside space-y-1">
+                <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm">
                   <li>Au moins 8 caractères</li>
                   <li>Une lettre minuscule et majuscule</li>
                   <li>Au moins un chiffre</li>
@@ -179,7 +179,7 @@ export function ResetPassword() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+              <Label htmlFor="confirmPassword" className="text-sm sm:text-base">Confirmer le mot de passe</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -189,20 +189,20 @@ export function ResetPassword() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-12 pr-12"
+                  className="h-10 sm:h-12 pr-10 sm:pr-12 text-sm sm:text-base"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-12 px-3 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-10 sm:h-12 px-2 sm:px-3 hover:bg-transparent"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={isLoading}
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="w-4 h-4 text-gray-500" />
+                    <EyeOff className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
                   ) : (
-                    <Eye className="w-4 h-4 text-gray-500" />
+                    <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
                   )}
                 </Button>
               </div>
@@ -210,18 +210,20 @@ export function ResetPassword() {
             
             <Button 
               type="submit" 
-              className="w-full h-12"
+              className="w-full h-10 sm:h-12 text-sm sm:text-base"
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Mise à jour...
+                  <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2 animate-spin" />
+                  <span className="hidden sm:inline">Mise à jour...</span>
+                  <span className="sm:hidden">Mise à jour...</span>
                 </>
               ) : (
                 <>
-                  <Lock className="w-4 h-4 mr-2" />
-                  Mettre à jour le mot de passe
+                  <Lock className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                  <span className="hidden sm:inline">Mettre à jour le mot de passe</span>
+                  <span className="sm:hidden">Mettre à jour</span>
                 </>
               )}
             </Button>

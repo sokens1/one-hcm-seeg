@@ -100,8 +100,8 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
             <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto animate-bounce">
               <CheckCircle className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground">Candidature envoyée !</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Candidature envoyée !</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Merci, <strong>{formData.firstName}</strong> ! Nous avons bien reçu votre candidature pour le poste de{" "}
               <strong>{jobTitle}</strong> et nous reviendrons vers vous très prochainement.
             </p>
@@ -129,20 +129,20 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6 sm:py-8">
         <div className="container mx-auto px-4">
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-4 text-white hover:bg-white/10"
+            className="mb-4 text-white hover:bg-white/10 text-xs sm:text-sm"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
             Retour à l'offre
           </Button>
           
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold">Candidature pour {jobTitle}</h1>
-            <p className="text-lg opacity-90 max-w-2xl mx-auto">
+          <div className="text-center space-y-3 sm:space-y-4">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold leading-tight">Candidature pour {jobTitle}</h1>
+            <p className="text-sm sm:text-base lg:text-lg opacity-90 max-w-2xl mx-auto px-2">
               Processus de candidature en 4 étapes pour rejoindre le comité de direction de la SEEG
             </p>
           </div>
@@ -151,34 +151,34 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
 
       <div className="container mx-auto px-4 py-8">
         {/* Progress Bar */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
+        <div className="max-w-4xl mx-auto mb-6 sm:mb-8">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${
                     step <= currentStep 
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg' 
                       : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
                   }`}>
-                    {step <= currentStep ? <CheckCircle className="w-6 h-6" /> : step}
+                    {step <= currentStep ? <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> : step}
                   </div>
                   {step < 4 && (
-                    <div className={`h-1 w-20 mx-2 rounded-full transition-all ${
+                    <div className={`h-0.5 sm:h-1 w-12 sm:w-16 lg:w-20 mx-1 sm:mx-2 rounded-full transition-all ${
                       step < currentStep ? 'bg-gradient-to-r from-blue-600 to-blue-700' : 'bg-gray-200'
                     }`} />
                   )}
                 </div>
               ))}
             </div>
-            <div className="flex justify-between text-xs font-medium text-gray-600">
+            <div className="flex justify-between text-xs sm:text-sm font-medium text-gray-600">
               {stepTitles.map((title, index) => (
-                <span key={index} className="text-center max-w-20">{title}</span>
+                <span key={index} className="text-center max-w-16 sm:max-w-20 leading-tight">{title}</span>
               ))}
             </div>
-            <div className="mt-4 bg-gray-200 rounded-full h-2">
+            <div className="mt-3 sm:mt-4 bg-gray-200 rounded-full h-1.5 sm:h-2">
               <div 
-                className="bg-gradient-to-r from-blue-600 to-blue-700 h-2 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 h-1.5 sm:h-2 rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -188,67 +188,72 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
         {/* Form Content */}
         <div className="max-w-4xl mx-auto">
           <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-              <CardTitle className="flex items-center gap-3 text-xl">
-                {currentStep === 1 && <><User className="w-6 h-6" /> Informations Personnelles</>}
-                {currentStep === 2 && <><FileText className="w-6 h-6" /> Parcours & Documents</>}
-                {currentStep === 3 && <><MessageSquare className="w-6 h-6" /> Questionnaire : Métier, Talent et Paradigme</>}
-                {currentStep === 4 && <><Send className="w-6 h-6" /> Finalisation</>}
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
+                {currentStep === 1 && <><User className="w-5 h-5 sm:w-6 sm:h-6" /> Informations Personnelles</>}
+                {currentStep === 2 && <><FileText className="w-5 h-5 sm:w-6 sm:h-6" /> Parcours & Documents</>}
+                {currentStep === 3 && <><MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" /> Questionnaire : Métier, Talent et Paradigme</>}
+                {currentStep === 4 && <><Send className="w-5 h-5 sm:w-6 sm:h-6" /> Finalisation</>}
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="space-y-6 p-8">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 lg:p-8">
               {/* Step 1: Personal Info */}
               {currentStep === 1 && (
-                <div className="space-y-6 animate-fade-in">
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4 sm:space-y-6 animate-fade-in">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <Label htmlFor="firstName">Prénom *</Label>
+                      <Label htmlFor="firstName" className="text-sm sm:text-base">Prénom *</Label>
                        <Input
                          id="firstName"
                          value={formData.firstName}
                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                          required
+                         className="text-sm sm:text-base"
                        />
                     </div>
                     <div>
-                      <Label htmlFor="lastName">Nom *</Label>
+                      <Label htmlFor="lastName" className="text-sm sm:text-base">Nom *</Label>
                        <Input
                          id="lastName"
                          value={formData.lastName}
                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                          required
+                         className="text-sm sm:text-base"
                        />
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" className="text-sm sm:text-base">Email *</Label>
                      <Input
                        id="email"
                        type="email"
                        value={formData.email}
                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                        required
+                       className="text-sm sm:text-base"
                      />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <Label htmlFor="birthDate">Date de naissance *</Label>
+                      <Label htmlFor="birthDate" className="text-sm sm:text-base">Date de naissance *</Label>
                       <Input
                         id="birthDate"
                         type="date"
                         value={formData.birthDate}
                         onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
                         required
+                        className="text-sm sm:text-base"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="currentPosition">Poste actuel *</Label>
+                      <Label htmlFor="currentPosition" className="text-sm sm:text-base">Poste actuel *</Label>
                       <Input
                         id="currentPosition"
                         value={formData.currentPosition}
                         onChange={(e) => setFormData({ ...formData, currentPosition: e.target.value })}
                         required
+                        className="text-sm sm:text-base"
                       />
                     </div>
                   </div>

@@ -25,27 +25,31 @@ export function RecruiterLayout({ children, className = "" }: RecruiterLayoutPro
       <div className="min-h-screen flex w-full">
         <RecruiterSidebar />
         
-        <div className="flex-1 flex flex-col">
-          <header className="h-12 flex items-center justify-between border-b bg-background px-4">
-            <div className="flex items-center">
-              <SidebarTrigger className="mr-4" />
-              <h1 className="text-lg font-semibold">Espace Recruteur</h1>
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="h-12 sm:h-14 flex items-center justify-between border-b bg-background px-2 sm:px-4">
+            <div className="flex items-center min-w-0">
+              <SidebarTrigger className="mr-2 sm:mr-4" />
+              <h1 className="text-sm sm:text-lg font-semibold truncate">
+                <span className="hidden sm:inline">Espace Recruteur</span>
+                <span className="sm:hidden">Recruteur</span>
+              </h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Link to="/recruiter/profile">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <UserIcon className="w-4 h-4" />
-                  <span className="hidden sm:inline">Profil</span>
+                <Button variant="ghost" size="sm" className="gap-1 sm:gap-2 px-2 sm:px-3">
+                  <UserIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline text-xs sm:text-sm">Profil</span>
                 </Button>
               </Link>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
-                <LogOut className="w-4 h-4" />
-                Déconnexion
+              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1 sm:gap-2 px-2 sm:px-3 text-xs sm:text-sm">
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Déconnexion</span>
+                <span className="sm:hidden">Sortir</span>
               </Button>
             </div>
           </header>
           
-          <main className={`flex-1 ${className}`}>
+          <main className={`flex-1 overflow-x-hidden ${className}`}>
             {children}
           </main>
         </div>

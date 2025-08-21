@@ -121,19 +121,19 @@ export default function CreateJob() {
 
   return (
     <RecruiterLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+            <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
               <Link to="/recruiter">
-                <Button variant="outline" size="icon">
-                  <ArrowLeft className="w-4 h-4" />
+                <Button variant="outline" size="icon" className="flex-shrink-0">
+                  <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </Link>
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">Créer une nouvelle offre</h1>
-                <p className="text-muted-foreground">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Créer une nouvelle offre</h1>
+                <p className="text-xs sm:text-sm lg:text-base text-muted-foreground">
                   Remplissez les informations pour attirer les meilleurs talents
                 </p>
               </div>
@@ -144,36 +144,38 @@ export default function CreateJob() {
           {/* Form */}
           <Card className="shadow-medium">
             <CardHeader>
-              <CardTitle>Informations de l'offre</CardTitle>
+              <CardTitle className="text-base sm:text-lg lg:text-xl">Informations de l'offre</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-6 sm:space-y-8">
                 {/* Première ligne - Intitulé du poste */}
                 <div className="space-y-2">
-                  <Label htmlFor="title">Intitulé du poste *</Label>
+                  <Label htmlFor="title" className="text-sm sm:text-base font-medium">Intitulé du poste *</Label>
                   <Input
                     id="title"
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}
                     placeholder="Ex: Développeur Full-Stack"
+                    className="text-sm sm:text-base"
                     required
                   />
                 </div>
                 {/* Deuxième ligne - Ligne hiérarchique et Type de contrat */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="reportingLine">Ligne hiérarchique directe</Label>
+                    <Label htmlFor="reportingLine" className="text-sm sm:text-base font-medium">Ligne hiérarchique directe</Label>
                     <Input
                       id="reportingLine"
                       value={formData.reportingLine}
                       onChange={(e) => handleInputChange("reportingLine", e.target.value)}
                       placeholder="Ex: Chef de Département Support"
+                      className="text-sm sm:text-base"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="contractType">Type de contrat *</Label>
+                    <Label htmlFor="contractType" className="text-sm sm:text-base font-medium">Type de contrat *</Label>
                     <Select value={formData.contractType} onValueChange={(value) => handleInputChange("contractType", value)} required>
-                      <SelectTrigger>
+                      <SelectTrigger className="text-sm sm:text-base">
                         <SelectValue placeholder="Type de contrat" />
                       </SelectTrigger>
                       <SelectContent>
@@ -187,11 +189,11 @@ export default function CreateJob() {
                 </div>
 
               {/* Troisième ligne - Catégorie et Salaire brut */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="categorieMetier">Catégorie *</Label>
+                  <Label htmlFor="categorieMetier" className="text-sm sm:text-base font-medium">Catégorie *</Label>
                   <Select value={formData.categorieMetier} onValueChange={(value) => handleInputChange("categorieMetier", value)} required>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-sm sm:text-base">
                       <SelectValue placeholder="Choisir une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
@@ -201,31 +203,33 @@ export default function CreateJob() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="salaryNote">Salaire brut</Label>
+                  <Label htmlFor="salaryNote" className="text-sm sm:text-base font-medium">Salaire brut</Label>
                   <Input
                     id="salaryNote"
                     value={formData.salaryNote}
                     onChange={(e) => handleInputChange("salaryNote", e.target.value)}
                     placeholder="Ex: Selon grille salariale SEEG"
+                    className="text-sm sm:text-base"
                   />
                 </div>
               </div>
 
               {/* Quatrième ligne - Date d'embauche et Lieu de travail */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="startDate">Date d'embauche</Label>
+                  <Label htmlFor="startDate" className="text-sm sm:text-base font-medium">Date d'embauche</Label>
                   <Input
                     id="startDate"
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => handleInputChange("startDate", e.target.value)}
+                    className="text-sm sm:text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="location">Lieu de travail *</Label>
+                  <Label htmlFor="location" className="text-sm sm:text-base font-medium">Lieu de travail *</Label>
                   <Select value={formData.location} onValueChange={(value) => handleInputChange("location", value)} required>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-sm sm:text-base">
                       <SelectValue placeholder="Choisir une ville" />
                     </SelectTrigger>
                     <SelectContent>
@@ -241,70 +245,71 @@ export default function CreateJob() {
 
               {/* Cinquième ligne - Date limite */}
               <div className="space-y-2">
-                <Label htmlFor="dateLimite">Date limite de candidature</Label>
+                <Label htmlFor="dateLimite" className="text-sm sm:text-base font-medium">Date limite de candidature</Label>
                 <Input
                   id="dateLimite"
                   type="date"
                   value={formData.dateLimite}
                   onChange={(e) => handleInputChange("dateLimite", e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
               {/* Missions principales */}
               <div className="space-y-2">
-                <Label htmlFor="responsibilities">Missions principales *</Label>
+                <Label htmlFor="responsibilities" className="text-sm sm:text-base font-medium">Missions principales *</Label>
                 <Textarea
                   id="responsibilities"
                   value={formData.responsibilities}
                   onChange={(e) => handleInputChange("responsibilities", e.target.value)}
                   placeholder={"Saisissez une mission par ligne\nEx:\n- Définir et piloter la politique RH\n- Élaborer et superviser la gestion administrative du personnel"}
-                  className="min-h-[180px]"
+                  className="min-h-[140px] sm:min-h-[180px] text-sm sm:text-base"
                   required
                 />
               </div>
 
               {/* Connaissance savoir et requis */}
               <div className="space-y-2">
-                <Label htmlFor="requirements">Connaissance savoir et requis *</Label>
+                <Label htmlFor="requirements" className="text-sm sm:text-base font-medium">Connaissance savoir et requis *</Label>
                 <Textarea
                   id="requirements"
                   value={formData.requirements}
                   onChange={(e) => handleInputChange("requirements", e.target.value)}
                   placeholder={"Saisissez un requis par ligne\nEx:\n- Bac+5 en RH, Droit social, Psychologie du travail\n- Expérience managériale de X années"}
-                  className="min-h-[180px]"
+                  className="min-h-[140px] sm:min-h-[180px] text-sm sm:text-base"
                   required
                 />
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-end pt-6 border-t">
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    onClick={handleSave}
-                    disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements}
-                  >
-                    {isCreating ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Save className="w-4 h-4 mr-2" />
-                    )}
-                    {isCreating ? 'Sauvegarde...' : 'Sauvegarder le brouillon'}
-                  </Button>
-                  <Button 
-                    variant="success" 
-                    onClick={handlePublish}
-                    disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements}
-                  >
-                    {isCreating ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Send className="w-4 h-4 mr-2" />
-                    )}
-                    {isCreating ? 'Publication...' : "Publier l'offre"}
-                  </Button>
-                </div>
+              <div className="flex flex-col sm:flex-row justify-end pt-6 border-t gap-3 sm:gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={handleSave}
+                  disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements}
+                  className="w-full sm:w-auto text-xs sm:text-sm"
+                >
+                  {isCreating ? (
+                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Save className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                  )}
+                  {isCreating ? 'Sauvegarde...' : 'Sauvegarder le brouillon'}
+                </Button>
+                <Button 
+                  variant="success" 
+                  onClick={handlePublish}
+                  disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements}
+                  className="w-full sm:w-auto text-xs sm:text-sm"
+                >
+                  {isCreating ? (
+                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                  )}
+                  {isCreating ? 'Publication...' : "Publier l'offre"}
+                </Button>
               </div>
             </form>
             </CardContent>
