@@ -82,10 +82,10 @@ export default function CandidateSignup() {
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">
                 Créer votre compte candidat
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Rejoignez l'équipe dirigeante de la SEEG
               </p>
             </div>

@@ -118,7 +118,7 @@ export function ApplicationTracking() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 px-3 sm:px-0">
       <div className="flex items-center gap-4">
         <Button
           variant="outline"
@@ -139,49 +139,49 @@ export function ApplicationTracking() {
           }}
           className="gap-2"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Retour
+          <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="text-xs sm:text-sm">Retour</span>
         </Button>
       </div>
 
-      <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">
+      <div className="text-center px-2">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 leading-tight">
           Suivi de ma candidature pour : {application.job_offers?.title}
         </h1>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
           Candidature déposée le {format(new Date(application.created_at), 'dd MMMM yyyy', { locale: fr })}
         </p>
       </div>
 
       <Card className="shadow-lg border-primary/20">
-        <CardHeader>
-          <CardTitle className="text-xl">Votre parcours de recrutement</CardTitle>
+        <CardHeader className="pb-4 sm:pb-6">
+          <CardTitle className="text-lg sm:text-xl">Votre parcours de recrutement</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-6 relative">
+        <CardContent className="px-3 sm:px-6">
+          <div className="space-y-4 sm:space-y-6 relative">
             {timeline.map((step, index) => (
-              <div key={step.title} className="flex items-start gap-4 pl-4">
-                {/* Vertical line for timeline */}
+              <div key={step.title} className="flex items-start gap-3 sm:gap-4 pl-2 sm:pl-4">
+                {/* Vertical line for timeline - Hidden on very small screens */}
                 {index < timeline.length - 1 && (
-                  <div className="absolute left-10 top-0 bottom-0 w-0.5 bg-gray-200" style={{ zIndex: 0 }}></div>
+                  <div className="absolute left-8 sm:left-10 top-0 bottom-0 w-0.5 bg-gray-200 hidden xs:block" style={{ zIndex: 0 }}></div>
                 )}
-                <div className="absolute left-10 w-0.5 h-full" 
-                     style={{ top: `${index * 6.5}rem`, height: '6.5rem', background: step.status === 'completed' ? 'var(--primary)' : 'rgb(229 231 235)' }}></div>
+                <div className="absolute left-8 sm:left-10 w-0.5 h-full hidden xs:block" 
+                     style={{ top: `${index * 5.5}rem`, height: '5.5rem', background: step.status === 'completed' ? 'var(--primary)' : 'rgb(229 231 235)' }}></div>
 
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all z-10 ${getStatusColor(step.status)}`}>
-                  <step.icon className="w-5 h-5" />
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 transition-all z-10 flex-shrink-0 ${getStatusColor(step.status)}`}>
+                  <step.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 
-                <div className="flex-1 min-w-0 pt-2">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-lg">{step.title}</h3>
+                <div className="flex-1 min-w-0 pt-1 sm:pt-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
+                    <h3 className="font-semibold text-base sm:text-lg leading-tight">{step.title}</h3>
                     {getStatusBadge(step.status)}
                   </div>
-                  <p className="text-muted-foreground mb-1">{step.description}</p>
+                  <p className="text-muted-foreground mb-2 text-sm sm:text-base leading-relaxed">{step.description}</p>
                   {step.date && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4" />
-                      {step.date}
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                      <span>{step.date}</span>
                     </div>
                   )}
                 </div>

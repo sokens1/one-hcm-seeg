@@ -95,10 +95,10 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" />
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <User className="w-4 h-4 sm:w-5 sm:h-5" />
             Détails du candidat
           </DialogTitle>
         </DialogHeader>
@@ -116,45 +116,51 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
           </div>
         ) : application && candidate ? (
           <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Infos candidat */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <User className="w-4 h-4" />
                   Informations personnelles
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-muted-foreground" />
-                      <span className="font-medium">Nom complet :</span>
-                      <span>{candidate.first_name} {candidate.last_name}</span>
+              <CardContent className="p-4 sm:p-6 pt-0 space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <div className="flex items-center gap-2">
+                        <User className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="font-medium text-xs sm:text-sm">Nom complet :</span>
+                      </div>
+                      <span className="text-xs sm:text-sm">{candidate.first_name} {candidate.last_name}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-muted-foreground" />
-                      <span className="font-medium">Email :</span>
-                      <span>{candidate.email}</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="font-medium text-xs sm:text-sm">Email :</span>
+                      </div>
+                      <span className="text-xs sm:text-sm break-all">{candidate.email}</span>
                     </div>
                     {candidate.phone && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-medium">Téléphone :</span>
-                        <span>{candidate.phone}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium text-xs sm:text-sm">Téléphone :</span>
+                        </div>
+                        <span className="text-xs sm:text-sm">{candidate.phone}</span>
                       </div>
                     )}
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="font-medium">Candidature soumise :</span>
-                      <span>{formatDistanceToNow(new Date(application.created_at), { addSuffix: true, locale: fr })}</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="font-medium text-xs sm:text-sm">Candidature soumise :</span>
+                      </div>
+                      <span className="text-xs sm:text-sm">{formatDistanceToNow(new Date(application.created_at), { addSuffix: true, locale: fr })}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Statut :</span>
-                      <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <span className="font-medium text-xs sm:text-sm">Statut :</span>
+                      <Badge variant={statusConfig.variant} className="text-xs w-fit">{statusConfig.label}</Badge>
                     </div>
                   </div>
                 </div>
@@ -164,17 +170,26 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
             {/* Infos offre */}
             {jobOffer && (
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <FileText className="w-4 h-4" />
                     Offre d'emploi
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div><span className="font-medium">Poste :</span> {jobOffer.title}</div>
-                    <div><span className="font-medium">Localisation :</span> {jobOffer.location}</div>
-                    <div><span className="font-medium">Type de contrat :</span> {jobOffer.contract_type}</div>
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                      <span className="font-medium text-xs sm:text-sm">Poste :</span>
+                      <span className="text-xs sm:text-sm">{jobOffer.title}</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                      <span className="font-medium text-xs sm:text-sm">Localisation :</span>
+                      <span className="text-xs sm:text-sm">{jobOffer.location}</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                      <span className="font-medium text-xs sm:text-sm">Type de contrat :</span>
+                      <span className="text-xs sm:text-sm">{jobOffer.contract_type}</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -182,23 +197,23 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
           </div>
 
           {/* Documents de la candidature */}
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Documents de la candidature</CardTitle>
+          <Card className="mt-4 sm:mt-6">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Documents de la candidature</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="p-4 sm:p-6 pt-0 space-y-3">
               {documents.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Aucun document fourni.</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Aucun document fourni.</p>
               ) : (
                 documents.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between border rounded-md p-3">
-                    <div className="space-y-0.5">
-                      <div className="font-medium text-sm">{getDocumentTypeLabel(doc.document_type)}</div>
-                      <div className="text-xs text-muted-foreground">{doc.file_name} · {formatFileSize(doc.file_size)}</div>
+                  <div key={doc.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between border rounded-md p-3 gap-3">
+                    <div className="space-y-0.5 flex-1 min-w-0">
+                      <div className="font-medium text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</div>
+                      <div className="text-xs text-muted-foreground truncate">{doc.file_name} · {formatFileSize(doc.file_size)}</div>
                     </div>
-                    <a href={doc.file_path} target="_blank" rel="noreferrer">
-                      <Button variant="outline" size="sm">
-                        <Download className="w-4 h-4 mr-2" /> Télécharger
+                    <a href={doc.file_path} target="_blank" rel="noreferrer" className="flex-shrink-0">
+                      <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                        <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Télécharger
                       </Button>
                     </a>
                   </div>
@@ -208,41 +223,41 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
           </Card>
 
           {/* Détails de la candidature */}
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Détails de la candidature</CardTitle>
+          <Card className="mt-4 sm:mt-6">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Détails de la candidature</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-4 sm:p-6 pt-0 space-y-3 sm:space-y-4">
               {application.cover_letter && (
                 <div>
-                  <span className="font-medium">Lettre de motivation :</span>
+                  <span className="font-medium text-xs sm:text-sm">Lettre de motivation :</span>
                   <div className="mt-2 p-3 bg-muted rounded-lg">
-                    <p className="text-sm whitespace-pre-wrap">{application.cover_letter}</p>
+                    <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.cover_letter}</p>
                   </div>
                 </div>
               )}
               
               {application.motivation && (
                 <div>
-                  <span className="font-medium">Motivation :</span>
+                  <span className="font-medium text-xs sm:text-sm">Motivation :</span>
                   <div className="mt-2 p-3 bg-muted rounded-lg">
-                    <p className="text-sm whitespace-pre-wrap">{application.motivation}</p>
+                    <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.motivation}</p>
                   </div>
                 </div>
               )}
 
               {application.availability_start && (
-                <div>
-                  <span className="font-medium">Disponibilité :</span>
-                  <span className="ml-2">{new Date(application.availability_start).toLocaleDateString('fr-FR')}</span>
+                <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                  <span className="font-medium text-xs sm:text-sm">Disponibilité :</span>
+                  <span className="text-xs sm:text-sm">{new Date(application.availability_start).toLocaleDateString('fr-FR')}</span>
                 </div>
               )}
 
               {application.reference_contacts && (
                 <div>
-                  <span className="font-medium">Contacts de référence :</span>
+                  <span className="font-medium text-xs sm:text-sm">Contacts de référence :</span>
                   <div className="mt-2 p-3 bg-muted rounded-lg">
-                    <p className="text-sm whitespace-pre-wrap">{application.reference_contacts}</p>
+                    <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.reference_contacts}</p>
                   </div>
                 </div>
               )}
@@ -250,12 +265,12 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
           </Card>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={onClose}>
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
+            <Button variant="outline" onClick={onClose} className="text-xs sm:text-sm">
               Fermer
             </Button>
-            <Button variant="default">
-              <Mail className="w-4 h-4 mr-2" />
+            <Button variant="default" className="text-xs sm:text-sm">
+              <Mail className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Contacter
             </Button>
           </div>

@@ -20,16 +20,16 @@ import { fr } from 'date-fns/locale';
 const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, label: string, value?: string | null, isLink?: boolean }) => {
   if (!value) return null;
   return (
-    <div className="flex items-start gap-3">
-      <Icon className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
-      <div className="flex-1">
-        <span className="text-sm font-medium text-muted-foreground">{label}:</span>
+    <div className="flex items-start gap-2 sm:gap-3">
+      <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+      <div className="flex-1 min-w-0">
+        <span className="text-xs sm:text-sm font-medium text-muted-foreground">{label}:</span>
         {isLink ? (
-          <a href={value.startsWith('http') ? value : `https://${value}`} target="_blank" rel="noopener noreferrer" className="block text-sm text-blue-600 hover:underline break-all">
+          <a href={value.startsWith('http') ? value : `https://${value}`} target="_blank" rel="noopener noreferrer" className="block text-xs sm:text-sm text-blue-600 hover:underline break-all">
             {value}
           </a>
         ) : (
-          <p className="text-sm text-foreground break-words">{value}</p>
+          <p className="text-xs sm:text-sm text-foreground break-words">{value}</p>
         )}
       </div>
     </div>
@@ -63,10 +63,10 @@ const ProfileTab = ({ application }: { application: Application }) => {
   const profile = candidateProfile;
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><User className="w-5 h-5"/> Informations Personnelles</CardTitle>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><User className="w-4 h-4 sm:w-5 sm:h-5"/> Informations Personnelles</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
         <InfoRow icon={User} label="Prénom" value={user?.first_name} />
         <InfoRow icon={User} label="Nom" value={user?.last_name} />
         <InfoRow icon={Mail} label="Email" value={user?.email} />
@@ -82,16 +82,16 @@ const ProfileTab = ({ application }: { application: Application }) => {
 const ReferencesTab = ({ application }: { application: Application }) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Users className="w-5 h-5"/> Références de Recommandation</CardTitle>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><Users className="w-4 h-4 sm:w-5 sm:h-5"/> Références de Recommandation</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6">
         {application.reference_contacts || application.ref_contacts ? (
-          <div className="whitespace-pre-wrap text-sm">
+          <div className="whitespace-pre-wrap text-xs sm:text-sm">
             {application.reference_contacts || application.ref_contacts}
           </div>
         ) : (
-          <p className="text-muted-foreground">Aucune référence fournie.</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Aucune référence fournie.</p>
         )}
       </CardContent>
     </Card>
@@ -99,25 +99,25 @@ const ReferencesTab = ({ application }: { application: Application }) => {
 };
 
 const MtpAnswersDisplay = ({ mtpAnswers }) => {
-  if (!mtpAnswers) return <p>Aucune réponse au questionnaire MTP.</p>;
+  if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
 
   const renderAnswers = (title, answers) => (
     <div>
-      <h4 className="font-semibold text-md mb-2">{title}</h4>
+      <h4 className="font-semibold text-sm sm:text-base mb-2">{title}</h4>
       {answers && answers.length > 0 ? (
-        <ul className="list-disc list-inside pl-4 text-sm text-muted-foreground">
+        <ul className="list-disc list-inside pl-3 sm:pl-4 text-xs sm:text-sm text-muted-foreground">
           {answers.map((answer, index) => <li key={index}>{answer}</li>)}
         </ul>
-      ) : <p className="text-sm text-muted-foreground">Aucune réponse.</p>}
+      ) : <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse.</p>}
     </div>
   );
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Réponses au Questionnaire MTP</CardTitle>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-base sm:text-lg">Réponses au Questionnaire MTP</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
         {renderAnswers("Métier", mtpAnswers.metier)}
         {renderAnswers("Talent", mtpAnswers.talent)}
         {renderAnswers("Paradigme", mtpAnswers.paradigme)}
@@ -198,34 +198,34 @@ const DocumentsTab = ({ documents, documentsLoading, getFileUrl, downloadFile }:
   return (
     <>
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><FileText className="w-5 h-5"/> Documents</CardTitle>
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5"/> Documents</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-2 sm:space-y-3 p-4 sm:p-6">
           {documentsLoading ? (
-            <p>Chargement...</p>
+            <p className="text-xs sm:text-sm">Chargement...</p>
           ) : documents.length > 0 ? (
             documents.map((doc) => (
-              <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <FileText className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-                  <div className="overflow-hidden">
-                    <p className="font-medium truncate">{getDocumentTypeLabel(doc.document_type)}</p>
-                    <p className="text-sm text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
+              <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  <div className="overflow-hidden min-w-0">
+                    <p className="font-medium truncate text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</p>
+                    <p className="text-xs text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
                   </div>
                 </div>
-                <div className="flex gap-2 flex-shrink-0">
-                  <Button size="sm" variant="outline" onClick={() => handlePreview(doc.file_path, doc.file_name)}>
-                    <Eye className="w-4 h-4" />
+                <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+                  <Button size="sm" variant="outline" onClick={() => handlePreview(doc.file_path, doc.file_name)} className="p-1 sm:p-2">
+                    <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => downloadFile(doc.file_path, doc.file_name)}>
-                    <Download className="w-4 h-4" />
+                  <Button size="sm" variant="outline" onClick={() => downloadFile(doc.file_path, doc.file_name)} className="p-1 sm:p-2">
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-center text-muted-foreground py-4">Aucun document.</p>
+            <p className="text-center text-xs sm:text-sm text-muted-foreground py-4">Aucun document.</p>
           )}
         </CardContent>
       </Card>
@@ -332,37 +332,37 @@ export default function CandidateAnalysis() {
 
   return (
     <RecruiterLayout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="mb-4 sm:mb-6">
           <RouterLink to={jobId ? `/recruiter/jobs/${jobId}/pipeline` : "#"} onClick={(e) => { if (!jobId) { e.preventDefault(); navigate(-1); } }}>
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
               Retour au pipeline
             </Button>
           </RouterLink>
         </div>
 
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">{candidateName}</h1>
-          <p className="text-muted-foreground">Candidature pour le poste de {application.job_offers?.title}</p>
-          <p className="text-sm text-muted-foreground mt-1">Candidature reçue le {format(new Date(application.created_at), 'PPP', { locale: fr })}</p>
+        <header className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-tight">{candidateName}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">Candidature pour le poste de {application.job_offers?.title}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Candidature reçue le {format(new Date(application.created_at), 'PPP', { locale: fr })}</p>
         </header>
 
         <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="info">Informations Candidat</TabsTrigger>
-            <TabsTrigger value="evaluation">Évaluation</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
+            <TabsTrigger value="info" className="px-2 sm:px-4">Informations Candidat</TabsTrigger>
+            <TabsTrigger value="evaluation" className="px-2 sm:px-4">Évaluation</TabsTrigger>
           </TabsList>
-          <TabsContent value="info" className="mt-6">
-            <div className="space-y-6">
+          <TabsContent value="info" className="mt-4 sm:mt-6">
+            <div className="space-y-4 sm:space-y-6">
               <ProfileTab application={application} />
               <DocumentsTab documents={documents} documentsLoading={documentsLoading} getFileUrl={getFileUrl} downloadFile={downloadFile} />
               <ReferencesTab application={application} />
               <MtpAnswersDisplay mtpAnswers={application.mtp_answers} />
             </div>
           </TabsContent>
-          <TabsContent value="evaluation" className="mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <TabsContent value="evaluation" className="mt-4 sm:mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               <div className="lg:col-span-2">
                 <EvaluationProtocol />
               </div>

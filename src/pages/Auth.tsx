@@ -157,8 +157,8 @@ export default function Auth() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -166,35 +166,36 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6">
-        <div className="container mx-auto px-4">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-4 sm:py-6">
+        <div className="container mx-auto px-3 sm:px-4">
           <Link to="/">
-            <Button variant="ghost" className="mb-4 text-white hover:bg-white/10">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Retour à l'accueil
+            <Button variant="ghost" className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-xs sm:text-sm">
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Retour à l'accueil</span>
+              <span className="sm:hidden">Retour</span>
             </Button>
           </Link>
           
-          <div className="text-center space-y-4">
-            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm">
-              <Building2 className="w-4 h-4 inline mr-2" />
+          <div className="text-center space-y-2 sm:space-y-3 lg:space-y-4">
+            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
+              <Building2 className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
               Plateforme SEEG
             </div>
-            <h1 className="text-4xl font-bold">Accès à votre compte</h1>
-            <p className="text-lg opacity-90 max-w-2xl mx-auto">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold">Accès à votre compte</h1>
+            <p className="text-xs sm:text-sm lg:text-base xl:text-lg opacity-90 max-w-2xl mx-auto px-2 sm:px-4 leading-relaxed">
               Connectez-vous ou créez votre compte pour accéder à la plateforme de recrutement SEEG
             </p>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+        <div className="max-w-sm sm:max-w-md mx-auto">
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">Authentification</CardTitle>
+            <CardHeader className="text-center pb-4 sm:pb-6">
+              <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Authentification</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
                             {showForgotPassword ? (
                 <ForgotPassword onBack={() => setShowForgotPassword(false)} />
               ) : (
@@ -259,24 +260,26 @@ export default function Auth() {
                 {/* Sign Up Tab */}
                 <TabsContent value="signup">
                   <form onSubmit={handleSignUp} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="firstName">Prénom</Label>
+                        <Label htmlFor="firstName" className="text-sm">Prénom</Label>
                         <Input
                           id="firstName"
                           placeholder="Prénom"
                           value={signUpData.firstName}
                           onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
+                          className="text-sm"
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="lastName">Nom</Label>
+                        <Label htmlFor="lastName" className="text-sm">Nom</Label>
                         <Input
                           id="lastName"
                           placeholder="Nom"
                           value={signUpData.lastName}
                           onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
+                          className="text-sm"
                           required
                         />
                       </div>

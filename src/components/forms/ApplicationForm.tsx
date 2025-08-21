@@ -466,21 +466,21 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   if (isSubmitted) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-lg mx-auto text-center space-y-6">
-            <div className="w-20 h-20 bg-success rounded-full flex items-center justify-center mx-auto animate-bounce-soft">
-              <CheckCircle className="w-10 h-10 text-white" />
+        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 lg:py-12">
+          <div className="max-w-md sm:max-w-lg mx-auto text-center space-y-4 sm:space-y-6">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-success rounded-full flex items-center justify-center mx-auto animate-bounce-soft">
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground">Candidature envoyée !</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Candidature envoyée !</h1>
+            <p className="text-sm sm:text-base text-muted-foreground px-2 sm:px-4 leading-relaxed">
               Merci, <strong>{formData.firstName}</strong> ! Nous avons bien reçu votre candidature pour le poste de{" "}
               <strong>{jobTitle}</strong> et nous reviendrons vers vous très prochainement.
             </p>
-            <div className="space-y-3">
-              <Button variant="hero" onClick={onBack} className="w-full">
+            <div className="space-y-2 sm:space-y-3 px-2 sm:px-4">
+              <Button variant="hero" onClick={onBack} className="w-full text-sm sm:text-base py-2 sm:py-3">
                 Retour aux offres
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full text-sm sm:text-base py-2 sm:py-3">
                 Postuler à une autre offre
               </Button>
             </div>
@@ -493,24 +493,25 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Header with gradient background */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8">
-        <div className="container mx-auto px-4">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6 sm:py-8">
+        <div className="container mx-auto px-3 sm:px-4">
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-4 text-white hover:bg-white/10"
+            className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-sm sm:text-base"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour à l'offre
+            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Retour à l'offre</span>
+            <span className="sm:hidden">Retour</span>
           </Button>
           
-          <div className="text-center space-y-4">
-            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm">
+          <div className="text-center space-y-3 sm:space-y-4 px-4">
+            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
               Plateforme de Recrutement Nouvelle Génération
             </div>
-            <h1 className="text-4xl font-bold">Rejoignez l'Excellence</h1>
-            <h2 className="text-2xl font-light">{jobTitle}</h2>
-            <p className="text-lg opacity-90 max-w-2xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Rejoignez l'Excellence</h1>
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-light break-words">{jobTitle}</h2>
+            <p className="text-sm sm:text-base lg:text-lg opacity-90 max-w-2xl mx-auto">
               Découvrez un processus de candidature révolutionnaire qui valorise vos compétences, 
               votre potentiel et votre ambition.
             </p>
@@ -518,35 +519,35 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Progress Bar with modern design */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
+        <div className="max-w-4xl mx-auto mb-6 sm:mb-8">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4 overflow-x-auto">
               {[1, 2, 3, 4].map((step) => (
-                <div key={step} className="flex items-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                <div key={step} className="flex items-center flex-shrink-0">
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all ${
                     step <= currentStep 
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg' 
                       : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
                   }`}>
-                    {step <= currentStep ? <CheckCircle className="w-6 h-6" /> : step}
+                    {step <= currentStep ? <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> : step}
                   </div>
                   {step < 4 && (
-                    <div className={`h-1 w-16 mx-2 rounded-full transition-all ${
+                    <div className={`h-1 w-8 sm:w-12 lg:w-16 mx-1 sm:mx-2 rounded-full transition-all ${
                       step < currentStep ? 'bg-gradient-to-r from-blue-600 to-blue-700' : 'bg-gray-200'
                     }`} />
                   )}
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-4 gap-2 text-xs font-medium text-gray-600 text-center">
-              <span>Infos Personnelles</span>
-              <span>Parcours & Documents</span>
-              <span>Adhérence MTP</span>
-              <span>Finalisation</span>
+            <div className="grid grid-cols-4 gap-1 sm:gap-2 text-xs font-medium text-gray-600 text-center">
+              <span className="truncate">Infos Personnelles</span>
+              <span className="truncate">Parcours & Documents</span>
+              <span className="truncate">Adhérence MTP</span>
+              <span className="truncate">Finalisation</span>
             </div>
-            <div className="mt-4 bg-gray-200 rounded-full h-2">
+            <div className="mt-3 sm:mt-4 bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-gradient-to-r from-blue-600 to-blue-700 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }}
@@ -558,22 +559,22 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         {/* Form Content with modern layout */}
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
             {/* Left side - Progress info */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-lg p-6 sticky top-8">
-                <div className="space-y-6">
+            <div className="xl:col-span-1 order-2 xl:order-1">
+              <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 xl:sticky xl:top-8">
+                <div className="space-y-4 sm:space-y-6">
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle className="w-8 h-8 text-white" />
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                      <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs sm:text-sm text-muted-foreground">
                       Étape <span className="font-semibold text-foreground">{currentStep}</span> / {totalSteps}
                     </div>
                   </div>
-                  <div className="space-y-3 text-center">
-                    <h3 className="font-semibold text-gray-900">Guide de Candidature</h3>
-                    <p className="text-sm text-gray-600">
+                  <div className="space-y-2 sm:space-y-3 text-center">
+                    <h3 className="text-sm sm:text-base font-semibold text-gray-900">Guide de Candidature</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
                       Ce formulaire se déroule en 4 étapes: renseignez vos informations, ajoutez vos
                       documents clés, indiquez votre adhérence MTP (Métier, Talent, Paradigme), puis
                       vérifiez et soumettez votre candidature.
@@ -584,14 +585,14 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             </div>
 
             {/* Right side - Form */}
-            <div className="lg:col-span-2">
+            <div className="xl:col-span-2 order-1 xl:order-2">
               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-3 text-xl">
-                    {currentStep === 1 && <><User className="w-6 h-6" /> Informations Personnelles</>}
-                    {currentStep === 2 && <><FileText className="w-6 h-6" /> Parcours & Documents</>}
-                    {currentStep === 3 && <><CheckCircle className="w-6 h-6" /> Adhérence MTP</>}
-                    {currentStep === 4 && <><Send className="w-6 h-6" /> Finalisation</>}
+                  <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl">
+                    {currentStep === 1 && <><User className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> Informations Personnelles</>}
+                    {currentStep === 2 && <><FileText className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> Parcours & Documents</>}
+                    {currentStep === 3 && <><CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> Adhérence MTP</>}
+                    {currentStep === 4 && <><Send className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" /> Finalisation</>}
                   </CardTitle>
                 </CardHeader>
 
@@ -599,7 +600,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               {/* Step 1: Personal Info */}
               {currentStep === 1 && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">Prénom *</Label>
                       <Input
@@ -1124,7 +1125,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               {/* Step 4: Review */}
               {currentStep === 4 && (
                 <div className="space-y-6 animate-fade-in">
-                  <h4 className="text-xl font-semibold text-center mb-6">Récapitulatif de votre candidature</h4>
+                  <h4 className="text-lg sm:text-xl font-semibold text-center mb-6">Récapitulatif de votre candidature</h4>
                   
                   <div className="space-y-4">
                     <div className="bg-muted rounded-lg p-4">
@@ -1132,7 +1133,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <h5 className="font-medium">Informations Personnelles</h5>
                         <Button variant="outline" size="sm" onClick={() => setCurrentStep(1)}>Modifier</Button>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Nom complet:</span>
                           <p>{formData.firstName} {formData.lastName}</p>
@@ -1228,11 +1229,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               )}
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between pt-6 border-t">
+              <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-6 border-t">
                 <Button
                   variant="outline"
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
+                  className="w-full sm:w-auto"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Précédent
@@ -1247,6 +1249,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       (currentStep === 2 && (!formData.cv || !formData.coverLetter || !formData.integrityLetter || !formData.projectIdea)) ||
                       (currentStep === 3 && (!formData.metier1 || !formData.metier2 || !formData.metier3 || !formData.talent1 || !formData.talent2 || !formData.talent3 || !formData.paradigme1 || !formData.paradigme2 || !formData.paradigme3))
                     }
+                    className="w-full sm:w-auto"
                   >
                     Suivant
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -1256,8 +1259,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     variant="success"
                     onClick={handleSubmit}
                     disabled={!formData.consent}
+                    className="w-full sm:w-auto"
                   >
-                    Envoyer ma candidature
+                    <span className="hidden sm:inline">Envoyer ma candidature</span>
+                    <span className="sm:hidden">Envoyer</span>
                     <Send className="w-4 h-4 ml-2" />
                   </Button>
                 )}

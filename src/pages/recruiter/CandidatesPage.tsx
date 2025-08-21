@@ -175,19 +175,19 @@ export default function CandidatesPage() {
 
   return (
     <RecruiterLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">
               Tous les Candidats
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Gérez et suivez tous les candidats qui ont postulé aux offres SEEG
             </p>
           </div>
           <Link to="/recruiter">
-            <Button variant="outline">
+            <Button variant="outline" className="text-sm sm:text-base w-full sm:w-auto">
               Retour au tableau de bord
             </Button>
           </Link>
@@ -207,22 +207,23 @@ export default function CandidatesPage() {
         )}
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
+        <div className="flex flex-col gap-4 mb-6 sm:mb-8">
+          <div className="relative">
             <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher par nom, email ou poste..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 text-sm sm:text-base"
             />
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button 
               variant={statusFilter === "all" ? "default" : "outline"}
               size="sm"
               onClick={() => setStatusFilter("all")}
+              className="text-xs sm:text-sm"
             >
               Tous
             </Button>
@@ -232,6 +233,7 @@ export default function CandidatesPage() {
                 variant={statusFilter === status ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter(status as ApplicationStatus)}
+                className="text-xs sm:text-sm"
               >
                 {config.label}
               </Button>
