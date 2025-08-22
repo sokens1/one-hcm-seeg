@@ -188,11 +188,17 @@ const Index = () => {
           ) : (
             <div className="bg-white rounded-lg shadow-sm border overflow-hidden mx-4">
               {/* Header pour desktop seulement */}
-              <div className="hidden sm:grid [grid-template-columns:2fr_1fr_1fr_auto] items-center gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
+              <div
+                className={`hidden sm:grid ${
+                  preLaunch
+                    ? "[grid-template-columns:1fr_auto]"
+                    : "[grid-template-columns:2fr_minmax(160px,1fr)_minmax(180px,1fr)_auto]"
+                } items-center gap-4 p-4 bg-gray-50 border-b font-semibold text-sm`}
+              >
                 <div>Titre du poste</div>
-                {preLaunch ? <div className="invisible">Lieu</div> : <div>Lieu</div>}
-                {preLaunch ? <div className="invisible">Type de contrat</div> : <div>Type de contrat</div>}
-                <div className="text-right">Action</div>
+                {!preLaunch && <div>Lieu</div>}
+                {!preLaunch && <div>Type de contrat</div>}
+                <div className="text-center">Action</div>
               </div>
               {filteredJobs.map((job, index) => (
                 <div key={job.id} className="border-b hover:bg-gray-50 transition-colors animate-fade-in" style={{ animationDelay: `${300 + index * 50}ms` }}>
@@ -219,11 +225,17 @@ const Index = () => {
                     </Button>
                   </div>
                   {/* Version desktop - grille */}
-                  <div className="hidden sm:grid [grid-template-columns:2fr_1fr_1fr_auto] items-center gap-4 p-4">
+                  <div
+                    className={`hidden sm:grid ${
+                      preLaunch
+                        ? "[grid-template-columns:1fr_auto]"
+                        : "[grid-template-columns:2fr_minmax(160px,1fr)_minmax(180px,1fr)_auto]"
+                    } items-center gap-4 p-4`}
+                  >
                     <div className="font-medium">{job.title}</div>
-                    {preLaunch ? <div /> : <div className="text-muted-foreground">{job.location}</div>}
-                    {preLaunch ? <div /> : <div className="text-muted-foreground">{job.contract_type}</div>}
-                    <div className="text-right flex justify-end">
+                    {!preLaunch && <div className="text-muted-foreground">{job.location}</div>}
+                    {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
+                    <div className="flex justify-center">
                       <Button 
                         variant="hero" 
                         size="sm"
