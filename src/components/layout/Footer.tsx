@@ -52,9 +52,9 @@ export function Footer() {
               <a href="/recruiter" className="block text-sm text-white/90 hover:text-white transition-colors">
                 Espace recruteur
               </a>
-              <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
+              {/* <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
                 À propos
-              </a>
+              </a> */}
               {/* <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
                 Politique de confidentialité
               </a> */}
