@@ -23,7 +23,8 @@ const buttonVariants = cva(
         ocean: "bg-ocean text-ocean-foreground hover:bg-ocean/90 shadow-soft hover:shadow-medium",
         gradient: "bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300",
         recruiter: "bg-primary-dark text-primary-foreground hover:bg-primary shadow-medium hover:shadow-strong",
-        candidate: "bg-gradient-warm text-secondary-foreground hover:shadow-glow transition-all duration-300"
+        candidate: "bg-gradient-warm text-secondary-foreground hover:shadow-glow transition-all duration-300",
+        listBlue: "bg-gradient-to-b from-blue-400 to-blue-600 text-white shadow-soft hover:brightness-95"
       },
       size: {
         default: "h-10 px-4 py-2",
