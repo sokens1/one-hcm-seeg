@@ -163,28 +163,41 @@ export default function CandidateJobs() {
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-sm border overflow-x-auto">
-              <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm min-w-[640px]">
+              <div
+                className={`grid ${
+                  preLaunch
+                    ? "[grid-template-columns:1fr_auto]"
+                    : "[grid-template-columns:2fr_minmax(160px,1fr)_minmax(180px,1fr)_auto]"
+                } items-center gap-4 p-4 bg-gray-50 border-b font-semibold text-sm`}
+              >
                 <div>Titre du poste</div>
                 {!preLaunch && <div>Lieu</div>}
                 {!preLaunch && <div>Type de contrat</div>}
-                <div>Action</div>
+                <div className="text-center">Action</div>
               </div>
               {filteredJobs.map((job, index) => (
-                <div key={job.id} className="grid grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in min-w-[640px]" style={{ animationDelay: `${300 + index * 50}ms` }}>
+                <div
+                  key={job.id}
+                  className={`grid ${
+                    preLaunch
+                      ? "[grid-template-columns:1fr_auto]"
+                      : "[grid-template-columns:2fr_minmax(160px,1fr)_minmax(180px,1fr)_auto]"
+                  } items-center gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in`}
+                  style={{ animationDelay: `${300 + index * 50}ms` }}
+                >
                   <div className="font-medium">{job.title}</div>
                   {!preLaunch && <div className="text-muted-foreground">{job.location}</div>}
                   {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
-                  <div>
+                  <div className="flex justify-center">
                     <Button 
-                      variant="outline" 
+                      variant="hero" 
                       size="sm"
                       onClick={() =>
                         preLaunch
                           ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
                           : toast.info("Créez votre compte pour voir l'offre et postuler.")
                       }
-                      aria-disabled={preLaunch}
-                      className="cursor-pointer"
+                      className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
                     >
                       Voir l'offre
                     </Button>

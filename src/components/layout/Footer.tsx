@@ -60,7 +60,7 @@ export function Footer() {
             <h4 className="font-semibold text-white">Liens rapides</h4>
             <div className="space-y-2">
               <Link to="/" className="block text-sm text-white/90 hover:text-white transition-colors">
-                Offres d'emploi
+                Postes à pourvoir
               </Link>
               <Link to="/recruiter" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
                 Espace recruteur
@@ -87,7 +87,7 @@ export function Footer() {
 
         <div className="border-t border-white/20 mt-8 pt-8">
           <div className="text-center text-sm text-white/90">
-            <p>&copy; {new Date().getFullYear()} OneHCM | talents source. Tous droits
+            <p>&copy; {new Date().getFullYear()} OneHCM | Talent source. Tous droits
             réservés.</p>
           </div>
         </div>
