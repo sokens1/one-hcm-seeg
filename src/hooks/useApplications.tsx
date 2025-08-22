@@ -328,7 +328,7 @@ export function useCandidateSkills(profileId: string | undefined) {
 }
 
 export function useRecruiterApplications(jobOfferId?: string) {
-  const { user } = useAuth();
+  const { user, isRecruiter, isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
   const queryKey = ['recruiterApplications', user?.id, jobOfferId];
@@ -337,6 +337,7 @@ export function useRecruiterApplications(jobOfferId?: string) {
     if (!user) return [];
 
     // Récupération de TOUTES les candidatures pour ce recruteur
+    
     let query = supabase
       .from('applications')
       .select(`
@@ -358,7 +359,6 @@ export function useRecruiterApplications(jobOfferId?: string) {
       throw new Error(error.message);
     }
 
-    console.log('[useRecruiterApplications] Candidatures récupérées:', data?.length || 0);
 
     // Enrichir chaque candidature avec les données utilisateur et profil
     const enrichedApps = await Promise.all(
