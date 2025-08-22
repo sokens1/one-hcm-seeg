@@ -57,6 +57,9 @@ export default function CreateJob() {
   };
 
   const handleSubmit = async (status: 'draft' | 'published') => {
+    console.log('[CreateJob] Starting submission with status:', status);
+    console.log('[CreateJob] Form data:', formData);
+
     // Validate required fields for DB NOT NULL constraints
     if (!formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements) {
       toast({
@@ -84,6 +87,8 @@ export default function CreateJob() {
         .map(s => s.trim())
         .filter(Boolean);
 
+    const mappedStatus = status === 'published' ? 'active' : 'draft';
+
     const jobData = {
       title: formData.title,
       location: formData.location,
@@ -92,16 +97,19 @@ export default function CreateJob() {
       profile: formData.requirements, // CONNAISSANCES SAVOIR ET REQUIS devient le profil
       categorie_metier: formData.categorieMetier || null,
       date_limite: formData.dateLimite ? new Date(formData.dateLimite).toISOString() : null,
-      reporting_line: formData.reportingLine || undefined,
-      salary_note: formData.salaryNote || undefined,
-      start_date: formData.startDate || undefined,
-      responsibilities: formData.responsibilities ? toList(formData.responsibilities) : undefined,
-      requirements: formData.requirements ? toList(formData.requirements) : undefined,
+      reporting_line: formData.reportingLine || null,
+      salary_note: formData.salaryNote || null,
+      start_date: formData.startDate || null,
+      responsibilities: formData.responsibilities ? toList(formData.responsibilities) : null,
+      requirements: formData.requirements ? toList(formData.requirements) : null,
     };
-    const mappedStatus = status === 'published' ? 'active' : 'draft';
+
+    console.log('[CreateJob] Prepared job data:', jobData);
 
     try {
-      await createJobOffer({ jobData, status: mappedStatus });
+      const result = await createJobOffer({ jobData, status: mappedStatus });
+      console.log('[CreateJob] Creation successful:', result);
+      
       toast({
         title: "Offre d'emploi sauvegardée",
         description: `L'offre a été ${status === 'published' ? 'publiée' : 'sauvegardée comme brouillon'} avec succès.`,
@@ -109,9 +117,11 @@ export default function CreateJob() {
       });
       navigate("/recruiter");
     } catch (error) {
+      console.error('[CreateJob] Creation failed:', error);
+      
       toast({
         title: "Erreur lors de la sauvegarde",
-        description: "Une erreur est survenue. Veuillez réessayer.",
+        description: error instanceof Error ? error.message : "Une erreur est survenue. Veuillez réessayer.",
         variant: "destructive",
       });
     }

@@ -61,31 +61,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Initial fetch
           (async () => {
             try {
-              const { data } = await supabase
-                .from('users')
-                .select('role')
-                .eq('id', uid)
-                .single();
-              setDbRole((data as { role?: string } | null)?.role ?? null);
+              const { data, error } = await supabase.rpc('get_my_role');
+              if (!error) {
+                setDbRole((data as unknown as string) ?? null);
+              } else {
+                setDbRole(null);
+              }
             } catch {
               setDbRole(null);
             }
           })();
-
-          // Realtime subscription on own row
-          const channel = supabase.channel(`users-role-${uid}`)
-            .on('postgres_changes', {
-              event: '*',
-              schema: 'public',
-              table: 'users',
-              filter: `id=eq.${uid}`,
-            }, (payload) => {
-              // payload.new may be undefined on DELETE; guard it
-              const nextRole = (payload as any)?.new?.role as string | undefined;
-              if (typeof nextRole === 'string') setDbRole(nextRole);
-            })
-            .subscribe();
-          channelRef.current = channel;
+          // Realtime subscription removed to avoid RLS-related errors
         } else {
           setDbRole(null);
         }
@@ -112,18 +98,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
         setIsRoleLoading(true);
-        const { data, error } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-        if (!error && data?.role) {
-          setDbRole(String(data.role));
+        const { data, error } = await supabase.rpc('get_my_role');
+        if (!error && data) {
+          setDbRole(String(data as unknown as string));
         } else {
           setDbRole(null);
         }
       } catch {
         setDbRole(null);
+
       } finally {
         setIsRoleLoading(false);
       }

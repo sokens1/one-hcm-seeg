@@ -2,7 +2,7 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Users, Edit, Loader2, Plus } from "lucide-react";
+import { Eye, Users, Edit, Loader2, Plus, Briefcase } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
@@ -42,10 +42,15 @@ export default function RecruiterDashboard() {
           <div className="min-w-0">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Tableau de Bord</h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Gérez vos offres d'emploi et suivez vos candidatures en temps réel
+              Gérez vos Offres d'emploi et suivez vos candidatures en temps réel
             </p>
           </div>
-          {/* Bouton bleu de création d'offre retiré selon la demande */}
+          <Link to="/recruiter/jobs/new">
+            <Button variant="hero" className="gap-2 text-sm sm:text-base">
+              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+              Créer une offre
+            </Button>
+          </Link>
         </div>
 
         {/* Loading State */}
@@ -56,9 +61,9 @@ export default function RecruiterDashboard() {
           </div>
         ) : (
           <>
-            {/* Stats Cards - version demandée */}
+            {/* Stats Cards - version dynamique */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <Card className="shadow-soft hover:shadow-medium transition-all">
+              <Card className="shadow-soft hover:shadow-medium transition-all animate-fade-in">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
                     Total candidats
@@ -67,15 +72,16 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl sm:text-2xl font-bold text-foreground">{stats.totalCandidates}</div>
-                  <p className="text-xs text-muted-foreground">+{stats.newCandidates} nouveaux (24h)</p>
+                  <p className="text-xs text-orange-500 font-medium animate-bounce">+{stats.newCandidates} aux derniers 24h</p>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-soft hover:shadow-medium transition-all">
+              <Card className="shadow-soft hover:shadow-medium transition-all animate-fade-in" style={{ animationDelay: '100ms' }}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
                     % Hommes candidats
                   </CardTitle>
+                  <Users className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 flex-shrink-0" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl sm:text-2xl font-bold text-foreground">{(stats.malePercent ?? 0).toFixed(1)}%</div>
@@ -83,11 +89,12 @@ export default function RecruiterDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-soft hover:shadow-medium transition-all">
+              <Card className="shadow-soft hover:shadow-medium transition-all animate-fade-in" style={{ animationDelay: '200ms' }}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
                     % Femmes candidates
                   </CardTitle>
+                  <Users className="h-3 w-3 sm:h-4 sm:w-4 text-pink-500 flex-shrink-0" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl sm:text-2xl font-bold text-foreground">{(stats.femalePercent ?? 0).toFixed(1)}%</div>
@@ -95,11 +102,12 @@ export default function RecruiterDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-soft hover:shadow-medium transition-all">
+              <Card className="shadow-soft hover:shadow-medium transition-all animate-fade-in" style={{ animationDelay: '300ms' }}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
                     Candidats multi-postes
                   </CardTitle>
+                  <Briefcase className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500 flex-shrink-0" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-xl sm:text-2xl font-bold text-foreground">{stats.multiPostCandidates ?? 0}</div>
@@ -111,10 +119,9 @@ export default function RecruiterDashboard() {
             {/* Active Jobs Section */}
             <div className="space-y-4 sm:space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground">Mes offres actives</h2>
-                <Badge variant="secondary" className="bg-primary-dark text-white self-start sm:self-center">
-                  {activeJobs.length} offres
-                </Badge>
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground">
+                  Offres actives ({activeJobs.length})
+                </h2>
               </div>
 
               {activeJobs.length > 0 ? (
@@ -146,10 +153,10 @@ export default function RecruiterDashboard() {
                           </div>
                       </div>
 
-                      <div className="mt-4 pt-4 border-t">
-                        <div className="flex flex-col sm:flex-row gap-2">
+                      <div className="mt-4 pt-3 border-t border-border/50">
+                        <div className="flex flex-col sm:flex-row gap-2 w-full">
                           <Link to={`/recruiter/jobs/${job.id}/pipeline`} className="flex-1">
-                            <Button variant="hero" size="sm" className="gap-2 w-full text-xs sm:text-sm">
+                            <Button variant="hero" size="sm" className="gap-2 w-full text-xs sm:text-sm h-8 sm:h-9">
                               <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                               <span className="hidden sm:inline">Voir le pipeline</span>
                               <span className="sm:hidden">Pipeline</span>
@@ -158,7 +165,7 @@ export default function RecruiterDashboard() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="gap-2 px-2 sm:px-3 text-xs sm:text-sm"
+                            className="gap-2 px-2 sm:px-3 text-xs sm:text-sm h-8 sm:h-9 flex-shrink-0"
                             onClick={() => handleEditJob(job.id)}
                           >
                             <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
