@@ -41,58 +41,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    let mounted = true;
+
+    const setupForUid = async (uid: string | undefined | null) => {
+      if (!uid) {
+        setDbRole(null);
+        return;
+      }
+      // Remove previous channel if any
+      if (channelRef.current) {
+        try { supabase.removeChannel(channelRef.current); } catch { /* empty */ }
+        channelRef.current = null;
+      }
+      try {
+        const { data } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', uid)
+          .single();
+        if (!mounted) return;
+        setDbRole((data as { role?: string } | null)?.role ?? null);
+      } catch {
+        if (!mounted) return;
+        setDbRole(null);
+      }
+      // Realtime subscription on own row
+      const channel = supabase.channel(`users-role-${uid}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'users',
+          filter: `id=eq.${uid}`,
+        }, (payload) => {
+          const nextRole = (payload as any)?.new?.role as string | undefined;
+          if (typeof nextRole === 'string') setDbRole(nextRole);
+        })
+        .subscribe();
+      channelRef.current = channel;
+    };
+
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
+        if (!mounted) return;
         setSession(session);
         setUser(session?.user ?? null);
-        setIsLoading(false);
-
-        // When auth state changes, fetch role from DB and bind realtime
         const uid = session?.user?.id;
-        if (uid) {
-          // Remove previous channel if any
-          if (channelRef.current) {
-            try { supabase.removeChannel(channelRef.current); } catch { /* empty */ }
-            channelRef.current = null;
-          }
-          // Initial fetch
-          (async () => {
-            try {
-              const { data } = await supabase
-                .from('users')
-                .select('role')
-                .eq('id', uid)
-                .single();
-              setDbRole((data as { role?: string } | null)?.role ?? null);
-            } catch {
-              setDbRole(null);
-            }
-          })();
-
-          // Realtime subscription on own row
-          const channel = supabase.channel(`users-role-${uid}`)
-            .on('postgres_changes', {
-              event: '*',
-              schema: 'public',
-              table: 'users',
-              filter: `id=eq.${uid}`,
-            }, (payload) => {
-              // payload.new may be undefined on DELETE; guard it
-              const nextRole = (payload as any)?.new?.role as string | undefined;
-              if (typeof nextRole === 'string') setDbRole(nextRole);
-            })
-            .subscribe();
-          channelRef.current = channel;
-        } else {
-          setDbRole(null);
-        }
+        setupForUid(uid);
       }
     );
 
-    // The onAuthStateChange listener handles the initial session check automatically.
+    // Explicitly get the initial session to avoid blank screen on reload
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!mounted) return;
+      setSession(session);
+      setUser(session?.user ?? null);
+      await setupForUid(session?.user?.id);
+      setIsLoading(false);
+    })();
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
       if (channelRef.current) {
         try { supabase.removeChannel(channelRef.current); } catch { /* empty */ }
