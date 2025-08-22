@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { useJobOfferNotifications } from "@/hooks/useJobOfferNotifications";
+import { isPreLaunch } from "@/utils/launchGate";
+import { toast } from "sonner";
 
 export default function CandidateJobs() {
   useJobOfferNotifications();
@@ -13,6 +15,7 @@ export default function CandidateJobs() {
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const { data, isLoading, error } = useJobOffers();
   const jobOffers = data ?? [];
+  const preLaunch = isPreLaunch();
 
   const filteredJobs = jobOffers.filter(job => 
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -154,6 +157,8 @@ export default function CandidateJobs() {
                     onClick={() => {
                       window.location.href = `/jobs/${job.id}`;
                     }}
+                    locked={preLaunch}
+                    onLockedClick={() => toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -162,20 +167,22 @@ export default function CandidateJobs() {
             <div className="bg-white rounded-lg shadow-sm border overflow-x-auto">
               <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm min-w-[640px]">
                 <div>Titre du poste</div>
-                <div>Lieu</div>
-                <div>Type de contrat</div>
+                {!preLaunch && <div>Lieu</div>}
+                {!preLaunch && <div>Type de contrat</div>}
                 <div>Action</div>
               </div>
               {filteredJobs.map((job, index) => (
                 <div key={job.id} className="grid grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in min-w-[640px]" style={{ animationDelay: `${300 + index * 50}ms` }}>
                   <div className="font-medium">{job.title}</div>
-                  <div className="text-muted-foreground">{job.location}</div>
-                  <div className="text-muted-foreground">{job.contract_type}</div>
+                  {!preLaunch && <div className="text-muted-foreground">{job.location}</div>}
+                  {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
                   <div>
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => window.location.href = `/jobs/${job.id}`}
+                      onClick={() => preLaunch ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.") : window.location.href = `/jobs/${job.id}`}
+                      aria-disabled={preLaunch}
+                      className="cursor-pointer"
                     >
                       Voir l'offre
                     </Button>

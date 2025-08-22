@@ -11,6 +11,8 @@ interface JobCardProps {
   isPreview?: boolean;
   candidateCount?: number;
   onClick?: () => void;
+  locked?: boolean;
+  onLockedClick?: () => void;
 }
 
 export function JobCard({ 
@@ -20,10 +22,15 @@ export function JobCard({
   description, 
   isPreview = false,
   candidateCount,
-  onClick 
+  onClick,
+  locked = false,
+  onLockedClick,
 }: JobCardProps) {
   return (
-    <Card className="hover:shadow-medium transition-all duration-300 cursor-pointer group h-full flex flex-col" onClick={onClick}>
+    <Card
+      className={`hover:shadow-medium transition-all duration-300 ${locked ? "cursor-default" : "cursor-pointer"} group h-full flex flex-col`}
+      onClick={locked ? undefined : onClick}
+    >
       <CardContent className="p-3 sm:p-4 md:p-5 lg:p-6 flex-1 flex flex-col">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4 flex-1">
           <div className="flex-1 space-y-2 md:space-y-3 flex flex-col min-w-0">
@@ -31,24 +38,26 @@ export function JobCard({
               {title}
             </h3>
             
-            <div className="flex flex-col md:flex-row md:items-center gap-1 sm:gap-2 md:gap-4 text-xs sm:text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                <span className="truncate">{location}</span>
+            {!locked && (
+              <div className="flex flex-col md:flex-row md:items-center gap-1 sm:gap-2 md:gap-4 text-xs sm:text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">{location}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">{contractType}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                <span className="truncate">{contractType}</span>
-              </div>
-            </div>
+            )}
 
-            {description && (
+            {!locked && description && (
               <p className="text-muted-foreground line-clamp-3 text-xs sm:text-sm flex-1 leading-relaxed">
                 {description}
               </p>
             )}
 
-            {candidateCount !== undefined && (
+            {!locked && candidateCount !== undefined && (
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="bg-success-light text-success-foreground px-2 sm:px-3 lg:px-4 py-1 text-xs">
                   {candidateCount} {candidateCount === 1 ? 'candidat' : 'candidats'}
@@ -59,7 +68,13 @@ export function JobCard({
 
           <div className="flex-shrink-0 w-full md:w-auto">
             {isPreview ? (
-              <Button variant="hero" size="sm" className="w-full md:w-auto text-xs sm:text-sm h-8 md:h-9">
+              <Button
+                variant="hero"
+                size="sm"
+                className={`w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer ${locked ? "opacity-60" : ""}`}
+                onClick={locked ? onLockedClick : onClick}
+                aria-disabled={locked}
+              >
                 <span className="hidden md:inline">Voir l'offre</span>
                 <span className="md:hidden">Voir</span>
               </Button>
