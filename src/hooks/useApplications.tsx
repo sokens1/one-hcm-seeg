@@ -341,7 +341,7 @@ export function useRecruiterApplications(jobOfferId?: string) {
       .from('applications')
       .select(`
         *,
-        job_offers!inner (title, location, contract_type, recruiter_id)
+        job_offers (title, location, contract_type, recruiter_id)
       `);
 
     // Filtrer par job spécifique si fourni, sinon récupérer TOUTES les candidatures
@@ -354,8 +354,11 @@ export function useRecruiterApplications(jobOfferId?: string) {
 
     if (error) {
       console.error('[useRecruiterApplications] Erreur requête:', error);
+      console.log('[useRecruiterApplications] Query details:', { user: user?.id, jobOfferId });
       throw new Error(error.message);
     }
+
+    console.log('[useRecruiterApplications] Candidatures récupérées:', data?.length || 0);
 
     // Enrichir chaque candidature avec les données utilisateur et profil
     const enrichedApps = await Promise.all(

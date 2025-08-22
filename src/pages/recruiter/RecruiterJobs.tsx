@@ -8,13 +8,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Eye, Edit, Loader2, Search, LayoutGrid, List } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useRecruiterJobOffers } from "@/hooks/useJobOffers";
+import { useJobOffers } from "@/hooks/useJobOffers";
 
 export default function RecruiterJobs() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const recruiterId = user?.id;
-  const { data: jobs = [], isLoading, error } = useRecruiterJobOffers(recruiterId);
+  const { data: jobs = [], isLoading, error } = useJobOffers();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 

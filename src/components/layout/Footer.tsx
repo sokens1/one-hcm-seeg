@@ -30,8 +30,9 @@ export function Footer() {
               </div> */}
             </div>
             <p className="text-sm text-white/90">
-              Plateforme de recrutement dédiée aux talents gabonais.<br/>
-              Connectons les entreprises aux meilleurs candidats du Gabon.
+              Plateforme de recrutement dédié à la détection des <br/>
+              talents pour créer une passerelle entre l’entreprise <br/>
+              et ses potentiels internes.
             </p>
           </div>
 
@@ -64,12 +65,12 @@ export function Footer() {
               <Link to="/recruiter" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
                 Espace recruteur
               </Link>
-              <a href="#" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
+              {/* <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
                 À propos
-              </a>
-              <a href="#" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
+              </a> */}
+              {/* <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
                 Politique de confidentialité
-              </a>
+              </a> */}
             </div>
           </div>
 
@@ -86,7 +87,8 @@ export function Footer() {
 
         <div className="border-t border-white/20 mt-8 pt-8">
           <div className="text-center text-sm text-white/90">
-            <p>&copy; {new Date().getFullYear()} OneHCM - Sourcing Talents. Tous droits réservés.</p>
+            <p>&copy; {new Date().getFullYear()} OneHCM | Sourcing de talents. Tous droits
+            réservés.</p>
           </div>
         </div>
       </div>

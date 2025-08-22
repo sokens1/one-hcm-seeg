@@ -200,6 +200,8 @@ export default function Auth() {
     }
 
     try {
+      // Le matricule a déjà été validé via verifyMatricule() ci-dessus
+
       const { error } = await signUp(signUpData.email, signUpData.password, {
         role: "candidat",
         first_name: signUpData.firstName,
@@ -280,7 +282,6 @@ export default function Auth() {
           </div>
         </div>
       </div>
-
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
         <div className="max-w-sm sm:max-w-md mx-auto">
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
