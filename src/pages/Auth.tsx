@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,11 +26,21 @@ export default function Auth() {
   const [showSignupConfirm, setShowSignupConfirm] = useState(false);
   const preLaunch = isPreLaunch();
 
-  const preLaunchToast = () =>
-    toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
+  // Deduplicate pre-launch toasts (shown in multiple places)
+  const lastPreLaunchToastTs = useRef<number>(0);
+  const preLaunchToast = () => {
+    const now = Date.now();
+    if (now - lastPreLaunchToastTs.current > 1200) {
+      toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
+      lastPreLaunchToastTs.current = now;
+    }
+  };
 
   const searchParams = new URLSearchParams(location.search);
   const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
+
+  // Prevent duplicate success toasts on login (e.g., unexpected double submits)
+  const lastLoginToastTs = useRef<number>(0);
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -129,7 +139,11 @@ export default function Auth() {
         return;
       }
 
-      toast.success("Connexion réussie !");
+      const now = Date.now();
+      if (now - lastLoginToastTs.current > 1500) {
+        toast.success("Connexion réussie !");
+        lastLoginToastTs.current = now;
+      }
       if (redirectParam) {
         navigate(redirectParam);
       } else {
@@ -274,7 +288,7 @@ export default function Auth() {
           <div className="text-center space-y-2 sm:space-y-3 lg:space-y-4">
             <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
               <Building2 className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
-              Plateforme SEEG
+              Plateforme OneHCM | Talent source
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold">Accès à votre compte</h1>
             <p className="text-xs sm:text-sm lg:text-base xl:text-lg opacity-90 max-w-2xl mx-auto px-2 sm:px-4 leading-relaxed">
@@ -305,17 +319,7 @@ export default function Auth() {
                 >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signin">Connexion</TabsTrigger>
-                    <TabsTrigger
-                      value="signup"
-                      onClick={(e) => {
-                        if (preLaunch) {
-                          e.preventDefault();
-                          preLaunchToast();
-                        }
-                      }}
-                      aria-disabled={preLaunch}
-                      className={preLaunch ? "cursor-not-allowed" : undefined}
-                    >
+                    <TabsTrigger value="signup" aria-disabled={preLaunch} className={preLaunch ? "cursor-not-allowed" : undefined}>
                       Inscription
                     </TabsTrigger>
                   </TabsList>

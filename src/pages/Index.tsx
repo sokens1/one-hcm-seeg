@@ -206,14 +206,14 @@ const Index = () => {
                       </div>
                     )}
                     <Button 
-                      variant="outline" 
+                      variant="hero" 
                       size="sm"
                       onClick={() =>
                         preLaunch
                           ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
                           : toast.info("Créez votre compte pour voir l'offre et postuler.")
                       }
-                      className="w-full cursor-pointer"
+                      className="w-full text-xs sm:text-sm h-8 md:h-9 cursor-pointer"
                       aria-disabled={preLaunch}
                     >
                       Voir l'offre
@@ -226,7 +226,7 @@ const Index = () => {
                     {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
                     <div>
                       <Button 
-                        variant="outline" 
+                        variant="hero" 
                         size="sm"
                         onClick={() =>
                           preLaunch
@@ -234,7 +234,7 @@ const Index = () => {
                             : toast.info("Créez votre compte pour voir l'offre et postuler.")
                         }
                         aria-disabled={preLaunch}
-                        className="cursor-pointer"
+                        className="w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer"
                       >
                         Voir l'offre
                       </Button>
@@ -258,7 +258,7 @@ const Index = () => {
                   À propos de l'entreprise : Contexte du recrutement
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg opacity-90 mb-4 sm:mb-6 leading-relaxed">
-                  Explorez la vision stratégique et les ambitieux portées
+                  Explorez la vision stratégique et les ambitions portées
                   par cette campagne de recrutement inédite pour
                   impulser une nouvelle ère à la SEEG
                 </p>

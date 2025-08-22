@@ -87,7 +87,7 @@ export function Footer() {
 
         <div className="border-t border-white/20 mt-8 pt-8">
           <div className="text-center text-sm text-white/90">
-            <p>&copy; {new Date().getFullYear()} OneHCM | Talents Source. Tous droits
+            <p>&copy; {new Date().getFullYear()} OneHCM | talents source. Tous droits
             réservés.</p>
           </div>
         </div>

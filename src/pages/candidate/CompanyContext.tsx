@@ -39,7 +39,7 @@ export default function CompanyContext() {
                 Contexte du recrutement
               </div>
               <h1 className="text-4xl md:text-5xl font-bold">
-                Vision SEEG 2025 2035
+                Vision SEEG 2025 - 2035
               </h1>
               <p className="text-xl md:text-2xl opacity-90">
                 Contenu officiel de la Vision et du contexte de la campagne SEEG
@@ -202,10 +202,12 @@ export default function CompanyContext() {
               <Card className="shadow-xl bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-2xl">
                 <CardContent className="p-8">
                   <h2 className="text-3xl font-bold mb-4">
-                    Prêt à Rejoindre cette Aventure ?
+                  Prêt à rejoindre l’équipe dirigeante ?
                   </h2>
                   <p className="mb-6 opacity-90 text-lg">
-                    Découvrez nos {jobCount} poste{jobCount > 1 ? 's' : ''} disponible{jobCount > 1 ? 's' : ''} et contribuez à la renaissance de la SEEG.
+                  15 profils recherchés pour une mission d’intérêt
+                  national. Et si c’était vous ?
+                    {/* Découvrez nos {jobCount} poste{jobCount > 1 ? 's' : ''} disponible{jobCount > 1 ? 's' : ''} et contribuez à la renaissance de la SEEG. */}
                   </p>
                   <Button variant="secondary" size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-bold" asChild>
                     <a href="/jobs">
