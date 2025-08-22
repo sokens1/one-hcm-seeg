@@ -158,7 +158,7 @@ export default function CandidateJobs() {
                       window.location.href = `/jobs/${job.id}`;
                     }}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les candidatures débuteront à partir du 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -180,8 +180,9 @@ export default function CandidateJobs() {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => preLaunch ? toast.info("Les candidatures débuteront à partir du 25 août 2025.") : window.location.href = `/jobs/${job.id}`}
+                      onClick={() => preLaunch ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.") : window.location.href = `/jobs/${job.id}`}
                       aria-disabled={preLaunch}
+                      className="cursor-pointer"
                     >
                       Voir l'offre
                     </Button>

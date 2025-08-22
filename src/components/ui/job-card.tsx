@@ -71,7 +71,7 @@ export function JobCard({
               <Button
                 variant="hero"
                 size="sm"
-                className={`w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 ${locked ? "opacity-60 cursor-not-allowed" : ""}`}
+                className={`w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer ${locked ? "opacity-60" : ""}`}
                 onClick={locked ? onLockedClick : onClick}
                 aria-disabled={locked}
               >

@@ -180,7 +180,7 @@ const Index = () => {
                     isPreview={true}
                     onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les candidatures débuteront à partir du 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -208,8 +208,8 @@ const Index = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => preLaunch ? toast.info("Les candidatures débuteront à partir du 25 août 2025.") : navigate(`/jobs/${job.id}`)}
-                      className="w-full"
+                      onClick={() => preLaunch ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.") : navigate(`/jobs/${job.id}`)}
+                      className="w-full cursor-pointer"
                       aria-disabled={preLaunch}
                     >
                       Voir l'offre
@@ -224,8 +224,9 @@ const Index = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => preLaunch ? toast.info("Les candidatures débuteront à partir du 25 août 2025.") : navigate(`/jobs/${job.id}`)}
+                        onClick={() => preLaunch ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.") : navigate(`/jobs/${job.id}`)}
                         aria-disabled={preLaunch}
+                        className="cursor-pointer"
                       >
                         Voir l'offre
                       </Button>
