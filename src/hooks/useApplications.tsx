@@ -344,12 +344,11 @@ export function useRecruiterApplications(jobOfferId?: string) {
         job_offers!inner (title, location, contract_type, recruiter_id)
       `);
 
-    // Filtrer par recruteur seulement si pas d'ID de job spécifique
+    // Filtrer par job spécifique si fourni, sinon récupérer TOUTES les candidatures
     if (jobOfferId) {
       query = query.eq('job_offer_id', jobOfferId);
-    } else {
-      query = query.eq('job_offers.recruiter_id', user.id);
     }
+    // Suppression du filtre par recruiter_id pour permettre l'accès à toutes les candidatures
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
