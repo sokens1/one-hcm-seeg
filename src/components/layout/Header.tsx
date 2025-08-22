@@ -36,8 +36,8 @@ export function Header() {
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-2 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-19 lg:h-19 rounded-lg overflow-hidden bg-white flex items-center justify-center">
-            <img src="/LOGO HCM4.png" alt="Logo" className="w-14 h-12 sm:w-16 sm:h-14 lg:w-20 lg:h-35 object-contain" />
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+            <img src="/LOGO HCM4.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
         </Link>
 

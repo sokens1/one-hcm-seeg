@@ -19,10 +19,10 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row justify-between items-start gap-12 max-w-6xl mx-auto px-4 w-full">
           {/* Company Info */}
-          <div className="flex-1 min-w-[300px] space-y-4">
+          <div className="flex-1 min-w-[300px] space-y-2">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-19 lg:h-19 rounded-lg overflow-hidden bg-white flex items-center justify-center">
-                <img src="/LOGO HCM4.png" alt="Logo" className="w-14 h-12 sm:w-16 sm:h-14 lg:w-20 lg:h-35 object-contain" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
+                <img src="/LOGO HCM WHITE.png" alt="Logo OneHCM" className="w-full h-full object-contain" />
               </div>
               {/* <div>
                 <h3 className="text-lg font-bold text-white">OneHCM</h3>

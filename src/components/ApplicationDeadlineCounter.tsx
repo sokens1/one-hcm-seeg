@@ -57,7 +57,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
       <div 
         className={`text-white p-5 rounded-xl shadow-2xl border backdrop-blur-sm ${getStatusColor()}`}
         style={{
-          background: 'linear-gradient(135deg,rgb(146, 31, 52) 0%,rgb(229, 15, 58) 100%)'
+          background: 'linear-gradient(135deg,rgba(128, 0, 0, 1) 0%,rgba(128, 0, 0, 1) 100%)'
         }}
       >
         <div className="flex justify-between items-start mb-3">
@@ -98,11 +98,9 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
             <div className="font-mono text-lg font-bold text-center tracking-wider">
               {timeLeft.split(': ')[1] || timeLeft}
             </div>
-            {status !== 'after' && (
-              <div className="text-xs text-white/70 text-center mt-1">
-                {timeLeft.split(': ')[0]}
-              </div>
-            )}
+            <div className="text-xs text-white/70 text-center mt-1">
+              Fermeture des candidatures
+            </div>
           </div>
         </div>
       </div>
