@@ -240,8 +240,9 @@ const Index = () => {
                   À propos de l'entreprise : Contexte du recrutement
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg opacity-90 mb-4 sm:mb-6 leading-relaxed">
-                  Découvrez la vision et les ambitions derrière cette campagne de recrutement 
-                  exceptionnelle pour la renaissance de la SEEG.
+                  Explorez la vision stratégique et les ambitieux portées
+                  par cette campagne de recrutement inédite pour
+                  impulser une nouvelle ère à la SEEG
                 </p>
                 <Button variant="secondary" size="lg" asChild className="w-full sm:w-auto">
                   <a href="/company-context">
