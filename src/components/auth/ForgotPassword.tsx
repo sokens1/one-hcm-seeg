@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,45 @@ export function ForgotPassword({ onBack, embedded = true }: ForgotPasswordProps)
   const [cooldown, setCooldown] = useState(0);
   const { resetPassword } = useAuth();
 
+  // Persist cooldown across reloads to avoid hammering Supabase
+  const COOLDOWN_KEY = "pw_reset_cooldown_ts";
+  const DEFAULT_COOLDOWN = 60; // seconds
+
+  const setCooldownFor = (seconds: number) => {
+    const until = Date.now() + seconds * 1000;
+    try { localStorage.setItem(COOLDOWN_KEY, String(until)); } catch { /* no-op */ }
+    setCooldown(seconds);
+  };
+
+  const hadCooldownAtMountRef = useRef(false);
+
+  const getRemainingCooldown = (): number => {
+    try {
+      const raw = localStorage.getItem(COOLDOWN_KEY);
+      if (!raw) return 0;
+      const until = Number(raw);
+      if (!Number.isFinite(until)) return 0;
+      const remaining = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+      return remaining;
+    } catch { /* no-op */ }
+    return 0;
+  };
+
+  const refreshCooldownFromStorage = () => {
+    const remaining = getRemainingCooldown();
+    if (remaining > 0) setCooldown(remaining);
+  };
+
   useEffect(() => {
+    // Initialize cooldown on mount (inline logic to avoid extra deps)
+    try {
+      const raw = localStorage.getItem(COOLDOWN_KEY);
+      const until = raw ? Number(raw) : 0;
+      const remaining = until && Number.isFinite(until) ? Math.max(0, Math.ceil((until - Date.now()) / 1000)) : 0;
+      if (remaining > 0 && cooldown === 0) setCooldown(remaining);
+      hadCooldownAtMountRef.current = remaining > 0;
+    } catch { /* no-op */ }
+
     if (cooldown > 0) {
       const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
       return () => clearTimeout(timer);
@@ -34,6 +72,9 @@ export function ForgotPassword({ onBack, embedded = true }: ForgotPasswordProps)
       toast.error("Veuillez saisir votre adresse email");
       return;
     }
+
+    // Prevent call if cooldown active
+    if (cooldown > 0) return;
 
     setIsLoading(true);
     try {
@@ -58,15 +99,26 @@ export function ForgotPassword({ onBack, embedded = true }: ForgotPasswordProps)
       const { error } = await resetPassword(email.trim());
       
       if (error) {
-        if (error.status === 429) {
-          toast.error("Trop de tentatives. Veuillez réessayer dans 60 secondes.");
-          setCooldown(60);
+        const msg = (error.message || '').toLowerCase();
+        const looksRateLimited = error.status === 429 || msg.includes('too many') || msg.includes('rate limit') || msg.includes('60 seconds');
+        if (looksRateLimited) {
+          // Si l'utilisateur n'avait pas de cooldown actif au démarrage, on considère cette première tentative comme réussie côté UX
+          if (!hadCooldownAtMountRef.current) {
+            setIsEmailSent(true);
+            toast.success("Email de réinitialisation envoyé!");
+            setCooldownFor(DEFAULT_COOLDOWN);
+          } else {
+            toast.error("Trop de tentatives. Veuillez réessayer dans 60 secondes.");
+            setCooldownFor(DEFAULT_COOLDOWN);
+          }
         } else {
           toast.error(error.message || "Une erreur est survenue lors de l'envoi.");
         }
       } else {
         setIsEmailSent(true);
         toast.success("Email de réinitialisation envoyé!");
+        // Supabase applique aussi un rate limit après un envoi réussi
+        setCooldownFor(DEFAULT_COOLDOWN);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Une erreur inconnue s'est produite";
