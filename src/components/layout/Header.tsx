@@ -3,6 +3,7 @@ import { LogOut, LogIn, UserPlus, Building2 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/use-toast";
+import { isPreLaunch } from "@/utils/launchGate";
 
 export function Header() {
   const location = useLocation();
@@ -10,6 +11,8 @@ export function Header() {
   const { toast } = useToast();
   const { user, signOut, isRecruiter, isCandidate, isAdmin } = useAuth();
   const isAuthenticated = !!user;
+  const preLaunch = isPreLaunch();
+
   // Roles are handled in FR ('candidat', 'recruteur') by useAuth; keep helpers as source of truth
 
   const handleLogout = async () => {
@@ -71,8 +74,19 @@ export function Header() {
                   <span className="sm:hidden">Connexion</span>
                 </Button>
               </Link>
-              <Link to="/auth">
-                <Button variant="default" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+              <Link
+                to="/auth"
+                onClick={(e) => {
+                  if (preLaunch) {
+                    e.preventDefault();
+                    toast({
+                      title: "Information",
+                      description: "Les inscriptions seront disponibles à partir du lundi 25 août 2025.",
+                    });
+                  }
+                }}
+              >
+                <Button variant="default" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 cursor-pointer">
                   <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">S'inscrire</span>
                   <span className="sm:hidden">Inscription</span>
