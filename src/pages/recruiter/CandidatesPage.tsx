@@ -31,6 +31,8 @@ interface UICandidate {
   appliedDate: string;
   status: ApplicationStatus;
   jobTitle?: string;
+  linkedin_url?: string;
+  portfolio_url?: string;
 }
 
 function CandidateDetails({ candidate }: { candidate: UICandidate }) {
@@ -62,6 +64,26 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
         <div>
           <Label className="text-sm text-muted-foreground">Date de naissance</Label>
           <p className="font-medium">{candidate.birthDate ? format(new Date(candidate.birthDate), 'PPP', { locale: fr }) : 'Non renseignée'}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Profil LinkedIn</Label>
+          {candidate.linkedin_url ? (
+            <a href={candidate.linkedin_url} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline break-all">
+              {candidate.linkedin_url}
+            </a>
+          ) : (
+            <p className="font-medium">Non renseigné</p>
+          )}
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Portfolio</Label>
+          {candidate.portfolio_url ? (
+            <a href={candidate.portfolio_url} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline break-all">
+              {candidate.portfolio_url}
+            </a>
+          ) : (
+            <p className="font-medium">Non renseigné</p>
+          )}
         </div>
       </div>
 
@@ -126,9 +148,9 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
 }
 
 const statusConfig: Record<ApplicationStatus, { label: string; color: string }> = {
-  candidature: { label: "Candidature", color: "bg-blue-100 text-blue-800 border-blue-200" },
-  incubation: { label: "Incubation", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
-  embauche: { label: "Embauché", color: "bg-green-100 text-green-800 border-green-200" },
+  candidature: { label: "Candidat", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  incubation: { label: "Incubé", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
+  embauche: { label: "Engagé", color: "bg-green-100 text-green-800 border-green-200" },
   refuse: { label: "Refusé", color: "bg-red-100 text-red-800 border-red-200" },
 };
 
@@ -139,22 +161,24 @@ export default function CandidatesPage() {
 
   const uiCandidates: UICandidate[] = useMemo(() => {
     return (applications || []).map(app => {
-      const profile = (app.users as any)?.candidate_profiles as
-        | { gender?: string; current_position?: string; date_of_birth?: string }
-        | undefined;
+      const user = (app.users as any) || {};
+      
+      
       return {
         id: app.id,
-        firstName: app.users?.first_name || "",
-        lastName: app.users?.last_name || "",
-        email: app.users?.email || "",
-        phone: app.users?.phone || undefined,
-        gender: profile?.gender || undefined,
-        birthDate: app.users?.date_of_birth || profile?.date_of_birth || undefined,
-        currentPosition: profile?.current_position || undefined,
+        firstName: user.first_name || "",
+        lastName: user.last_name || "",
+        email: user.email || "",
+        phone: user.phone || undefined,
+        gender: user.gender || undefined,
+        birthDate: user.birth_date || undefined,
+        currentPosition: user.current_position || undefined,
         location: app.job_offers?.location || undefined,
         appliedDate: app.created_at,
         status: app.status as ApplicationStatus,
         jobTitle: app.job_offers?.title || undefined,
+        linkedin_url: user.linkedin_url || undefined,
+        portfolio_url: user.portfolio_url || undefined,
       };
     });
   }, [applications]);

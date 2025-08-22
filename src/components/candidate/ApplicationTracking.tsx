@@ -35,10 +35,10 @@ const generateTimeline = (application: Application | null | undefined): Timeline
       date: createdAt,
     },
     {
-      title: "Entretien (évaluation physique MTP)",
+      title: "Evaluation MTP",
       status: status === 'incubation' ? 'current' : (isCompleted(['embauche', 'refuse']) ? 'completed' : 'pending'),
       icon: Users,
-      description: "Entretien et évaluation MTP (Metier, Talent, Paradigme) avec l'équipe.",
+      description: "Entretien et évaluation MTP (Metier, Talent, Paradigme).",
       date: status === 'incubation' ? 'En cours' : (isCompleted(['embauche', 'refuse']) ? createdAt : 'À venir'),
     },
     {

@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { getMetierQuestionsForTitle } from "@/data/metierQuestions";
 
 interface ApplicationFormProps {
   jobTitle: string;
@@ -38,15 +39,17 @@ interface FormData {
   yearsExperience: number | null;
   cv: UploadedFile | null;
   coverLetter: UploadedFile | null;
-  integrityLetter: UploadedFile | null;
-  projectIdea: UploadedFile | null;
+  yearsOfExperience: string;
   certificates: UploadedFile[];
-  recommendations: UploadedFile[];
   references: string;
   // Partie Métier
   metier1: string;
   metier2: string;
   metier3: string;
+  metier4: string;
+  metier5: string;
+  metier6: string;
+  metier7: string;
   // Partie Talent
   talent1: string;
   talent2: string;
@@ -86,15 +89,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     yearsExperience: null,
     cv: null,
     coverLetter: null,
-    integrityLetter: null,
-    projectIdea: null,
+    yearsOfExperience: "",
     certificates: [],
-    recommendations: [],
     references: "",
     // Partie Métier
     metier1: "",
     metier2: "",
     metier3: "",
+    metier4: "",
+    metier5: "",
+    metier6: "",
+    metier7: "",
     // Partie Talent
     talent1: "",
     talent2: "",
@@ -221,6 +226,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             metier1: mtp?.metier?.[0] ?? prev.metier1,
             metier2: mtp?.metier?.[1] ?? prev.metier2,
             metier3: mtp?.metier?.[2] ?? prev.metier3,
+            metier4: mtp?.metier?.[3] ?? prev.metier4,
+            metier5: mtp?.metier?.[4] ?? prev.metier5,
+            metier6: mtp?.metier?.[5] ?? prev.metier6,
+            metier7: mtp?.metier?.[6] ?? prev.metier7,
             talent1: mtp?.talent?.[0] ?? prev.talent1,
             talent2: mtp?.talent?.[1] ?? prev.talent2,
             talent3: mtp?.talent?.[2] ?? prev.talent3,
@@ -259,7 +268,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         if (cancelled || !data) return;
 
         const makeUploaded = (d: any): UploadedFile => ({
-          path: d.file_path, // may already be a public URL
+          path: d.file_path,
           name: d.file_name,
           size: d.file_size ?? 0,
           type: ''
@@ -267,20 +276,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         const cv = data.find(d => d.document_type === 'cv');
         const cover = data.find(d => d.document_type === 'cover_letter');
-        // Sections masquées: on ignore ces documents s'ils existent
-        const integrity = undefined;
-        const project = undefined;
         const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
-        const recommendations: UploadedFile[] = [];
 
         setFormData(prev => ({
           ...prev,
           cv: cv ? makeUploaded(cv) : prev.cv,
           coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
-          integrityLetter: prev.integrityLetter,
-          projectIdea: prev.projectIdea,
           certificates: certificates.length ? certificates : prev.certificates,
-          recommendations: prev.recommendations,
         }));
       } catch (e) {
         console.warn('Chargement des documents échoué:', (e as any)?.message || e);
@@ -292,6 +294,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
+  const metierQuestions = getMetierQuestionsForTitle(jobTitle);
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -444,7 +447,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'coverLetter' | 'integrityLetter' | 'projectIdea' | 'certificates' | 'recommendations') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'coverLetter' | 'certificates') => {
     const files = e.target.files;
     if (!files) return;
 
@@ -457,24 +460,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const uploadedFile = await uploadFile(files[0], 'cover-letters');
         setFormData({ ...formData, coverLetter: uploadedFile });
         toast.success("Lettre de motivation uploadée avec succès!");
-      } else if (type === 'integrityLetter') {
-        const uploadedFile = await uploadFile(files[0], 'integrity-letters');
-        setFormData({ ...formData, integrityLetter: uploadedFile });
-        toast.success("Lettre d'intégrité professionnelle uploadée avec succès!");
-      } else if (type === 'projectIdea') {
-        const uploadedFile = await uploadFile(files[0], 'project-ideas');
-        setFormData({ ...formData, projectIdea: uploadedFile });
-        toast.success("Idée de projet uploadée avec succès!");
       } else if (type === 'certificates') {
         const uploadPromises = Array.from(files).map(file => uploadFile(file, 'certificates'));
         const uploadedFiles = await Promise.all(uploadPromises);
         setFormData({ ...formData, certificates: [...formData.certificates, ...uploadedFiles] });
         toast.success("Certificats uploadés avec succès!");
-      } else if (type === 'recommendations') {
-        const uploadPromises = Array.from(files).map(file => uploadFile(file, 'recommendations'));
-        const uploadedFiles = await Promise.all(uploadPromises);
-        setFormData({ ...formData, recommendations: [...formData.recommendations, ...uploadedFiles] });
-        toast.success("Recommandations uploadées avec succès!");
       }
     } catch (error: any) {
       toast.error("Erreur lors de l'upload: " + error.message);
@@ -486,8 +476,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       <Layout>
         <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 lg:py-12">
           <div className="max-w-md sm:max-w-lg mx-auto text-center space-y-4 sm:space-y-6">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-success rounded-full flex items-center justify-center mx-auto animate-bounce-soft">
-              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" />
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-success rounded-full flex items-center justify-center mx-auto animate-bounce-soft">
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Candidature envoyée !</h1>
             <p className="text-sm sm:text-base text-muted-foreground px-2 sm:px-4 leading-relaxed">
@@ -689,6 +679,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       required
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="yearsOfExperience">Années d'expérience dans un secteur similaire *</Label>
+                    <Input
+                      id="yearsOfExperience"
+                      type="text"
+                      value={formData.yearsOfExperience}
+                      onChange={(e) => setFormData({ ...formData, yearsOfExperience: e.target.value })}
+                      placeholder="Ex: 5 ans"
+                      required
+                    />
+                  </div>
                 </div>
               )}
 
@@ -842,38 +843,22 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           Partie Métier
                         </h4>
                         <div className="space-y-3 sm:space-y-4">
-                          <div>
-                            <Label htmlFor="metier1" className="text-sm sm:text-base">1. Quelles sont vos principales compétences techniques dans ce domaine ?</Label>
-                            <Textarea
-                              id="metier1"
-                              value={formData.metier1}
-                              onChange={(e) => setFormData({ ...formData, metier1: e.target.value })}
-                              placeholder="Décrivez vos compétences techniques..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="metier2" className="text-sm sm:text-base">2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?</Label>
-                            <Textarea
-                              id="metier2"
-                              value={formData.metier2}
-                              onChange={(e) => setFormData({ ...formData, metier2: e.target.value })}
-                              placeholder="Expliquez la pertinence de votre expérience..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="metier3" className="text-sm sm:text-base">3. Quels défis techniques de ce métier vous motivent le plus ?</Label>
-                            <Textarea
-                              id="metier3"
-                              value={formData.metier3}
-                              onChange={(e) => setFormData({ ...formData, metier3: e.target.value })}
-                              placeholder="Partagez vos motivations techniques..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
+                          {metierQuestions.map((q, idx) => {
+                            const field = `metier${idx + 1}` as keyof typeof formData;
+                            const value = (formData as any)[field] as string;
+                            return (
+                              <div key={idx}>
+                                <Label htmlFor={`metier${idx + 1}`} className="text-sm sm:text-base">{q}</Label>
+                                <Textarea
+                                  id={`metier${idx + 1}`}
+                                  value={value}
+                                  onChange={(e) => setFormData({ ...formData, [`metier${idx + 1}`]: e.target.value } as any)}
+                                  placeholder="Votre réponse..."
+                                  className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -888,35 +873,79 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         
                         <div className="space-y-3 sm:space-y-4">
                           <div>
-                            <Label htmlFor="talent1" className="text-sm sm:text-base">1. Quel est votre talent naturel le plus distinctif ?</Label>
+                            <Label htmlFor="talent1" className="text-sm sm:text-base">1. Décrivez une situation où votre créativité et innovation ont permis de proposer des solutions stratégiques pour optimiser des processus, comme réduire l'utilisation de gasoil dans un système énergétique, en inspirant vos équipes dirigeantes.</Label>
                             <Textarea
                               id="talent1"
                               value={formData.talent1}
                               onChange={(e) => setFormData({ ...formData, talent1: e.target.value })}
-                              placeholder="Décrivez votre talent unique..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              placeholder="Décrivez une situation concrète..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="talent2" className="text-sm sm:text-base">2. Comment ce talent vous aide-t-il à exceller dans votre travail ?</Label>
+                            <Label htmlFor="talent2" className="text-sm sm:text-base">2. Comment démontrez-vous votre initiative et votre autonomie dans des tâches imprévues à haut niveau, par exemple lors d'une campagne de recouvrement d'impayés ou de réparation critique d'équipements, en mobilisant des ressources exécutives ?</Label>
                             <Textarea
                               id="talent2"
                               value={formData.talent2}
                               onChange={(e) => setFormData({ ...formData, talent2: e.target.value })}
-                              placeholder="Expliquez l'impact de votre talent..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              placeholder="Expliquez votre approche et vos résultats..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="talent3" className="text-sm sm:text-base">3. Donnez un exemple concret où votre talent a fait la différence.</Label>
+                            <Label htmlFor="talent3" className="text-sm sm:text-base">3. Fournissez un exemple où votre raisonnement analytique a aidé à synthétiser des informations complexes, analyser des allégations de détournements ou des données sur la performance des réseaux, pour orienter des décisions board-level.</Label>
                             <Textarea
                               id="talent3"
                               value={formData.talent3}
                               onChange={(e) => setFormData({ ...formData, talent3: e.target.value })}
-                              placeholder="Racontez un exemple précis..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              placeholder="Détaillez votre processus d'analyse et les décisions prises..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="talent4" className="text-sm sm:text-base">4. Expliquez comment vous gérez le stress et les crises à un niveau dirigeant, par exemple en maintenant votre leadership lors de tensions récurrentes comme des délestages électriques affectant populations et industries.</Label>
+                            <Textarea
+                              id="talent4"
+                              value={formData.talent4}
+                              onChange={(e) => setFormData({ ...formData, talent4: e.target.value })}
+                              placeholder="Décrivez vos stratégies de gestion de crise..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="talent5" className="text-sm sm:text-base">5. Décrivez votre capacité à prendre des décisions en situations difficiles, comme allouer des ressources limitées pour une maintenance rigoureuse des infrastructures existantes, en alignant avec la vision globale de l'entreprise.</Label>
+                            <Textarea
+                              id="talent5"
+                              value={formData.talent5}
+                              onChange={(e) => setFormData({ ...formData, talent5: e.target.value })}
+                              placeholder="Partagez un exemple de prise de décision stratégique..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="talent6" className="text-sm sm:text-base">6. Comment votre aptitude à l'apprentissage continu vous a permis de vous perfectionner en technologies émergentes, par exemple les compteurs connectés pour la gestion des réseaux au Gabon, et de cascader cela à vos équipes de direction ? Au besoin, vous pouvez considérer un autre exemple.</Label>
+                            <Textarea
+                              id="talent6"
+                              value={formData.talent6}
+                              onChange={(e) => setFormData({ ...formData, talent6: e.target.value })}
+                              placeholder="Décrivez votre processus d'apprentissage et de transmission..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="talent7" className="text-sm sm:text-base">7. Partagez une expérience où votre travail en équipe a favorisé la coordination à un niveau exécutif, par exemple dans un dialogue constructif avec des parties prenantes comme l'État ou des associations de consommateurs.</Label>
+                            <Textarea
+                              id="talent7"
+                              value={formData.talent7}
+                              onChange={(e) => setFormData({ ...formData, talent7: e.target.value })}
+                              placeholder="Décrivez cette expérience de coordination..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
@@ -977,35 +1006,79 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         
                         <div className="space-y-3 sm:space-y-4">
                           <div>
-                            <Label htmlFor="paradigme1" className="text-sm sm:text-base">1. Quelles valeurs guident vos décisions professionnelles ?</Label>
+                            <Label htmlFor="paradigme1" className="text-sm sm:text-base">1. Comment alignez-vous votre vision professionnelle en tant que dirigeant avec une approche holistique de renaissance d'une entreprise comme la SEEG, combinant rigueur managériale et investissements stratégiques pour le développement national du Gabon ?</Label>
                             <Textarea
                               id="paradigme1"
                               value={formData.paradigme1}
                               onChange={(e) => setFormData({ ...formData, paradigme1: e.target.value })}
-                              placeholder="Partagez vos valeurs professionnelles..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              placeholder="Décrivez votre vision stratégique..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="paradigme2" className="text-sm sm:text-base">2. Comment votre vision s'aligne-t-elle avec la mission de OneHCM ?</Label>
+                            <Label htmlFor="paradigme2" className="text-sm sm:text-base">2. Décrivez comment vous avez manifesté votre intégrité professionnelle ainsi que vos valeurs de transparence et de gouvernance renforcée dans un précédent rôle, par exemple en gérant un dilemme éthique ou en prenant une décision difficile alignée avec vos valeurs éthiques.</Label>
                             <Textarea
                               id="paradigme2"
                               value={formData.paradigme2}
                               onChange={(e) => setFormData({ ...formData, paradigme2: e.target.value })}
-                              placeholder="Expliquez l'alignement avec notre mission..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              placeholder="Partagez une expérience concrète d'intégrité..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor="paradigme3" className="text-sm sm:text-base">3. Comment contribueriez-vous à notre culture d'entreprise ?</Label>
+                            <Label htmlFor="paradigme3" className="text-sm sm:text-base">3. Expliquez votre adhésion à un paradigme de transition énergétique durable, en promouvant des énergies renouvelables et des standards de service comparables aux pays développés d'ici 2035, sous votre direction stratégique.</Label>
                             <Textarea
                               id="paradigme3"
                               value={formData.paradigme3}
                               onChange={(e) => setFormData({ ...formData, paradigme3: e.target.value })}
-                              placeholder="Décrivez votre contribution potentielle..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              placeholder="Détaillez votre vision de la transition énergétique..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="paradigme4" className="text-sm sm:text-base">4. Comment votre paradigme professionnel soutient l'implication des parties prenantes, comme la participation active des consommateurs et la motivation des employés dans une restructuration organisationnelle à grande échelle ?</Label>
+                            <Textarea
+                              id="paradigme4"
+                              value={formData.paradigme4}
+                              onChange={(e) => setFormData({ ...formData, paradigme4: e.target.value })}
+                              placeholder="Expliquez votre approche de l'engagement des parties prenantes..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="paradigme5" className="text-sm sm:text-base">5. Fournissez un exemple où vous avez promu un modèle économique viable, en résolvant des impayés et en appliquant une tarification sociale réaliste pour un accès universel à l'eau et l'électricité, en tant que dirigeant financier.</Label>
+                            <Textarea
+                              id="paradigme5"
+                              value={formData.paradigme5}
+                              onChange={(e) => setFormData({ ...formData, paradigme5: e.target.value })}
+                              placeholder="Décrivez votre expérience en modèle économique viable..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="paradigme6" className="text-sm sm:text-base">6. Décrivez comment vous anticipez et gérez le changement dans un paradigme d'autosuffisance énergétique et hydrique, en visant une capacité de 2 à 4 Gigawatts à horizon 2030 au Gabon, via des roadmaps exécutives.</Label>
+                            <Textarea
+                              id="paradigme6"
+                              value={formData.paradigme6}
+                              onChange={(e) => setFormData({ ...formData, paradigme6: e.target.value })}
+                              placeholder="Expliquez votre stratégie d'autosuffisance énergétique..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="paradigme7" className="text-sm sm:text-base">7. Expliquez votre alignement avec un paradigme d'innovation et d'excellence régionale, en positionnant une société comme la SEEG comme référence en Afrique centrale pour la performance et la durabilité, sous votre vision leadership.</Label>
+                            <Textarea
+                              id="paradigme7"
+                              value={formData.paradigme7}
+                              onChange={(e) => setFormData({ ...formData, paradigme7: e.target.value })}
+                              placeholder="Décrivez votre vision d'excellence régionale..."
+                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
                             />
                           </div>
 

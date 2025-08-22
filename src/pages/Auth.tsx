@@ -75,13 +75,14 @@ export default function Auth() {
       });
 
       if (error) {
-        setMatriculeError("Erreur lors de la vérification du matricule.");
+        console.error('Erreur vérification matricule:', error);
+        setMatriculeError(`Erreur lors de la vérification du matricule: ${error.message}`);
         setIsMatriculeValid(false);
         return false;
       }
 
       if (!isValid) {
-        setMatriculeError("Matricule non valide.");
+        setMatriculeError("Ce matricule n'est pas autorisé. Vérifiez qu'il correspond à un agent SEEG actif.");
         setIsMatriculeValid(false);
         return false;
       }
@@ -394,15 +395,12 @@ export default function Auth() {
                       <div className="relative">
                         <Input
                           id="matricule"
-                          type="text"
-                          inputMode="numeric"
-                          pattern="\\d+"
-                          placeholder="4517"
+                          placeholder="Ex: 1234"
+                          title="Le matricule ne doit contenir que des chiffres."
                           value={signUpData.matricule}
                           onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
-                          onBlur={verifyMatricule}
                           required
-                          className="pr-10"
+                          className={matriculeError ? "border-destructive" : isMatriculeValid ? "border-green-500" : ""}
                         />
                         {isVerifyingMatricule && (
                           <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
