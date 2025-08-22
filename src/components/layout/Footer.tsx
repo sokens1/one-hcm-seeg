@@ -30,7 +30,7 @@ export function Footer() {
               </div> */}
             </div>
             <p className="text-sm text-white/90">
-              Plateforme de recrutement dédié à la détection des <br/>
+              Plateforme de recrutement dédiée à la détection des <br/>
               talents pour créer une passerelle entre l’entreprise <br/>
               et ses potentiels internes.
             </p>
