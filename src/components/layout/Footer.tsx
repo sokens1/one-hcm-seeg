@@ -22,7 +22,7 @@ export function Footer() {
           <div className="flex-1 min-w-[300px] space-y-2">
             <div className="flex items-center gap-3">
               <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
-                <img src="/LOGO HCM WHITE .png" alt="Logo OneHCM" className="w-full h-full object-contain" />
+                <img src="/LOGO HCM WHITE.png" alt="Logo OneHCM" className="w-full h-full object-contain" />
               </div>
               {/* <div>
                 <h3 className="text-lg font-bold text-white">OneHCM</h3>
