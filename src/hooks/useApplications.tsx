@@ -253,21 +253,25 @@ export function useApplication(id: string | undefined) {
           *,
           mtp_answers,
           job_offers (*),
-          users!inner (
+          users (
             first_name, 
             last_name, 
             email, 
             phone,
-            date_of_birth
+            candidate_profiles (gender, current_position, birth_date, linkedin_url, portfolio_url)
           )
         `)
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Erreur requête application:', error);
         throw new Error(error.message);
       }
+
+      // Les données personnelles sont maintenant directement disponibles via la jointure users
+      // Pas besoin d'enrichir avec candidate_profiles à cause des restrictions RLS
+
       return data as Application;
     },
     enabled: !!id,
@@ -332,69 +336,73 @@ export function useRecruiterApplications(jobOfferId?: string) {
   const fetchRecruiterApplications = async () => {
     if (!user) return [];
 
-    const { data: jobOffers, error: jobOffersError } = await supabase
-      .from('job_offers')
-      .select('id')
-      .eq('recruiter_id', user.id);
-
-    if (jobOffersError) throw new Error(jobOffersError.message);
-    if (!jobOffers || jobOffers.length === 0) return [];
-
-    const jobOfferIds = jobOffers.map(jo => jo.id);
-
+    // Récupération de TOUTES les candidatures pour ce recruteur
     let query = supabase
       .from('applications')
       .select(`
         *,
-        job_offers (title, location, contract_type, recruiter_id),
-        users (first_name, last_name, email, phone, date_of_birth)
-      `)
-      .in('job_offer_id', jobOfferIds);
+        job_offers!inner (title, location, contract_type, recruiter_id)
+      `);
 
+    // Filtrer par recruteur seulement si pas d'ID de job spécifique
     if (jobOfferId) {
       query = query.eq('job_offer_id', jobOfferId);
+    } else {
+      query = query.eq('job_offers.recruiter_id', user.id);
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
-    if (error) throw new Error(error.message);
-
-    const apps = (data as Application[]) || [];
-    // Enrichir avec candidate_profiles (gender, current_position, birth_date)
-    const candidateIds = Array.from(new Set(apps.map(a => a.candidate_id).filter(Boolean)));
-    if (candidateIds.length > 0) {
-      const { data: profiles, error: profilesError } = await supabase
-        .from('candidate_profiles')
-        .select('user_id, gender, current_position, birth_date')
-        .in('user_id', candidateIds as string[]);
-
-      if (!profilesError && profiles) {
-        const byUser: Record<string, { user_id: string; gender?: string; current_position?: string; birth_date?: string | null }> = {};
-        for (const p of profiles as any[]) byUser[p.user_id] = p;
-        apps.forEach(app => {
-          const p = byUser[app.candidate_id];
-          if (p) {
-            const mappedProfile: CandidateProfile = {
-              id: p.user_id,
-              gender: p.gender || '',
-              date_of_birth: p.birth_date || '',
-              current_position: p.current_position || '',
-              address: '',
-              linkedin_profile: '',
-              portfolio_url: '',
-              experiences: [],
-              educations: [],
-              skills: [],
-            };
-            if (app.users) {
-              (app.users as any).candidate_profiles = mappedProfile;
-            }
-          }
-        });
-      }
+    if (error) {
+      console.error('[useRecruiterApplications] Erreur requête:', error);
+      throw new Error(error.message);
     }
 
-    return apps;
+    // Enrichir chaque candidature avec les données utilisateur et profil
+    const enrichedApps = await Promise.all(
+      (data as any[] || []).map(async (app) => {
+        // Récupérer les données utilisateur (peut ne pas exister)
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('first_name, last_name, email, phone')
+          .eq('id', app.candidate_id)
+          .maybeSingle();
+
+        if (userError && userError.code !== 'PGRST116') {
+          console.error('[useRecruiterApplications] Erreur récupération utilisateur:', userError);
+        }
+
+        // Récupérer les données du profil candidat (peut ne pas exister)
+        const { data: profileData, error: profileError } = await supabase
+          .from('candidate_profiles')
+          .select('gender, current_position, birth_date, linkedin_url, portfolio_url')
+          .eq('user_id', app.candidate_id)
+          .maybeSingle();
+
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.error('[useRecruiterApplications] Erreur récupération profil:', profileError);
+        }
+
+        // Fusionner toutes les données disponibles
+        app.users = {
+          first_name: userData?.first_name || 'Prénom',
+          last_name: userData?.last_name || 'non renseigné',
+          email: userData?.email || 'Email non renseigné',
+          phone: userData?.phone || undefined,
+          gender: profileData?.gender || undefined,
+          birth_date: profileData?.birth_date || undefined,
+          current_position: profileData?.current_position || undefined,
+          linkedin_url: profileData?.linkedin_url || undefined,
+          portfolio_url: profileData?.portfolio_url || undefined,
+        };
+
+
+        return app as Application;
+      })
+    );
+
+
+    return enrichedApps;
   };
 
   const query = useQuery({

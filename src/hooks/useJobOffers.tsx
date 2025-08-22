@@ -46,12 +46,22 @@ const fetchJobOffers = async () => {
   // 2. Fetch all applications for those job offers, including creation date
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: applications, error: applicationsError } = await supabase
-    .from('applications')
-    .select('job_offer_id, created_at')
-    .in('job_offer_id', offerIds);
+  let applications: Array<{ job_offer_id: string; created_at: string }> = [];
+  try {
+    const appsQuery = supabase
+      .from('applications')
+      .select('job_offer_id, created_at');
 
-  if (applicationsError) throw new Error(applicationsError.message);
+    const { data, error } = offerIds.length === 1
+      ? await appsQuery.eq('job_offer_id', offerIds[0])
+      : await appsQuery.in('job_offer_id', offerIds);
+
+    if (error) throw error;
+    applications = (data as Array<{ job_offer_id: string; created_at: string }>) || [];
+  } catch (e) {
+    // Fail soft: keep dashboard working even if the applications aggregate fails
+    applications = [];
+  }
 
   // 3. Count total and new applications for each offer
   const applicationStats = (applications || []).reduce((acc, app) => {
@@ -141,12 +151,21 @@ const fetchRecruiterJobOffers = async (recruiterId: string): Promise<JobOffer[]>
   // 2. Fetch all applications for those job offers, including creation date
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: applications, error: applicationsError } = await supabase
-    .from('applications')
-    .select('job_offer_id, created_at')
-    .in('job_offer_id', offerIds);
+  let applications: Array<{ job_offer_id: string; created_at: string }> = [];
+  try {
+    const appsQuery = supabase
+      .from('applications')
+      .select('job_offer_id, created_at');
 
-  if (applicationsError) throw new Error(applicationsError.message);
+    const { data, error } = offerIds.length === 1
+      ? await appsQuery.eq('job_offer_id', offerIds[0])
+      : await appsQuery.in('job_offer_id', offerIds);
+
+    if (error) throw error;
+    applications = (data as Array<{ job_offer_id: string; created_at: string }>) || [];
+  } catch (e) {
+    applications = [];
+  }
 
   // 3. Count total and new applications for each offer
   const applicationStats = (applications || []).reduce((acc, app) => {

@@ -25,7 +25,7 @@ const menuItems = [
     icon: Users,
   },
   {
-    title: "Poste à pourvoir",
+    title: "Postes à pourvoir",
     url: "/recruiter/jobs",
     icon: Briefcase,
   },

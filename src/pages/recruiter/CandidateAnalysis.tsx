@@ -131,10 +131,10 @@ const EvaluationProtocol = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Protocole d'évaluation</CardTitle>
+        <CardTitle>Protocole 1</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">Le module d'évaluation est en cours de développement.</p>
+        <p className="text-sm text-muted-foreground">Le module Evaluation est en cours d'intégration.</p>
         {/* The original structure will be restored here once defined */}
       </CardContent>
     </Card>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
@@ -205,45 +206,58 @@ export function useCreateJobOffer() {
 
   const createJobOfferMutation = useMutation({
     mutationFn: async ({ jobData, status }: {
-      jobData: {
-        title: string;
-        description: string;
-        location: string;
-        contract_type: string;
-        profile?: string;
-        department?: string;
-        salary_min?: number;
-        salary_max?: number;
-        requirements?: string[];
-        benefits?: string[];
-        application_deadline?: string;
-      };
+      jobData: any;
       status: 'active' | 'draft';
     }) => {
       if (!user) throw new Error("User not authenticated");
 
-      // Build payload dynamically to avoid sending unknown columns
-      const basePayload: JobOffersInsert = { recruiter_id: user.id, status };
-      for (const [k, v] of Object.entries(jobData)) {
-        if (v !== undefined && v !== null && v !== "") basePayload[k] = v;
-      }
+      console.log('[CreateJobOffer] Input data:', { jobData, status });
+      console.log('[CreateJobOffer] User ID:', user.id);
 
-      const { error } = await supabase.from('job_offers').insert([basePayload]);
+      // Build payload with proper field mapping
+      const basePayload: JobOffersInsert = { 
+        recruiter_id: user.id, 
+        status,
+        title: jobData.title,
+        description: jobData.description,
+        location: jobData.location,
+        contract_type: jobData.contract_type,
+        profile: jobData.profile,
+        categorie_metier: jobData.categorie_metier,
+        date_limite: jobData.date_limite,
+        reporting_line: jobData.reporting_line,
+        salary_note: jobData.salary_note,
+        start_date: jobData.start_date,
+        responsibilities: jobData.responsibilities,
+        requirements: jobData.requirements
+      };
 
-      // If backend complains about unknown column (e.g., profile), retry without it
-      if (error && (error.message?.includes('column') || error.message?.includes('profile') || error.code === '409')) {
-        const retryPayload = { ...basePayload };
-        delete retryPayload.profile;
-        const retry = await supabase.from('job_offers').insert([retryPayload]);
-        if (retry.error) throw retry.error;
-      } else if (error) {
-        throw error;
+      // Remove undefined/null/empty values
+      Object.keys(basePayload).forEach(key => {
+        if (basePayload[key] === undefined || basePayload[key] === null || basePayload[key] === '') {
+          delete basePayload[key];
+        }
+      });
+
+      console.log('[CreateJobOffer] Final payload:', basePayload);
+
+      const { data, error } = await supabase.from('job_offers').insert([basePayload]).select();
+
+      if (error) {
+        console.error('[CreateJobOffer] Database error:', error);
+        throw new Error(`Erreur lors de la création de l'offre: ${error.message}`);
       }
-      return null;
+      
+      console.log('[CreateJobOffer] Success:', data);
+      return data;
     },
     onSuccess: () => {
+      console.log('[CreateJobOffer] Mutation successful, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['recruiterDashboard', user?.id] });
       queryClient.invalidateQueries({ queryKey: ['jobOffers'] });
+    },
+    onError: (error) => {
+      console.error('[CreateJobOffer] Mutation error:', error);
     },
   });
 

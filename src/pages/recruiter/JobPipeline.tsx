@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams, useNavigate } from "react-router-dom";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
@@ -19,14 +20,17 @@ interface Candidate {
   score: number;
   applicationDate: string;
   email: string;
+  address?: string;
+  gender?: string;
+  birthDate?: string;
 }
 
 const getStatusLabel = (status: string) => {
   switch (status) {
-    case 'candidature': return 'Candidature';
-    case 'incubation': return 'Incubation';
-    case 'embauche': return 'Embauché';
-    case 'refuse': return 'Refusé';
+    case 'candidature': return 'Candidats';
+    case 'incubation': return 'Incubés';
+    case 'embauche': return 'Engagés';
+    case 'refuse': return 'Refusés';
     default: return status;
   }
 };
@@ -47,17 +51,23 @@ export default function JobPipeline() {
   const { applications, isLoading, error, updateApplicationStatus } = useRecruiterApplications(id);
 
   // Transform applications to candidates format
-  const candidates: Candidate[] = applications.map(app => ({
-    id: app.id,
-    name: `${app.users?.first_name || ''} ${app.users?.last_name || ''}`.trim(),
-    statusLabel: getStatusLabel(app.status),
-    phone: app.users?.phone || 'Non fourni',
-    experience: '', // Placeholder for future use
-    status: app.status,
-    score: 0, // TODO: Calculate from evaluations
-    applicationDate: new Date(app.created_at).toISOString().split('T')[0],
-    email: app.users?.email || ''
-  }));
+  const candidates: Candidate[] = applications.map(app => {
+    console.log('Application data received in JobPipeline:', app);
+    return {
+      id: app.id,
+      name: `${app.users?.first_name || ''} ${app.users?.last_name || ''}`.trim(),
+      statusLabel: getStatusLabel(app.status),
+      phone: app.users?.phone || 'Non fourni',
+      experience: '', // Placeholder for future use
+      status: app.status,
+      score: 0, // TODO: Calculate from evaluations
+      applicationDate: new Date(app.created_at).toISOString().split('T')[0],
+      email: app.users?.email || '',
+      address: 'Non disponible', // L'adresse n'est pas dans candidate_profiles
+      gender: (app.users as any)?.sexe,
+      birthDate: app.users?.date_of_birth
+    };
+  });
 
   const jobTitle = applications[0]?.job_offers?.title || "Offre d'emploi";
   const getCandidatesByStatus = (status: string) => {
@@ -65,15 +75,16 @@ export default function JobPipeline() {
   };
 
   const statuses = [
-    { key: 'candidature', label: 'Candidature', color: 'border-blue-500' },
-    { key: 'incubation', label: 'Incubation', color: 'border-warning' },
-    { key: 'embauche', label: 'Embauché', color: 'border-success' },
-    { key: 'refuse', label: 'Refusé', color: 'border-red-500' }
+    { key: 'candidature', label: 'Candidats', color: 'border-blue-500' },
+    { key: 'incubation', label: 'Incubés', color: 'border-warning' },
+    { key: 'embauche', label: 'Engagés', color: 'border-success' },
+    { key: 'refuse', label: 'Refusés', color: 'border-red-500' }
   ];
 
   const handleAnalyzeCandidate = (candidateId: string) => {
     const jobId = id; // current job offer id from route params
     const suffix = jobId ? `?jobId=${jobId}` : "";
+    console.log(`Navigating to analysis for candidate ${candidateId} with job ${jobId}`);
     navigate(`/recruiter/candidates/${candidateId}/analysis${suffix}`);
   };
 
@@ -122,22 +133,6 @@ export default function JobPipeline() {
           </div>
         ) : (
           <>
-            {/* Statistiques globales */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-              {statuses.map((status) => {
-                const count = getCandidatesByStatus(status.key).length;
-                return (
-                  <Card key={status.key} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-3 sm:p-4 text-center">
-                      <div className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">{count}</div>
-                      <div className="text-xs sm:text-sm text-muted-foreground truncate" title={status.label}>
-                        {status.label}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
 
             {/* Vue Kanban */}
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
@@ -171,6 +166,9 @@ export default function JobPipeline() {
                                 </p>
                                 <p className="text-xs sm:text-sm text-muted-foreground">
                                   Candidature : {new Date(candidate.applicationDate).toLocaleDateString('fr-FR')}
+                                </p>
+                                <p className="text-xs sm:text-sm text-muted-foreground truncate" title={candidate.address}>
+                                  {candidate.address}
                                 </p>
                               </div>
                               
