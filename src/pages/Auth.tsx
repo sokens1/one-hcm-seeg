@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, Building2, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
 import { supabase } from "@/integrations/supabase/client";
-// Link already imported above
+import { isPreLaunch } from "@/utils/launchGate";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -20,12 +20,12 @@ export default function Auth() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cooldown, setCooldown] = useState(0);
-  // Password visibility toggles
   const [showSigninPassword, setShowSigninPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showSignupConfirm, setShowSignupConfirm] = useState(false);
+  const preLaunch = isPreLaunch();
+
   const searchParams = new URLSearchParams(location.search);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
 
   useEffect(() => {
@@ -35,13 +35,11 @@ export default function Auth() {
     }
   }, [cooldown]);
 
-  // Sign in form state
   const [signInData, setSignInData] = useState({
     email: "",
     password: ""
   });
 
-  // Sign up form state
   const [signUpData, setSignUpData] = useState({
     email: "",
     password: "",
@@ -52,18 +50,15 @@ export default function Auth() {
     matricule: ""
   });
 
-  // Matricule validation state
   const [matriculeError, setMatriculeError] = useState<string>("");
   const [isMatriculeValid, setIsMatriculeValid] = useState<boolean>(false);
   const [isVerifyingMatricule, setIsVerifyingMatricule] = useState<boolean>(false);
 
-  // Reset matricule validation when matricule changes
   useEffect(() => {
     setIsMatriculeValid(false);
     setMatriculeError("");
   }, [signUpData.matricule]);
 
-  // Verify matricule against database (secure RPC, matricule only)
   const verifyMatricule = async (): Promise<boolean> => {
     const matricule = signUpData.matricule.trim();
     if (!matricule) {
@@ -104,14 +99,12 @@ export default function Auth() {
     }
   };
 
-  // Debounced automatic verification on matricule changes
   useEffect(() => {
     if (!signUpData.matricule) return;
     const timer = setTimeout(() => {
       verifyMatricule();
     }, 500);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signUpData.matricule]);
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -133,11 +126,9 @@ export default function Auth() {
       }
 
       toast.success("Connexion réussie !");
-      // If a redirect param is present, go there first
       if (redirectParam) {
         navigate(redirectParam);
       } else {
-        // Prefer authoritative role from DB (public.users), fallback to JWT metadata
         try {
           const { data: userRow, error: userRowError } = await supabase
             .from('users')
@@ -177,6 +168,12 @@ export default function Auth() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    if (preLaunch) {
+      toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
+      setIsSubmitting(false);
+      return;
+    }
 
     if (signUpData.password !== signUpData.confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas");
