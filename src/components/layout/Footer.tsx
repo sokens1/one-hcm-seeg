@@ -60,7 +60,7 @@ export function Footer() {
             <h4 className="font-semibold text-white">Liens rapides</h4>
             <div className="space-y-2">
               <Link to="/" className="block text-sm text-white/90 hover:text-white transition-colors">
-                Offres d'emploi
+                Postes à pourvoir
               </Link>
               <Link to="/recruiter" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
                 Espace recruteur
