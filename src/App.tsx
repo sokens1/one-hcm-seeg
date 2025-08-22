@@ -115,7 +115,6 @@ function App() {
             <Suspense fallback={<LoadingFallback />}>
               <RouterProvider
                 router={router}
-                future={{ v7_startTransition: true }}
               />
             </Suspense>
             <Toaster />
