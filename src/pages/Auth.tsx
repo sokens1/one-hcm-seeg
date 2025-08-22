@@ -183,18 +183,7 @@ export default function Auth() {
     }
 
     try {
-      // Vérification via RPC sécurisée (ne révèle pas la table)
-      const { data: isValid, error: rpcErr } = await supabase.rpc('verify_seeg_matricule', { p_matricule: matricule });
-      if (rpcErr) {
-        toast.error("Impossible de vérifier le matricule. Réessayez.");
-        setIsSubmitting(false);
-        return;
-      }
-      if (!isValid) {
-        toast.error("Matricule invalide: l'inscription est réservée aux agents SEEG.");
-        setIsSubmitting(false);
-        return;
-      }
+      // Le matricule a déjà été validé via verifyMatricule() ci-dessus
 
       const { error } = await signUp(signUpData.email, signUpData.password, {
         role: "candidat",
@@ -277,73 +266,73 @@ export default function Auth() {
         </div>
       </div>
 
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
-        <div className="max-w-sm sm:max-w-md mx-auto">
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center pb-4 sm:pb-6">
-              <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Authentification</CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 sm:px-6">
-                            {showForgotPassword ? (
-                <ForgotPassword onBack={() => setShowForgotPassword(false)} />
-              ) : (
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="signin">Connexion</TabsTrigger>
-                  <TabsTrigger value="signup">Inscription</TabsTrigger>
-                </TabsList>
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+      <div className="max-w-sm sm:max-w-md mx-auto">
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="text-center pb-4 sm:pb-6">
+            <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Authentification</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 sm:px-6">
+                          {showForgotPassword ? (
+              <ForgotPassword onBack={() => setShowForgotPassword(false)} />
+            ) : (
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="signin">Connexion</TabsTrigger>
+                <TabsTrigger value="signup">Inscription</TabsTrigger>
+              </TabsList>
 
-                {/* Sign In Tab */}
-                <TabsContent value="signin">
-                  <form onSubmit={handleSignIn} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="signin-email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="signin-email"
-                          type="email"
-                          placeholder="votre.email@exemple.com"
-                          value={signInData.email}
-                          onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
-                          className="pl-10"
-                          required
-                        />
-                      </div>
+              {/* Sign In Tab */}
+              <TabsContent value="signin">
+                <form onSubmit={handleSignIn} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signin-email"
+                        type="email"
+                        placeholder="votre.email@exemple.com"
+                        value={signInData.email}
+                        onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
+                        className="pl-10"
+                        required
+                      />
                     </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="signin-password">Mot de passe</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="signin-password"
-                          type="password"
-                          placeholder="Votre mot de passe"
-                          value={signInData.password}
-                          onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
-                          className="pl-10"
-                          required
-                        />
-                      </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-password">Mot de passe</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signin-password"
+                        type="password"
+                        placeholder="Votre mot de passe"
+                        value={signInData.password}
+                        onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
+                        className="pl-10"
+                        required
+                      />
                     </div>
+                  </div>
 
-                                        <div className="text-right text-sm">
-                      <Button
-                        type="button"
-                        variant="link"
-                        className="p-0 h-auto font-normal"
-                        onClick={() => setShowForgotPassword(true)}
-                      >
-                        Mot de passe oublié ?
-                      </Button>
-                    </div>
-
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                      {isSubmitting ? "Connexion..." : "Se connecter"}
+                  <div className="text-right text-sm">
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="p-0 h-auto font-normal"
+                      onClick={() => setShowForgotPassword(true)}
+                    >
+                      Mot de passe oublié ?
                     </Button>
-                  </form>
-                </TabsContent>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Connexion..." : "Se connecter"}
+                  </Button>
+                </form>
+              </TabsContent>
 
                 {/* Sign Up Tab */}
                 <TabsContent value="signup">
@@ -434,19 +423,7 @@ export default function Auth() {
                         required
                       />
                     </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="matricule">Matricule SEEG</Label>
-                      <Input
-                        id="matricule"
-                        placeholder="Ex: SEEG-12345"
-                        value={signUpData.matricule}
-                        onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
-                        required
-                      />
-                    </div>
-
-
+                    
                     <div className="space-y-2">
                       <Label htmlFor="signup-password">Mot de passe</Label>
                       <div className="relative">
