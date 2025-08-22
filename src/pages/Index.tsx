@@ -258,7 +258,7 @@ const Index = () => {
                   À propos de l'entreprise : Contexte du recrutement
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg opacity-90 mb-4 sm:mb-6 leading-relaxed">
-                  Explorez la vision stratégique et les ambitieux portées
+                  Explorez la vision stratégique et les ambitions portées
                   par cette campagne de recrutement inédite pour
                   impulser une nouvelle ère à la SEEG
                 </p>

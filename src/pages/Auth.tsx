@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +31,9 @@ export default function Auth() {
 
   const searchParams = new URLSearchParams(location.search);
   const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
+
+  // Prevent duplicate success toasts on login (e.g., unexpected double submits)
+  const lastLoginToastTs = useRef<number>(0);
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -129,7 +132,11 @@ export default function Auth() {
         return;
       }
 
-      toast.success("Connexion réussie !");
+      const now = Date.now();
+      if (now - lastLoginToastTs.current > 1500) {
+        toast.success("Connexion réussie !");
+        lastLoginToastTs.current = now;
+      }
       if (redirectParam) {
         navigate(redirectParam);
       } else {
