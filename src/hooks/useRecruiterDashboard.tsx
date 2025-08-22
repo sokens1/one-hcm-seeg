@@ -31,7 +31,7 @@ export function useRecruiterDashboard() {
       return { stats: null, activeJobs: [] };
     }
 
-    // Fetch job offers with application counts and applicant ids
+    // Fetch ALL job offers with application counts and applicant ids (removed recruiter_id filter)
     const { data: jobsData, error: jobsError } = await supabase
       .from('job_offers')
       .select(`
@@ -42,7 +42,6 @@ export function useRecruiterDashboard() {
         created_at,
         applications(id, status, created_at, candidate_id, job_offer_id)
       `)
-      .eq('recruiter_id', user.id)
       .eq('status', 'active');
 
     if (jobsError) throw jobsError;
@@ -274,8 +273,7 @@ export function useCreateJobOffer() {
       const { error } = await supabase
         .from('job_offers')
         .update(cleanData)
-        .eq('id', jobId)
-        .eq('recruiter_id', user.id);
+        .eq('id', jobId);
 
       if (error && (error.message?.includes('column') || error.message?.includes('profile') || error.code === '409')) {
         const retryData = { ...cleanData };
@@ -283,8 +281,7 @@ export function useCreateJobOffer() {
         const retry = await supabase
           .from('job_offers')
           .update(retryData)
-          .eq('id', jobId)
-          .eq('recruiter_id', user.id);
+          .eq('id', jobId);
         if (retry.error) throw retry.error;
       } else if (error) {
         throw error;
@@ -311,8 +308,7 @@ export function useCreateJobOffer() {
       const { error } = await supabase
         .from('job_offers')
         .update({ status: 'closed' })
-        .eq('id', jobId)
-        .eq('recruiter_id', user.id);
+        .eq('id', jobId);
 
       if (error) throw error;
       return null;
