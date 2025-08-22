@@ -39,7 +39,7 @@ export default function CompanyContext() {
                 Contexte du recrutement
               </div>
               <h1 className="text-4xl md:text-5xl font-bold">
-                Vision SEEG 2025 2035
+                Vision SEEG 2025 - 2035
               </h1>
               <p className="text-xl md:text-2xl opacity-90">
                 Contenu officiel de la Vision et du contexte de la campagne SEEG

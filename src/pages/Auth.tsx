@@ -26,8 +26,15 @@ export default function Auth() {
   const [showSignupConfirm, setShowSignupConfirm] = useState(false);
   const preLaunch = isPreLaunch();
 
-  const preLaunchToast = () =>
-    toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
+  // Deduplicate pre-launch toasts (shown in multiple places)
+  const lastPreLaunchToastTs = useRef<number>(0);
+  const preLaunchToast = () => {
+    const now = Date.now();
+    if (now - lastPreLaunchToastTs.current > 1200) {
+      toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
+      lastPreLaunchToastTs.current = now;
+    }
+  };
 
   const searchParams = new URLSearchParams(location.search);
   const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
@@ -312,17 +319,7 @@ export default function Auth() {
                 >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signin">Connexion</TabsTrigger>
-                    <TabsTrigger
-                      value="signup"
-                      onClick={(e) => {
-                        if (preLaunch) {
-                          e.preventDefault();
-                          preLaunchToast();
-                        }
-                      }}
-                      aria-disabled={preLaunch}
-                      className={preLaunch ? "cursor-not-allowed" : undefined}
-                    >
+                    <TabsTrigger value="signup" aria-disabled={preLaunch} className={preLaunch ? "cursor-not-allowed" : undefined}>
                       Inscription
                     </TabsTrigger>
                   </TabsList>
