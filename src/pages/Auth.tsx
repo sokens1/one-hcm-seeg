@@ -305,7 +305,19 @@ export default function Auth() {
                 >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signin">Connexion</TabsTrigger>
-                    <TabsTrigger value="signup">Inscription</TabsTrigger>
+                    <TabsTrigger
+                      value="signup"
+                      onClick={(e) => {
+                        if (preLaunch) {
+                          e.preventDefault();
+                          preLaunchToast();
+                        }
+                      }}
+                      aria-disabled={preLaunch}
+                      className={preLaunch ? "cursor-not-allowed" : undefined}
+                    >
+                      Inscription
+                    </TabsTrigger>
                   </TabsList>
 
                   {/* Sign In Tab */}
