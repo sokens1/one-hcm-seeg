@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { isPreLaunch } from "@/utils/launchGate";
+import { toast } from "sonner";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
 
@@ -19,6 +21,7 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const { data, isLoading, error } = useJobOffers();
   const jobOffers: JobOffer[] = data ?? [];
+  const preLaunch = isPreLaunch();
 
   useEffect(() => {
     if (user) {
@@ -176,6 +179,8 @@ const Index = () => {
                     description={job.description}
                     isPreview={true}
                     onClick={() => navigate(`/jobs/${job.id}`)}
+                    locked={preLaunch}
+                    onLockedClick={() => toast.info("Les candidatures débuteront à partir du 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -185,8 +190,8 @@ const Index = () => {
               {/* Header pour desktop seulement */}
               <div className="hidden sm:grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
                 <div>Titre du poste</div>
-                <div>Lieu</div>
-                <div>Type de contrat</div>
+                {!preLaunch && <div>Lieu</div>}
+                {!preLaunch && <div>Type de contrat</div>}
                 <div>Action</div>
               </div>
               {filteredJobs.map((job, index) => (
@@ -194,15 +199,18 @@ const Index = () => {
                   {/* Version mobile - empilée */}
                   <div className="sm:hidden p-4 space-y-3">
                     <div className="font-medium text-base sm:text-lg">{job.title}</div>
-                    <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                      <span className="bg-gray-100 px-2 py-1 rounded">{job.location}</span>
-                      <span className="bg-gray-100 px-2 py-1 rounded">{job.contract_type}</span>
-                    </div>
+                    {!preLaunch && (
+                      <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                        <span className="bg-gray-100 px-2 py-1 rounded">{job.location}</span>
+                        <span className="bg-gray-100 px-2 py-1 rounded">{job.contract_type}</span>
+                      </div>
+                    )}
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => navigate(`/jobs/${job.id}`)}
+                      onClick={() => preLaunch ? toast.info("Les candidatures débuteront à partir du 25 août 2025.") : navigate(`/jobs/${job.id}`)}
                       className="w-full"
+                      aria-disabled={preLaunch}
                     >
                       Voir l'offre
                     </Button>
@@ -210,13 +218,14 @@ const Index = () => {
                   {/* Version desktop - grille */}
                   <div className="hidden sm:grid grid-cols-4 gap-4 p-4">
                     <div className="font-medium">{job.title}</div>
-                    <div className="text-muted-foreground">{job.location}</div>
-                    <div className="text-muted-foreground">{job.contract_type}</div>
+                    {!preLaunch && <div className="text-muted-foreground">{job.location}</div>}
+                    {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
                     <div>
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => navigate(`/jobs/${job.id}`)}
+                        onClick={() => preLaunch ? toast.info("Les candidatures débuteront à partir du 25 août 2025.") : navigate(`/jobs/${job.id}`)}
+                        aria-disabled={preLaunch}
                       >
                         Voir l'offre
                       </Button>
