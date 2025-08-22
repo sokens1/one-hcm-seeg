@@ -42,7 +42,7 @@ export default function CompanyContext() {
                 Vision SEEG 2025 - 2035
               </h1>
               <p className="text-xl md:text-2xl opacity-90">
-                Contenu officiel de la Vision et du contexte de la campagne SEEG
+              Comprendre les fondements stratégiques du recrutement de l’équipe dirigeante
               </p>
             </div>
           </div>
