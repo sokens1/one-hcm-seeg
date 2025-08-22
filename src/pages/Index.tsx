@@ -178,7 +178,7 @@ const Index = () => {
                     contractType={job.contract_type}
                     description={job.description}
                     isPreview={true}
-                    onClick={() => navigate(`/jobs/${job.id}`)}
+                    onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
                     locked={preLaunch}
                     onLockedClick={() => toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")}
                   />
@@ -208,7 +208,11 @@ const Index = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => preLaunch ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.") : navigate(`/jobs/${job.id}`)}
+                      onClick={() =>
+                        preLaunch
+                          ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                          : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                      }
                       className="w-full cursor-pointer"
                       aria-disabled={preLaunch}
                     >
@@ -224,7 +228,11 @@ const Index = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => preLaunch ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.") : navigate(`/jobs/${job.id}`)}
+                        onClick={() =>
+                          preLaunch
+                            ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                            : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                        }
                         aria-disabled={preLaunch}
                         className="cursor-pointer"
                       >
