@@ -98,7 +98,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
             <div className="font-mono text-lg font-bold tracking-wider text-yellow-400">
               {timeLeft.split(': ')[1] || timeLeft}
             </div>
-            <div className="text-xs text-white/70 text-center mt-1">
+            <div className="text-xs text-white/70 text-left mt-1">
               Fermeture des candidatures
             </div>
           </div>
