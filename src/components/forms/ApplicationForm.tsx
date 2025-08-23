@@ -1264,7 +1264,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         </div>
                         <div>
                           <span className="text-muted-foreground">Années d'expérience:</span>
-                          <p>{formData.yearsExperience ?? "Non renseigné"}</p>
+                          <p>{formData.yearsOfExperience || "Non renseigné"}</p>
                         </div>
                       </div>
                     </div>
@@ -1294,7 +1294,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div>
                         <span className="text-muted-foreground font-medium">Métier:</span>
                         <p className="text-xs">
-                          {[formData.metier1, formData.metier2, formData.metier3].filter(Boolean).length}/3 questions répondues
+                          {[formData.metier1, formData.metier2, formData.metier3, formData.metier4, formData.metier5, formData.metier6, formData.metier7].filter(Boolean).length}/7 questions répondues
                         </p>
                       </div>
                       <div>

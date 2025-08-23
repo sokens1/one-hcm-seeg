@@ -20,7 +20,7 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Listes des candidats",
+    title: "Liste des candidatures",
     url: "/recruiter/candidates",
     icon: Users,
   },

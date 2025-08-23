@@ -258,6 +258,7 @@ export default function EditJob() {
                   <Select value={formData.contractType} onValueChange={(value) => handleInputChange("contractType", value)} required>
                     <SelectTrigger className="text-sm sm:text-base"><SelectValue placeholder="Type de contrat" /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="CDI avec période d'essai">CDI avec période d'essai</SelectItem>
                       <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
                       <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
                       <SelectItem value="Stage">Stage</SelectItem>
