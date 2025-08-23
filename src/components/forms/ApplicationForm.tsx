@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useQueryClient } from "@tanstack/react-query";
 import { useApplications } from "@/hooks/useApplications";
 import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
@@ -76,6 +77,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   const [activeTab, setActiveTab] = useState<'metier' | 'talent' | 'paradigme'>('metier');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
   const { submitApplication } = useApplications();
   const { uploadFile, isUploading, getFileUrl, deleteFile } = useFileUpload();
   const { user } = useAuth();
@@ -261,7 +263,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       if (mode !== 'edit' || !applicationId) return;
       try {
         const { data, error } = await supabase
-          .from('documents')
+          .from('application_documents')
           .select('document_type, file_name, file_path, file_size')
           .eq('application_id', applicationId);
         if (error) throw error;
@@ -350,7 +352,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         if (mode === 'edit' && applicationIdForDocs) {
           // En mode édition, supprimer d'abord tous les anciens documents
           await supabase
-            .from('documents')
+            .from('application_documents')
             .delete()
             .eq('application_id', applicationIdForDocs);
         }
@@ -391,7 +393,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         if (docsPayload.length > 0) {
           const { error: docsError } = await supabase
-            .from('documents')
+            .from('application_documents')
             .insert(docsPayload);
           if (docsError) {
             console.warn('Insertion documents échouée:', docsError.message);
@@ -409,10 +411,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             last_name: formData.lastName,
             date_of_birth: formData.dateOfBirth ? formData.dateOfBirth.toISOString() : null,
           }).eq('id', user.id),
-          supabase.from('candidate_profiles').update({ 
+          supabase.from('candidate_profiles').upsert({
+            user_id: user.id,
             current_position: formData.currentPosition,
             gender: formData.gender,
-          }).eq('user_id', user.id),
+            years_experience: formData.yearsExperience,
+            cv_url: formData.cv ? (isPublicUrl(formData.cv.path) ? formData.cv.path : getFileUrl(formData.cv.path)) : undefined,
+          }, { onConflict: 'user_id' }),
         ]).then(results => {
           results.forEach(result => {
             if (result.status === 'rejected') {
@@ -421,6 +426,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           });
         });
       }
+
+      // Manually update the recruiter's application list cache
+      queryClient.setQueryData(['recruiterApplications', user?.id, undefined], (oldData: any) => {
+        // This is a placeholder update. A more robust solution would be to fetch the new application
+        // and add it here, but invalidation should be triggered by the hook itself.
+        // For now, we trigger a refetch, which is more reliable than simple invalidation.
+        return oldData;
+      });
+      queryClient.refetchQueries({ queryKey: ['recruiterApplications'] });
 
       setIsSubmitted(true);
       toast.success("Candidature envoyée avec succès!");
@@ -581,12 +595,16 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     </div>
                   </div>
                   <div className="space-y-2 sm:space-y-3 text-center">
-                    <h3 className="text-sm sm:text-base font-semibold text-gray-900">Guide de Candidature</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                      Ce formulaire se déroule en 4 étapes: renseignez vos informations, ajoutez vos
-                      documents clés, indiquez votre adhérence MTP (Métier, Talent, Paradigme), puis
-                      vérifiez et soumettez votre candidature.
-                    </p>
+                    <h3 className="text-sm sm:text-base font-semibold text-gray-900">Guide de candidature</h3>
+                    <div className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                      <p className="mb-2 whitespace-nowrap">Ce formulaire se déroule en 4 étapes :</p>
+                      <ul className="list-disc list-inside space-y-1 text-left inline-block">
+                        <li>Renseignez vos informations ;</li>
+                        <li>Ajoutez vos documents clés ;</li>
+                        <li>Indiquez votre adhérence MTP (Métier, Talent, Paradigme) ;</li>
+                        <li>Vérifiez et soumettez votre candidature.</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>

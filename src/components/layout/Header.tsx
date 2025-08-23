@@ -1,15 +1,23 @@
 import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, UserPlus, Building2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { LogOut, LogIn, UserPlus, Building2, Bell } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useNotifications } from "@/hooks/useNotifications";
 import { useToast } from "@/components/ui/use-toast";
 import { isPreLaunch } from "@/utils/launchGate";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale/fr';
+import { useState } from "react";
 
 export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, signOut, isRecruiter, isCandidate, isAdmin } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const isAuthenticated = !!user;
   const preLaunch = isPreLaunch();
 
@@ -59,6 +67,74 @@ export function Header() {
                   </Button>
                 </Link>
               )}
+              
+              {/* Notification Bell */}
+              <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative p-2">
+                    <Bell className="w-4 h-4" />
+                    {unreadCount > 0 && (
+                      <Badge 
+                        variant="destructive" 
+                        className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                      >
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-0" align="end">
+                  <div className="p-4 border-b">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold">Notifications</h3>
+                      {unreadCount > 0 && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => markAllAsRead()}
+                          className="text-xs"
+                        >
+                          Tout marquer comme lu
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length > 0 ? (
+                      notifications.slice(0, 10).map((notification) => (
+                        <div 
+                          key={notification.id}
+                          className={`p-3 border-b hover:bg-muted/50 cursor-pointer ${!notification.read ? 'bg-blue-50/50' : ''}`}
+                          onClick={() => {
+                            if (!notification.read) markAsRead(notification.id);
+                            if (notification.link) navigate(notification.link);
+                            setNotificationOpen(false);
+                          }}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{notification.title}</p>
+                              <p className="text-xs text-muted-foreground line-clamp-2">{notification.message}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: fr })}
+                              </p>
+                            </div>
+                            {!notification.read && (
+                              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1"></div>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-6 text-center text-muted-foreground">
+                        <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Aucune notification</p>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              
               <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
                 <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">Déconnexion</span>
