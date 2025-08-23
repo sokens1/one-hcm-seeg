@@ -16,7 +16,7 @@ import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isCandidate, isRecruiter, isAdmin } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const { data, isLoading, error } = useJobOffers();
@@ -24,19 +24,27 @@ const Index = () => {
   const preLaunch = isPreLaunch();
 
   useEffect(() => {
-    if (user) {
-      const role = user.user_metadata?.role;
-      if (role === 'candidate') {
-        navigate("/candidate/dashboard");
-      } else if (role === 'recruiter') {
-        navigate("/recruiter/dashboard");
-      }
+    if (!user) return;
+    // Use normalized role flags from useAuth to avoid FR/EN mismatch
+    if (isAdmin) {
+      navigate("/admin/dashboard");
+    } else if (isRecruiter) {
+      navigate("/recruiter/dashboard");
+    } else if (isCandidate) {
+      navigate("/candidate/dashboard");
     }
-  }, [user, navigate]);
+  }, [user, isAdmin, isRecruiter, isCandidate, navigate]);
 
   // Ne pas afficher la page d'accueil si l'utilisateur est connecté
   if (user) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Redirection en cours...</span>
+        </div>
+      </div>
+    );
   }
 
   const filteredJobs = jobOffers.filter(job => 
@@ -180,7 +188,7 @@ const Index = () => {
                     isPreview={true}
                     onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -188,11 +196,17 @@ const Index = () => {
           ) : (
             <div className="bg-white rounded-lg shadow-sm border overflow-hidden mx-4">
               {/* Header pour desktop seulement */}
-              <div className="hidden sm:grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
+              <div
+                className={`hidden sm:grid ${
+                  preLaunch
+                    ? "[grid-template-columns:1fr_auto]"
+                    : "[grid-template-columns:2fr_minmax(160px,1fr)_minmax(180px,1fr)_auto]"
+                } items-center gap-4 p-4 bg-gray-50 border-b font-semibold text-sm`}
+              >
                 <div>Titre du poste</div>
                 {!preLaunch && <div>Lieu</div>}
                 {!preLaunch && <div>Type de contrat</div>}
-                <div>Action</div>
+                <div className="text-center">Action</div>
               </div>
               {filteredJobs.map((job, index) => (
                 <div key={job.id} className="border-b hover:bg-gray-50 transition-colors animate-fade-in" style={{ animationDelay: `${300 + index * 50}ms` }}>
@@ -206,35 +220,39 @@ const Index = () => {
                       </div>
                     )}
                     <Button 
-                      variant="outline" 
+                      variant="hero" 
                       size="sm"
                       onClick={() =>
                         preLaunch
-                          ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                          ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
                           : toast.info("Créez votre compte pour voir l'offre et postuler.")
                       }
-                      className="w-full cursor-pointer"
-                      aria-disabled={preLaunch}
+                      className={"w-full text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
                     >
                       Voir l'offre
                     </Button>
                   </div>
                   {/* Version desktop - grille */}
-                  <div className="hidden sm:grid grid-cols-4 gap-4 p-4">
+                  <div
+                    className={`hidden sm:grid ${
+                      preLaunch
+                        ? "[grid-template-columns:1fr_auto]"
+                        : "[grid-template-columns:2fr_minmax(160px,1fr)_minmax(180px,1fr)_auto]"
+                    } items-center gap-4 p-4`}
+                  >
                     <div className="font-medium">{job.title}</div>
                     {!preLaunch && <div className="text-muted-foreground">{job.location}</div>}
                     {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
-                    <div>
+                    <div className="flex justify-center">
                       <Button 
-                        variant="outline" 
+                        variant="hero" 
                         size="sm"
                         onClick={() =>
                           preLaunch
-                            ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                            ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
                             : toast.info("Créez votre compte pour voir l'offre et postuler.")
                         }
-                        aria-disabled={preLaunch}
-                        className="cursor-pointer"
+                        className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
                       >
                         Voir l'offre
                       </Button>
@@ -258,7 +276,7 @@ const Index = () => {
                   À propos de l'entreprise : Contexte du recrutement
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg opacity-90 mb-4 sm:mb-6 leading-relaxed">
-                  Explorez la vision stratégique et les ambitieux portées
+                  Explorez la vision stratégique et les ambitions portées
                   par cette campagne de recrutement inédite pour
                   impulser une nouvelle ère à la SEEG
                 </p>
@@ -289,7 +307,7 @@ const Index = () => {
         <div className="text-center py-12 sm:py-16 mt-8 sm:mt-16 px-4">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">
-              Équipe RH SEEG ?
+              Espace recruteurs
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
               Accédez à l'interface de gestion des candidatures et du processus de recrutement.

@@ -1,3 +1,4 @@
+
 -- 1. Mettre à jour la politique RLS pour la table application_documents
 -- Supprime l'ancienne politique (si elle existe) pour éviter les conflits
 DROP POLICY IF EXISTS "Recruiters can view documents for their job offers" ON public.application_documents;

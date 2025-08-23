@@ -1,18 +1,49 @@
 import { Building2, Mail, Phone, MapPin } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Footer() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isCandidate, isRecruiter, isAdmin } = useAuth();
 
   const handleOffersClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault();
+    // If authenticated, go to the appropriate offers/dashboard page by role
+    if (user) {
+      if (isAdmin) {
+        navigate("/admin/dashboard");
+        return;
+      }
+      if (isRecruiter) {
+        navigate("/recruiter/jobs");
+        return;
+      }
+      // default to candidate offers
+      navigate("/candidate/jobs");
+      return;
+    }
+    // Guests: go to home and scroll to offers section
     if (location.pathname === "/") {
       document.getElementById("job-list")?.scrollIntoView({ behavior: "smooth" });
     } else {
       navigate("/");
       setTimeout(() => document.getElementById("job-list")?.scrollIntoView({ behavior: "smooth" }), 50);
     }
+  };
+
+  const handleRecruiterSpaceClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault();
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    if (isRecruiter || isAdmin) {
+      navigate("/recruiter/dashboard");
+      return;
+    }
+    // Authenticated candidate -> keep them in their space
+    navigate("/candidate/dashboard");
   };
   return (
     <footer className="bg-primary-dark text-white mt-16">
@@ -30,8 +61,8 @@ export function Footer() {
               </div> */}
             </div>
             <p className="text-sm text-white/90">
-              Plateforme de recrutement dédiée à la détection des <br/>
-              talents pour créer une passerelle entre l’entreprise <br/>
+              Plateforme de recrutement dédiée à la détection des 
+              talents pour créer une passerelle entre l'entreprise 
               et ses potentiels internes.
             </p>
           </div>
@@ -59,11 +90,11 @@ export function Footer() {
           <div className="flex-1 min-w-[200px] space-y-4 md:text-right">
             <h4 className="font-semibold text-white">Liens rapides</h4>
             <div className="space-y-2">
-              <Link to="/" className="block text-sm text-white/90 hover:text-white transition-colors">
-                Offres d'emploi
+              <Link to="#" onClick={handleOffersClick} className="block text-sm text-white/90 hover:text-white transition-colors">
+                Postes à pourvoir
               </Link>
-              <Link to="/recruiter" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
-                Espace recruteur
+              <Link to="#" onClick={handleRecruiterSpaceClick} className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
+                Espace recruteurs
               </Link>
               {/* <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
                 À propos
@@ -87,7 +118,7 @@ export function Footer() {
 
         <div className="border-t border-white/20 mt-8 pt-8">
           <div className="text-center text-sm text-white/90">
-            <p>&copy; {new Date().getFullYear()} OneHCM | Talents Source. Tous droits
+            <p>&copy; {new Date().getFullYear()} OneHCM | Talent source. Tous droits
             réservés.</p>
           </div>
         </div>
