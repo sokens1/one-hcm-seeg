@@ -71,11 +71,11 @@ export default function CreateJob() {
     }
 
     // Validate contract type against DB CHECK constraint
-    const allowedContracts = ['CDI', 'CDD', 'Stage', 'Freelance'];
+    const allowedContracts = ['CDI avec période d\'essai', 'CDI', 'CDD', 'Stage', 'Freelance'];
     if (!allowedContracts.includes(formData.contractType)) {
       toast({
         title: "Type de contrat invalide",
-        description: "Le type de contrat doit être CDI, CDD, Stage ou Freelance.",
+        description: "Le type de contrat doit être CDI avec période d'essai, CDI, CDD, Stage ou Freelance.",
         variant: "destructive",
       });
       return;
@@ -189,6 +189,7 @@ export default function CreateJob() {
                         <SelectValue placeholder="Type de contrat" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="CDI avec période d'essai">CDI avec période d'essai</SelectItem>
                         <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
                         <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
                         <SelectItem value="Stage">Stage</SelectItem>
