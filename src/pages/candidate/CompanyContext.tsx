@@ -205,7 +205,7 @@ export default function CompanyContext() {
                   Prêt à rejoindre l’équipe dirigeante ?
                   </h2>
                   <p className="mb-6 opacity-90 text-lg">
-                  15 profils recherchés pour une mission d’intérêt
+                  {jobCount} profils recherchés pour une mission d’intérêt
                   national. Et si c’était vous ?
                     {/* Découvrez nos {jobCount} poste{jobCount > 1 ? 's' : ''} disponible{jobCount > 1 ? 's' : ''} et contribuez à la renaissance de la SEEG. */}
                   </p>

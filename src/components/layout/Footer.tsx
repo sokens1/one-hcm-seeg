@@ -30,8 +30,8 @@ export function Footer() {
               </div> */}
             </div>
             <p className="text-sm text-white/90">
-              Plateforme de recrutement dédiée à la détection des <br/>
-              talents pour créer une passerelle entre l’entreprise <br/>
+              Plateforme de recrutement dédiée à la détection des 
+              talents pour créer une passerelle entre l'entreprise 
               et ses potentiels internes.
             </p>
           </div>
@@ -63,7 +63,7 @@ export function Footer() {
                 Postes à pourvoir
               </Link>
               <Link to="/recruiter" className="block text-[13px] sm:text-sm text-white/90 hover:text-white transition-colors">
-                Espace recruteur
+                Espace recruteurs
               </Link>
               {/* <a href="#" className="block text-sm text-white/90 hover:text-white transition-colors">
                 À propos

@@ -307,7 +307,7 @@ const Index = () => {
         <div className="text-center py-12 sm:py-16 mt-8 sm:mt-16 px-4">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">
-              Équipe RH SEEG ?
+              Espace recruteurs
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
               Accédez à l'interface de gestion des candidatures et du processus de recrutement.
