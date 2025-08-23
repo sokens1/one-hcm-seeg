@@ -16,7 +16,7 @@ import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isCandidate, isRecruiter, isAdmin } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const { data, isLoading, error } = useJobOffers();
@@ -24,19 +24,27 @@ const Index = () => {
   const preLaunch = isPreLaunch();
 
   useEffect(() => {
-    if (user) {
-      const role = user.user_metadata?.role;
-      if (role === 'candidate') {
-        navigate("/candidate/dashboard");
-      } else if (role === 'recruiter') {
-        navigate("/recruiter/dashboard");
-      }
+    if (!user) return;
+    // Use normalized role flags from useAuth to avoid FR/EN mismatch
+    if (isAdmin) {
+      navigate("/admin/dashboard");
+    } else if (isRecruiter) {
+      navigate("/recruiter/dashboard");
+    } else if (isCandidate) {
+      navigate("/candidate/dashboard");
     }
-  }, [user, navigate]);
+  }, [user, isAdmin, isRecruiter, isCandidate, navigate]);
 
   // Ne pas afficher la page d'accueil si l'utilisateur est connecté
   if (user) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Redirection en cours...</span>
+        </div>
+      </div>
+    );
   }
 
   const filteredJobs = jobOffers.filter(job => 
@@ -180,7 +188,7 @@ const Index = () => {
                     isPreview={true}
                     onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -216,7 +224,7 @@ const Index = () => {
                       size="sm"
                       onClick={() =>
                         preLaunch
-                          ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                          ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
                           : toast.info("Créez votre compte pour voir l'offre et postuler.")
                       }
                       className={"w-full text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
@@ -241,7 +249,7 @@ const Index = () => {
                         size="sm"
                         onClick={() =>
                           preLaunch
-                            ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                            ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
                             : toast.info("Créez votre compte pour voir l'offre et postuler.")
                         }
                         className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}

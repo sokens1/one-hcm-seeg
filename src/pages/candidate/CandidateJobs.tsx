@@ -156,7 +156,7 @@ export default function CandidateJobs() {
                     isPreview={true}
                     onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -194,7 +194,7 @@ export default function CandidateJobs() {
                       size="sm"
                       onClick={() =>
                         preLaunch
-                          ? toast.info("Les appels candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                          ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
                           : toast.info("Créez votre compte pour voir l'offre et postuler.")
                       }
                       className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
