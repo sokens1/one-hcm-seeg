@@ -30,7 +30,7 @@ export function RecruiterLayout({ children, className = "" }: RecruiterLayoutPro
             <div className="flex items-center min-w-0">
               <SidebarTrigger className="mr-2 sm:mr-4" />
               <h1 className="text-sm sm:text-lg font-semibold truncate">
-                <span className="hidden sm:inline">Espace Recruteur</span>
+                <span className="hidden sm:inline">Espace Recruteurs</span>
                 <span className="sm:hidden">Recruteur</span>
               </h1>
             </div>
