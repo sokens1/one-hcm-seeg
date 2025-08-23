@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Loader2, Plus, Briefcase, Bell } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
 import {
@@ -20,6 +20,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
 export default function RecruiterDashboard() {
+  const navigate = useNavigate();
   const { stats, activeJobs, isLoading, error } = useRecruiterDashboard();
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
 
@@ -65,7 +66,13 @@ export default function RecruiterDashboard() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-4">
             {/* KPI: Candidats */}
-            <Card className="shadow-soft">
+            <Card
+              className="shadow-soft cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate("/recruiter/candidates")}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate('/recruiter/candidates'); }}
+            >
               <CardContent className="p-3 sm:p-4 flex items-center justify-between">
                 <div>
                   <p className="text-[11px] sm:text-xs text-muted-foreground">Candidats</p>
@@ -77,7 +84,13 @@ export default function RecruiterDashboard() {
             </Card>
 
             {/* KPI: Entretiens (incubation) */}
-            <Card className="shadow-soft">
+            <Card
+              className="shadow-soft cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate("/recruiter/candidates?status=incubation")}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate('/recruiter/candidates?status=incubation'); }}
+            >
               <CardContent className="p-3 sm:p-4">
                 <p className="text-[11px] sm:text-xs text-muted-foreground">Entretiens</p>
                 <div className="text-xl sm:text-2xl font-bold">{stats.interviewsScheduled}</div>
@@ -86,7 +99,13 @@ export default function RecruiterDashboard() {
             </Card>
 
             {/* KPI: Offres actives */}
-            <Card className="shadow-soft">
+            <Card
+              className="shadow-soft cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate("/recruiter/jobs")}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate('/recruiter/jobs'); }}
+            >
               <CardContent className="p-3 sm:p-4">
                 <p className="text-[11px] sm:text-xs text-muted-foreground">Offres actives</p>
                 <div className="text-xl sm:text-2xl font-bold">{stats.totalJobs}</div>
@@ -95,7 +114,13 @@ export default function RecruiterDashboard() {
             </Card>
 
             {/* KPI: Multi-postes */}
-            <Card className="shadow-soft">
+            <Card
+              className="shadow-soft cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate("/recruiter/candidates?multi=1")}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate('/recruiter/candidates?multi=1'); }}
+            >
               <CardContent className="p-3 sm:p-4">
                 <p className="text-[11px] sm:text-xs text-muted-foreground">Multi-postes</p>
                 <div className="text-xl sm:text-2xl font-bold">{stats.multiPostCandidates ?? 0}</div>
@@ -131,8 +156,12 @@ export default function RecruiterDashboard() {
                 </ResponsiveContainer>
               </div>
               <div className="flex justify-center gap-4 text-[11px] sm:text-xs mt-2">
-                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-pink-500" /> Femmes {(stats.femalePercent ?? 0).toFixed(1)}%</div>
-                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500" /> Hommes {(stats.malePercent ?? 0).toFixed(1)}%</div>
+                <Link to="/recruiter/candidates?gender=femme" className="flex items-center gap-1 text-pink-500 hover:underline">
+                  <span className="w-2 h-2 rounded-full bg-pink-500" /> Femmes {(stats.femalePercent ?? 0).toFixed(1)}%
+                </Link>
+                <Link to="/recruiter/candidates?gender=homme" className="flex items-center gap-1 text-blue-500 hover:underline">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" /> Hommes {(stats.malePercent ?? 0).toFixed(1)}%
+                </Link>
               </div>
             </CardContent>
           </Card>
@@ -145,18 +174,29 @@ export default function RecruiterDashboard() {
             <CardContent className="pt-2">
               <div className="h-36 sm:h-40">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={activeJobs.slice(0, 5).map(j => ({
-                    name: j.title.length > 10 ? `${j.title.slice(0, 10)}…` : j.title,
-                    value: j.candidate_count
-                  }))}>
-                    <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} height={24} />
-                    <Tooltip formatter={(v: number) => `${v} candidats`} />
-                    <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                      {activeJobs.slice(0, 5).map((_, idx) => (
-                        <Cell key={idx} fill={["#0ea5e9", "#22c55e", "#f59e0b", "#a855f7", "#ef4444"][idx % 5]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
+                  {(() => {
+                    const chartData = activeJobs.slice(0, 5).map(j => ({
+                      id: j.id,
+                      name: j.title.length > 10 ? `${j.title.slice(0, 10)}…` : j.title,
+                      value: j.candidate_count
+                    }));
+                    return (
+                      <BarChart data={chartData}>
+                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} height={24} />
+                        <Tooltip formatter={(v: number) => `${v} candidats`} />
+                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                          {chartData.map((d, idx) => (
+                            <Cell
+                              key={d.id}
+                              cursor="pointer"
+                              onClick={() => navigate(`/recruiter/jobs/${d.id}/pipeline`)}
+                              fill={["#0ea5e9", "#22c55e", "#f59e0b", "#a855f7", "#ef4444"][idx % 5]}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    );
+                  })()}
                 </ResponsiveContainer>
               </div>
             </CardContent>
@@ -170,18 +210,29 @@ export default function RecruiterDashboard() {
             <CardContent className="pt-2">
               <div className="h-36 sm:h-40">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={activeJobs.slice(0, 5).map(j => ({
-                    name: j.title.length > 10 ? `${j.title.slice(0, 10)}…` : j.title,
-                    value: j.new_candidates
-                  }))}>
-                    <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} height={24} />
-                    <Tooltip formatter={(v: number) => `${v} nouveaux`} />
-                    <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                      {activeJobs.slice(0, 5).map((_, idx) => (
-                        <Cell key={idx} fill={["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#a855f7"][idx % 5]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
+                  {(() => {
+                    const chartData = activeJobs.slice(0, 5).map(j => ({
+                      id: j.id,
+                      name: j.title.length > 10 ? `${j.title.slice(0, 10)}…` : j.title,
+                      value: j.new_candidates
+                    }));
+                    return (
+                      <BarChart data={chartData}>
+                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} height={24} />
+                        <Tooltip formatter={(v: number) => `${v} nouveaux`} />
+                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                          {chartData.map((d, idx) => (
+                            <Cell
+                              key={d.id}
+                              cursor="pointer"
+                              onClick={() => navigate(`/recruiter/jobs/${d.id}/pipeline`)}
+                              fill={["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#a855f7"][idx % 5]}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    );
+                  })()}
                 </ResponsiveContainer>
               </div>
             </CardContent>
