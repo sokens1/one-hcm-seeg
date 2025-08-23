@@ -6,11 +6,11 @@ interface ProtectedRecruiterRouteProps {
 }
 
 export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRouteProps) {
-  const { user, isLoading, isRecruiter } = useAuth();
+  const { user, isLoading, isRoleLoading, isRecruiter } = useAuth();
   const isAuthenticated = !!user;
   const location = useLocation();
 
-  if (isLoading) {
+  if (isLoading || isRoleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -19,7 +19,7 @@ export function ProtectedRecruiterRoute({ children }: ProtectedRecruiterRoutePro
   }
 
   if (!isAuthenticated || !isRecruiter) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" replace state={{ from: location }} />;
   }
 
   return <>{children}</>;
