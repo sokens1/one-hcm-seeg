@@ -103,12 +103,35 @@ export function useApplicationStatus(jobOfferId: string) {
 }
 
 export function useApplications() {
-  const { user } = useAuth();
+  const { user, isRecruiter, isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
   const fetchApplications = async () => {
     if (!user) return [];
 
+    // Si l'utilisateur est un candidat, utiliser la fonction RPC spécifique
+    if (!isRecruiter && !isAdmin) {
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_candidate_applications');
+
+      if (rpcError) {
+        console.error('Erreur RPC candidat applications:', rpcError);
+        throw new Error(rpcError.message);
+      }
+
+      // Transformer les données RPC au format attendu
+      const applications = (rpcData || []).map((app: any) => ({
+        ...app.application_details,
+        job_offers: app.job_offer_details,
+        users: {
+          ...app.candidate_details,
+          candidate_profiles: app.candidate_details?.candidate_profiles
+        }
+      }));
+
+      return applications as Application[];
+    }
+
+    // Pour les recruteurs/admins, utiliser l'ancienne méthode directe
     const { data, error } = await supabase
       .from('applications')
       .select(`
@@ -242,11 +265,39 @@ export function useApplications() {
 }
 
 export function useApplication(id: string | undefined) {
+  const { user, isRecruiter, isAdmin } = useAuth();
+  
   return useQuery({
-    queryKey: ['application', id],
+    queryKey: ['application', id, user?.id],
     queryFn: async () => {
-      if (!id) return null;
+      if (!id || !user) return null;
 
+      // Si l'utilisateur est un candidat, utiliser la fonction spécifique aux candidats
+      if (!isRecruiter && !isAdmin) {
+        const { data: rpcData, error: rpcError } = await supabase.rpc('get_candidate_application', {
+          p_application_id: id
+        });
+
+        if (rpcError) {
+          console.error('Erreur RPC candidat:', rpcError);
+          throw new Error(rpcError.message);
+        }
+
+        if (!rpcData || rpcData.length === 0) return null;
+
+        const rpcResult = rpcData[0];
+        const application = {
+          ...rpcResult.application_details,
+          job_offers: rpcResult.job_offer_details,
+          users: {
+            ...rpcResult.candidate_details,
+            candidate_profiles: rpcResult.candidate_details?.candidate_profiles
+          }
+        };
+        return application as Application;
+      }
+
+      // Pour les recruteurs/admins, utiliser l'ancienne logique
       // Étape 1: récupérer l'offre liée pour connaître le job_offer_id
       let jobOfferId: string | null = null;
       try {
@@ -312,7 +363,7 @@ export function useApplication(id: string | undefined) {
 
       return null;
     },
-    enabled: !!id,
+    enabled: !!id && !!user,
     retry: 1,
   });
 }
