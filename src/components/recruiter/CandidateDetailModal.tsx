@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -101,6 +101,9 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
             <User className="w-4 h-4 sm:w-5 sm:h-5" />
             Détails du candidat
           </DialogTitle>
+          <DialogDescription>
+            Informations détaillées sur le candidat, sa candidature et les documents associés.
+          </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
