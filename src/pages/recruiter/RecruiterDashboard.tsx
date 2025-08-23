@@ -2,7 +2,7 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Loader2, Plus, Briefcase } from "lucide-react";
+import { Users, Loader2, Plus, Briefcase, Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
@@ -16,7 +16,6 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
-
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
@@ -217,9 +216,12 @@ export default function RecruiterDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-soft">
-            <CardHeader className="py-3 pb-2">
-              <CardTitle className="text-sm">Activité récente</CardTitle>
+          <Card className="shadow-soft hover:shadow-medium transition-all">
+            <CardHeader className="flex flex-row items-center justify-between py-3 pb-2">
+              <CardTitle className="text-sm sm:text-base">Activité récente</CardTitle>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
             </CardHeader>
             <CardContent className="max-h-32 overflow-auto text-xs">
               {isLoadingActivities ? (
@@ -240,6 +242,11 @@ export default function RecruiterDashboard() {
                       </Badge>
                     </div>
                   ))}
+                  <div className="pt-2">
+                    <Button variant="link" className="p-0 h-auto text-xs sm:text-sm">
+                      Voir tout l'historique
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <p className="text-muted-foreground text-center">Aucune activité récente.</p>

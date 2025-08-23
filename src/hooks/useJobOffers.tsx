@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -41,25 +42,18 @@ const fetchJobOffers = async () => {
   if (error) throw error;
   if (!offers || offers.length === 0) return [];
 
-  const offerIds = offers.map(o => o.id);
-
-  // 2. Fetch all applications for those job offers, including creation date
+  // 2. Récupérer les candidatures via RPC par offre (signature 1-argument)
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   let applications: Array<{ job_offer_id: string; created_at: string }> = [];
   try {
-    const appsQuery = supabase
-      .from('applications')
-      .select('job_offer_id, created_at');
-
-    const { data, error } = offerIds.length === 1
-      ? await appsQuery.eq('job_offer_id', offerIds[0])
-      : await appsQuery.in('job_offer_id', offerIds);
-
-    if (error) throw error;
-    applications = (data as Array<{ job_offer_id: string; created_at: string }>) || [];
+    const { data: rpcData } = await supabase.rpc('get_all_recruiter_applications');
+    applications = (rpcData || []).map((app: any) => ({
+      job_offer_id: app.application_details?.job_offer_id,
+      created_at: app.application_details?.created_at,
+    })).filter(app => app.job_offer_id && app.created_at);
   } catch (e) {
-    // Fail soft: keep dashboard working even if the applications aggregate fails
+    // Fail soft: garder le dashboard fonctionnel même si l'agrégat échoue
     applications = [];
   }
 
@@ -103,14 +97,24 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
   if (error) throw error;
   if (!offer) return null;
 
-  // 2. Fetch applications for this offer
+  // 2. Fetch applications for this offer using RPC function
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { data: applications, error: applicationsError } = await supabase
-    .from('applications')
-    .select('created_at')
-    .eq('job_offer_id', id);
-
-  if (applicationsError) throw new Error(applicationsError.message);
+  
+  let applications: Array<{ created_at: string }> = [];
+  try {
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    
+    if (rpcError) throw rpcError;
+    
+    applications = (rpcData || [])
+      .filter((app: any) => app.application_details?.job_offer_id === id)
+      .map((app: any) => ({
+        created_at: app.application_details?.created_at
+      }))
+      .filter(app => app.created_at);
+  } catch (e) {
+    applications = [];
+  }
 
   // 3. Calculate counts
   const candidate_count = applications?.length || 0;
@@ -146,23 +150,16 @@ const fetchRecruiterJobOffers = async (recruiterId: string): Promise<JobOffer[]>
   if (offersError) throw new Error(offersError.message);
   if (!offers || offers.length === 0) return [];
 
-  const offerIds = offers.map(o => o.id);
-
-  // 2. Fetch all applications for those job offers, including creation date
+  // 2. Récupérer les candidatures via RPC par offre (signature 1-argument)
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   let applications: Array<{ job_offer_id: string; created_at: string }> = [];
   try {
-    const appsQuery = supabase
-      .from('applications')
-      .select('job_offer_id, created_at');
-
-    const { data, error } = offerIds.length === 1
-      ? await appsQuery.eq('job_offer_id', offerIds[0])
-      : await appsQuery.in('job_offer_id', offerIds);
-
-    if (error) throw error;
-    applications = (data as Array<{ job_offer_id: string; created_at: string }>) || [];
+    const { data: rpcData } = await supabase.rpc('get_all_recruiter_applications');
+    applications = (rpcData || []).map((app: any) => ({
+      job_offer_id: app.application_details?.job_offer_id,
+      created_at: app.application_details?.created_at,
+    })).filter(app => app.job_offer_id && app.created_at);
   } catch (e) {
     applications = [];
   }

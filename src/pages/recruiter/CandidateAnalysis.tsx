@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, GraduationCap, Star, Info, Linkedin, Link as LinkIcon, FileText, Eye, Download, Users, X } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -38,29 +38,8 @@ const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, labe
 
 const ProfileTab = ({ application }: { application: Application }) => {
   const user = application?.users;
-  
-  // Récupérer le profil candidat séparément
-  const [candidateProfile, setCandidateProfile] = useState(null);
-  
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!application?.candidate_id) return;
-      
-      const { data, error } = await supabase
-        .from('candidate_profiles')
-        .select('*')
-        .eq('user_id', application.candidate_id)
-        .maybeSingle();
-        
-      if (!error && data) {
-        setCandidateProfile(data);
-      }
-    };
-    
-    fetchProfile();
-  }, [application?.candidate_id]);
-  
-  const profile = candidateProfile;
+  // Utiliser le profil inclus via la RPC pour éviter les problèmes RLS
+  const profile = (application?.users as any)?.candidate_profiles || null;
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
@@ -155,6 +134,9 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
               <X className="w-4 h-4" />
             </Button>
           </DialogTitle>
+          <DialogDescription>
+            Prévisualisation du document {fileName}. Utilisez les contrôles pour naviguer dans le contenu.
+          </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
           {isPdf ? (
@@ -183,7 +165,7 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   );
 };
 
-const DocumentsTab = ({ documents, documentsLoading, getFileUrl, downloadFile }: { documents: any[], documentsLoading: boolean, getFileUrl: (path: string) => string, downloadFile: (path: string, name: string) => void }) => {
+const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => string, downloadFile: (path: string, name: string) => void }) => {
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean, fileUrl: string, fileName: string }>({
     isOpen: false,
     fileUrl: '',
@@ -202,9 +184,9 @@ const DocumentsTab = ({ documents, documentsLoading, getFileUrl, downloadFile }:
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5"/> Documents</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 sm:space-y-3 p-4 sm:p-6">
-          {documentsLoading ? (
+          {isLoading ? (
             <p className="text-xs sm:text-sm">Chargement...</p>
-          ) : documents.length > 0 ? (
+          ) : error ? (<p className="text-red-500 text-xs sm:text-sm">Erreur de chargement des documents.</p>) : documents && documents.length > 0 ? (
             documents.map((doc) => (
               <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
@@ -241,13 +223,19 @@ const DocumentsTab = ({ documents, documentsLoading, getFileUrl, downloadFile }:
 };
 
 export default function CandidateAnalysis() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  console.log('[CANDIDATE ANALYSIS DEBUG] Component loaded with id:', id);
+  
   const { data: application, isLoading, error } = useApplication(id);
-  const { data: documents = [], isLoading: documentsLoading } = useApplicationDocuments(id);
+  const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
   const { updateApplicationStatus } = useRecruiterApplications(application?.job_offer_id);
-
+  
+  console.log('[CANDIDATE ANALYSIS DEBUG] Application data:', application);
+  console.log('[CANDIDATE ANALYSIS DEBUG] Documents data:', documents);
+  console.log('[CANDIDATE ANALYSIS DEBUG] Loading states:', { isLoading, error });
 
   const jobId = searchParams.get('jobId') || application?.job_offer_id;
 
@@ -256,20 +244,20 @@ export default function CandidateAnalysis() {
     if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
       return filePath;
     }
-    // Sinon, générer l'URL publique depuis Supabase Storage
-    const { data } = supabase.storage.from('documents').getPublicUrl(filePath);
+    // Sinon, générer l'URL publique depuis le bucket correct
+    const { data } = supabase.storage.from('application-documents').getPublicUrl(filePath);
     return data.publicUrl;
   };
 
   const downloadFile = async (filePath: string, fileName: string) => {
     try {
       // Extraire le chemin relatif si c'est une URL complète
-      const relativePath = filePath.includes('/storage/v1/object/public/documents/') 
-        ? filePath.split('/storage/v1/object/public/documents/')[1]
+      const relativePath = filePath.includes('/storage/v1/object/public/application-documents/') 
+        ? filePath.split('/storage/v1/object/public/application-documents/')[1]
         : filePath;
       
       const { data, error } = await supabase.storage
-        .from('documents')
+        .from('application-documents')
         .download(relativePath);
       
       if (error) throw error;
@@ -356,7 +344,7 @@ export default function CandidateAnalysis() {
           <TabsContent value="info" className="mt-4 sm:mt-6">
             <div className="space-y-4 sm:space-y-6">
               <ProfileTab application={application} />
-              <DocumentsTab documents={documents} documentsLoading={documentsLoading} getFileUrl={getFileUrl} downloadFile={downloadFile} />
+              <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} />
               <ReferencesTab application={application} />
               <MtpAnswersDisplay mtpAnswers={application.mtp_answers} />
             </div>

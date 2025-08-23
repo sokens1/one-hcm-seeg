@@ -1,14 +1,22 @@
 import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, UserPlus, Building2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { LogOut, LogIn, UserPlus, Building2, Bell } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { isPreLaunch } from "@/utils/launchGate";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale/fr';
+import { useState } from "react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, isRecruiter, isCandidate, isAdmin } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const isAuthenticated = !!user;
   const preLaunch = isPreLaunch();
 

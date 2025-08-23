@@ -3,7 +3,7 @@ import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -259,6 +259,9 @@ export default function AdminUsers() {
         <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>{editing?.id ? "Modifier l'utilisateur" : "Créer un utilisateur"}</DialogTitle>
+            <DialogDescription>
+              {editing?.id ? "Modifiez les informations de l'utilisateur ci-dessous." : "Créez un nouvel utilisateur en remplissant les informations ci-dessous."}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={saveUser} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

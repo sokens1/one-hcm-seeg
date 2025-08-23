@@ -17,14 +17,35 @@ export function useApplicationDocuments(applicationId: string | undefined) {
     queryKey: ['documents', applicationId],
     queryFn: async () => {
       if (!applicationId) return [];
+
+      console.log('[DOCUMENTS DEBUG] Fetching for applicationId:', applicationId);
       
+      // Vérifier le token JWT actuel et les claims
+      const { data: { user } } = await supabase.auth.getUser();
+      const session = await supabase.auth.getSession();
+      console.log('[DOCUMENTS DEBUG] Current user:', user?.id);
+      const jwtClaims = session.data.session?.access_token ? JSON.parse(atob(session.data.session.access_token.split('.')[1])) : 'No token';
+      console.log('[DOCUMENTS DEBUG] JWT claims user_role:', jwtClaims?.user_role || 'MISSING');
+      console.log('[DOCUMENTS DEBUG] Full JWT claims:', jwtClaims);
+
       const { data, error } = await supabase
-        .from('documents')
+        .from('application_documents')
         .select('*')
-        .eq('application_id', applicationId)
-        .order('uploaded_at', { ascending: false });
+        .eq('application_id', applicationId);
+
+      console.log('[DOCUMENTS DEBUG] Query result data:', data);
+      console.log('[DOCUMENTS DEBUG] Query result error:', error);
+      console.log('[DOCUMENTS DEBUG] Documents count:', data?.length || 0);
       
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.log('[DOCUMENTS DEBUG] Error details:', error.code, error.message, error.details);
+      }
+
+      if (error) {
+        console.error('Error fetching documents:', error);
+        throw error;
+      }
+
       return data || [];
     },
     enabled: !!applicationId,
@@ -48,7 +69,7 @@ export function useCandidateDocuments() {
       if (appIds.length === 0) return [];
 
       const { data, error } = await supabase
-        .from('documents')
+        .from('application_documents')
         .select('*')
         .in('application_id', appIds)
         .order('uploaded_at', { ascending: false });

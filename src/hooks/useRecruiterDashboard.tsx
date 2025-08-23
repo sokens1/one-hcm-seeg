@@ -31,7 +31,14 @@ export function useRecruiterDashboard() {
       return { stats: null, activeJobs: [] };
     }
 
-    // Fetch ALL job offers with application counts and applicant ids (removed recruiter_id filter)
+    // Check user role
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    // Fetch ALL active job offers for recruiters and admins
     const { data: jobsData, error: jobsError } = await supabase
       .from('job_offers')
       .select(`
@@ -40,54 +47,63 @@ export function useRecruiterDashboard() {
         location,
         contract_type,
         created_at,
-        applications(id, status, created_at, candidate_id, job_offer_id)
+        recruiter_id
       `)
       .eq('status', 'active');
 
-    if (jobsError) throw jobsError;
+    // Récupérer TOUTES les candidatures avec la fonction optimisée
+    const { data: combinedEntries } = await supabase.rpc('get_all_recruiter_applications');
+    const allEntries = combinedEntries || [];
 
-    // Process jobs data
+    // Extraire les détails des candidatures
+    const allApplicationsData = (allEntries || []).map((app: any) => app.application_details);
+
+
+    if (jobsError) {
+      throw jobsError;
+    }
+
+    // Process jobs data with ALL applications
     const processedJobs: RecruiterJobOffer[] = (jobsData || []).map(job => {
-      const totalApplications = job.applications?.length || 0;
-      const newApplications = job.applications?.filter(app => {
+      // Find all applications for this job from the separate query
+      const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
+      
+      const totalApplications = jobApplications.length;
+      const newApplications = jobApplications.filter(app => {
         const appDate = new Date(app.created_at);
         const oneDayAgo = new Date();
         oneDayAgo.setDate(oneDayAgo.getDate() - 1);
         return appDate > oneDayAgo;
-      }).length || 0;
+      }).length;
 
       return {
         id: job.id,
         title: job.title,
         location: job.location,
         contract_type: job.contract_type,
-        candidate_count: totalApplications,
-        new_candidates: newApplications,
-        created_at: job.created_at
+        created_at: job.created_at,
+        recruiter_id: job.recruiter_id,
+        totalApplications,
+        newApplications,
+        candidate_count: totalApplications, // Alias pour le dashboard
+        new_candidates: newApplications,    // Alias pour le dashboard
       };
     });
 
-    // Gather unique candidates across all active jobs for this recruiter
-    const allApplications = (jobsData || []).flatMap(j => (j.applications || []));
-    const candidateIds = Array.from(new Set(allApplications.map(a => a.candidate_id).filter(Boolean)));
+    // Gather unique candidates across ALL applications
+    const candidateIds = Array.from(new Set((allApplicationsData || []).map(a => a.candidate_id).filter(Boolean)));
 
     // Calculate stats
     const totalJobs = processedJobs.length;
     const totalCandidates = candidateIds.length; // uniques
     const newCandidates = processedJobs.reduce((sum, job) => sum + job.new_candidates, 0);
 
-    // Count interviews scheduled (applications in 'incubation' status)
-    const { data: interviewsData } = await supabase
-      .from('applications')
-      .select('id', { count: 'exact' })
-      .in('job_offer_id', processedJobs.map(job => job.id))
-      .eq('status', 'incubation');
+    // Count interviews scheduled (applications in 'incubation' status) from ALL applications
+    const interviewsScheduled = (allApplicationsData || []).filter(app => app.status === 'incubation').length;
 
-    const interviewsScheduled = interviewsData?.length || 0;
-
-    // Compute multi-post applicants (candidates who applied to 2+ jobs among this recruiter's jobs)
+    // Compute multi-post applicants (candidates who applied to 2+ jobs)
     const applicationsByCandidate = new Map<string, Set<string>>();
-    for (const app of allApplications) {
+    for (const app of (allApplicationsData || [])) {
       const cid = app.candidate_id as string | undefined;
       const jid = app.job_offer_id as string | undefined;
       if (!cid || !jid) continue;
@@ -97,7 +113,7 @@ export function useRecruiterDashboard() {
     let multiPostCandidates = 0;
     applicationsByCandidate.forEach(set => { if (set.size > 1) multiPostCandidates++; });
 
-    // Compute gender distribution from candidate_profiles (robust normalization)
+    // Compute gender distribution from RPC data (robust normalization)
     let malePercent: number | undefined = 0;
     let femalePercent: number | undefined = 0;
 
@@ -113,31 +129,40 @@ export function useRecruiterDashboard() {
     };
 
     if (candidateIds.length > 0) {
-      const { data: profiles, error: profilesError } = await supabase
-        .from('candidate_profiles')
-        .select('user_id, gender')
-        .in('user_id', candidateIds as string[]);
+      // Extract gender data from RPC results instead of making a separate query
+      const candidateGenders = new Map<string, string | null>();
+      
+      // Get unique candidates with their gender from RPC data
+      (allEntries || []).forEach((app: any) => {
+        const candidateId = app.candidate_details?.id || app.application_details?.candidate_id;
+        const gender = app.candidate_details?.gender || app.candidate_details?.candidate_profiles?.gender; // Vérifier les deux emplacements
+        if (candidateId && !candidateGenders.has(candidateId)) {
+          candidateGenders.set(candidateId, gender);
+        }
+      });
 
-      if (profilesError) {
-        console.warn('[Dashboard] Could not fetch candidate profiles for gender stats:', profilesError.message);
-      } else if (profiles) {
-        // Ensure unique candidates and normalized genders
-        const normalized: Array<{ user_id: string; gender: 'Homme' | 'Femme' | null }> = profiles.map(p => ({
-          user_id: (p as any).user_id,
-          gender: normalizeGender((p as any).gender)
+      // Debug: Log gender data extraction
+      console.log('[DASHBOARD DEBUG] Full candidate_details object:', JSON.stringify(allEntries?.[0]?.candidate_details, null, 2));
+      console.log('[DASHBOARD DEBUG] Direct gender from candidate_details:', allEntries?.[0]?.candidate_details?.gender);
+      console.log('[DASHBOARD DEBUG] Candidate genders map:', candidateGenders);
+
+      // Normalize genders for unique candidates
+      const normalized: Array<{ user_id: string; gender: 'Homme' | 'Femme' | null }> = 
+        Array.from(candidateGenders.entries()).map(([userId, gender]) => ({
+          user_id: userId,
+          gender: normalizeGender(gender)
         }));
 
-        const withGender = normalized.filter(p => p.gender !== null);
-        const totalWithGender = withGender.length;
-        if (totalWithGender > 0) {
-          const maleCount = withGender.filter(p => p.gender === 'Homme').length;
-          const femaleCount = withGender.filter(p => p.gender === 'Femme').length;
-          malePercent = (maleCount / totalWithGender) * 100;
-          femalePercent = (femaleCount / totalWithGender) * 100;
-        } else {
-          malePercent = 0;
-          femalePercent = 0;
-        }
+      const withGender = normalized.filter(p => p.gender !== null);
+      const totalWithGender = withGender.length;
+      if (totalWithGender > 0) {
+        const maleCount = withGender.filter(p => p.gender === 'Homme').length;
+        const femaleCount = withGender.filter(p => p.gender === 'Femme').length;
+        malePercent = (maleCount / totalWithGender) * 100;
+        femalePercent = (femaleCount / totalWithGender) * 100;
+      } else {
+        malePercent = 0;
+        femalePercent = 0;
       }
     }
 

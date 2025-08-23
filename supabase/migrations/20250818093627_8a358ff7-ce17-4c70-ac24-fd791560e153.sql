@@ -207,26 +207,19 @@ CREATE POLICY "Candidates can view their own applications" ON public.application
 CREATE POLICY "Candidates can create applications" ON public.applications
   FOR INSERT WITH CHECK (candidate_id = auth.uid());
 
-CREATE POLICY "Candidates can update their own applications" ON public.applications
-  FOR UPDATE USING (candidate_id = auth.uid());
-
-CREATE POLICY "Recruiters can view applications for their jobs" ON public.applications
+CREATE POLICY "Recruiters and Admins can view all applications" ON public.applications
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM public.job_offers jo
-      JOIN public.users u ON u.id = auth.uid()
-      WHERE jo.id = job_offer_id 
-      AND (jo.recruiter_id = auth.uid() OR u.role = 'admin')
+      SELECT 1 FROM public.users
+      WHERE id = auth.uid() AND role IN ('recruteur', 'admin')
     )
   );
 
-CREATE POLICY "Recruiters can update applications for their jobs" ON public.applications
+CREATE POLICY "Recruiters and Admins can update all applications" ON public.applications
   FOR UPDATE USING (
     EXISTS (
-      SELECT 1 FROM public.job_offers jo
-      JOIN public.users u ON u.id = auth.uid()
-      WHERE jo.id = job_offer_id 
-      AND (jo.recruiter_id = auth.uid() OR u.role = 'admin')
+      SELECT 1 FROM public.users
+      WHERE id = auth.uid() AND role IN ('recruteur', 'admin')
     )
   );
 
@@ -340,3 +333,21 @@ INSERT INTO public.job_offers (id, recruiter_id, title, description, location, c
 ('660e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001', 'Directeur des Ressources Humaines', 'La SEEG recherche un Directeur RH expérimenté pour piloter la stratégie des ressources humaines et accompagner le développement de nos équipes.', 'Libreville', 'CDI', 'Ressources Humaines', 2000000, 3000000),
 ('660e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440001', 'Directeur des Systèmes d''Information', 'Poste de Directeur SI pour superviser l''évolution technologique et la transformation digitale de la SEEG.', 'Libreville', 'CDI', 'IT', 2500000, 3500000),
 ('660e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440001', 'Directeur Financier', 'Rejoignez la direction générale de la SEEG en tant que Directeur Financier pour piloter la stratégie financière.', 'Libreville', 'CDI', 'Finance', 3000000, 4000000);
+
+-- Ajouter quelques candidats supplémentaires pour les tests
+INSERT INTO public.users (id, email, role, first_name, last_name, phone) VALUES
+('550e8400-e29b-41d4-a716-446655440003', 'marie.martin@email.com', 'candidat', 'Marie', 'Martin', '+241 01 23 45 70'),
+('550e8400-e29b-41d4-a716-446655440004', 'pierre.durand@email.com', 'candidat', 'Pierre', 'Durand', '+241 01 23 45 71');
+
+-- Ajouter des profils candidats
+INSERT INTO public.candidate_profiles (id, user_id, current_position, current_department, years_experience, education, availability, expected_salary_min, expected_salary_max, skills) VALUES
+('770e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440002', 'Analyste RH', 'Ressources Humaines', 5, 'Master en GRH', 'Immédiate', 1500000, 2000000, ARRAY['Gestion RH', 'Recrutement', 'Formation']),
+('770e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440003', 'Chef de projet IT', 'Informatique', 8, 'Ingénieur Informatique', 'Dans 2 mois', 2000000, 2800000, ARRAY['Management', 'Systèmes d''information', 'Transformation digitale']),
+('770e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440004', 'Contrôleur de gestion', 'Finance', 6, 'Master Finance', 'Immédiate', 1800000, 2500000, ARRAY['Contrôle de gestion', 'Analyse financière', 'Reporting']);
+
+-- Ajouter des candidatures de test
+INSERT INTO public.applications (id, candidate_id, job_offer_id, cover_letter, status, motivation, availability_start, references) VALUES
+('880e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440002', '660e8400-e29b-41d4-a716-446655440000', 'Je suis très motivé pour rejoindre l''équipe RH de la SEEG...', 'candidature', 'Passionné par les ressources humaines et désireux de contribuer au développement de la SEEG.', '2024-03-01', 'Ancien manager: +241 01 11 11 11'),
+('880e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440003', '660e8400-e29b-41d4-a716-446655440001', 'Mon expérience en transformation digitale sera un atout...', 'incubation', 'Expert en systèmes d''information avec une vision stratégique.', '2024-05-01', 'CTO précédent: +241 02 22 22 22'),
+('880e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440004', '660e8400-e29b-41d4-a716-446655440002', 'Ma solide expérience en contrôle de gestion...', 'candidature', 'Spécialisé en analyse financière et reporting stratégique.', '2024-04-01', 'Directeur financier: +241 03 33 33 33'),
+('880e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440002', '660e8400-e29b-41d4-a716-446655440001', 'Bien que mon profil soit RH, je souhaite évoluer vers l''IT...', 'refuse', 'Reconversion professionnelle vers les systèmes d''information.', '2024-06-01', 'Formateur IT: +241 04 44 44 44');

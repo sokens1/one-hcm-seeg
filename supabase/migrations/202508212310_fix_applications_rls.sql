@@ -14,6 +14,10 @@ drop policy if exists "Recruiters can view applications for their jobs" on publi
 drop policy if exists "Recruiters can update applications for their jobs" on public.applications;
 
 -- Recreate safe policies without any direct read to public.applications in USING/with check
+drop policy if exists applications_select_candidate on public.applications;
+drop policy if exists applications_select_recruiter_or_admin on public.applications;
+drop policy if exists applications_insert_candidate on public.applications;
+drop policy if exists applications_update_candidate_or_recruiter_or_admin on public.applications;
 
 -- SELECT: candidates can see their own applications
 create policy applications_select_candidate
