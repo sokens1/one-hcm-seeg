@@ -12,7 +12,7 @@ import { useJobOffers } from "@/hooks/useJobOffers";
 
 export default function RecruiterJobs() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isRecruiter } = useAuth();
   const recruiterId = user?.id;
   const { data: jobs = [], isLoading, error } = useJobOffers();
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,12 +39,14 @@ export default function RecruiterJobs() {
             Gérez toutes vos offres d'emploi et suivez les candidatures
           </p>
         </div>
-        <Link to="/recruiter/jobs/new" className="w-full sm:w-auto">
-          <Button variant="hero" size="lg" className="gap-2 w-full sm:w-auto text-sm">
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-            Créer une offre
-          </Button>
-        </Link>
+        {isRecruiter && (
+          <Link to="/recruiter/jobs/new" className="w-full sm:w-auto">
+            <Button variant="hero" size="lg" className="gap-2 w-full sm:w-auto text-sm">
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+              Créer une offre
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Liste des offres */}
@@ -121,15 +123,17 @@ export default function RecruiterJobs() {
                             Voir le Pipeline
                           </Button>
                         </Link>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="gap-2 px-3"
-                          onClick={() => handleEditJob(job.id)}
-                        >
-                          <Edit className="w-4 h-4" />
-                          Modifier
-                        </Button>
+                        {isRecruiter && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="gap-2 px-3"
+                            onClick={() => handleEditJob(job.id)}
+                          >
+                            <Edit className="w-4 h-4" />
+                            Modifier
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -166,7 +170,9 @@ export default function RecruiterJobs() {
                         <Link to={`/recruiter/jobs/${job.id}/pipeline`}>
                           <Button variant="outline" size="sm">Voir</Button>
                         </Link>
-                        <Button variant="outline" size="sm" onClick={() => handleEditJob(job.id)}>Modifier</Button>
+                        {isRecruiter && (
+                          <Button variant="outline" size="sm" onClick={() => handleEditJob(job.id)}>Modifier</Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

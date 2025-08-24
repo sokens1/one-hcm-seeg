@@ -12,7 +12,7 @@ import { useAuth, SignUpMetadata } from "@/hooks/useAuth";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 
 export default function RecruiterProfile() {
-  const { user, updateUser, isUpdating } = useAuth();
+  const { user, updateUser, isUpdating, isRecruiter } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,6 +34,7 @@ export default function RecruiterProfile() {
       bio,
       role: user?.user_metadata?.role
     };
+    if (!isRecruiter) return; // extra safety
     const success = await updateUser(metadataToUpdate);
 
     if (success) {
@@ -80,26 +81,28 @@ export default function RecruiterProfile() {
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <CardTitle className="text-lg sm:text-xl">Informations</CardTitle>
-                {!isEditing ? (
-                  <Button variant="outline" onClick={() => setIsEditing(true)} className="gap-1 sm:gap-2 text-sm sm:text-base">
-                    <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                    Modifier
-                  </Button>
-                ) : (
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button variant="outline" size="sm" onClick={handleCancel} className="gap-1 sm:gap-2 text-xs sm:text-sm">
-                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
-                      Annuler
+                {isRecruiter && (
+                  !isEditing ? (
+                    <Button variant="outline" onClick={() => setIsEditing(true)} className="gap-1 sm:gap-2 text-sm sm:text-base">
+                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                      Modifier
                     </Button>
-                    <Button size="sm" onClick={handleSave} disabled={isUpdating} className="gap-1 sm:gap-2 text-xs sm:text-sm">
-                      {isUpdating ? (
-                        <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-                      ) : (
-                        <Save className="w-3 h-3 sm:w-4 sm:h-4" />
-                      )}
-                      Sauvegarder
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Button variant="outline" size="sm" onClick={handleCancel} className="gap-1 sm:gap-2 text-xs sm:text-sm">
+                        <X className="w-3 h-3 sm:w-4 sm:h-4" />
+                        Annuler
+                      </Button>
+                      <Button size="sm" onClick={handleSave} disabled={isUpdating} className="gap-1 sm:gap-2 text-xs sm:text-sm">
+                        {isUpdating ? (
+                          <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+                        ) : (
+                          <Save className="w-3 h-3 sm:w-4 sm:h-4" />
+                        )}
+                        Sauvegarder
+                      </Button>
+                    </div>
+                  )
                 )}
               </div>
             </CardHeader>

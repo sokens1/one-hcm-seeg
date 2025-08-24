@@ -266,14 +266,16 @@ export function useApplications() {
 
 export function useApplication(id: string | undefined) {
   const { user, isRecruiter, isAdmin } = useAuth();
-  
+  const isObserver = (useAuth() as any)?.isObserver as boolean | undefined;
+
   return useQuery({
     queryKey: ['application', id, user?.id],
     queryFn: async () => {
       if (!id || !user) return null;
 
       // Si l'utilisateur est un candidat, utiliser la fonction spécifique aux candidats
-      if (!isRecruiter && !isAdmin) {
+      // NOTE: les observateurs doivent être traités comme recruteurs (lecture seule)
+      if (!isRecruiter && !isAdmin && !isObserver) {
         const { data: rpcData, error: rpcError } = await supabase.rpc('get_candidate_application', {
           p_application_id: id
         });
@@ -297,7 +299,7 @@ export function useApplication(id: string | undefined) {
         return application as Application;
       }
 
-      // Pour les recruteurs/admins, utiliser l'ancienne logique
+      // Pour les recruteurs/admins/observateurs, utiliser la logique recruteur via RPC enrichie
       // Étape 1: récupérer l'offre liée pour connaître le job_offer_id
       let jobOfferId: string | null = null;
       try {
