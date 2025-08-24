@@ -164,7 +164,7 @@ export default function Auth() {
           } else if (isRecruiter || isObserver) {
             navigate('/recruiter/dashboard');
           } else {
-            navigate('/candidate/dashboard?view=jobs');
+            navigate('/candidate/dashboard');
           }
         } catch {
           const rawRole = String(data.user.user_metadata?.role ?? '').toLowerCase();
@@ -173,7 +173,7 @@ export default function Auth() {
           } else if (rawRole === 'recruteur' || rawRole === 'recruiter' || rawRole === 'observateur' || rawRole === 'observer') {
             navigate('/recruiter/dashboard');
           } else {
-            navigate('/candidate/dashboard?view=jobs');
+            navigate('/candidate/dashboard');
           }
         }
       }
