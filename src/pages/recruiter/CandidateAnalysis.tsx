@@ -21,6 +21,21 @@ import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
+const getBadgeVariant = (status: Application['status']) => {
+  switch (status) {
+    case 'candidature':
+      return 'default';
+    case 'incubation':
+      return 'secondary';
+    case 'embauche':
+      return 'success';
+    case 'refuse':
+      return 'destructive';
+    default:
+      return 'default';
+  }
+};
+
 const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, label: string, value?: string | null, isLink?: boolean }) => {
   if (!value) return null;
   return (
@@ -399,11 +414,12 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
                     <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                       <Button size="sm" variant="outline" onClick={async () => {
                         try {
-                          const finalUrl = await getFileUrl(doc.file_url);
+                          // Utiliser directement getPublicUrl au lieu de passer par getFileUrl
+                          const { data } = supabase.storage
+                            .from('application-documents')
+                            .getPublicUrl(doc.file_url);
                           
-                          // Ouvrir directement la prévisualisation sans vérification HEAD
-                          // car les permissions RLS peuvent bloquer la vérification mais pas l'accès réel
-                          setPreviewModal({ isOpen: true, fileUrl: finalUrl, fileName: doc.file_name });
+                          setPreviewModal({ isOpen: true, fileUrl: data.publicUrl, fileName: doc.file_name });
                         } catch (error) {
                           console.error('Error getting preview URL:', error);
                           toast({
@@ -482,10 +498,15 @@ export default function CandidateAnalysis() {
       return filePath;
     }
 
-    // Utiliser l'API Supabase pour obtenir l'URL publique correcte
+    // Pour les buckets publics, on utilise getPublicUrl.
     const { data } = supabase.storage
       .from('application-documents')
       .getPublicUrl(filePath);
+
+    if (!data.publicUrl) {
+      console.error(`Error getting public URL for path: ${filePath}`);
+      throw new Error('Impossible de générer le lien public du document.');
+    }
 
     return data.publicUrl;
   };
@@ -561,6 +582,10 @@ export default function CandidateAnalysis() {
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-tight">{candidateName}</h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">Candidature pour le poste de {application.job_offers?.title}</p>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">Candidature reçue le {format(new Date(application.created_at), 'PPP', { locale: fr })}</p>
+          <div className="flex items-center mt-2">
+            <p className="text-xs sm:text-sm text-muted-foreground mr-2">Statut:</p>
+            <Badge variant={getBadgeVariant(application.status)}>{application.status}</Badge>
+          </div>
         </header>
 
         <Tabs defaultValue="info" className="w-full">
