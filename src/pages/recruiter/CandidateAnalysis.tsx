@@ -92,9 +92,6 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
   // Récupérer les questions métier spécifiques pour ce poste
   const metierQuestions = getMetierQuestionsForTitle(jobTitle);
   
-  console.log('[MTP DEBUG] mtpAnswers received:', mtpAnswers);
-  console.log('[MTP DEBUG] jobTitle:', jobTitle);
-  console.log('[MTP DEBUG] metierQuestions length:', metierQuestions.length);
   
   if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
 
@@ -124,7 +121,6 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
     // Récupérer toutes les réponses métier depuis le tableau
     const metierAnswers = mtpAnswers.metier || [];
     
-    console.log('[MTP DEBUG] metierAnswers from array:', metierAnswers);
     
     return (
       <div className="mb-6">
@@ -151,7 +147,6 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
     // Récupérer toutes les réponses talent depuis le tableau
     const talentAnswers = (mtpAnswers.talent || []).filter(answer => answer && answer.trim() !== '');
     
-    console.log('[MTP DEBUG] talentAnswers from array:', talentAnswers);
     
     return (
       <div className="mb-6">
@@ -178,7 +173,6 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
     // Récupérer toutes les réponses paradigme depuis le tableau
     const paradigmeAnswers = (mtpAnswers.paradigme || []).filter(answer => answer && answer.trim() !== '');
     
-    console.log('[MTP DEBUG] paradigmeAnswers from array:', paradigmeAnswers);
     
     return (
       <div className="mb-4">
@@ -218,6 +212,17 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
 const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl: string, fileName: string, isOpen: boolean, onClose: () => void }) => {
   const isPdf = fileName.toLowerCase().endsWith('.pdf');
   const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(fileName);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (!isOpen) {
+      setError(null);
+      // Nettoyer l'URL Blob quand le modal se ferme
+      if (fileUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(fileUrl);
+      }
+    }
+  }, [isOpen, fileUrl]);
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -234,24 +239,32 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
-          {isPdf ? (
+          {error ? (
+            <div className="flex flex-col items-center justify-center h-full text-red-500 space-y-2">
+              <p className="text-sm">Erreur lors du chargement du document:</p>
+              <p className="text-xs">{error}</p>
+            </div>
+          ) : isPdf ? (
             <embed
               src={fileUrl}
               type="application/pdf"
               className="w-full h-full"
               title={`Prévisualisation de ${fileName}`}
+              onError={() => setError("Impossible de charger le PDF. Vérifiez que vous avez les permissions nécessaires.")}
             />
           ) : isImage ? (
             <img
               src={fileUrl}
               alt={fileName}
               className="w-full h-full object-contain"
+              onError={() => setError("Impossible de charger l'image. Vérifiez que vous avez les permissions nécessaires.")}
             />
           ) : (
             <iframe
               src={`https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`}
               className="w-full h-full border-0"
               title={`Prévisualisation de ${fileName}`}
+              onError={() => setError("Impossible de charger le document. Vérifiez que vous avez les permissions nécessaires.")}
             />
           )}
         </div>
@@ -260,20 +273,22 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   );
 };
 
-const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => string, downloadFile: (path: string, name: string) => void }) => {
+const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void }) => {
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean, fileUrl: string, fileName: string }>({
     isOpen: false,
     fileUrl: '',
     fileName: ''
   });
 
-  console.log('[DOCUMENTS DEBUG] DocumentsTab props:', { documents, isLoading, error });
-  console.log('[DOCUMENTS DEBUG] Documents array:', documents);
-  console.log('[DOCUMENTS DEBUG] Documents count:', documents?.length || 0);
   
-  const handlePreview = (fileUrl: string, fileName: string) => {
-    console.log('[DOCUMENTS DEBUG] Preview requested for:', { fileUrl, fileName });
-    setPreviewModal({ isOpen: true, fileUrl, fileName });
+  const handlePreview = async (fileUrl: string, fileName: string) => {
+    try {
+      const absUrl = await getFileUrl(fileUrl);
+      setPreviewModal({ isOpen: true, fileUrl: absUrl, fileName });
+    } catch (error) {
+      console.error('Error getting preview URL:', error);
+      alert('Erreur lors de la prévisualisation. Veuillez réessayer.');
+    }
   };
 
   return (
@@ -295,7 +310,11 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
             <div>
               <p className="text-xs text-muted-foreground mb-3">{documents.length} document(s) trouvé(s)</p>
               {documents.map((doc) => {
-                console.log('[DOCUMENTS DEBUG] Rendering document:', doc);
+                console.log('[DOCUMENTS DEBUG] Document:', doc);
+                console.log('[DOCUMENTS DEBUG] doc.file_url:', doc.file_url);
+                console.log('[DOCUMENTS DEBUG] doc.file_name:', doc.file_name);
+                console.log('[DOCUMENTS DEBUG] doc.id:', doc.id);
+                
                 return (
                   <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
@@ -304,13 +323,44 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
                         <p className="font-medium truncate text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</p>
                         <p className="text-xs text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
                         <p className="text-xs text-muted-foreground truncate">ID: {doc.id}</p>
+                        <p className="text-xs text-muted-foreground truncate">URL: {doc.file_url}</p>
                       </div>
                     </div>
                     <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-                      <Button size="sm" variant="outline" onClick={() => handlePreview(doc.file_url, doc.file_name)} className="p-1 sm:p-2">
+                      <Button size="sm" variant="outline" onClick={async () => {
+                        console.log('[BUTTON DEBUG] Eye button clicked for:', doc.file_name);
+                        const finalUrl = await getFileUrl(doc.file_url);
+                        console.log('[BUTTON DEBUG] Opening URL:', finalUrl);
+                        
+                        // Test si le fichier existe avant d'ouvrir
+                        try {
+                          const response = await fetch(finalUrl, { method: 'HEAD' });
+                          console.log('[FILE CHECK] HTTP Status:', response.status);
+                          console.log('[FILE CHECK] Response OK:', response.ok);
+                          
+                          if (!response.ok) {
+                            console.error('[FILE CHECK] File not found or access denied');
+                            if (response.status === 400) {
+                              alert(`Erreur 400: Le bucket 'application-documents' n'est pas public ou mal configuré.\n\nSolution:\n1. Allez dans Supabase Dashboard > Storage\n2. Cliquez sur le bucket 'application-documents'\n3. Activez 'Public bucket' dans les paramètres\n4. Ou vérifiez les politiques RLS\n\nURL: ${finalUrl}`);
+                            } else {
+                              alert(`Erreur ${response.status}: Fichier non trouvé ou accès refusé.\nURL: ${finalUrl}`);
+                            }
+                            return;
+                          }
+                        } catch (error) {
+                          console.error('[FILE CHECK] Network error:', error);
+                          alert(`Erreur réseau: ${error.message}\nURL: ${finalUrl}`);
+                          return;
+                        }
+                        
+                        window.open(finalUrl, '_blank');
+                      }} className="p-1 sm:p-2">
                         <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => downloadFile(doc.file_url, doc.file_name)} className="p-1 sm:p-2">
+                      <Button size="sm" variant="outline" onClick={() => {
+                        console.log('[BUTTON DEBUG] Download button clicked for:', doc.file_name);
+                        downloadFile(doc.file_url, doc.file_name);
+                      }} className="p-1 sm:p-2">
                         <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
                     </div>
@@ -356,55 +406,79 @@ export default function CandidateAnalysis() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
-  console.log('[CANDIDATE ANALYSIS DEBUG] Component loaded with id:', id);
-  
   const { data: application, isLoading, error } = useApplication(id);
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
   const { updateApplicationStatus } = useRecruiterApplications(application?.job_offer_id);
-  
-  console.log('[CANDIDATE ANALYSIS DEBUG] Application data:', application);
-  console.log('[CANDIDATE ANALYSIS DEBUG] Documents data:', documents);
-  console.log('[CANDIDATE ANALYSIS DEBUG] Loading states:', { isLoading, error });
 
   const jobId = searchParams.get('jobId') || application?.job_offer_id;
   const jobTitle = application?.job_offers?.title;
 
-  const getFileUrl = (filePath: string) => {
-    // Si le chemin est déjà une URL complète, la retourner telle quelle
-    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
-      return filePath;
+  // Helper pour garantir une URL absolue Supabase vers le bucket application-documents
+  const ensureAbsoluteUrl = (path: string) => {
+    console.log('[DOC URL DEBUG] === ensureAbsoluteUrl START ===');
+    console.log('[DOC URL DEBUG] Input path:', path);
+    console.log('[DOC URL DEBUG] Path type:', typeof path);
+    console.log('[DOC URL DEBUG] VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
+    
+    if (!path) {
+      console.log('[DOC URL DEBUG] Empty path, returning as-is');
+      return path;
     }
-    // Sinon, générer l'URL publique depuis le bucket correct
-    const { data } = supabase.storage.from('application-documents').getPublicUrl(filePath);
-    return data.publicUrl;
+    
+    if (path.startsWith('http')) {
+      console.log('[DOC URL DEBUG] Already absolute URL, returning as-is');
+      return path;
+    }
+    
+    const base = import.meta.env.VITE_SUPABASE_URL?.replace(/\/$/, '') || '';
+    let p = String(path).trim();
+    console.log('[DOC URL DEBUG] Base URL:', base);
+    console.log('[DOC URL DEBUG] Trimmed path:', p);
+    
+    // Nettoyage des slashes de début
+    p = p.replace(/^\/+/, '');
+    console.log('[DOC URL DEBUG] Path after slash cleanup:', p);
+    
+    let finalUrl = '';
+    
+    // Si on reçoit déjà un chemin public complet stockage
+    if (p.startsWith('storage/v1/object/public/')) {
+      finalUrl = `${base}/${p}`;
+      console.log('[DOC URL DEBUG] Case: storage/v1/object/public/ prefix detected');
+    }
+    // Si le chemin inclut déjà le nom du bucket
+    else if (p.startsWith('application-documents/')) {
+      finalUrl = `${base}/storage/v1/object/public/${p}`;
+      console.log('[DOC URL DEBUG] Case: application-documents/ prefix detected');
+    }
+    // Cas par défaut: ajouter le bucket
+    else {
+      finalUrl = `${base}/storage/v1/object/public/application-documents/${p}`;
+      console.log('[DOC URL DEBUG] Case: default, adding bucket prefix');
+    }
+    
+    console.log('[DOC URL DEBUG] Final URL:', finalUrl);
+    console.log('[DOC URL DEBUG] === ensureAbsoluteUrl END ===');
+    return finalUrl;
   };
 
-  const downloadFile = async (filePath: string, fileName: string) => {
-    try {
-      // Extraire le chemin relatif si c'est une URL complète
-      const relativePath = filePath.includes('/storage/v1/object/public/application-documents/') 
-        ? filePath.split('/storage/v1/object/public/application-documents/')[1]
-        : filePath;
-      
-      const { data, error } = await supabase.storage
-        .from('application-documents')
-        .download(relativePath);
-      
-      if (error) throw error;
-      
-      const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+  const getFileUrl = async (filePath: string) => {
+    return ensureAbsoluteUrl(filePath);
+  };
+
+  // Nettoie une URL Blob si c'en est une
+  const cleanupBlobUrl = (url: string) => {
+    if (url && url.startsWith('blob:')) {
       URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Erreur lors du téléchargement:', error);
-      // Fallback: ouvrir dans un nouvel onglet
-      window.open(getFileUrl(filePath), '_blank');
     }
+  };
+
+  const downloadFile = async (fileUrl: string, fileName: string) => {
+    console.log('[DOWNLOAD DEBUG] Attempting to download:', fileName);
+    console.log('[DOWNLOAD DEBUG] File URL:', fileUrl);
+    const finalUrl = ensureAbsoluteUrl(fileUrl);
+    console.log('[DOWNLOAD DEBUG] Final URL:', finalUrl);
+    window.open(finalUrl, '_blank');
   };
 
   const handleStatusChange = async (newStatus: Application['status']) => {

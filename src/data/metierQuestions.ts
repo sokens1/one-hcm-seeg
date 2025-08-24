@@ -186,14 +186,6 @@ const metierQuestionsByOfferNormalized: Record<string, string[]> = {
 export function getMetierQuestionsForTitle(jobTitle?: string): string[] {
   if (!jobTitle) return defaultMetierQuestions;
   const key = normalize(jobTitle);
-  console.log('[MetierQuestions] Job title:', jobTitle);
-  console.log('[MetierQuestions] Normalized key:', key);
-  console.log('[MetierQuestions] Available keys:', Object.keys(metierQuestionsByOfferNormalized));
-  console.log('[MetierQuestions] Looking for exact match:', key);
-  Object.keys(metierQuestionsByOfferNormalized).forEach(availableKey => {
-    console.log('[MetierQuestions] Available key:', availableKey, '- Match:', availableKey === key);
-  });
   const questions = metierQuestionsByOfferNormalized[key] ?? defaultMetierQuestions;
-  console.log('[MetierQuestions] Found specific questions:', questions !== defaultMetierQuestions);
   return questions;
 }

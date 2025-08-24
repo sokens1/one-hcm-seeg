@@ -18,35 +18,22 @@ export function useApplicationDocuments(applicationId: string | undefined) {
     queryFn: async () => {
       if (!applicationId) return [];
 
-      console.log('[DOCUMENTS DEBUG] Fetching for applicationId:', applicationId);
-      
-      // Vérifier le token JWT actuel et les claims
-      const { data: { user } } = await supabase.auth.getUser();
-      const session = await supabase.auth.getSession();
-      console.log('[DOCUMENTS DEBUG] Current user:', user?.id);
-      const jwtClaims = session.data.session?.access_token ? JSON.parse(atob(session.data.session.access_token.split('.')[1])) : 'No token';
-      console.log('[DOCUMENTS DEBUG] JWT claims user_role:', jwtClaims?.user_role || 'MISSING');
-      console.log('[DOCUMENTS DEBUG] Full JWT claims:', jwtClaims);
-
-      const { data, error } = await supabase
+      // 1) Récupérer les enregistrements de documents
+      const { data: documents, error } = await supabase
         .from('application_documents')
         .select('id, application_id, document_type, file_name, file_url, file_size, uploaded_at')
         .eq('application_id', applicationId);
 
-      console.log('[DOCUMENTS DEBUG] Query result data:', data);
-      console.log('[DOCUMENTS DEBUG] Query result error:', error);
-      console.log('[DOCUMENTS DEBUG] Documents count:', data?.length || 0);
-      
       if (error) {
-        console.log('[DOCUMENTS DEBUG] Error details:', error.code, error.message, error.details);
-      }
-
-      if (error) {
-        console.error('Error fetching documents:', error);
+        console.error('Error fetching document records:', error);
         throw error;
       }
 
-      return data || [];
+      if (!documents || documents.length === 0) return [];
+
+      // Utiliser directement les URLs publiques stockées en DB
+      // Plus besoin d'appel RPC car les URLs sont déjà correctes
+      return documents;
     },
     enabled: !!applicationId,
   });
