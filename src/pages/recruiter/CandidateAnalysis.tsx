@@ -2,6 +2,7 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useApplication, useRecruiterApplications, Application } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
+import { getMetierQuestionsForTitle } from "@/data/metierQuestions";
 import { supabase } from "@/integrations/supabase/client";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, GraduationCap, Star, Info, Linkedin, Link as LinkIcon, FileText, Eye, Download, Users, X } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, GraduationCap, Star, Info, FileText, Eye, Download, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
@@ -45,14 +46,24 @@ const ProfileTab = ({ application }: { application: Application }) => {
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><User className="w-4 h-4 sm:w-5 sm:h-5"/> Informations Personnelles</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
-        <InfoRow icon={User} label="Prénom" value={user?.first_name} />
-        <InfoRow icon={User} label="Nom" value={user?.last_name} />
-        <InfoRow icon={Mail} label="Email" value={user?.email} />
-        <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />
-        <InfoRow icon={Calendar} label="Date de naissance" value={user?.date_of_birth ? format(new Date(user.date_of_birth), 'PPP', { locale: fr }) : undefined} />
-        <InfoRow icon={Info} label="Sexe" value={profile?.gender} />
-        <InfoRow icon={Briefcase} label="Poste actuel" value={profile?.current_position} />
+      <CardContent className="p-4 sm:p-6">
+        {/* Layout horizontal avec grid responsive */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="space-y-3 sm:space-y-4">
+            <InfoRow icon={User} label="Prénom" value={user?.first_name} />
+            <InfoRow icon={User} label="Nom" value={user?.last_name} />
+            <InfoRow icon={Mail} label="Email" value={user?.email} />
+          </div>
+          <div className="space-y-3 sm:space-y-4">
+            <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />
+            <InfoRow icon={Calendar} label="Date de naissance" value={user?.date_of_birth ? format(new Date(user.date_of_birth), 'PPP', { locale: fr }) : undefined} />
+            <InfoRow icon={Info} label="Sexe" value={profile?.gender} />
+          </div>
+          <div className="space-y-3 sm:space-y-4">
+            <InfoRow icon={Briefcase} label="Poste actuel" value={profile?.current_position} />
+            <InfoRow icon={MapPin} label="Adresse" value={profile?.address} />
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
@@ -77,44 +88,128 @@ const ReferencesTab = ({ application }: { application: Application }) => {
   );
 };
 
-const MtpAnswersDisplay = ({ mtpAnswers }) => {
+const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
+  // Récupérer les questions métier spécifiques pour ce poste
+  const metierQuestions = getMetierQuestionsForTitle(jobTitle);
+  
+  console.log('[MTP DEBUG] mtpAnswers received:', mtpAnswers);
+  console.log('[MTP DEBUG] jobTitle:', jobTitle);
+  console.log('[MTP DEBUG] metierQuestions length:', metierQuestions.length);
+  
   if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
 
-  const renderAnswers = (title, answers) => (
-    <div>
-      <h4 className="font-semibold text-sm sm:text-base mb-2">{title}</h4>
-      {answers && answers.length > 0 ? (
-        <ul className="list-disc list-inside pl-3 sm:pl-4 text-xs sm:text-sm text-muted-foreground">
-          {answers.map((answer, index) => <li key={index}>{answer}</li>)}
-        </ul>
-      ) : <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse.</p>}
-    </div>
-  );
+  // Questions Talent fixes (7 questions)
+  const talentQuestions = [
+    "1. Décrivez une situation où votre créativité et innovation ont permis de proposer des solutions stratégiques pour optimiser des processus, comme réduire l'utilisation de gasoil dans un système énergétique, en inspirant vos équipes dirigeantes.",
+    "2. Comment démontrez-vous votre initiative et votre autonomie dans des tâches imprévues à haut niveau, par exemple lors d'une campagne de recouvrement d'impayés ou de réparation critique d'équipements, en mobilisant des ressources exécutives ?",
+    "3. Fournissez un exemple où votre raisonnement analytique a aidé à synthétiser des informations complexes, analyser des allégations de détournements ou des données sur la performance des réseaux, pour orienter des décisions board-level.",
+    "4. Expliquez comment vous gérez le stress et les crises à un niveau dirigeant, par exemple en maintenant votre leadership lors de tensions récurrentes comme des délestages électriques affectant populations et industries.",
+    "5. Décrivez votre capacité à prendre des décisions en situations difficiles, comme allouer des ressources limitées pour une maintenance rigoureuse des infrastructures existantes, en alignant avec la vision globale de l'entreprise.",
+    "6. Comment votre aptitude à l'apprentissage continu vous a permis de vous perfectionner en technologies émergentes, par exemple les compteurs connectés pour la gestion des réseaux au Gabon, et de cascader cela à vos équipes de direction ?",
+    "7. Partagez une expérience où votre travail en équipe a favorisé la coordination à un niveau exécutif, par exemple dans un dialogue constructif avec des parties prenantes comme l'État ou des associations de consommateurs."
+  ];
+
+  // Questions Paradigme fixes (7 questions)
+  const paradigmeQuestions = [
+    "1. Comment alignez-vous votre vision professionnelle en tant que dirigeant avec une approche holistique de renaissance d'une entreprise comme la SEEG, combinant rigueur managériale et investissements stratégiques pour le développement national du Gabon ?",
+    "2. Décrivez comment vous avez manifesté votre intégrité professionnelle ainsi que vos valeurs de transparence et de gouvernance renforcée dans un précédent rôle, par exemple en gérant un dilemme éthique ou en prenant une décision difficile alignée avec vos valeurs éthiques.",
+    "3. Expliquez votre adhésion à un paradigme de transition énergétique durable, en promouvant des énergies renouvelables et des standards de service comparables aux pays développés d'ici 2035, sous votre direction stratégique.",
+    "4. Comment votre paradigme professionnel soutient l'implication des parties prenantes, comme la participation active des consommateurs et la motivation des employés dans une restructuration organisationnelle à grande échelle ?",
+    "5. Fournissez un exemple où vous avez promu un modèle économique viable, en résolvant des impayés et en appliquant une tarification sociale réaliste pour un accès universel à l'eau et l'électricité, en tant que dirigeant financier.",
+    "6. Décrivez comment vous anticipez et gérez le changement dans un paradigme d'autosuffisance énergétique et hydrique, en visant une capacité de 2 à 4 Gigawatts à horizon 2030 au Gabon, via des roadmaps exécutives.",
+    "7. Expliquez votre alignement avec un paradigme d'innovation et d'excellence régionale, en positionnant une société comme la SEEG comme référence en Afrique centrale pour la performance et la durabilité, sous votre vision leadership."
+  ];
+
+  const renderMetierAnswers = () => {
+    // Récupérer toutes les réponses métier depuis le tableau
+    const metierAnswers = mtpAnswers.metier || [];
+    
+    console.log('[MTP DEBUG] metierAnswers from array:', metierAnswers);
+    
+    return (
+      <div className="mb-6">
+        <h4 className="font-semibold text-sm sm:text-base mb-3">Questions Métier ({metierAnswers.length}/7 réponses)</h4>
+        {metierAnswers.length > 0 ? (
+          <div className="space-y-3">
+            {metierAnswers.map((answer, index) => (
+              <div key={index} className="border-l-2 border-blue-500 pl-3">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
+                  {metierQuestions[index] || `Question ${index + 1}`}
+                </p>
+                <p className="text-xs sm:text-sm text-foreground">{answer}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse aux questions métier.</p>
+        )}
+      </div>
+    );
+  };
+
+  const renderTalentAnswers = () => {
+    // Récupérer toutes les réponses talent depuis le tableau
+    const talentAnswers = (mtpAnswers.talent || []).filter(answer => answer && answer.trim() !== '');
+    
+    console.log('[MTP DEBUG] talentAnswers from array:', talentAnswers);
+    
+    return (
+      <div className="mb-6">
+        <h4 className="font-semibold text-sm sm:text-base mb-3">Questions Talent ({talentAnswers.length}/7 réponses)</h4>
+        {talentAnswers.length > 0 ? (
+          <div className="space-y-3">
+            {talentAnswers.map((answer, index) => (
+              <div key={index} className="border-l-2 border-green-500 pl-3">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
+                  {talentQuestions[index] || `Question ${index + 1}`}
+                </p>
+                <p className="text-xs sm:text-sm text-foreground">{answer}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse aux questions talent.</p>
+        )}
+      </div>
+    );
+  };
+
+  const renderParadigmeAnswers = () => {
+    // Récupérer toutes les réponses paradigme depuis le tableau
+    const paradigmeAnswers = (mtpAnswers.paradigme || []).filter(answer => answer && answer.trim() !== '');
+    
+    console.log('[MTP DEBUG] paradigmeAnswers from array:', paradigmeAnswers);
+    
+    return (
+      <div className="mb-4">
+        <h4 className="font-semibold text-sm sm:text-base mb-3">Questions Paradigme ({paradigmeAnswers.length}/7 réponses)</h4>
+        {paradigmeAnswers.length > 0 ? (
+          <div className="space-y-3">
+            {paradigmeAnswers.map((answer, index) => (
+              <div key={index} className="border-l-2 border-purple-500 pl-3">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
+                  {paradigmeQuestions[index] || `Question ${index + 1}`}
+                </p>
+                <p className="text-xs sm:text-sm text-foreground">{answer}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse aux questions paradigme.</p>
+        )}
+      </div>
+    );
+  };
 
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="text-base sm:text-lg">Réponses au Questionnaire MTP</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
-        {renderAnswers("Métier", mtpAnswers.metier)}
-        {renderAnswers("Talent", mtpAnswers.talent)}
-        {renderAnswers("Paradigme", mtpAnswers.paradigme)}
-      </CardContent>
-    </Card>
-  );
-};
-
-// Restored Evaluation Protocol as requested
-const EvaluationProtocol = () => {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Protocole 1</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">Le module Evaluation est en cours d'intégration.</p>
-        {/* The original structure will be restored here once defined */}
+      <CardContent className="space-y-4 p-4 sm:p-6">
+        {renderMetierAnswers()}
+        {renderTalentAnswers()}
+        {renderParadigmeAnswers()}
       </CardContent>
     </Card>
   );
@@ -172,8 +267,12 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
     fileName: ''
   });
 
-  const handlePreview = (filePath: string, fileName: string) => {
-    const fileUrl = getFileUrl(filePath);
+  console.log('[DOCUMENTS DEBUG] DocumentsTab props:', { documents, isLoading, error });
+  console.log('[DOCUMENTS DEBUG] Documents array:', documents);
+  console.log('[DOCUMENTS DEBUG] Documents count:', documents?.length || 0);
+  
+  const handlePreview = (fileUrl: string, fileName: string) => {
+    console.log('[DOCUMENTS DEBUG] Preview requested for:', { fileUrl, fileName });
     setPreviewModal({ isOpen: true, fileUrl, fileName });
   };
 
@@ -185,29 +284,45 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
         </CardHeader>
         <CardContent className="space-y-2 sm:space-y-3 p-4 sm:p-6">
           {isLoading ? (
-            <p className="text-xs sm:text-sm">Chargement...</p>
-          ) : error ? (<p className="text-red-500 text-xs sm:text-sm">Erreur de chargement des documents.</p>) : documents && documents.length > 0 ? (
-            documents.map((doc) => (
-              <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
-                  <div className="overflow-hidden min-w-0">
-                    <p className="font-medium truncate text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</p>
-                    <p className="text-xs text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
+            <p className="text-xs sm:text-sm">Chargement des documents...</p>
+          ) : error ? (
+            <div className="text-red-500 text-xs sm:text-sm">
+              <p>Erreur de chargement des documents:</p>
+              <p className="text-xs mt-1">{error.message}</p>
+              <p className="text-xs mt-1">Vérifiez la console pour plus de détails.</p>
+            </div>
+          ) : documents && documents.length > 0 ? (
+            <div>
+              <p className="text-xs text-muted-foreground mb-3">{documents.length} document(s) trouvé(s)</p>
+              {documents.map((doc) => {
+                console.log('[DOCUMENTS DEBUG] Rendering document:', doc);
+                return (
+                  <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
+                      <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                      <div className="overflow-hidden min-w-0">
+                        <p className="font-medium truncate text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</p>
+                        <p className="text-xs text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
+                        <p className="text-xs text-muted-foreground truncate">ID: {doc.id}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+                      <Button size="sm" variant="outline" onClick={() => handlePreview(doc.file_url, doc.file_name)} className="p-1 sm:p-2">
+                        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => downloadFile(doc.file_url, doc.file_name)} className="p-1 sm:p-2">
+                        <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-                  <Button size="sm" variant="outline" onClick={() => handlePreview(doc.file_path, doc.file_name)} className="p-1 sm:p-2">
-                    <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => downloadFile(doc.file_path, doc.file_name)} className="p-1 sm:p-2">
-                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                </div>
-              </div>
-            ))
+                );
+              })}
+            </div>
           ) : (
-            <p className="text-center text-xs sm:text-sm text-muted-foreground py-4">Aucun document.</p>
+            <div className="text-center text-xs sm:text-sm text-muted-foreground py-4">
+              <p>Aucun document trouvé.</p>
+              <p className="text-xs mt-2">Les documents peuvent ne pas être visibles en raison de permissions ou d'un problème de récupération.</p>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -219,6 +334,20 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
         onClose={() => setPreviewModal({ isOpen: false, fileUrl: '', fileName: '' })}
       />
     </>
+  );
+};
+
+const EvaluationProtocol = () => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Protocole 1</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">Le module Evaluation est en cours d'intégration.</p>
+        {/* The original structure will be restored here once defined */}
+      </CardContent>
+    </Card>
   );
 };
 
@@ -238,6 +367,7 @@ export default function CandidateAnalysis() {
   console.log('[CANDIDATE ANALYSIS DEBUG] Loading states:', { isLoading, error });
 
   const jobId = searchParams.get('jobId') || application?.job_offer_id;
+  const jobTitle = application?.job_offers?.title;
 
   const getFileUrl = (filePath: string) => {
     // Si le chemin est déjà une URL complète, la retourner telle quelle
@@ -346,7 +476,7 @@ export default function CandidateAnalysis() {
               <ProfileTab application={application} />
               <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} />
               <ReferencesTab application={application} />
-              <MtpAnswersDisplay mtpAnswers={application.mtp_answers} />
+              <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} />
             </div>
           </TabsContent>
           <TabsContent value="evaluation" className="mt-4 sm:mt-6">

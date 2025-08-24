@@ -190,10 +190,10 @@ export default function CreateJob() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="CDI avec période d'essai">CDI avec période d'essai</SelectItem>
-                        <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
-                        <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
-                        <SelectItem value="Stage">Stage</SelectItem>
-                        <SelectItem value="Freelance">Freelance</SelectItem>
+                        <SelectItem value="CDI">CDI </SelectItem>
+                        <SelectItem value="CDD">CDD </SelectItem>
+                        {/* <SelectItem value="Stage">Stage</SelectItem>
+                        <SelectItem value="Freelance">Freelance</SelectItem>*/}
                       </SelectContent>
                     </Select>
                   </div>

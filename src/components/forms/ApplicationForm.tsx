@@ -264,13 +264,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       try {
         const { data, error } = await supabase
           .from('application_documents')
-          .select('document_type, file_name, file_path, file_size')
+          .select('document_type, file_name, file_url, file_size')
           .eq('application_id', applicationId);
         if (error) throw error;
         if (cancelled || !data) return;
 
         const makeUploaded = (d: any): UploadedFile => ({
-          path: d.file_path,
+          path: d.file_url,
           name: d.file_name,
           size: d.file_size ?? 0,
           type: ''
@@ -325,7 +325,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           .update({
             reference_contacts: formData.references,
             mtp_answers: {
-              metier: [formData.metier1, formData.metier2, formData.metier3],
+              metier: [formData.metier1, formData.metier2, formData.metier3, formData.metier4, formData.metier5, formData.metier6, formData.metier7],
               talent: [formData.talent1, formData.talent2, formData.talent3, formData.talent4, formData.talent5, formData.talent6, formData.talent7],
               paradigme: [formData.paradigme1, formData.paradigme2, formData.paradigme3, formData.paradigme4, formData.paradigme5, formData.paradigme6, formData.paradigme7],
             },
@@ -339,7 +339,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           job_offer_id: jobId as string,
           ref_contacts: formData.references,
           mtp_answers: {
-            metier: [formData.metier1, formData.metier2, formData.metier3],
+            metier: [formData.metier1, formData.metier2, formData.metier3, formData.metier4, formData.metier5, formData.metier6, formData.metier7],
             talent: [formData.talent1, formData.talent2, formData.talent3, formData.talent4, formData.talent5, formData.talent6, formData.talent7],
             paradigme: [formData.paradigme1, formData.paradigme2, formData.paradigme3, formData.paradigme4, formData.paradigme5, formData.paradigme6, formData.paradigme7],
           },
@@ -357,7 +357,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             .eq('application_id', applicationIdForDocs);
         }
 
-        const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_path: string; file_size: number | null; }> = [];
+        const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_url: string; file_size: number | null; }> = [];
         
         const toFileUrl = (p: string) => (isPublicUrl(p)) ? p : getFileUrl(p);
 
@@ -373,7 +373,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               application_id: applicationIdForDocs as string,
               document_type: type,
               file_name: file.name,
-              file_path: toFileUrl(file.path),
+              file_url: toFileUrl(file.path),
               file_size: file.size ?? null,
             });
           }
@@ -384,7 +384,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             application_id: applicationIdForDocs as string,
             document_type: 'diploma',
             file_name: cert.name,
-            file_path: toFileUrl(cert.path),
+            file_url: toFileUrl(cert.path),
             file_size: cert.size ?? null,
           });
         }

@@ -7,7 +7,7 @@ export interface Document {
   application_id: string;
   document_type: 'cv' | 'cover_letter' | 'diploma' | 'recommendation' | 'integrity_letter' | 'project_idea';
   file_name: string;
-  file_path: string;
+  file_url: string; // Corrigé: utilise file_url au lieu de file_path
   file_size: number | null;
   uploaded_at: string;
 }
@@ -30,7 +30,7 @@ export function useApplicationDocuments(applicationId: string | undefined) {
 
       const { data, error } = await supabase
         .from('application_documents')
-        .select('*')
+        .select('id, application_id, document_type, file_name, file_url, file_size, uploaded_at')
         .eq('application_id', applicationId);
 
       console.log('[DOCUMENTS DEBUG] Query result data:', data);
