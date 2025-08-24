@@ -83,7 +83,7 @@ export default function CreateJob() {
 
     const toList = (text: string) =>
       text
-        .split(/\r?\n|\u2022|-/) // newline or bullet separators
+        .split(/\r?\n/) // only newline separators, no bullet processing
         .map(s => s.trim())
         .filter(Boolean);
 
@@ -209,7 +209,7 @@ export default function CreateJob() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Cadre">Cadre</SelectItem>
-                      <SelectItem value="Cadre directeur">Cadre directeur</SelectItem>
+                      <SelectItem value="Cadre directeur">Cadre de Direction </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
