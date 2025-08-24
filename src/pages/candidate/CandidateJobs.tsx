@@ -3,11 +3,12 @@ import { Layout } from "@/components/layout/Layout";
 import { JobCard } from "@/components/ui/job-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
+import { Search, Filter, Grid, List, Building } from "lucide-react";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { useJobOfferNotifications } from "@/hooks/useJobOfferNotifications";
 import { isPreLaunch } from "@/utils/launchGate";
 import { toast } from "sonner";
+import { ContentSpinner } from "@/components/ui/spinner";
 
 export default function CandidateJobs() {
   useJobOfferNotifications();
@@ -28,7 +29,11 @@ export default function CandidateJobs() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <p className="text-red-500">Erreur lors du chargement des offres: {error.message}</p>
-            <Button variant="outline" onClick={() => window.location.reload()}>
+            <Button variant="outline" onClick={() => {
+              if (typeof window !== 'undefined' && window.location?.reload) {
+                window.location.reload();
+              }
+            }}>
               Réessayer
             </Button>
           </div>
@@ -76,7 +81,12 @@ export default function CandidateJobs() {
                 variant="secondary" 
                 size="lg"
                 className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                onClick={() => document.getElementById('job-list')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  const element = document.getElementById('job-list');
+                  if (element && typeof element.scrollIntoView === 'function') {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
               >
                 Postuler maintenant
               </Button>
@@ -140,10 +150,7 @@ export default function CandidateJobs() {
         {/* Job Listings */}
         <div className="max-w-7xl mx-auto mb-12">
           {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <span className="ml-2">Chargement des offres...</span>
-            </div>
+            <ContentSpinner text="Chargement des offres..." />
           ) : viewMode === "cards" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredJobs.map((job, index) => (
@@ -156,7 +163,7 @@ export default function CandidateJobs() {
                     isPreview={true}
                     onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -194,7 +201,7 @@ export default function CandidateJobs() {
                       size="sm"
                       onClick={() =>
                         preLaunch
-                          ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                          ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
                           : toast.info("Créez votre compte pour voir l'offre et postuler.")
                       }
                       className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}

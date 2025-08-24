@@ -5,11 +5,12 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Calendar, Building2, Users, DollarSign, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Building2, Users, Banknote, Clock } from "lucide-react";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { useAuth } from "@/hooks/useAuth";
 import { useApplicationStatus } from "@/hooks/useApplications";
+import { ContentSpinner } from "@/components/ui/spinner";
 
 export default function JobDetail() {
   const { id } = useParams<{ id: string }>();
@@ -20,34 +21,31 @@ export default function JobDetail() {
   const { data: applicationStatus, isLoading: isLoadingApplication } = useApplicationStatus(id || "");
 
   const handleBackToJobs = () => {
-    navigate("/");
+    // Use browser history to go back to previous page
+    window.history.back();
   };
 
   const handleApply = () => {
-    const target = `/candidate/dashboard?view=jobs&jobId=${id}&apply=1`;
     if (!user) {
-      // Redirect to auth and then into candidate dashboard at the same job
-      const redirect = encodeURIComponent(target);
+      // Redirect to auth and then to apply page
+      const redirect = encodeURIComponent(`/jobs/${id}/apply`);
       navigate(`/auth?redirect=${redirect}`);
       return;
     }
-    // If already authenticated, go to candidate dashboard at the job detail
-    navigate(target);
+    // If already authenticated, go directly to apply page
+    navigate(`/jobs/${id}/apply`);
   };
 
   const handleApplicationSubmit = () => {
     setShowApplicationForm(false);
-    navigate("/");
+    // Ne pas naviguer automatiquement pour préserver l'historique du navigateur
   };
 
   if (isLoading || isLoadingApplication) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8" aria-live="polite">
-          <div className="flex justify-center items-center min-h-[400px]">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-2">Chargement de l'offre...</span>
-          </div>
+          <ContentSpinner text="Chargement de l'offre..." />
         </div>
       </Layout>
     );
@@ -62,7 +60,7 @@ export default function JobDetail() {
             <p className="text-muted-foreground mb-6">
               {error?.message ?? "Cette offre d'emploi n'existe pas ou n'est plus disponible."}
             </p>
-            <Button variant="outline" onClick={handleBackToJobs}>
+            <Button variant="outline" onClick={handleBackToJobs} className="bg-white text-blue-600">
               Retour aux offres
             </Button>
           </div>
@@ -119,7 +117,7 @@ export default function JobDetail() {
             <Button 
               variant="ghost" 
               onClick={handleBackToJobs}
-              className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-sm sm:text-base"
+              className="mb-3 sm:mb-4 text-blue-600 bg-white text-sm sm:text-base"
             >
               <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Retour aux offres</span>
@@ -152,7 +150,7 @@ export default function JobDetail() {
                 </div>
                 {jobOffer.salary_note && (
                   <div className="flex items-center gap-1 sm:gap-2">
-                    <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <Banknote className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     <span className="truncate">{jobOffer.salary_note}</span>
                   </div>
                 )}
@@ -247,7 +245,7 @@ export default function JobDetail() {
                       <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                       <span>
                         {jobOffer.date_limite 
-                          ? `Date limite: ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
+                          ? `Date limite : ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
                           : "Candidatures ouvertes"
                         }
                       </span>

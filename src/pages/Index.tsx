@@ -25,21 +25,28 @@ const Index = () => {
 
   useEffect(() => {
     if (!user) return;
+    
+    // Only redirect if user is actually on the home page (not from a page reload)
+    const currentPath = window.location.pathname;
+    if (currentPath !== "/" && currentPath !== "/index") return;
+    
     // Use normalized role flags from useAuth to avoid FR/EN mismatch
     if (isAdmin) {
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     } else if (isRecruiter) {
+      navigate("/recruiter/dashboard", { replace: true });
       navigate("/recruiter/dashboard");
     } else if (isObserver) {
       // Observateurs: accès en lecture seule au dashboard recruteur
       navigate("/recruiter/dashboard");
     } else if (isCandidate) {
-      navigate("/candidate/dashboard");
+      navigate("/candidate/dashboard?view=dashboard", { replace: true });
     }
   }, [user, isAdmin, isRecruiter, isObserver, isCandidate, navigate]);
 
-  // Ne pas afficher la page d'accueil si l'utilisateur est connecté
-  if (user) {
+  // Ne pas afficher la page d'accueil si l'utilisateur est connecté ET qu'il est vraiment sur la home
+  const currentPath = window.location.pathname;
+  if (user && (currentPath === "/" || currentPath === "/index")) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-3 text-muted-foreground">
@@ -191,7 +198,7 @@ const Index = () => {
                     isPreview={true}
                     onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -227,7 +234,7 @@ const Index = () => {
                       size="sm"
                       onClick={() =>
                         preLaunch
-                          ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                          ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
                           : toast.info("Créez votre compte pour voir l'offre et postuler.")
                       }
                       className={"w-full text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
@@ -252,7 +259,7 @@ const Index = () => {
                         size="sm"
                         onClick={() =>
                           preLaunch
-                            ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
+                            ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
                             : toast.info("Créez votre compte pour voir l'offre et postuler.")
                         }
                         className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
