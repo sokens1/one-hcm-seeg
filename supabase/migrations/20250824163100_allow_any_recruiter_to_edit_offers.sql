@@ -7,6 +7,7 @@ DROP POLICY IF EXISTS "Recruiters can update their job offers" ON public.job_off
 
 -- Create a new, more permissive policy for all actions (SELECT, INSERT, UPDATE, DELETE).
 -- This single policy simplifies management and ensures consistency.
+DROP POLICY IF EXISTS "Recruiters and Admins can manage all job offers" ON public.job_offers;
 CREATE POLICY "Recruiters and Admins can manage all job offers" ON public.job_offers
   FOR ALL
   USING (

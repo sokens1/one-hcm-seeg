@@ -42,6 +42,7 @@ interface FormData {
   coverLetter: UploadedFile | null;
   yearsOfExperience: string;
   certificates: UploadedFile[];
+  additionalCertificates: UploadedFile[];
   references: string;
   // Partie Métier
   metier1: string;
@@ -93,6 +94,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     coverLetter: null,
     yearsOfExperience: "",
     certificates: [],
+    additionalCertificates: [],
     references: "",
     // Partie Métier
     metier1: "",
@@ -278,13 +280,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         const cv = data.find(d => d.document_type === 'cv');
         const cover = data.find(d => d.document_type === 'cover_letter');
-        const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
+                const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
+        const additionalCertificates = data.filter(d => d.document_type === 'additional_certificate').map(makeUploaded);
 
         setFormData(prev => ({
           ...prev,
           cv: cv ? makeUploaded(cv) : prev.cv,
           coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
           certificates: certificates.length ? certificates : prev.certificates,
+          additionalCertificates: additionalCertificates.length ? additionalCertificates : prev.additionalCertificates,
         }));
       } catch (e) {
         console.warn('Chargement des documents échoué:', (e as any)?.message || e);
@@ -389,6 +393,16 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           });
         }
 
+        for (const cert of formData.additionalCertificates) {
+          docsPayload.push({
+            application_id: applicationIdForDocs as string,
+            document_type: 'certificate',
+            file_name: cert.name,
+            file_url: toFileUrl(cert.path),
+            file_size: cert.size ?? null,
+          });
+        }
+
         // Les recommandations sont désormais masquées et non traitées
 
         if (docsPayload.length > 0) {
@@ -461,7 +475,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'coverLetter' | 'certificates') => {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'coverLetter' | 'certificates' | 'additional_certificates') => {
     const files = e.target.files;
     if (!files) return;
 
@@ -478,6 +492,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const uploadPromises = Array.from(files).map(file => uploadFile(file, 'certificates'));
         const uploadedFiles = await Promise.all(uploadPromises);
         setFormData({ ...formData, certificates: [...formData.certificates, ...uploadedFiles] });
+        toast.success("Diplômes uploadés avec succès!");
+      } else if (type === 'additional_certificates') {
+        const uploadPromises = Array.from(files).map(file => uploadFile(file, 'additional-certificates'));
+        const uploadedFiles = await Promise.all(uploadPromises);
+        setFormData({ ...formData, additionalCertificates: [...formData.additionalCertificates, ...uploadedFiles] });
         toast.success("Certificats uploadés avec succès!");
       }
     } catch (error: any) {
@@ -921,7 +940,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           type="file"
                           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                           multiple
-                          onChange={(e) => handleFileUpload(e, 'certificates')}
+                          onChange={(e) => handleFileUpload(e, 'additional_certificates')}
                           className="hidden"
                           id="additional-certificates-upload"
                         />
@@ -934,6 +953,26 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         >
                           {isUploading ? "Upload..." : "Choisir des fichiers"}
                         </Button>
+                        {formData.additionalCertificates.length > 0 && (
+                          <div className="mt-3 space-y-2">
+                            {formData.additionalCertificates.map((cert, index) => (
+                              <div key={index} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
+                                <span>{cert.name}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={async () => {
+                                    await safeDeleteStorageFile(cert.path);
+                                    const newCerts = formData.additionalCertificates.filter((_, i) => i !== index);
+                                    setFormData({ ...formData, additionalCertificates: newCerts });
+                                  }}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1280,8 +1319,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       </div>
                       {/* Sections cachées non affichées en récapitulatif: intégrité et idée de projet */}
                       <div>
-                        <span className="text-muted-foreground">Certificats:</span>
+                        <span className="text-muted-foreground">Diplômes:</span>
                         <p>{formData.certificates.length} fichier(s)</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Certificats</span>
+                        <p>{formData.additionalCertificates.length} fichier(s)</p>
                       </div>
                       {/* Sections cachées non affichées: lettres de recommandation */}
                     </div>

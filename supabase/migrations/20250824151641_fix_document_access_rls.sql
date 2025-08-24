@@ -14,7 +14,7 @@ CREATE POLICY "Allow read access to documents based on role" ON storage.objects
 FOR SELECT
 TO authenticated
 USING (
-  bucket_id = 'documents' AND (
+  bucket_id = 'application-documents' AND (
     -- Admins and recruiters can see everything in the bucket.
     (get_my_claim('user_role')::text IN ('admin', 'recruteur')) OR
     -- Candidates can only see documents within their own folder (named by their user_id).
@@ -30,5 +30,5 @@ CREATE POLICY "Allow authenticated users to upload documents" ON storage.objects
 FOR INSERT
 TO authenticated
 WITH CHECK (
-  bucket_id = 'documents'
+  bucket_id = 'application-documents'
 );
