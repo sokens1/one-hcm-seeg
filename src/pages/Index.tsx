@@ -16,7 +16,7 @@ import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, isCandidate, isRecruiter, isAdmin } = useAuth();
+  const { user, isCandidate, isRecruiter, isAdmin, isObserver } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const { data, isLoading, error } = useJobOffers();
@@ -30,10 +30,13 @@ const Index = () => {
       navigate("/admin/dashboard");
     } else if (isRecruiter) {
       navigate("/recruiter/dashboard");
+    } else if (isObserver) {
+      // Observateurs: accès en lecture seule au dashboard recruteur
+      navigate("/recruiter/dashboard");
     } else if (isCandidate) {
       navigate("/candidate/dashboard");
     }
-  }, [user, isAdmin, isRecruiter, isCandidate, navigate]);
+  }, [user, isAdmin, isRecruiter, isObserver, isCandidate, navigate]);
 
   // Ne pas afficher la page d'accueil si l'utilisateur est connecté
   if (user) {
