@@ -60,11 +60,8 @@ export function useFileUpload() {
   };
 
   const getFileUrl = (filePath: string): string => {
-    const { data } = supabase.storage
-      .from('application-documents')
-      .getPublicUrl(filePath);
-
-    return data.publicUrl;
+    // Les URLs sont déjà complètes, les retourner directement
+    return filePath;
   };
 
   const downloadFile = async (filePath: string): Promise<Blob> => {

@@ -33,6 +33,17 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
   const queryClient = useQueryClient();
   const { data: documents = [] } = useApplicationDocuments(applicationId);
 
+  // Normalise une URL de document pour pointer vers le bucket public Supabase
+  const ensureAbsoluteUrl = (path?: string | null) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const base = import.meta.env.VITE_SUPABASE_URL?.replace(/\/$/, '') || '';
+    const p = String(path).trim().replace(/^\/+/, '');
+    if (p.startsWith('storage/v1/object/public/')) return `${base}/${p}`;
+    if (p.startsWith('application-documents/')) return `${base}/storage/v1/object/public/${p}`;
+    return `${base}/storage/v1/object/public/application-documents/${p}`;
+  };
+
   // Temps réel: rafraîchir si le profil candidat (table users) ou la candidature change
   useEffect(() => {
     if (!applicationId || !isOpen) return;
@@ -214,7 +225,7 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
                       <div className="font-medium text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</div>
                       <div className="text-xs text-muted-foreground truncate">{doc.file_name} · {formatFileSize(doc.file_size)}</div>
                     </div>
-                    <a href={doc.file_path} target="_blank" rel="noreferrer" className="flex-shrink-0">
+                    <a href={ensureAbsoluteUrl(doc.file_url)} target="_blank" rel="noreferrer" className="flex-shrink-0">
                       <Button variant="outline" size="sm" className="text-xs sm:text-sm">
                         <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Télécharger
                       </Button>
