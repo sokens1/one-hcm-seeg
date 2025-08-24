@@ -73,7 +73,7 @@ export default function CandidateSignup() {
       description: "Bienvenue dans votre espace candidat"
     });
     
-    navigate("/candidate/dashboard");
+    navigate("/candidate/dashboard?view=dashboard");
   };
 
   return (

@@ -102,7 +102,7 @@ export function CandidateApplications() {
                           variant="secondary"
                           size="sm"
                           className="gap-1 md:gap-2 text-xs sm:text-sm md:text-sm h-8 md:h-9"
-                          onClick={() => navigate(`/candidate/applications/${application.id}/edit?step=4`)}
+                          onClick={() => navigate(`/candidate/applications/${application.id}/edit?step=4&from=applications`)}
                         >
                           <Edit className="w-3 h-3 md:w-4 md:h-4" />
                           Modifier

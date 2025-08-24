@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Wrench, Shield, CircleDollarSign, Handshake, Leaf } from "lucide-react";
+import { ArrowLeft, Users, Wrench, Shield, Coins, Handshake, Leaf } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CompanyContext() {
@@ -51,7 +51,7 @@ export default function CompanyContext() {
         <div className="container mx-auto px-4 py-12 -mt-16">
           <div className="max-w-4xl mx-auto">
             {/* Bouton retour */}
-            <Button variant="outline" className="mb-8 bg-white/80 backdrop-blur-sm" asChild>
+            <Button variant="outline" className="mb-8 bg-white text-blue-600 backdrop-blur-sm" asChild>
               <a href="/jobs">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour aux offres
@@ -132,7 +132,7 @@ export default function CompanyContext() {
                     </div>
                     {/* Theme 4 */}
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 bg-blue-100 text-blue-600 p-3 rounded-full"><CircleDollarSign className="w-6 h-6" /></div>
+                      <div className="flex-shrink-0 bg-blue-100 text-blue-600 p-3 rounded-full"><Coins className="w-6 h-6" /></div>
                       <div>
                         <h4 className="text-xl font-bold text-slate-800 mb-2">Thème 4: Modèle Economique Viable</h4>
                         <ul className="list-disc pl-5 space-y-2 text-slate-600 text-sm">

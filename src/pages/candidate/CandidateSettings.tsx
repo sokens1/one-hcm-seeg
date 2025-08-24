@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Mail, User, KeyRound, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { FullPageSpinner } from "@/components/ui/spinner";
 
 export default function CandidateSettings() {
   const { user, isLoading } = useAuth();
@@ -41,11 +42,7 @@ export default function CandidateSettings() {
   }, [user]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <FullPageSpinner text="Chargement des paramètres..." />;
   }
 
   if (!isAuthenticated) {
