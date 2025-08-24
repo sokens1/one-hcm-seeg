@@ -6,13 +6,13 @@ export interface JobOffer {
   id: string;
   title: string;
   description: string;
-  location: string;
+  location: string | string[];
   contract_type: string;
   profile?: string | null;
   department?: string | null;
   salary_min?: number | null;
   salary_max?: number | null;
-  requirements?: string[] | null;
+  requirements?: string | string[] | null;
   benefits?: string[] | null;
   status: string;
   application_deadline?: string | null;
@@ -26,7 +26,7 @@ export interface JobOffer {
   job_grade?: string | null;
   salary_note?: string | null;
   start_date?: string | null;
-  responsibilities?: string[] | null;
+  responsibilities?: string | string[] | null;
   candidate_count: number;
   new_candidates: number;
 }
@@ -93,6 +93,9 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
     .select('*')
     .eq('id', id)
     .single();
+
+  console.log('[useJobOffers DEBUG] Raw offer data from DB:', offer);
+  console.log('[useJobOffers DEBUG] DB error:', error);
 
   if (error) throw error;
   if (!offer) return null;

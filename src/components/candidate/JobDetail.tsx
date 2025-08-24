@@ -64,6 +64,13 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
     return "Salaire à négocier";
   };
 
+  // Convert legacy arrays to HTML lists for display
+  const arrayToHtmlList = (arr?: string[] | null) => {
+    if (!arr || arr.length === 0) return "";
+    const items = arr.map((item) => `<li>${(item || "").toString()}</li>`).join("");
+    return `<ul>${items}</ul>`;
+  };
+
   return (
     <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
       {/* Header avec gradient comme la vue publique */}
@@ -125,44 +132,40 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-            {/* Missions principales */}
-            {jobOffer.responsibilities && jobOffer.responsibilities.length > 0 && (
+            {/* Missions principales (Description riche) */}
+            {(jobOffer.description || (jobOffer.responsibilities && jobOffer.responsibilities.length > 0)) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">MISSIONS PRINCIPALES</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 sm:space-y-3">
-                    {jobOffer.responsibilities.map((mission, index) => (
-                      <div key={index} className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                        {mission}
-                      </div>
-                    ))}
-                  </div>
+                  <div
+                    className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
+                    dangerouslySetInnerHTML={{
+                      __html: jobOffer.description && jobOffer.description.trim().length > 0
+                        ? jobOffer.description
+                        : arrayToHtmlList(jobOffer.responsibilities as unknown as string[]),
+                    }}
+                  />
                 </CardContent>
               </Card>
             )}
 
-            {/* Connaissances savoir et requis */}
-            {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
+            {/* Connaissances savoir et requis (Profil riche) */}
+            {(jobOffer.profile || (jobOffer.requirements && jobOffer.requirements.length > 0)) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">CONNAISSANCE SAVOIR ET REQUIS</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {jobOffer.requirements && jobOffer.requirements.length > 0 ? (
-                    <div className="space-y-2 sm:space-y-3">
-                      {jobOffer.requirements.map((requirement, index) => (
-                        <div key={index} className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                          {requirement}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="whitespace-pre-wrap text-sm sm:text-base text-foreground">
-                      {jobOffer.profile}
-                    </div>
-                  )}
+                  <div
+                    className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
+                    dangerouslySetInnerHTML={{
+                      __html: jobOffer.profile && jobOffer.profile.trim().length > 0
+                        ? jobOffer.profile
+                        : arrayToHtmlList(jobOffer.requirements as unknown as string[]),
+                    }}
+                  />
                 </CardContent>
               </Card>
             )}
