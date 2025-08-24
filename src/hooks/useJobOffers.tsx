@@ -6,13 +6,13 @@ export interface JobOffer {
   id: string;
   title: string;
   description: string;
-  location: string;
+  location: string | string[];
   contract_type: string;
   profile?: string | null;
   department?: string | null;
   salary_min?: number | null;
   salary_max?: number | null;
-  requirements?: string[] | null;
+  requirements?: string | string[] | null;
   benefits?: string[] | null;
   status: string;
   application_deadline?: string | null;
@@ -26,7 +26,7 @@ export interface JobOffer {
   job_grade?: string | null;
   salary_note?: string | null;
   start_date?: string | null;
-  responsibilities?: string[] | null;
+  responsibilities?: string | string[] | null;
   candidate_count: number;
   new_candidates: number;
 }
@@ -47,13 +47,20 @@ const fetchJobOffers = async () => {
 
   let applications: Array<{ job_offer_id: string; created_at: string }> = [];
   try {
-    const { data: rpcData } = await supabase.rpc('get_all_recruiter_applications');
-    applications = (rpcData || []).map((app: any) => ({
-      job_offer_id: app.application_details?.job_offer_id,
-      created_at: app.application_details?.created_at,
-    })).filter(app => app.job_offer_id && app.created_at);
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    
+    if (rpcError) {
+      console.warn('RPC get_all_recruiter_applications failed:', rpcError.message);
+      applications = [];
+    } else {
+      applications = (rpcData || []).map((app: any) => ({
+        job_offer_id: app.application_details?.job_offer_id,
+        created_at: app.application_details?.created_at,
+      })).filter(app => app.job_offer_id && app.created_at);
+    }
   } catch (e) {
     // Fail soft: garder le dashboard fonctionnel même si l'agrégat échoue
+    console.warn('Error calling RPC get_all_recruiter_applications:', e);
     applications = [];
   }
 
@@ -94,6 +101,9 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
     .eq('id', id)
     .single();
 
+  console.log('[useJobOffers DEBUG] Raw offer data from DB:', offer);
+  console.log('[useJobOffers DEBUG] DB error:', error);
+
   if (error) throw error;
   if (!offer) return null;
 
@@ -104,15 +114,19 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
   try {
     const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
     
-    if (rpcError) throw rpcError;
-    
-    applications = (rpcData || [])
-      .filter((app: any) => app.application_details?.job_offer_id === id)
-      .map((app: any) => ({
-        created_at: app.application_details?.created_at
-      }))
-      .filter(app => app.created_at);
+    if (rpcError) {
+      console.warn('RPC get_all_recruiter_applications failed for job offer:', rpcError.message);
+      applications = [];
+    } else {
+      applications = (rpcData || [])
+        .filter((app: any) => app.application_details?.job_offer_id === id)
+        .map((app: any) => ({
+          created_at: app.application_details?.created_at
+        }))
+        .filter(app => app.created_at);
+    }
   } catch (e) {
+    console.warn('Error calling RPC get_all_recruiter_applications for job offer:', e);
     applications = [];
   }
 
@@ -155,12 +169,19 @@ const fetchRecruiterJobOffers = async (recruiterId: string): Promise<JobOffer[]>
 
   let applications: Array<{ job_offer_id: string; created_at: string }> = [];
   try {
-    const { data: rpcData } = await supabase.rpc('get_all_recruiter_applications');
-    applications = (rpcData || []).map((app: any) => ({
-      job_offer_id: app.application_details?.job_offer_id,
-      created_at: app.application_details?.created_at,
-    })).filter(app => app.job_offer_id && app.created_at);
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    
+    if (rpcError) {
+      console.warn('RPC get_all_recruiter_applications failed for recruiter:', rpcError.message);
+      applications = [];
+    } else {
+      applications = (rpcData || []).map((app: any) => ({
+        job_offer_id: app.application_details?.job_offer_id,
+        created_at: app.application_details?.created_at,
+      })).filter(app => app.job_offer_id && app.created_at);
+    }
   } catch (e) {
+    console.warn('Error calling RPC get_all_recruiter_applications for recruiter:', e);
     applications = [];
   }
 

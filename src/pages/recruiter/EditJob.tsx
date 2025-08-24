@@ -4,11 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { ArrowLeft, Save, Loader2, Trash2, CalendarIcon } from "lucide-react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { ArrowLeft, Save, Loader2, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,8 +31,6 @@ interface JobFormData {
   title: string;
   location: string;
   contractType: string;
-  description: string;
-  profile: string;
   categorieMetier: string;
   dateLimite: string;
   reportingLine: string;
@@ -59,8 +56,6 @@ export default function EditJob() {
     title: "",
     location: "",
     contractType: "",
-    description: "",
-    profile: "",
     categorieMetier: "",
     dateLimite: "",
     reportingLine: "",
@@ -71,16 +66,41 @@ export default function EditJob() {
     requirements: ""
   });
 
+  // Debug: Logger l'état du formulaire à chaque changement
+  useEffect(() => {
+    console.log('[EditJob DEBUG] FormData state updated:', formData);
+  }, [formData]);
+
   useEffect(() => {
     if (jobOffer) {
+      console.log('[EditJob DEBUG] JobOffer data received:', jobOffer);
+      console.log('[EditJob DEBUG] responsibilities type:', typeof jobOffer.responsibilities, jobOffer.responsibilities);
+      console.log('[EditJob DEBUG] requirements type:', typeof jobOffer.requirements, jobOffer.requirements);
+      console.log('[EditJob DEBUG] description:', jobOffer.description);
+      console.log('[EditJob DEBUG] profile:', jobOffer.profile);
+      
+      // Prioriser le contenu HTML existant (description/profile) même s'il est vide
+      const responsibilitiesContent = jobOffer.description && jobOffer.description.trim() !== ""
+        ? jobOffer.description
+        : Array.isArray(jobOffer.responsibilities) 
+          ? `<ul>${jobOffer.responsibilities.map(item => `<li>${item}</li>`).join('')}</ul>` 
+          : (jobOffer.responsibilities || "");
+        
+      const requirementsContent = jobOffer.profile && jobOffer.profile.trim() !== ""
+        ? jobOffer.profile
+        : Array.isArray(jobOffer.requirements) 
+          ? `<ul>${jobOffer.requirements.map(item => `<li>${item}</li>`).join('')}</ul>` 
+          : (jobOffer.requirements || "");
+      
+      console.log('[EditJob DEBUG] Final responsibilities content:', responsibilitiesContent);
+      console.log('[EditJob DEBUG] Final requirements content:', requirementsContent);
+      
       setFormData({
         title: jobOffer.title || "",
-        location: jobOffer.location || "",
+        location: Array.isArray(jobOffer.location) ? jobOffer.location[0] || "" : jobOffer.location || "",
         contractType: jobOffer.contract_type || "",
-        description: jobOffer.description || "",
-        profile: jobOffer.profile || "",
-        responsibilities: (jobOffer.responsibilities || []).join("\n"),
-        requirements: (jobOffer.requirements || []).join("\n"),
+        responsibilities: responsibilitiesContent,
+        requirements: requirementsContent,
         reportingLine: jobOffer.reporting_line || "",
         jobGrade: jobOffer.job_grade || "",
         salaryNote: jobOffer.salary_note || "",
@@ -95,22 +115,21 @@ export default function EditJob() {
     e.preventDefault();
     if (!id) return;
 
-    const toList = (text: string) => text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-
     const jobDataToUpdate = {
       title: formData.title,
       location: formData.location,
       contract_type: formData.contractType,
-      description: formData.description,
-      profile: formData.profile,
+      description: formData.responsibilities, // Le contenu HTML devient la description
+      profile: formData.requirements, // Le contenu HTML devient le profil
       categorie_metier: formData.categorieMetier || null,
       date_limite: formData.dateLimite ? new Date(formData.dateLimite).toISOString() : null,
       reporting_line: formData.reportingLine || null,
       job_grade: formData.jobGrade || null,
       salary_note: formData.salaryNote || null,
       start_date: formData.startDate ? new Date(formData.startDate).toISOString() : null,
-      responsibilities: toList(formData.responsibilities),
-      requirements: toList(formData.requirements),
+      // Ne pas envoyer les champs HTML vers les colonnes array de la DB
+      // responsibilities: formData.responsibilities, 
+      // requirements: formData.requirements,
     };
 
     try {
@@ -181,7 +200,11 @@ export default function EditJob() {
     });
   };
 
-  const handleInputChange = (field: keyof JobFormData, value: string) => {
+  const handleInputChange = (field: keyof Omit<JobFormData, 'responsibilities' | 'requirements'>, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleQuillChange = (field: 'responsibilities' | 'requirements', value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -316,13 +339,13 @@ export default function EditJob() {
               {/* Missions principales */}
               <div className="space-y-2">
                 <Label htmlFor="responsibilities">Missions principales *</Label>
-                <Textarea id="responsibilities" value={formData.responsibilities} onChange={(e) => handleInputChange("responsibilities", e.target.value)} placeholder={"Saisissez une mission par ligne\nEx:\n- Définir et piloter la politique RH\n- Élaborer et superviser la gestion administrative du personnel"} className="min-h-[180px]" required />
+                <ReactQuill theme="snow" value={formData.responsibilities} onChange={(value) => handleQuillChange("responsibilities", value)} className="bg-white quill-editor-container" />
               </div>
 
               {/* Connaissance savoir et requis */}
               <div className="space-y-2">
                 <Label htmlFor="requirements">Connaissance savoir et requis *</Label>
-                <Textarea id="requirements" value={formData.requirements} onChange={(e) => handleInputChange("requirements", e.target.value)} placeholder={"Saisissez un requis par ligne\nEx:\n- Bac+5 en RH, Droit social, Psychologie du travail\n- Expérience managériale de X années"} className="min-h-[180px]" required />
+                <ReactQuill theme="snow" value={formData.requirements} onChange={(value) => handleQuillChange("requirements", value)} className="bg-white quill-editor-container" />
               </div>
 
               {/* Actions */}

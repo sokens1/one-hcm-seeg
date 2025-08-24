@@ -28,6 +28,18 @@ export function useJobOfferNotifications() {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Debounce invalidations to prevent excessive refetching
+    let invalidationTimeout: NodeJS.Timeout | null = null;
+    
+    const debouncedInvalidate = () => {
+      if (invalidationTimeout) {
+        clearTimeout(invalidationTimeout);
+      }
+      invalidationTimeout = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['jobOffers'] });
+      }, 1000); // Wait 1 second before invalidating
+    };
+
     // Subscribe to INSERT and UPDATE events on job_offers
     const channel = supabase
       .channel('job_offers_notifications')
@@ -41,7 +53,7 @@ export function useJobOfferNotifications() {
         (payload: RealtimePayload) => {
           const row = payload.new;
           if (row?.status === 'active') {
-            queryClient.invalidateQueries({ queryKey: ['jobOffers'] });
+            debouncedInvalidate();
             toast({
               title: "Nouvelle offre publiée",
               description: `${row.title} • ${row.location} (${row.contract_type})`,
@@ -61,7 +73,7 @@ export function useJobOfferNotifications() {
           const next = payload.new;
           // Notify only when a draft becomes active
           if (prev?.status !== 'active' && next?.status === 'active') {
-            queryClient.invalidateQueries({ queryKey: ['jobOffers'] });
+            debouncedInvalidate();
             toast({
               title: "Offre publiée",
               description: `${next.title} • ${next.location} (${next.contract_type})`,
@@ -72,6 +84,9 @@ export function useJobOfferNotifications() {
       .subscribe();
 
     return () => {
+      if (invalidationTimeout) {
+        clearTimeout(invalidationTimeout);
+      }
       supabase.removeChannel(channel);
     };
   }, [queryClient, toast]);

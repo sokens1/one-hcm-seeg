@@ -2,8 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send, Building2, DollarSign, Clock } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send, Building2, Banknote, Clock } from "lucide-react";
 import { useJobOffer } from "@/hooks/useJobOffers";
+import { ContentSpinner } from "@/components/ui/spinner";
 
 interface JobDetailProps {
   jobId: string;
@@ -15,11 +16,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   const { data: jobOffer, isLoading, error } = useJobOffer(jobId);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
+    return <ContentSpinner text="Chargement de l'offre d'emploi..." />;
   }
 
   if (error) {
@@ -64,6 +61,13 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
     return "Salaire à négocier";
   };
 
+  // Convert legacy arrays to HTML lists for display
+  const arrayToHtmlList = (arr?: string[] | null) => {
+    if (!arr || arr.length === 0) return "";
+    const items = arr.map((item) => `<li>${(item || "").toString()}</li>`).join("");
+    return `<ul>${items}</ul>`;
+  };
+
   return (
     <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
       {/* Header avec gradient comme la vue publique */}
@@ -72,7 +76,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-sm sm:text-base"
+            className="mb-3 sm:mb-4 text-blue-600 bg-white text-sm sm:text-base"
           >
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Retour aux offres</span>
@@ -105,7 +109,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
               </div>
               {jobOffer.salary_note && (
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <Banknote className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">{jobOffer.salary_note}</span>
                 </div>
               )}
@@ -125,44 +129,40 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-            {/* Missions principales */}
-            {jobOffer.responsibilities && jobOffer.responsibilities.length > 0 && (
+            {/* Missions principales (Description riche) */}
+            {(jobOffer.description || (jobOffer.responsibilities && jobOffer.responsibilities.length > 0)) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">MISSIONS PRINCIPALES</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 sm:space-y-3">
-                    {jobOffer.responsibilities.map((mission, index) => (
-                      <div key={index} className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                        {mission}
-                      </div>
-                    ))}
-                  </div>
+                  <div
+                    className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
+                    dangerouslySetInnerHTML={{
+                      __html: jobOffer.description && jobOffer.description.trim().length > 0
+                        ? jobOffer.description
+                        : arrayToHtmlList(jobOffer.responsibilities as unknown as string[]),
+                    }}
+                  />
                 </CardContent>
               </Card>
             )}
 
-            {/* Connaissances savoir et requis */}
-            {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
+            {/* Connaissances savoir et requis (Profil riche) */}
+            {(jobOffer.profile || (jobOffer.requirements && jobOffer.requirements.length > 0)) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">CONNAISSANCE SAVOIR ET REQUIS</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {jobOffer.requirements && jobOffer.requirements.length > 0 ? (
-                    <div className="space-y-2 sm:space-y-3">
-                      {jobOffer.requirements.map((requirement, index) => (
-                        <div key={index} className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                          {requirement}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="whitespace-pre-wrap text-sm sm:text-base text-foreground">
-                      {jobOffer.profile}
-                    </div>
-                  )}
+                  <div
+                    className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
+                    dangerouslySetInnerHTML={{
+                      __html: jobOffer.profile && jobOffer.profile.trim().length > 0
+                        ? jobOffer.profile
+                        : arrayToHtmlList(jobOffer.requirements as unknown as string[]),
+                    }}
+                  />
                 </CardContent>
               </Card>
             )}
@@ -198,14 +198,14 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                   {jobOffer.start_date && (
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                      <span>Date d'embauche: {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</span>
+                      <span>Date d'embauche : {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                     <span>
                       {jobOffer.date_limite 
-                        ? `Date limite: ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
+                        ? `Date limite : ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
                         : "Candidatures ouvertes"
                       }
                     </span>

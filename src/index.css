@@ -217,6 +217,7 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
   }
 
   .line-clamp-2 {
@@ -224,5 +225,40 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  /* ReactQuill Editor Styling */
+  .quill-editor-container .ql-editor {
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .quill-editor-container .ql-toolbar {
+    border-top: 1px solid hsl(var(--border));
+    border-left: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    border-bottom: none;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .quill-editor-container .ql-container {
+    border-left: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--border));
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+  }
+
+  .quill-editor-container .ql-editor:focus {
+    outline: none;
+  }
+
+  .quill-editor-container .ql-editor.ql-blank::before {
+    color: hsl(var(--muted-foreground));
+    font-style: normal;
   }
 }

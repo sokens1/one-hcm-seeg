@@ -26,6 +26,17 @@ export function JobCard({
   locked = false,
   onLockedClick,
 }: JobCardProps) {
+  const toPlainText = (input?: string) => {
+    if (!input) return "";
+    // If string contains HTML tags, convert to text using a temporary element
+    if (/<[a-z][\s\S]*>/i.test(input)) {
+      const el = document.createElement('div');
+      el.innerHTML = input;
+      return (el.textContent || el.innerText || "").trim();
+    }
+    return input;
+  };
+
   return (
     <Card
       className={`hover:shadow-medium transition-all duration-300 ${locked ? "cursor-default" : "cursor-pointer"} group h-full flex flex-col`}
@@ -53,7 +64,7 @@ export function JobCard({
 
             {!locked && description && (
               <p className="text-muted-foreground line-clamp-3 text-xs sm:text-sm flex-1 leading-relaxed">
-                {description}
+                {toPlainText(description)}
               </p>
             )}
 

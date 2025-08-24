@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { ArrowLeft, Save, Send, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateJobOffer } from "@/hooks/useRecruiterDashboard";
@@ -81,11 +82,6 @@ export default function CreateJob() {
       return;
     }
 
-    const toList = (text: string) =>
-      text
-        .split(/\r?\n/) // only newline separators, no bullet processing
-        .map(s => s.trim())
-        .filter(Boolean);
 
     const mappedStatus = status === 'published' ? 'active' : 'draft';
 
@@ -100,8 +96,9 @@ export default function CreateJob() {
       reporting_line: formData.reportingLine || null,
       salary_note: formData.salaryNote || null,
       start_date: formData.startDate || null,
-      responsibilities: formData.responsibilities ? toList(formData.responsibilities) : null,
-      requirements: formData.requirements ? toList(formData.requirements) : null,
+      // Ne pas envoyer les champs HTML vers les colonnes array de la DB
+      // responsibilities: formData.responsibilities,
+      // requirements: formData.requirements,
     };
 
     console.log('[CreateJob] Prepared job data:', jobData);
@@ -270,26 +267,24 @@ export default function CreateJob() {
               {/* Missions principales */}
               <div className="space-y-2">
                 <Label htmlFor="responsibilities" className="text-sm sm:text-base font-medium">Missions principales *</Label>
-                <Textarea
-                  id="responsibilities"
+                <ReactQuill
+                  theme="snow"
                   value={formData.responsibilities}
-                  onChange={(e) => handleInputChange("responsibilities", e.target.value)}
+                  onChange={(content) => handleInputChange("responsibilities", content)}
                   placeholder={"Saisissez une mission par ligne\nEx:\n- Définir et piloter la politique RH\n- Élaborer et superviser la gestion administrative du personnel"}
-                  className="min-h-[140px] sm:min-h-[180px] text-sm sm:text-base"
-                  required
+                  className="bg-card quill-editor-container"
                 />
               </div>
 
               {/* Connaissance savoir et requis */}
               <div className="space-y-2">
                 <Label htmlFor="requirements" className="text-sm sm:text-base font-medium">Connaissance savoir et requis *</Label>
-                <Textarea
-                  id="requirements"
+                <ReactQuill
+                  theme="snow"
                   value={formData.requirements}
-                  onChange={(e) => handleInputChange("requirements", e.target.value)}
+                  onChange={(content) => handleInputChange("requirements", content)}
                   placeholder={"Saisissez un requis par ligne\nEx:\n- Bac+5 en RH, Droit social, Psychologie du travail\n- Expérience managériale de X années"}
-                  className="min-h-[140px] sm:min-h-[180px] text-sm sm:text-base"
-                  required
+                  className="bg-card quill-editor-container"
                 />
               </div>
 

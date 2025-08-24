@@ -5,11 +5,12 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Calendar, Building2, Users, DollarSign, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Building2, Users, Banknote, Clock } from "lucide-react";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { useAuth } from "@/hooks/useAuth";
 import { useApplicationStatus } from "@/hooks/useApplications";
+import { ContentSpinner } from "@/components/ui/spinner";
 
 export default function JobDetail() {
   const { id } = useParams<{ id: string }>();
@@ -20,34 +21,31 @@ export default function JobDetail() {
   const { data: applicationStatus, isLoading: isLoadingApplication } = useApplicationStatus(id || "");
 
   const handleBackToJobs = () => {
-    navigate("/");
+    // Use browser history to go back to previous page
+    window.history.back();
   };
 
   const handleApply = () => {
-    const target = `/candidate/dashboard?view=jobs&jobId=${id}&apply=1`;
     if (!user) {
-      // Redirect to auth and then into candidate dashboard at the same job
-      const redirect = encodeURIComponent(target);
+      // Redirect to auth and then to apply page
+      const redirect = encodeURIComponent(`/jobs/${id}/apply`);
       navigate(`/auth?redirect=${redirect}`);
       return;
     }
-    // If already authenticated, go to candidate dashboard at the job detail
-    navigate(target);
+    // If already authenticated, go directly to apply page
+    navigate(`/jobs/${id}/apply`);
   };
 
   const handleApplicationSubmit = () => {
     setShowApplicationForm(false);
-    navigate("/");
+    // Ne pas naviguer automatiquement pour préserver l'historique du navigateur
   };
 
   if (isLoading || isLoadingApplication) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8" aria-live="polite">
-          <div className="flex justify-center items-center min-h-[400px]">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-2">Chargement de l'offre...</span>
-          </div>
+          <ContentSpinner text="Chargement de l'offre..." />
         </div>
       </Layout>
     );
@@ -62,7 +60,7 @@ export default function JobDetail() {
             <p className="text-muted-foreground mb-6">
               {error?.message ?? "Cette offre d'emploi n'existe pas ou n'est plus disponible."}
             </p>
-            <Button variant="outline" onClick={handleBackToJobs}>
+            <Button variant="outline" onClick={handleBackToJobs} className="bg-white text-blue-600">
               Retour aux offres
             </Button>
           </div>
@@ -102,6 +100,13 @@ export default function JobDetail() {
     if (max) return `Jusqu'à ${max.toLocaleString()} FCFA`;
     return "Salaire à négocier";
   };
+  
+  // Convert legacy string[] fields to an HTML unordered list for display
+  const arrayToHtmlList = (arr?: string[] | null) => {
+    if (!arr || arr.length === 0) return "";
+    const items = arr.map((item) => `<li>${(item || "").toString()}</li>`).join("");
+    return `<ul>${items}</ul>`;
+  };
 
   return (
     <Layout>
@@ -112,7 +117,7 @@ export default function JobDetail() {
             <Button 
               variant="ghost" 
               onClick={handleBackToJobs}
-              className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-sm sm:text-base"
+              className="mb-3 sm:mb-4 text-blue-600 bg-white text-sm sm:text-base"
             >
               <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Retour aux offres</span>
@@ -145,7 +150,7 @@ export default function JobDetail() {
                 </div>
                 {jobOffer.salary_note && (
                   <div className="flex items-center gap-1 sm:gap-2">
-                    <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <Banknote className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     <span className="truncate">{jobOffer.salary_note}</span>
                   </div>
                 )}
@@ -164,44 +169,40 @@ export default function JobDetail() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-              {/* Missions principales */}
-              {jobOffer.responsibilities && jobOffer.responsibilities.length > 0 && (
+              {/* Missions principales (Description riche) */}
+              {(jobOffer.description || (jobOffer.responsibilities && jobOffer.responsibilities.length > 0)) && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg sm:text-xl">MISSIONS PRINCIPALES</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2 sm:space-y-3">
-                      {jobOffer.responsibilities.map((mission, index) => (
-                        <div key={index} className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                          {mission}
-                        </div>
-                      ))}
-                    </div>
+                    <div
+                      className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
+                      dangerouslySetInnerHTML={{
+                        __html: jobOffer.description && jobOffer.description.trim().length > 0
+                          ? jobOffer.description
+                          : arrayToHtmlList(jobOffer.responsibilities as unknown as string[]),
+                      }}
+                    />
                   </CardContent>
                 </Card>
               )}
 
-              {/* Connaissances savoir et requis */}
-              {((jobOffer.requirements && jobOffer.requirements.length > 0) || jobOffer.profile) && (
+              {/* Connaissances savoir et requis (Profil riche) */}
+              {(jobOffer.profile || (jobOffer.requirements && jobOffer.requirements.length > 0)) && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg sm:text-xl">CONNAISSANCE SAVOIR ET REQUIS</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {jobOffer.requirements && jobOffer.requirements.length > 0 ? (
-                      <div className="space-y-2 sm:space-y-3">
-                        {jobOffer.requirements.map((requirement, index) => (
-                          <div key={index} className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                            {requirement}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="whitespace-pre-wrap text-sm sm:text-base text-foreground">
-                        {jobOffer.profile}
-                      </div>
-                    )}
+                    <div
+                      className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
+                      dangerouslySetInnerHTML={{
+                        __html: jobOffer.profile && jobOffer.profile.trim().length > 0
+                          ? jobOffer.profile
+                          : arrayToHtmlList(jobOffer.requirements as unknown as string[]),
+                      }}
+                    />
                   </CardContent>
                 </Card>
               )}
@@ -210,7 +211,6 @@ export default function JobDetail() {
               {jobOffer.benefits && jobOffer.benefits.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg sm:text-xl">Avantages</CardTitle>
                     <CardTitle className="text-lg sm:text-xl">Avantages</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -245,7 +245,7 @@ export default function JobDetail() {
                       <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                       <span>
                         {jobOffer.date_limite 
-                          ? `Date limite: ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
+                          ? `Date limite : ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
                           : "Candidatures ouvertes"
                         }
                       </span>

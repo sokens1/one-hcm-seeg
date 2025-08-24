@@ -2,7 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 let SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+let SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
 // Normalize and validate envs early to avoid confusing 500s
 if (typeof SUPABASE_URL === 'string') {
@@ -15,7 +15,15 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     VITE_SUPABASE_URL: SUPABASE_URL,
     VITE_SUPABASE_ANON_KEY: SUPABASE_PUBLISHABLE_KEY ? `${SUPABASE_PUBLISHABLE_KEY.slice(0, 6)}...` : undefined,
   });
-  throw new Error('Supabase env variables are missing. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env');
+  
+  // En mode test, utiliser des valeurs par défaut pour éviter les erreurs
+  if (process.env.NODE_ENV === 'test') {
+    console.warn('[Supabase] Using test defaults for missing environment variables');
+    SUPABASE_URL = SUPABASE_URL || 'https://test.supabase.co';
+    SUPABASE_PUBLISHABLE_KEY = SUPABASE_PUBLISHABLE_KEY || 'test-key';
+  } else {
+    throw new Error('Supabase env variables are missing. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env');
+  }
 }
 
 // Import the supabase client like this:
