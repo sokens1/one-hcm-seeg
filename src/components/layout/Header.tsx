@@ -59,7 +59,7 @@ export function Header() {
                 {isRecruiter && (
                   <Link to="/recruiter/dashboard" className="hidden sm:block">
                     <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
-                      Espace Recruteur
+                      Espace Recruteurs
                     </Button>
                   </Link>
                 )}

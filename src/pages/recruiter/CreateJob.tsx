@@ -83,7 +83,7 @@ export default function CreateJob() {
 
     const toList = (text: string) =>
       text
-        .split(/\r?\n|\u2022|-/) // newline or bullet separators
+        .split(/\r?\n/) // only newline separators, no bullet processing
         .map(s => s.trim())
         .filter(Boolean);
 
@@ -190,10 +190,10 @@ export default function CreateJob() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="CDI avec période d'essai">CDI avec période d'essai</SelectItem>
-                        <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
-                        <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
-                        <SelectItem value="Stage">Stage</SelectItem>
-                        <SelectItem value="Freelance">Freelance</SelectItem>
+                        <SelectItem value="CDI">CDI </SelectItem>
+                        <SelectItem value="CDD">CDD </SelectItem>
+                        {/* <SelectItem value="Stage">Stage</SelectItem>
+                        <SelectItem value="Freelance">Freelance</SelectItem>*/}
                       </SelectContent>
                     </Select>
                   </div>
@@ -209,7 +209,7 @@ export default function CreateJob() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Cadre">Cadre</SelectItem>
-                      <SelectItem value="Cadre directeur">Cadre directeur</SelectItem>
+                      <SelectItem value="Cadre directeur">Cadre de Direction </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

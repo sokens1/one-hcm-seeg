@@ -4,7 +4,7 @@ import { User, Session, AuthResponse, AuthError, type RealtimeChannel } from "@s
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SignUpMetadata {
-  role: "candidat" | "recruteur" | "admin";
+  role: "candidat" | "recruteur" | "admin" | "observateur";
   first_name?: string;
   last_name?: string;
   phone?: string;
@@ -29,6 +29,7 @@ interface AuthContextType {
   isCandidate: boolean;
   isRecruiter: boolean;
   isAdmin: boolean;
+  isObserver: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -290,6 +291,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isCandidate = roleValue === 'candidat' || roleValue === 'candidate';
   const isRecruiter = roleValue === 'recruteur' || roleValue === 'recruiter';
   const isAdmin = roleValue === 'admin';
+  const isObserver = roleValue === 'observateur' || roleValue === 'observer';
 
   const value = {
     user,
@@ -304,7 +306,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resetPassword,
     isCandidate,
     isRecruiter,
-    isAdmin
+    isAdmin,
+    isObserver
   };
 
   return (

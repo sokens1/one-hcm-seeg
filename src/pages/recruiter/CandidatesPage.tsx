@@ -155,7 +155,7 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
                     <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
                   </div>
                   <a
-                    href={toUrl(doc.file_path)}
+                    href={toUrl(doc.file_url)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 text-primary hover:underline"
@@ -267,7 +267,7 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
                     <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
                   </div>
                   <a
-                    href={toUrl(doc.file_path)}
+                    href={toUrl(doc.file_url)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 text-primary hover:underline"
@@ -370,10 +370,10 @@ export default function CandidatesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-              Tous les Candidats
+              Toutes les Candidatures
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Gérez et suivez tous les candidats qui ont postulé aux offres SEEG
+              Gérez et suivez tous les candidats qui ont postulé aux offres SEEG.
             </p>
           </div>
           <Link to="/recruiter">

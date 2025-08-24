@@ -95,7 +95,7 @@ export default function EditJob() {
     e.preventDefault();
     if (!id) return;
 
-    const toList = (text: string) => text.split(/\r?\n|\u2022|-/).map(s => s.trim()).filter(Boolean);
+    const toList = (text: string) => text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
 
     const jobDataToUpdate = {
       title: formData.title,
@@ -276,7 +276,7 @@ export default function EditJob() {
                     <SelectTrigger><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Cadre">Cadre</SelectItem>
-                      <SelectItem value="Cadre directeur">Cadre directeur</SelectItem>
+                      <SelectItem value="Cadre directeur">Cadre de Direction </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

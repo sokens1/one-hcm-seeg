@@ -97,7 +97,7 @@ function CandidateSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className={`text-sm sm:text-base font-medium px-2 sm:px-3 ${state === "collapsed" ? "sr-only" : ""}`}>
-            Espace candidat
+            Espace candidats
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -188,7 +188,7 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
 
   return (
     <CandidateLayoutContext.Provider value={{ currentView, setCurrentView }}>
-      <SidebarProvider defaultOpen={true} variant="sidebar">
+      <SidebarProvider defaultOpen={true}>
         <div className="min-h-screen flex w-full">
           {/* Header avec SidebarTrigger */}
           <div className="flex flex-col w-full min-w-0">

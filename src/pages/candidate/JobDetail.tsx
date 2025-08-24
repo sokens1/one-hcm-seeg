@@ -169,14 +169,13 @@ export default function JobDetail() {
                     <CardTitle className="text-lg sm:text-xl">MISSIONS PRINCIPALES</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-2 sm:space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {jobOffer.responsibilities.map((mission, index) => (
-                        <li key={index} className="flex items-start gap-2 sm:gap-3">
-                          <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                          <span className="text-sm sm:text-base text-muted-foreground leading-relaxed">{mission}</span>
-                        </li>
+                        <div key={index} className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                          {mission}
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </CardContent>
                 </Card>
               )}
@@ -189,14 +188,13 @@ export default function JobDetail() {
                   </CardHeader>
                   <CardContent>
                     {jobOffer.requirements && jobOffer.requirements.length > 0 ? (
-                      <ul className="space-y-2 sm:space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {jobOffer.requirements.map((requirement, index) => (
-                          <li key={index} className="flex items-start gap-2 sm:gap-3">
-                            <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                            <span className="text-sm sm:text-base text-muted-foreground leading-relaxed">{requirement}</span>
-                          </li>
+                          <div key={index} className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                            {requirement}
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     ) : (
                       <div className="whitespace-pre-wrap text-sm sm:text-base text-foreground">
                         {jobOffer.profile}

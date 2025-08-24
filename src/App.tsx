@@ -14,6 +14,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
+import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecruiterReadRoute";
 import { Loader2 } from 'lucide-react';
 
 // Lazily load page components
@@ -80,15 +81,15 @@ const router = createBrowserRouter(
       <Route path="reset-password" element={<ResetPassword />} />
       
       {/* Recruiter Routes */}
-      <Route path="recruiter" element={<ProtectedRecruiterRoute><RecruiterDashboard /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/dashboard" element={<ProtectedRecruiterRoute><RecruiterDashboard /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/profile" element={<ProtectedRecruiterRoute><RecruiterProfile /></ProtectedRecruiterRoute>} />
+      <Route path="recruiter" element={<ProtectedRecruiterReadRoute><RecruiterDashboard /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/dashboard" element={<ProtectedRecruiterReadRoute><RecruiterDashboard /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/profile" element={<ProtectedRecruiterReadRoute><RecruiterProfile /></ProtectedRecruiterReadRoute>} />
       <Route path="recruiter/jobs/new" element={<ProtectedRecruiterRoute><CreateJob /></ProtectedRecruiterRoute>} />
       <Route path="recruiter/jobs/:id/edit" element={<ProtectedRecruiterRoute><EditJob /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/jobs/:id/pipeline" element={<ProtectedRecruiterRoute><JobPipeline /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/candidates" element={<ProtectedRecruiterRoute><CandidatesPage /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/jobs" element={<ProtectedRecruiterRoute><RecruiterJobs /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/candidates/:id/analysis" element={<ProtectedRecruiterRoute><CandidateAnalysis /></ProtectedRecruiterRoute>} />
+      <Route path="recruiter/jobs/:id/pipeline" element={<ProtectedRecruiterReadRoute><JobPipeline /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/candidates" element={<ProtectedRecruiterReadRoute><CandidatesPage /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/jobs" element={<ProtectedRecruiterReadRoute><RecruiterJobs /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/candidates/:id/analysis" element={<ProtectedRecruiterReadRoute><CandidateAnalysis /></ProtectedRecruiterReadRoute>} />
       
       {/* Admin Routes */}
       <Route path="admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
