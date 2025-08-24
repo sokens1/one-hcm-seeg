@@ -157,10 +157,11 @@ export default function Auth() {
           const rawRole = String((!userRowError && (userRow as { role?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
           const isAdmin = rawRole === 'admin';
           const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
+          const isObserver = rawRole === 'observateur' || rawRole === 'observer';
 
           if (isAdmin) {
             navigate('/admin/dashboard');
-          } else if (isRecruiter) {
+          } else if (isRecruiter || isObserver) {
             navigate('/recruiter/dashboard');
           } else {
             navigate('/candidate/dashboard?view=jobs');
@@ -169,7 +170,7 @@ export default function Auth() {
           const rawRole = String(data.user.user_metadata?.role ?? '').toLowerCase();
           if (rawRole === 'admin') {
             navigate('/admin/dashboard');
-          } else if (rawRole === 'recruteur' || rawRole === 'recruiter') {
+          } else if (rawRole === 'recruteur' || rawRole === 'recruiter' || rawRole === 'observateur' || rawRole === 'observer') {
             navigate('/recruiter/dashboard');
           } else {
             navigate('/candidate/dashboard?view=jobs');
