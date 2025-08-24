@@ -2,8 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send, Building2, DollarSign, Clock } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send, Building2, Banknote, Clock } from "lucide-react";
 import { useJobOffer } from "@/hooks/useJobOffers";
+import { ContentSpinner } from "@/components/ui/spinner";
 
 interface JobDetailProps {
   jobId: string;
@@ -15,11 +16,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   const { data: jobOffer, isLoading, error } = useJobOffer(jobId);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
+    return <ContentSpinner text="Chargement de l'offre d'emploi..." />;
   }
 
   if (error) {
@@ -79,7 +76,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-sm sm:text-base"
+            className="mb-3 sm:mb-4 text-blue-600 bg-white text-sm sm:text-base"
           >
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Retour aux offres</span>
@@ -112,7 +109,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
               </div>
               {jobOffer.salary_note && (
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <Banknote className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">{jobOffer.salary_note}</span>
                 </div>
               )}
@@ -201,14 +198,14 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                   {jobOffer.start_date && (
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                      <span>Date d'embauche: {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</span>
+                      <span>Date d'embauche : {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                     <span>
                       {jobOffer.date_limite 
-                        ? `Date limite: ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
+                        ? `Date limite : ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
                         : "Candidatures ouvertes"
                       }
                     </span>

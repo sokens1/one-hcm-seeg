@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApplications } from "@/hooks/useApplications";
@@ -19,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { getMetierQuestionsForTitle } from "@/data/metierQuestions";
+import { Spinner } from "@/components/ui/spinner";
 
 interface ApplicationFormProps {
   jobTitle: string;
@@ -72,6 +74,7 @@ interface FormData {
 }
 
 export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<number>(
     typeof initialStep === 'number' && initialStep >= 1 ? initialStep : (mode === 'edit' ? 4 : 1)
   );
@@ -302,6 +305,110 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   const progress = (currentStep / totalSteps) * 100;
   const metierQuestions = getMetierQuestionsForTitle(jobTitle);
 
+  // Validation functions for each step
+  const validateStep1 = () => {
+    return (
+      formData.firstName.trim() !== '' &&
+      formData.lastName.trim() !== '' &&
+      formData.email.trim() !== '' &&
+      formData.gender.trim() !== '' &&
+      formData.dateOfBirth !== null &&
+      formData.currentPosition.trim() !== '' &&
+      formData.yearsOfExperience.trim() !== ''
+    );
+  };
+
+  const validateStep2 = () => {
+    return (
+      formData.cv !== null &&
+      formData.coverLetter !== null &&
+      formData.certificates.length > 0  // At least one diploma is required
+    );
+  };
+
+  const validateStep3 = () => {
+    // Validate Métier tab (3 questions)
+    const metierValid = formData.metier1.trim() !== '' && 
+                        formData.metier2.trim() !== '' && 
+                        formData.metier3.trim() !== '';
+    
+    // Validate Talent tab (7 questions)
+    const talentValid = formData.talent1.trim() !== '' && 
+                        formData.talent2.trim() !== '' && 
+                        formData.talent3.trim() !== '' &&
+                        formData.talent4.trim() !== '' && 
+                        formData.talent5.trim() !== '' && 
+                        formData.talent6.trim() !== '' &&
+                        formData.talent7.trim() !== '';
+    
+    // Validate Paradigme tab (7 questions)
+    const paradigmeValid = formData.paradigme1.trim() !== '' && 
+                            formData.paradigme2.trim() !== '' && 
+                            formData.paradigme3.trim() !== '' &&
+                            formData.paradigme4.trim() !== '' && 
+                            formData.paradigme5.trim() !== '' && 
+                            formData.paradigme6.trim() !== '' &&
+                            formData.paradigme7.trim() !== '';
+
+    return metierValid && talentValid && paradigmeValid;
+  };
+
+  const isNextButtonDisabled = () => {
+    switch (currentStep) {
+      case 1:
+        return !validateStep1();
+      case 2:
+        return !validateStep2();
+      case 3:
+        return !validateStep3();
+      default:
+        return false;
+    }
+  };
+
+  const getValidationMessage = () => {
+    switch (currentStep) {
+      case 1:
+        if (!validateStep1()) {
+          const missing = [];
+          if (!formData.firstName.trim()) missing.push("Prénom");
+          if (!formData.lastName.trim()) missing.push("Nom");
+          if (!formData.email.trim()) missing.push("Email");
+          if (!formData.gender.trim()) missing.push("Sexe");
+          if (!formData.dateOfBirth) missing.push("Date de naissance");
+          if (!formData.currentPosition.trim()) missing.push("Poste actuel");
+          if (!formData.yearsOfExperience.trim()) missing.push("Années d'expérience");
+          return missing.length > 0 ? `Veuillez renseigner: ${missing.join(', ')}` : '';
+        }
+        return '';
+      case 2:
+        if (!validateStep2()) {
+          const missing = [];
+          if (!formData.cv) missing.push("CV");
+          if (!formData.coverLetter) missing.push("Lettre de motivation");
+          if (formData.certificates.length === 0) missing.push("Au moins un diplôme");
+          return missing.length > 0 ? `Documents requis: ${missing.join(', ')}` : '';
+        }
+        return '';
+      case 3:
+        if (!validateStep3()) {
+          const missingTabs = [];
+          const metierFilled = [formData.metier1, formData.metier2, formData.metier3].filter(q => q.trim()).length;
+          const talentFilled = [formData.talent1, formData.talent2, formData.talent3, formData.talent4, formData.talent5, formData.talent6, formData.talent7].filter(q => q.trim()).length;
+          const paradigmeFilled = [formData.paradigme1, formData.paradigme2, formData.paradigme3, formData.paradigme4, formData.paradigme5, formData.paradigme6, formData.paradigme7].filter(q => q.trim()).length;
+          
+          if (metierFilled < 3) missingTabs.push(`Métier (${metierFilled}/3)`);
+          if (talentFilled < 7) missingTabs.push(`Talent (${talentFilled}/7)`);
+          if (paradigmeFilled < 7) missingTabs.push(`Paradigme (${paradigmeFilled}/7)`);
+          
+          return missingTabs.length > 0 ? `Compléter les onglets: ${missingTabs.join(', ')}` : '';
+        }
+        return '';
+      default:
+        return '';
+    }
+  };
+
   const handleNext = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
@@ -451,7 +558,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       queryClient.refetchQueries({ queryKey: ['recruiterApplications'] });
 
       setIsSubmitted(true);
-      toast.success("Candidature envoyée avec succès!");
+      toast.success(mode === 'edit' ? "Candidature modifiée avec succès!" : "Candidature envoyée avec succès!");
       
       // Appeler onSubmit si fourni après un délai
       setTimeout(() => {
@@ -518,11 +625,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               <strong>{jobTitle}</strong> et nous reviendrons vers vous très prochainement.
             </p>
             <div className="space-y-2 sm:space-y-3 px-2 sm:px-4">
-              <Button variant="hero" onClick={onBack} className="w-full text-sm sm:text-base py-2 sm:py-3">
-                Retour aux offres
+              <Button variant="hero" onClick={onBack} className="w-full bg-white text-blue-600 text-sm sm:text-base py-2 sm:py-3">
+                Retour à l'offre
               </Button>
-              <Button variant="outline" className="w-full text-sm sm:text-base py-2 sm:py-3">
-                Postuler à une autre offre
+              <Button 
+                variant="outline" 
+                className="w-full text-sm sm:text-base py-2 sm:py-3"
+                onClick={() => navigate('/candidate/applications')}
+              >
+                Voir mes candidatures
               </Button>
             </div>
           </div>
@@ -539,7 +650,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-sm sm:text-base"
+            className="mb-3 sm:mb-4 text-blue-600 bg-white text-sm sm:text-base"
           >
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Retour à l'offre</span>
@@ -644,7 +755,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             <CardContent className="space-y-6">
               {/* Step 1: Personal Info */}
               {currentStep === 1 && (
-                <div className="space-y-4 animate-fade-in">
+                <div className="space-y-4 animate-fade-in py-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">Prénom *</Label>
@@ -762,10 +873,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
-                          <div className="space-y-2">
-                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
-                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
-                          </div>
+                          <Spinner size="lg" text="Upload en cours..." />
                         ) : (
                           <>
                             <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
@@ -814,10 +922,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
-                          <div className="space-y-2">
-                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
-                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
-                          </div>
+                          <Spinner size="lg" text="Upload en cours..." />
                         ) : (
                           <>
                             <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
@@ -866,10 +971,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
-                          <div className="space-y-2">
-                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
-                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
-                          </div>
+                          <Spinner size="lg" text="Upload en cours..." />
                         ) : (
                           <>
                             <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
@@ -924,10 +1026,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
-                          <div className="space-y-2">
-                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
-                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
-                          </div>
+                          <Spinner size="lg" text="Upload en cours..." />
                         ) : (
                           <>
                             <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
@@ -1005,7 +1104,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           className={`${activeTab === 'metier' 
                             ? 'border-blue-500 text-blue-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                            whitespace-nowrap py-2 sm:py-4 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 min-w-[80px] sm:min-w-[120px]`}
                         >
                           <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'metier' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
                             M
@@ -1018,7 +1117,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           className={`${activeTab === 'talent' 
                             ? 'border-green-500 text-green-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                            whitespace-nowrap py-2 sm:py-4 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 min-w-[80px] sm:min-w-[120px]`}
                         >
                           <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'talent' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800'}`}>
                             T
@@ -1031,7 +1130,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           className={`${activeTab === 'paradigme' 
                             ? 'border-purple-500 text-purple-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                            whitespace-nowrap py-2 sm:py-4 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 min-w-[80px] sm:min-w-[120px]`}
                         >
                           <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'paradigme' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'}`}>
                             P
@@ -1049,7 +1148,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div className="bg-blue-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-blue-200 animate-fade-in">
                         <h4 className="text-base sm:text-lg font-semibold text-blue-800 mb-3 sm:mb-4 flex items-center gap-2">
                           <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">M</div>
-                          Partie Métier
+                          Métier
                         </h4>
                         <div className="space-y-3 sm:space-y-4">
                           {metierQuestions.map((q, idx) => {
@@ -1077,7 +1176,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div className="bg-green-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-green-200 animate-fade-in">
                         <h4 className="text-base sm:text-lg font-semibold text-green-800 mb-3 sm:mb-4 flex items-center gap-2">
                           <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">T</div>
-                          Partie Talent
+                          Talent
                         </h4>
                         
                         <div className="space-y-3 sm:space-y-4">
@@ -1165,7 +1264,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div className="bg-purple-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-purple-200 animate-fade-in">
                         <h4 className="text-base sm:text-lg font-semibold text-purple-800 mb-3 sm:mb-4 flex items-center gap-2">
                           <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">P</div>
-                          Partie Paradigme/Valeurs
+                          Paradigme
                         </h4>
                         
                         <div className="space-y-3 sm:space-y-4">
@@ -1254,22 +1353,35 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   
               {/* Navigation pour étapes 1 à 3 */}
               {currentStep < 4 && (
-                <div className="flex items-center justify-between mt-6">
-                  <Button
-                    variant="ghost"
-                    onClick={handlePrevious}
-                    disabled={currentStep === 1}
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Précédent
-                  </Button>
-                  <Button
-                    onClick={handleNext}
-                    className="w-full sm:w-auto"
-                  >
-                    Suivant
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                <div className="mt-6">
+                  {/* Message de validation si des champs manquent */}
+                  {isNextButtonDisabled() && (
+                    <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <p className="text-sm text-orange-800 flex items-center gap-2">
+                        <span className="text-orange-600">⚠️</span>
+                        {getValidationMessage()}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-between">
+                    <Button
+                      variant="ghost"
+                      onClick={handlePrevious}
+                      disabled={currentStep === 1}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Précédent
+                    </Button>
+                    <Button
+                      onClick={handleNext}
+                      className="w-full sm:w-auto"
+                      disabled={isNextButtonDisabled()}
+                    >
+                      Suivant
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
                 </div>
               )}
 
@@ -1303,7 +1415,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         </div>
                         <div>
                           <span className="text-muted-foreground">Années d'expérience:</span>
-                          <p>{formData.yearsOfExperience || "Non renseigné"}</p>
+                          <p>{formData.yearsExperience || "Non renseigné"}</p>
                         </div>
                       </div>
                     </div>
@@ -1362,8 +1474,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       onCheckedChange={(checked) => setFormData({ ...formData, consent: checked as boolean })}
                     />
                     <Label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed">
-                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature 
-                      conformément à la politique de confidentialité de OneHCM.
+                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature
+                      conformément à la <Link to="/privacy-policy" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link>.
                     </Label>
                   </div>
                   <div className="flex items-center justify-between mt-6">

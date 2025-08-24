@@ -5,11 +5,12 @@ import { CandidateLayout } from "@/components/layout/CandidateLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Eye, Loader2 } from "lucide-react";
+import { MapPin, Calendar, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useApplications } from "@/hooks/useApplications";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { FullPageSpinner } from "@/components/ui/spinner";
 
 export default function CandidateApplications() {
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -24,11 +25,7 @@ export default function CandidateApplications() {
   }, [isAuthenticated, isAuthLoading, navigate]);
 
   if (isAuthLoading || isAppsLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-16 h-16 animate-spin text-primary" />
-      </div>
-    );
+    return <FullPageSpinner text="Chargement de vos candidatures..." />;
   }
 
   if (!isAuthenticated) {

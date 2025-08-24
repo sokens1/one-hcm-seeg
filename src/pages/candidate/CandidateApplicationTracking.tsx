@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { CandidateLayout } from "@/components/layout/CandidateLayout";
 import { ApplicationTracking } from "@/components/candidate/ApplicationTracking";
+import { FullPageSpinner } from "@/components/ui/spinner";
 
 export default function CandidateApplicationTracking() {
   const { user, isLoading } = useAuth();
@@ -16,11 +17,7 @@ export default function CandidateApplicationTracking() {
   }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <FullPageSpinner text="Chargement du suivi des candidatures..." />;
   }
 
   if (!isAuthenticated) {

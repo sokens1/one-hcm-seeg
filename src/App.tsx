@@ -22,10 +22,12 @@ const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword").then(module => ({ default: module.ResetPassword })));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 // Candidate pages
 const CandidateJobs = lazy(() => import("./pages/candidate/CandidateJobs"));
 const JobDetail = lazy(() => import("./pages/candidate/JobDetail"));
+const ApplyToJob = lazy(() => import("./pages/candidate/ApplyToJob"));
 const CandidateSignup = lazy(() => import("./pages/candidate/CandidateSignup"));
 const CandidateLogin = lazy(() => import("./pages/candidate/CandidateLogin"));
 const CandidateDashboard = lazy(() => import("./pages/candidate/CandidateDashboard"));
@@ -64,8 +66,9 @@ const router = createBrowserRouter(
       {/* Home and Candidate Routes */}
       <Route index element={<Index />} />
       <Route path="auth" element={<Auth />} />
-      <Route path="jobs" element={<Navigate to="/" replace />} />
+      <Route path="jobs" element={<CandidateJobs />} />
       <Route path="jobs/:id" element={<JobDetail />} />
+      <Route path="jobs/:id/apply" element={<ProtectedRoute requiredRole="candidat"><ApplyToJob /></ProtectedRoute>} />
       <Route path="candidate/signup" element={<CandidateSignup />} />
       <Route path="candidate/login" element={<CandidateLogin />} />
       <Route path="candidate/dashboard" element={<ProtectedRoute requiredRole="candidat"><CandidateDashboard /></ProtectedRoute>} />
@@ -76,6 +79,7 @@ const router = createBrowserRouter(
       <Route path="candidate/profile" element={<CandidateProfile />} />
       <Route path="candidate/settings" element={<CandidateSettings />} />
       <Route path="company-context" element={<CompanyContext />} />
+      <Route path="privacy-policy" element={<PrivacyPolicy />} />
       <Route path="reset-password" element={<ResetPassword />} />
       
       {/* Recruiter Routes */}
@@ -109,21 +113,19 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <AuthProvider>
-            <Suspense fallback={<LoadingFallback />}>
-              <RouterProvider
-                router={router}
-              />
-            </Suspense>
-            <Toaster />
-            <Sonner />
-          </AuthProvider>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
+          <Suspense fallback={<LoadingFallback />}>
+            <RouterProvider
+              router={router}
+            />
+          </Suspense>
+          <Toaster />
+          <Sonner />
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 
