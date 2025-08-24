@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, GraduationCap, Star, Info, FileText, Eye, Download, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -210,19 +211,37 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
 };
 
 const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl: string, fileName: string, isOpen: boolean, onClose: () => void }) => {
-  const isPdf = fileName.toLowerCase().endsWith('.pdf');
-  const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(fileName);
+  const getFileType = (fileName: string) => {
+    const ext = fileName.toLowerCase().split('.').pop() || '';
+    
+    if (ext === 'pdf') return 'pdf';
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(ext)) return 'image';
+    if (['doc', 'docx'].includes(ext)) return 'word';
+    if (['xls', 'xlsx'].includes(ext)) return 'excel';
+    if (['ppt', 'pptx'].includes(ext)) return 'powerpoint';
+    if (['txt', 'rtf'].includes(ext)) return 'text';
+    if (['zip', 'rar', '7z'].includes(ext)) return 'archive';
+    return 'other';
+  };
+
+  const fileType = getFileType(fileName);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     if (!isOpen) {
       setError(null);
+      setIsLoading(true);
       // Nettoyer l'URL Blob quand le modal se ferme
       if (fileUrl.startsWith('blob:')) {
         URL.revokeObjectURL(fileUrl);
       }
+    } else if (fileUrl) {
+      // Pas de vérification HEAD car elle échoue avec les permissions RLS
+      // La modale gère les erreurs de chargement directement
+      setIsLoading(false);
     }
-  }, [isOpen, fileUrl]);
+  }, [isOpen, fileUrl, fileName]);
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -239,33 +258,100 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
-          {error ? (
-            <div className="flex flex-col items-center justify-center h-full text-red-500 space-y-2">
-              <p className="text-sm">Erreur lors du chargement du document:</p>
-              <p className="text-xs">{error}</p>
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full space-y-4">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-sm text-muted-foreground">Chargement du document...</p>
             </div>
-          ) : isPdf ? (
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-full text-red-500 space-y-4 p-6">
+              <FileText className="w-16 h-16 text-red-300" />
+              <div className="text-center space-y-2">
+                <p className="text-sm font-medium">Document inaccessible</p>
+                <p className="text-xs text-muted-foreground max-w-md">{error}</p>
+                <div className="pt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => window.open(fileUrl, '_blank')}
+                    className="mr-2"
+                  >
+                    Essayer dans un nouvel onglet
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={onClose}>
+                    Fermer
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : fileType === 'pdf' ? (
             <embed
               src={fileUrl}
               type="application/pdf"
               className="w-full h-full"
               title={`Prévisualisation de ${fileName}`}
-              onError={() => setError("Impossible de charger le PDF. Vérifiez que vous avez les permissions nécessaires.")}
+              onError={() => setError("Le fichier PDF n'existe pas ou a été supprimé du storage.")}
             />
-          ) : isImage ? (
+          ) : fileType === 'image' ? (
             <img
               src={fileUrl}
               alt={fileName}
               className="w-full h-full object-contain"
-              onError={() => setError("Impossible de charger l'image. Vérifiez que vous avez les permissions nécessaires.")}
+              onError={() => setError("Le fichier image n'existe pas ou a été supprimé du storage.")}
             />
-          ) : (
+          ) : fileType === 'word' || fileType === 'excel' || fileType === 'powerpoint' ? (
             <iframe
-              src={`https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`}
+              src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`}
               className="w-full h-full border-0"
               title={`Prévisualisation de ${fileName}`}
-              onError={() => setError("Impossible de charger le document. Vérifiez que vous avez les permissions nécessaires.")}
+              onError={() => {
+                // Fallback vers Google Docs Viewer si Office Online échoue
+                const iframe = document.querySelector('iframe[title*="Prévisualisation"]') as HTMLIFrameElement;
+                if (iframe) {
+                  iframe.src = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+                }
+              }}
             />
+          ) : fileType === 'text' ? (
+            <iframe
+              src={fileUrl}
+              className="w-full h-full border-0 bg-white"
+              title={`Prévisualisation de ${fileName}`}
+              onError={() => setError("Impossible de charger le fichier texte.")}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <FileText className="w-16 h-16 text-muted-foreground mx-auto" />
+                <div>
+                  <p className="text-sm font-medium">Prévisualisation non disponible</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Le type de fichier "{fileName.split('.').pop()?.toUpperCase()}" ne peut pas être prévisualisé directement.
+                  </p>
+                  <div className="flex gap-2 mt-4 justify-center">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => window.open(fileUrl, '_blank')}
+                    >
+                      Ouvrir dans un nouvel onglet
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = fileUrl;
+                        link.download = fileName;
+                        link.click();
+                      }}
+                    >
+                      Télécharger
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </DialogContent>
@@ -273,7 +359,7 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   );
 };
 
-const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void }) => {
+const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, toast }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void, toast: any }) => {
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean, fileUrl: string, fileName: string }>({
     isOpen: false,
     fileUrl: '',
@@ -281,16 +367,7 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
   });
 
   
-  const handlePreview = async (fileUrl: string, fileName: string) => {
-    try {
-      const absUrl = await getFileUrl(fileUrl);
-      setPreviewModal({ isOpen: true, fileUrl: absUrl, fileName });
-    } catch (error) {
-      console.error('Error getting preview URL:', error);
-      alert('Erreur lors de la prévisualisation. Veuillez réessayer.');
-    }
-  };
-
+  
   return (
     <>
       <Card>
@@ -310,11 +387,6 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
             <div>
               <p className="text-xs text-muted-foreground mb-3">{documents.length} document(s) trouvé(s)</p>
               {documents.map((doc) => {
-                console.log('[DOCUMENTS DEBUG] Document:', doc);
-                console.log('[DOCUMENTS DEBUG] doc.file_url:', doc.file_url);
-                console.log('[DOCUMENTS DEBUG] doc.file_name:', doc.file_name);
-                console.log('[DOCUMENTS DEBUG] doc.id:', doc.id);
-                
                 return (
                   <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
@@ -322,43 +394,28 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
                       <div className="overflow-hidden min-w-0">
                         <p className="font-medium truncate text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</p>
                         <p className="text-xs text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
-                        <p className="text-xs text-muted-foreground truncate">ID: {doc.id}</p>
-                        <p className="text-xs text-muted-foreground truncate">URL: {doc.file_url}</p>
                       </div>
                     </div>
                     <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                       <Button size="sm" variant="outline" onClick={async () => {
-                        console.log('[BUTTON DEBUG] Eye button clicked for:', doc.file_name);
-                        const finalUrl = await getFileUrl(doc.file_url);
-                        console.log('[BUTTON DEBUG] Opening URL:', finalUrl);
-                        
-                        // Test si le fichier existe avant d'ouvrir
                         try {
-                          const response = await fetch(finalUrl, { method: 'HEAD' });
-                          console.log('[FILE CHECK] HTTP Status:', response.status);
-                          console.log('[FILE CHECK] Response OK:', response.ok);
+                          const finalUrl = await getFileUrl(doc.file_url);
                           
-                          if (!response.ok) {
-                            console.error('[FILE CHECK] File not found or access denied');
-                            if (response.status === 400) {
-                              alert(`Erreur 400: Le bucket 'application-documents' n'est pas public ou mal configuré.\n\nSolution:\n1. Allez dans Supabase Dashboard > Storage\n2. Cliquez sur le bucket 'application-documents'\n3. Activez 'Public bucket' dans les paramètres\n4. Ou vérifiez les politiques RLS\n\nURL: ${finalUrl}`);
-                            } else {
-                              alert(`Erreur ${response.status}: Fichier non trouvé ou accès refusé.\nURL: ${finalUrl}`);
-                            }
-                            return;
-                          }
+                          // Ouvrir directement la prévisualisation sans vérification HEAD
+                          // car les permissions RLS peuvent bloquer la vérification mais pas l'accès réel
+                          setPreviewModal({ isOpen: true, fileUrl: finalUrl, fileName: doc.file_name });
                         } catch (error) {
-                          console.error('[FILE CHECK] Network error:', error);
-                          alert(`Erreur réseau: ${error.message}\nURL: ${finalUrl}`);
-                          return;
+                          console.error('Error getting preview URL:', error);
+                          toast({
+                            variant: "destructive",
+                            title: "Erreur de prévisualisation",
+                            description: "Impossible de récupérer l'URL du fichier pour la prévisualisation.",
+                          });
                         }
-                        
-                        window.open(finalUrl, '_blank');
                       }} className="p-1 sm:p-2">
                         <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => {
-                        console.log('[BUTTON DEBUG] Download button clicked for:', doc.file_name);
                         downloadFile(doc.file_url, doc.file_name);
                       }} className="p-1 sm:p-2">
                         <Download className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -402,6 +459,7 @@ const EvaluationProtocol = () => {
 };
 
 export default function CandidateAnalysis() {
+  const { toast } = useToast();
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -413,72 +471,36 @@ export default function CandidateAnalysis() {
   const jobId = searchParams.get('jobId') || application?.job_offer_id;
   const jobTitle = application?.job_offers?.title;
 
-  // Helper pour garantir une URL absolue Supabase vers le bucket application-documents
-  const ensureAbsoluteUrl = (path: string) => {
-    console.log('[DOC URL DEBUG] === ensureAbsoluteUrl START ===');
-    console.log('[DOC URL DEBUG] Input path:', path);
-    console.log('[DOC URL DEBUG] Path type:', typeof path);
-    console.log('[DOC URL DEBUG] VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-    
-    if (!path) {
-      console.log('[DOC URL DEBUG] Empty path, returning as-is');
-      return path;
+  const getFileUrl = async (filePath: string): Promise<string> => {
+    if (!filePath) {
+      throw new Error('File path is invalid.');
     }
-    
-    if (path.startsWith('http')) {
-      console.log('[DOC URL DEBUG] Already absolute URL, returning as-is');
-      return path;
-    }
-    
-    const base = import.meta.env.VITE_SUPABASE_URL?.replace(/\/$/, '') || '';
-    let p = String(path).trim();
-    console.log('[DOC URL DEBUG] Base URL:', base);
-    console.log('[DOC URL DEBUG] Trimmed path:', p);
-    
-    // Nettoyage des slashes de début
-    p = p.replace(/^\/+/, '');
-    console.log('[DOC URL DEBUG] Path after slash cleanup:', p);
-    
-    let finalUrl = '';
-    
-    // Si on reçoit déjà un chemin public complet stockage
-    if (p.startsWith('storage/v1/object/public/')) {
-      finalUrl = `${base}/${p}`;
-      console.log('[DOC URL DEBUG] Case: storage/v1/object/public/ prefix detected');
-    }
-    // Si le chemin inclut déjà le nom du bucket
-    else if (p.startsWith('application-documents/')) {
-      finalUrl = `${base}/storage/v1/object/public/${p}`;
-      console.log('[DOC URL DEBUG] Case: application-documents/ prefix detected');
-    }
-    // Cas par défaut: ajouter le bucket
-    else {
-      finalUrl = `${base}/storage/v1/object/public/application-documents/${p}`;
-      console.log('[DOC URL DEBUG] Case: default, adding bucket prefix');
-    }
-    
-    console.log('[DOC URL DEBUG] Final URL:', finalUrl);
-    console.log('[DOC URL DEBUG] === ensureAbsoluteUrl END ===');
-    return finalUrl;
-  };
 
-  const getFileUrl = async (filePath: string) => {
-    return ensureAbsoluteUrl(filePath);
-  };
-
-  // Nettoie une URL Blob si c'en est une
-  const cleanupBlobUrl = (url: string) => {
-    if (url && url.startsWith('blob:')) {
-      URL.revokeObjectURL(url);
+    // Si le chemin est déjà une URL complète, la retourner directement.
+    if (filePath.startsWith('http')) {
+      return filePath;
     }
+
+    // Utiliser l'API Supabase pour obtenir l'URL publique correcte
+    const { data } = supabase.storage
+      .from('application-documents')
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
   };
 
   const downloadFile = async (fileUrl: string, fileName: string) => {
-    console.log('[DOWNLOAD DEBUG] Attempting to download:', fileName);
-    console.log('[DOWNLOAD DEBUG] File URL:', fileUrl);
-    const finalUrl = ensureAbsoluteUrl(fileUrl);
-    console.log('[DOWNLOAD DEBUG] Final URL:', finalUrl);
-    window.open(finalUrl, '_blank');
+    try {
+      const finalUrl = await getFileUrl(fileUrl);
+      window.open(finalUrl, '_blank');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast({ 
+        variant: 'destructive', 
+        title: 'Erreur de téléchargement',
+        description: 'Impossible de récupérer l\'URL du fichier.'
+      });
+    }
   };
 
   const handleStatusChange = async (newStatus: Application['status']) => {
@@ -548,7 +570,7 @@ export default function CandidateAnalysis() {
           <TabsContent value="info" className="mt-4 sm:mt-6">
             <div className="space-y-4 sm:space-y-6">
               <ProfileTab application={application} />
-              <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} />
+              <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} toast={toast} />
               <ReferencesTab application={application} />
               <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} />
             </div>
