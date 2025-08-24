@@ -1376,7 +1376,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         </div>
                         <div>
                           <span className="text-muted-foreground">Années d'expérience:</span>
-                          <p>{formData.yearsOfExperience || "Non renseigné"}</p>
+                          <p>{formData.yearsExperience || "Non renseigné"}</p>
                         </div>
                       </div>
                     </div>
@@ -1431,16 +1431,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       onCheckedChange={(checked) => setFormData({ ...formData, consent: checked as boolean })}
                     />
                     <Label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed">
-                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature 
-                      conformément à la{" "}
-                      <Link 
-                        to="/company-context" 
-                        className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        politique de confidentialité de OneHCM
-                      </Link>.
+                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature
+                      conformément à la <Link to="/privacy-policy" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link>.
                     </Label>
                   </div>
                   <div className="flex items-center justify-between mt-6">

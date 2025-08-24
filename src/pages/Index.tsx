@@ -23,6 +23,9 @@ const Index = () => {
   const jobOffers: JobOffer[] = data ?? [];
   const preLaunch = isPreLaunch();
 
+  // Helper to normalize location which can be string | string[] from the API
+  const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
+
   useEffect(() => {
     if (!user) return;
     
@@ -57,10 +60,12 @@ const Index = () => {
     );
   }
 
-  const filteredJobs = jobOffers.filter(job => 
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobOffers.filter(job => {
+    const hayTitle = (job.title || "").toLowerCase();
+    const hayLoc = normalizeLocation(job.location).toLowerCase();
+    const needle = (searchTerm || "").toLowerCase();
+    return hayTitle.includes(needle) || hayLoc.includes(needle);
+  });
 
   return (
     <Layout showFooter={true}>
@@ -192,7 +197,7 @@ const Index = () => {
                 <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                   <JobCard
                     title={job.title}
-                    location={job.location}
+                    location={normalizeLocation(job.location)}
                     contractType={job.contract_type}
                     description={job.description}
                     isPreview={true}
@@ -225,7 +230,7 @@ const Index = () => {
                     <div className="font-medium text-base sm:text-lg">{job.title}</div>
                     {!preLaunch && (
                       <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                        <span className="bg-gray-100 px-2 py-1 rounded">{job.location}</span>
+                        <span className="bg-gray-100 px-2 py-1 rounded">{normalizeLocation(job.location)}</span>
                         <span className="bg-gray-100 px-2 py-1 rounded">{job.contract_type}</span>
                       </div>
                     )}
@@ -251,7 +256,7 @@ const Index = () => {
                     } items-center gap-4 p-4`}
                   >
                     <div className="font-medium">{job.title}</div>
-                    {!preLaunch && <div className="text-muted-foreground">{job.location}</div>}
+                    {!preLaunch && <div className="text-muted-foreground">{normalizeLocation(job.location)}</div>}
                     {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
                     <div className="flex justify-center">
                       <Button 

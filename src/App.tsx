@@ -22,6 +22,7 @@ const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword").then(module => ({ default: module.ResetPassword })));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 // Candidate pages
 const CandidateJobs = lazy(() => import("./pages/candidate/CandidateJobs"));
@@ -78,6 +79,7 @@ const router = createBrowserRouter(
       <Route path="candidate/profile" element={<CandidateProfile />} />
       <Route path="candidate/settings" element={<CandidateSettings />} />
       <Route path="company-context" element={<CompanyContext />} />
+      <Route path="privacy-policy" element={<PrivacyPolicy />} />
       <Route path="reset-password" element={<ResetPassword />} />
       
       {/* Recruiter Routes */}
