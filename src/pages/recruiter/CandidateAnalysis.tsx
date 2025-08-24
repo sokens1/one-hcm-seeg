@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+
 import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, GraduationCap, Star, Info, FileText, Eye, Download, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Link as RouterLink } from "react-router-dom";
@@ -280,7 +282,7 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile }:
     fileName: ''
   });
 
-  
+  // Helper pour ouvrir un document en prévisualisation
   const handlePreview = async (fileUrl: string, fileName: string) => {
     try {
       const absUrl = await getFileUrl(fileUrl);
@@ -405,6 +407,7 @@ export default function CandidateAnalysis() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isRecruiter } = useAuth();
   
   const { data: application, isLoading, error } = useApplication(id);
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
@@ -559,16 +562,18 @@ export default function CandidateAnalysis() {
                 <EvaluationProtocol />
               </div>
               <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button className="w-full" onClick={() => handleStatusChange('incubation')}>Déplacer en Incubation</Button>
-                    <Button className="w-full" onClick={() => handleStatusChange('embauche')}>Engager</Button>
-                    <Button variant="destructive" className="w-full" onClick={() => handleStatusChange('refuse')}>Refuser</Button>
-                  </CardContent>
-                </Card>
+                {isRecruiter && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <Button className="w-full" onClick={() => handleStatusChange('incubation')}>Déplacer en Incubation</Button>
+                      <Button className="w-full" onClick={() => handleStatusChange('embauche')}>Engager</Button>
+                      <Button variant="destructive" className="w-full" onClick={() => handleStatusChange('refuse')}>Refuser</Button>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           </TabsContent>
