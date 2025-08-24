@@ -10,6 +10,7 @@ import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, Messa
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 interface ApplicationFormAdvancedProps {
   jobTitle: string;
@@ -472,8 +473,8 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                       onCheckedChange={(checked) => setFormData({ ...formData, consent: checked as boolean })}
                     />
                     <Label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed">
-                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature 
-                      conformément à la politique de confidentialité de la SEEG et aux règlements RGPD.
+                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature
+                      conformément à la <Link to="/privacy-policy" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link> de la SEEG et aux règlements RGPD.
                     </Label>
                   </div>
                 </div>
