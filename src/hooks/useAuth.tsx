@@ -4,7 +4,7 @@ import { User, Session, AuthResponse, AuthError, type RealtimeChannel } from "@s
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SignUpMetadata {
-  role: "candidat" | "recruteur" | "admin";
+  role: "candidat" | "recruteur" | "admin" | "observateur";
   first_name?: string;
   last_name?: string;
   phone?: string;
@@ -19,6 +19,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  isRoleLoading: boolean;
   isUpdating: boolean;
   signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<AuthResponse>;
@@ -28,6 +29,7 @@ interface AuthContextType {
   isCandidate: boolean;
   isRecruiter: boolean;
   isAdmin: boolean;
+  isObserver: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,6 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isRoleLoading, setIsRoleLoading] = useState(false);
   const [dbRole, setDbRole] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
@@ -54,16 +57,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         channelRef.current = null;
       }
       try {
-        const { data } = await supabase
+        setIsRoleLoading(true);
+        const { data, error } = await supabase
           .from('users')
           .select('role')
           .eq('id', uid)
           .single();
         if (!mounted) return;
-        setDbRole((data as { role?: string } | null)?.role ?? null);
-      } catch {
+        
+        if (error) {
+          console.warn('Failed to fetch user role:', error.message);
+          setDbRole(null);
+        } else {
+          setDbRole((data as { role?: string } | null)?.role ?? null);
+        }
+      } catch (err) {
         if (!mounted) return;
+        console.warn('Error fetching user role:', err);
         setDbRole(null);
+      } finally {
+        if (mounted) {
+          setIsRoleLoading(false);
+        }
       }
       // Realtime subscription on own row
       const channel = supabase.channel(`users-role-${uid}`)
@@ -80,14 +95,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       channelRef.current = channel;
     };
 
-    // Set up auth state listener
+    // Keep track of current user ID to avoid unnecessary updates
+    let currentUserIdRef = user?.id;
+    
+    // Set up auth state listener - with stability check to avoid unnecessary re-renders
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         if (!mounted) return;
+        
+        const newUserId = session?.user?.id;
+        
+        // Skip redundant updates during focus changes that don't change user
+        if (event === 'TOKEN_REFRESHED' && newUserId === currentUserIdRef) {
+          return;
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
-        const uid = session?.user?.id;
-        setupForUid(uid);
+        currentUserIdRef = newUserId;
+        
+        // Always setup role for new sessions, but avoid redundant calls
+        setupForUid(newUserId);
       }
     );
 
@@ -111,11 +139,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Remove this redundant useEffect as role is already fetched in the main effect above
+
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    // Pour le développement, on peut désactiver la confirmation email
+    // Base URL selon l'environnement (dev/prod)
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
+    const redirectUrl = `${siteBaseUrl}/`;
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -123,16 +153,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       options: {
         emailRedirectTo: redirectUrl,
         data: metadata,
-        // En développement, on peut essayer de contourner la confirmation email
-        ...(isDevelopment && { emailRedirectTo: undefined })
       }
     });
     
     // Si on est en développement et qu'il y a une erreur de rate limit,
-    // on peut essayer de créer l'utilisateur directement
+    // on peut assouplir l'expérience côté UI
     if (error && error.message.includes('rate limit') && isDevelopment) {
       console.warn('Rate limit atteint, tentative de création directe en mode développement');
-      // En développement, on peut simuler une inscription réussie
+      // En développement, on peut simuler une inscription réussie côté UI
       return { error: null };
     }
     
@@ -241,7 +269,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/reset-password`;
+    // Base URL selon l'environnement (dev/prod)
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
+    const redirectUrl = `${siteBaseUrl}/reset-password`;
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
@@ -250,7 +281,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
-  // Helper functions to check user role
+  // Helper functions to check user role (normalize FR/EN + admin)
   const getUserRole = () => {
     // Prefer DB role for dynamic behavior; fallback to auth metadata; default 'candidat'
     return dbRole || (user?.user_metadata?.role as string | undefined) || 'candidat';
@@ -260,11 +291,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isCandidate = roleValue === 'candidat' || roleValue === 'candidate';
   const isRecruiter = roleValue === 'recruteur' || roleValue === 'recruiter';
   const isAdmin = roleValue === 'admin';
+  const isObserver = roleValue === 'observateur' || roleValue === 'observer';
 
   const value = {
     user,
     session,
     isLoading,
+    isRoleLoading,
     isUpdating,
     signUp,
     signIn,
@@ -273,7 +306,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resetPassword,
     isCandidate,
     isRecruiter,
-    isAdmin
+    isAdmin,
+    isObserver
   };
 
   return (
@@ -287,6 +321,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
+    // En mode développement/test, fournir des valeurs par défaut pour éviter les crashes
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+      console.warn('useAuth called outside AuthProvider, returning default values');
+      return {
+        user: null,
+        session: null,
+        isLoading: false,
+        isRoleLoading: false,
+        isUpdating: false,
+        signUp: async () => ({ error: null }),
+        signIn: async () => ({ data: null, error: null }),
+        signOut: async () => ({ error: null }),
+        updateUser: async () => false,
+        resetPassword: async () => ({ error: null }),
+        isCandidate: false,
+        isRecruiter: false,
+        isAdmin: false,
+      } as AuthContextType;
+    }
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

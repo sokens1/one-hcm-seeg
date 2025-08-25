@@ -12,7 +12,7 @@ interface RecruiterLayoutProps {
 }
 
 export function RecruiterLayout({ children, className = "" }: RecruiterLayoutProps) {
-  const { signOut } = useAuth();
+  const { signOut, isObserver } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -30,8 +30,8 @@ export function RecruiterLayout({ children, className = "" }: RecruiterLayoutPro
             <div className="flex items-center min-w-0">
               <SidebarTrigger className="mr-2 sm:mr-4" />
               <h1 className="text-sm sm:text-lg font-semibold truncate">
-                <span className="hidden sm:inline">Espace Recruteur</span>
-                <span className="sm:hidden">Recruteur</span>
+                <span className="hidden sm:inline">{isObserver ? "Espace Observateur" : "Espace Recruteur"}</span>
+                <span className="sm:hidden">{isObserver ? "Observateur" : "Recruteur"}</span>
               </h1>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">

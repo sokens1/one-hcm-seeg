@@ -79,7 +79,7 @@
 
     --sidebar-primary: 240 5.9% 10%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 100%;
 
     --sidebar-accent: 240 4.8% 95.9%;
 
@@ -135,6 +135,130 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+  }
+
+  /* Responsive, legible base typography */
+  html {
+    font-size: 15px; /* slightly smaller default for phones */
+  }
+
+  @media (min-width: 640px) {
+    html { font-size: 16px; }
+  }
+
+  @media (min-width: 1024px) {
+    html { font-size: 17px; }
+  }
+
+  h1 { font-size: clamp(1.375rem, 1.1rem + 1vw, 2rem); line-height: 1.2; font-weight: 700; }
+  h2 { font-size: clamp(1.25rem, 1.05rem + 0.7vw, 1.75rem); line-height: 1.25; font-weight: 700; }
+  h3 { font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem); line-height: 1.3; font-weight: 600; }
+  h4 { font-size: 1.125rem; line-height: 1.35; font-weight: 600; }
+  p, li { line-height: 1.6; }
+
+  /* Better tap targets on mobile */
+  button, a, input, select, textarea { touch-action: manipulation; }
+}
+
+@layer utilities {
+  /* Animation classes for dashboard */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-bounce-soft {
+    animation: bounceSoft 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes bounceSoft {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Shadow utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  /* ReactQuill Editor Styling */
+  .quill-editor-container .ql-editor {
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .quill-editor-container .ql-toolbar {
+    border-top: 1px solid hsl(var(--border));
+    border-left: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    border-bottom: none;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .quill-editor-container .ql-container {
+    border-left: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--border));
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+  }
+
+  .quill-editor-container .ql-editor:focus {
+    outline: none;
+  }
+
+  .quill-editor-container .ql-editor.ql-blank::before {
+    color: hsl(var(--muted-foreground));
+    font-style: normal;
   }
 }

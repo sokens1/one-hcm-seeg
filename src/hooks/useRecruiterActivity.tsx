@@ -11,25 +11,24 @@ export interface Activity {
   job_title: string;
 }
 
-const fetchRecruiterActivity = async (recruiterId: string): Promise<Activity[]> => {
-  if (!recruiterId) return [];
+const fetchRecruiterActivity = async (userId: string): Promise<Activity[]> => {
+  if (!userId) return [];
 
-  const { data: activities, error } = await supabase.rpc(
-    'get_recruiter_activity',
-    { p_recruiter_id: recruiterId }
-  );
+  // Use the RPC function to get all recent activities, bypassing RLS.
+  const { data: activities, error } = await supabase.rpc('get_recruiter_activities');
 
   if (error) {
-    console.error("Error fetching recruiter activity:", error);
-    throw new Error("Could not fetch recruiter activity");
+    console.error("Error fetching activities:", error);
+    throw new Error("Could not fetch activities");
   }
 
-  return (activities as any[]).map(a => ({
-    id: a.id,
-    type: a.type,
-    description: a.description,
-    created_at: a.created_at,
-    job_title: a.job_title,
+  // Transform the RPC result into the Activity format
+  return (activities || []).slice(0, 5).map((activity: any) => ({
+    id: activity.id,
+    type: "new_application" as const, // Assuming all activities are new applications for now
+    description: `Nouvelle candidature de ${activity.candidate_name}`,
+    created_at: activity.created_at,
+    job_title: activity.job_title,
   }));
 };
 
@@ -40,6 +39,8 @@ export function useRecruiterActivity() {
     queryKey: ["recruiterActivity", user?.id],
     queryFn: () => fetchRecruiterActivity(user!.id),
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 30 * 1000, // 30 seconds - refresh more frequently
+    refetchInterval: 60 * 1000, // Auto-refresh every minute
+    refetchIntervalInBackground: true, // Continue refreshing in background
   });
 }

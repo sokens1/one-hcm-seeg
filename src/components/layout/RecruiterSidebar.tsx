@@ -12,6 +12,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/useAuth";
 
 const menuItems = [
   {
@@ -20,12 +21,12 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Listes des candidats",
+    title: "Liste des candidatures",
     url: "/recruiter/candidates",
     icon: Users,
   },
   {
-    title: "Poste à pourvoir",
+    title: "Postes à pourvoir",
     url: "/recruiter/jobs",
     icon: Briefcase,
   },
@@ -39,6 +40,7 @@ const menuItems = [
 export function RecruiterSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
+  const { isObserver } = useAuth();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => {
@@ -61,7 +63,7 @@ export function RecruiterSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className={`text-sm sm:text-base font-medium px-2 sm:px-3 ${state === "collapsed" ? "sr-only" : ""}`}>
-            Recruteur
+            {isObserver ? "Observateur" : "Recruteur"}
           </SidebarGroupLabel>
           
           <SidebarGroupContent>

@@ -4,6 +4,7 @@
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
+  -- First, insert or update the user in the public.users table
   INSERT INTO public.users (id, email, role, first_name, last_name, phone, date_of_birth)
   VALUES (
     NEW.id,
@@ -31,14 +32,27 @@ BEGIN
     phone = COALESCE(EXCLUDED.phone, public.users.phone),
     date_of_birth = COALESCE(EXCLUDED.date_of_birth, public.users.date_of_birth),
     updated_at = now();
+
+  -- Then, if it's a new user, create a welcome notification
+  IF (TG_OP = 'INSERT') THEN
+    INSERT INTO public.notifications (user_id, title, message, link)
+    VALUES (
+        NEW.id,
+        'Bienvenue sur la plateforme SEEG',
+        'Votre compte a été créé avec succès. Vous pouvez maintenant postuler à nos offres d''emploi.',
+        '/jobs'
+    );
+  END IF;
   
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger qui s'exécute après chaque inscription ou connexion
-CREATE OR REPLACE TRIGGER on_auth_user_created
-  AFTER INSERT OR UPDATE ON auth.users
+-- This trigger now handles both user sync and welcome notification
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Synchroniser les utilisateurs existants dans auth.users avec la table users

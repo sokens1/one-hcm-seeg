@@ -6,9 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Mail, User, KeyRound } from "lucide-react";
+import { Mail, User, KeyRound, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { FullPageSpinner } from "@/components/ui/spinner";
 
 export default function CandidateSettings() {
   const { user, isLoading } = useAuth();
@@ -23,6 +24,8 @@ export default function CandidateSettings() {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [changingPwd, setChangingPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -39,11 +42,7 @@ export default function CandidateSettings() {
   }, [user]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <FullPageSpinner text="Chargement des paramètres..." />;
   }
 
   if (!isAuthenticated) {
@@ -154,11 +153,43 @@ export default function CandidateSettings() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    type={showNewPwd ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showNewPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    onClick={() => setShowNewPwd((v) => !v)}
+                    className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                  >
+                    {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <div>
                 <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPwd ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showConfirmPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    onClick={() => setShowConfirmPwd((v) => !v)}
+                    className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                  >
+                    {showConfirmPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
             </div>
             <div className="flex justify-end">

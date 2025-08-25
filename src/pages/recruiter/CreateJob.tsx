@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { ArrowLeft, Save, Send, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateJobOffer } from "@/hooks/useRecruiterDashboard";
@@ -57,6 +58,9 @@ export default function CreateJob() {
   };
 
   const handleSubmit = async (status: 'draft' | 'published') => {
+    console.log('[CreateJob] Starting submission with status:', status);
+    console.log('[CreateJob] Form data:', formData);
+
     // Validate required fields for DB NOT NULL constraints
     if (!formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements) {
       toast({
@@ -68,21 +72,18 @@ export default function CreateJob() {
     }
 
     // Validate contract type against DB CHECK constraint
-    const allowedContracts = ['CDI', 'CDD', 'Stage', 'Freelance'];
+    const allowedContracts = ['CDI avec période d\'essai', 'CDI', 'CDD', 'Stage', 'Freelance'];
     if (!allowedContracts.includes(formData.contractType)) {
       toast({
         title: "Type de contrat invalide",
-        description: "Le type de contrat doit être CDI, CDD, Stage ou Freelance.",
+        description: "Le type de contrat doit être CDI avec période d'essai, CDI, CDD, Stage ou Freelance.",
         variant: "destructive",
       });
       return;
     }
 
-    const toList = (text: string) =>
-      text
-        .split(/\r?\n|\u2022|-/) // newline or bullet separators
-        .map(s => s.trim())
-        .filter(Boolean);
+
+    const mappedStatus = status === 'published' ? 'active' : 'draft';
 
     const jobData = {
       title: formData.title,
@@ -92,16 +93,20 @@ export default function CreateJob() {
       profile: formData.requirements, // CONNAISSANCES SAVOIR ET REQUIS devient le profil
       categorie_metier: formData.categorieMetier || null,
       date_limite: formData.dateLimite ? new Date(formData.dateLimite).toISOString() : null,
-      reporting_line: formData.reportingLine || undefined,
-      salary_note: formData.salaryNote || undefined,
-      start_date: formData.startDate || undefined,
-      responsibilities: formData.responsibilities ? toList(formData.responsibilities) : undefined,
-      requirements: formData.requirements ? toList(formData.requirements) : undefined,
+      reporting_line: formData.reportingLine || null,
+      salary_note: formData.salaryNote || null,
+      start_date: formData.startDate || null,
+      // Ne pas envoyer les champs HTML vers les colonnes array de la DB
+      // responsibilities: formData.responsibilities,
+      // requirements: formData.requirements,
     };
-    const mappedStatus = status === 'published' ? 'active' : 'draft';
+
+    console.log('[CreateJob] Prepared job data:', jobData);
 
     try {
-      await createJobOffer({ jobData, status: mappedStatus });
+      const result = await createJobOffer({ jobData, status: mappedStatus });
+      console.log('[CreateJob] Creation successful:', result);
+      
       toast({
         title: "Offre d'emploi sauvegardée",
         description: `L'offre a été ${status === 'published' ? 'publiée' : 'sauvegardée comme brouillon'} avec succès.`,
@@ -109,9 +114,11 @@ export default function CreateJob() {
       });
       navigate("/recruiter");
     } catch (error) {
+      console.error('[CreateJob] Creation failed:', error);
+      
       toast({
         title: "Erreur lors de la sauvegarde",
-        description: "Une erreur est survenue. Veuillez réessayer.",
+        description: error instanceof Error ? error.message : "Une erreur est survenue. Veuillez réessayer.",
         variant: "destructive",
       });
     }
@@ -179,10 +186,11 @@ export default function CreateJob() {
                         <SelectValue placeholder="Type de contrat" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="CDI">CDI (Contrat à Durée Indéterminée)</SelectItem>
-                        <SelectItem value="CDD">CDD (Contrat à Durée Déterminée)</SelectItem>
-                        <SelectItem value="Stage">Stage</SelectItem>
-                        <SelectItem value="Freelance">Freelance</SelectItem>
+                        <SelectItem value="CDI avec période d'essai">CDI avec période d'essai</SelectItem>
+                        <SelectItem value="CDI">CDI </SelectItem>
+                        <SelectItem value="CDD">CDD </SelectItem>
+                        {/* <SelectItem value="Stage">Stage</SelectItem>
+                        <SelectItem value="Freelance">Freelance</SelectItem>*/}
                       </SelectContent>
                     </Select>
                   </div>
@@ -198,7 +206,7 @@ export default function CreateJob() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Cadre">Cadre</SelectItem>
-                      <SelectItem value="Cadre directeur">Cadre directeur</SelectItem>
+                      <SelectItem value="Cadre directeur">Cadre de Direction </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -259,26 +267,24 @@ export default function CreateJob() {
               {/* Missions principales */}
               <div className="space-y-2">
                 <Label htmlFor="responsibilities" className="text-sm sm:text-base font-medium">Missions principales *</Label>
-                <Textarea
-                  id="responsibilities"
+                <ReactQuill
+                  theme="snow"
                   value={formData.responsibilities}
-                  onChange={(e) => handleInputChange("responsibilities", e.target.value)}
+                  onChange={(content) => handleInputChange("responsibilities", content)}
                   placeholder={"Saisissez une mission par ligne\nEx:\n- Définir et piloter la politique RH\n- Élaborer et superviser la gestion administrative du personnel"}
-                  className="min-h-[140px] sm:min-h-[180px] text-sm sm:text-base"
-                  required
+                  className="bg-card quill-editor-container"
                 />
               </div>
 
               {/* Connaissance savoir et requis */}
               <div className="space-y-2">
                 <Label htmlFor="requirements" className="text-sm sm:text-base font-medium">Connaissance savoir et requis *</Label>
-                <Textarea
-                  id="requirements"
+                <ReactQuill
+                  theme="snow"
                   value={formData.requirements}
-                  onChange={(e) => handleInputChange("requirements", e.target.value)}
+                  onChange={(content) => handleInputChange("requirements", content)}
                   placeholder={"Saisissez un requis par ligne\nEx:\n- Bac+5 en RH, Droit social, Psychologie du travail\n- Expérience managériale de X années"}
-                  className="min-h-[140px] sm:min-h-[180px] text-sm sm:text-base"
-                  required
+                  className="bg-card quill-editor-container"
                 />
               </div>
 

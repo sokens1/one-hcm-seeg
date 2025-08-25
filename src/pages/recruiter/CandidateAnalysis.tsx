@@ -2,20 +2,37 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useApplication, useRecruiterApplications, Application } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
+import { getMetierQuestionsForTitle } from "@/data/metierQuestions";
 import { supabase } from "@/integrations/supabase/client";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, GraduationCap, Star, Info, Linkedin, Link as LinkIcon, FileText, Eye, Download, Users, X } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useAuth } from "@/hooks/useAuth";
+
+import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+
+const getBadgeVariant = (status: Application['status']) => {
+  switch (status) {
+    case 'candidature':
+      return 'default';
+    case 'incubation':
+      return 'secondary';
+    case 'embauche':
+      return 'success';
+    case 'refuse':
+      return 'destructive';
+    default:
+      return 'default';
+  }
+};
 
 const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, label: string, value?: string | null, isLink?: boolean }) => {
   if (!value) return null;
@@ -38,42 +55,31 @@ const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, labe
 
 const ProfileTab = ({ application }: { application: Application }) => {
   const user = application?.users;
-  
-  // Récupérer le profil candidat séparément
-  const [candidateProfile, setCandidateProfile] = useState(null);
-  
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!application?.candidate_id) return;
-      
-      const { data, error } = await supabase
-        .from('candidate_profiles')
-        .select('*')
-        .eq('user_id', application.candidate_id)
-        .maybeSingle();
-        
-      if (!error && data) {
-        setCandidateProfile(data);
-      }
-    };
-    
-    fetchProfile();
-  }, [application?.candidate_id]);
-  
-  const profile = candidateProfile;
+  // Utiliser le profil inclus via la RPC pour éviter les problèmes RLS
+  const profile = (application?.users as any)?.candidate_profiles || null;
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><User className="w-4 h-4 sm:w-5 sm:h-5"/> Informations Personnelles</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
-        <InfoRow icon={User} label="Prénom" value={user?.first_name} />
-        <InfoRow icon={User} label="Nom" value={user?.last_name} />
-        <InfoRow icon={Mail} label="Email" value={user?.email} />
-        <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />
-        <InfoRow icon={Calendar} label="Date de naissance" value={user?.date_of_birth ? format(new Date(user.date_of_birth), 'PPP', { locale: fr }) : undefined} />
-        <InfoRow icon={Info} label="Sexe" value={profile?.gender} />
-        <InfoRow icon={Briefcase} label="Poste actuel" value={profile?.current_position} />
+      <CardContent className="p-4 sm:p-6">
+        {/* Layout horizontal avec grid responsive */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="space-y-3 sm:space-y-4">
+            <InfoRow icon={User} label="Prénom" value={user?.first_name} />
+            <InfoRow icon={User} label="Nom" value={user?.last_name} />
+            <InfoRow icon={Mail} label="Email" value={user?.email} />
+          </div>
+          <div className="space-y-3 sm:space-y-4">
+            <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />
+            <InfoRow icon={Calendar} label="Date de naissance" value={user?.date_of_birth ? format(new Date(user.date_of_birth), 'PPP', { locale: fr }) : undefined} />
+            <InfoRow icon={Info} label="Sexe" value={profile?.gender} />
+          </div>
+          <div className="space-y-3 sm:space-y-4">
+            <InfoRow icon={Briefcase} label="Poste actuel" value={profile?.current_position} />
+            <InfoRow icon={MapPin} label="Adresse" value={profile?.address} />
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
@@ -98,52 +104,83 @@ const ReferencesTab = ({ application }: { application: Application }) => {
   );
 };
 
-const MtpAnswersDisplay = ({ mtpAnswers }) => {
+const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
+  // Récupérer les questions MTP spécifiques pour ce poste
+  const questions = getMetierQuestionsForTitle(jobTitle);
+
   if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
 
-  const renderAnswers = (title, answers) => (
-    <div>
-      <h4 className="font-semibold text-sm sm:text-base mb-2">{title}</h4>
-      {answers && answers.length > 0 ? (
-        <ul className="list-disc list-inside pl-3 sm:pl-4 text-xs sm:text-sm text-muted-foreground">
-          {answers.map((answer, index) => <li key={index}>{answer}</li>)}
-        </ul>
-      ) : <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse.</p>}
-    </div>
-  );
+  const renderSection = (title, section, color, answers) => {
+    const validAnswers = (answers || []).filter(answer => answer && answer.trim() !== '');
+    const sectionQuestions = questions[section] || [];
+
+    return (
+      <div className="mb-6">
+        <h4 className="font-semibold text-sm sm:text-base mb-3">{title} ({validAnswers.length}/{sectionQuestions.length} réponses)</h4>
+        {validAnswers.length > 0 ? (
+          <div className="space-y-3">
+            {validAnswers.map((answer, index) => (
+              <div key={index} className={`border-l-2 ${color} pl-3`}>
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
+                  {sectionQuestions[index] || `Question ${index + 1}`}
+                </p>
+                <p className="text-xs sm:text-sm text-foreground">{answer}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse aux questions {title.toLowerCase()}.</p>
+        )}
+      </div>
+    );
+  };
 
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="text-base sm:text-lg">Réponses au Questionnaire MTP</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
-        {renderAnswers("Métier", mtpAnswers.metier)}
-        {renderAnswers("Talent", mtpAnswers.talent)}
-        {renderAnswers("Paradigme", mtpAnswers.paradigme)}
-      </CardContent>
-    </Card>
-  );
-};
-
-// Restored Evaluation Protocol as requested
-const EvaluationProtocol = () => {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Protocole d'évaluation</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">Le module d'évaluation est en cours de développement.</p>
-        {/* The original structure will be restored here once defined */}
+      <CardContent className="space-y-4 p-4 sm:p-6">
+        {renderSection('Questions Métier', 'metier', 'border-blue-500', mtpAnswers.metier)}
+        {renderSection('Questions Talent', 'talent', 'border-green-500', mtpAnswers.talent)}
+        {renderSection('Questions Paradigme', 'paradigme', 'border-purple-500', mtpAnswers.paradigme)}
       </CardContent>
     </Card>
   );
 };
 
 const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl: string, fileName: string, isOpen: boolean, onClose: () => void }) => {
-  const isPdf = fileName.toLowerCase().endsWith('.pdf');
-  const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(fileName);
+  const getFileType = (fileName: string) => {
+    const ext = fileName.toLowerCase().split('.').pop() || '';
+    
+    if (ext === 'pdf') return 'pdf';
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(ext)) return 'image';
+    if (['doc', 'docx'].includes(ext)) return 'word';
+    if (['xls', 'xlsx'].includes(ext)) return 'excel';
+    if (['ppt', 'pptx'].includes(ext)) return 'powerpoint';
+    if (['txt', 'rtf'].includes(ext)) return 'text';
+    if (['zip', 'rar', '7z'].includes(ext)) return 'archive';
+    return 'other';
+  };
+
+  const fileType = getFileType(fileName);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    if (!isOpen) {
+      setError(null);
+      setIsLoading(true);
+      // Nettoyer l'URL Blob quand le modal se ferme
+      if (fileUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(fileUrl);
+      }
+    } else if (fileUrl) {
+      // Pas de vérification HEAD car elle échoue avec les permissions RLS
+      // La modale gère les erreurs de chargement directement
+      setIsLoading(false);
+    }
+  }, [isOpen, fileUrl, fileName]);
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -155,27 +192,105 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
               <X className="w-4 h-4" />
             </Button>
           </DialogTitle>
+          <DialogDescription>
+            Prévisualisation du document {fileName}. Utilisez les contrôles pour naviguer dans le contenu.
+          </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
-          {isPdf ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full space-y-4">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-sm text-muted-foreground">Chargement du document...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-full text-red-500 space-y-4 p-6">
+              <FileText className="w-16 h-16 text-red-300" />
+              <div className="text-center space-y-2">
+                <p className="text-sm font-medium">Document inaccessible</p>
+                <p className="text-xs text-muted-foreground max-w-md">{error}</p>
+                <div className="pt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => window.open(fileUrl, '_blank')}
+                    className="mr-2"
+                  >
+                    Essayer dans un nouvel onglet
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={onClose}>
+                    Fermer
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : fileType === 'pdf' ? (
             <embed
               src={fileUrl}
               type="application/pdf"
               className="w-full h-full"
               title={`Prévisualisation de ${fileName}`}
+              onError={() => setError("Le fichier PDF n'existe pas ou a été supprimé du storage.")}
             />
-          ) : isImage ? (
+          ) : fileType === 'image' ? (
             <img
               src={fileUrl}
               alt={fileName}
               className="w-full h-full object-contain"
+              onError={() => setError("Le fichier image n'existe pas ou a été supprimé du storage.")}
             />
-          ) : (
+          ) : fileType === 'word' || fileType === 'excel' || fileType === 'powerpoint' ? (
             <iframe
-              src={`https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`}
+              src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`}
               className="w-full h-full border-0"
               title={`Prévisualisation de ${fileName}`}
+              onError={() => {
+                // Fallback vers Google Docs Viewer si Office Online échoue
+                const iframe = document.querySelector('iframe[title*="Prévisualisation"]') as HTMLIFrameElement;
+                if (iframe) {
+                  iframe.src = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+                }
+              }}
             />
+          ) : fileType === 'text' ? (
+            <iframe
+              src={fileUrl}
+              className="w-full h-full border-0 bg-white"
+              title={`Prévisualisation de ${fileName}`}
+              onError={() => setError("Impossible de charger le fichier texte.")}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <FileText className="w-16 h-16 text-muted-foreground mx-auto" />
+                <div>
+                  <p className="text-sm font-medium">Prévisualisation non disponible</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Le type de fichier "{fileName.split('.').pop()?.toUpperCase()}" ne peut pas être prévisualisé directement.
+                  </p>
+                  <div className="flex gap-2 mt-4 justify-center">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => window.open(fileUrl, '_blank')}
+                    >
+                      Ouvrir dans un nouvel onglet
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = fileUrl;
+                        link.download = fileName;
+                        link.click();
+                      }}
+                    >
+                      Télécharger
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </DialogContent>
@@ -183,17 +298,12 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   );
 };
 
-const DocumentsTab = ({ documents, documentsLoading, getFileUrl, downloadFile }: { documents: any[], documentsLoading: boolean, getFileUrl: (path: string) => string, downloadFile: (path: string, name: string) => void }) => {
+const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, toast }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void, toast: any }) => {
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean, fileUrl: string, fileName: string }>({
     isOpen: false,
     fileUrl: '',
     fileName: ''
   });
-
-  const handlePreview = (filePath: string, fileName: string) => {
-    const fileUrl = getFileUrl(filePath);
-    setPreviewModal({ isOpen: true, fileUrl, fileName });
-  };
 
   return (
     <>
@@ -202,30 +312,62 @@ const DocumentsTab = ({ documents, documentsLoading, getFileUrl, downloadFile }:
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5"/> Documents</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 sm:space-y-3 p-4 sm:p-6">
-          {documentsLoading ? (
-            <p className="text-xs sm:text-sm">Chargement...</p>
-          ) : documents.length > 0 ? (
-            documents.map((doc) => (
-              <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
-                  <div className="overflow-hidden min-w-0">
-                    <p className="font-medium truncate text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</p>
-                    <p className="text-xs text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
+          {isLoading ? (
+            <p className="text-xs sm:text-sm">Chargement des documents...</p>
+          ) : error ? (
+            <div className="text-red-500 text-xs sm:text-sm">
+              <p>Erreur de chargement des documents:</p>
+              <p className="text-xs mt-1">{error.message}</p>
+              <p className="text-xs mt-1">Vérifiez la console pour plus de détails.</p>
+            </div>
+          ) : documents && documents.length > 0 ? (
+            <div>
+              <p className="text-xs text-muted-foreground mb-3">{documents.length} document(s) trouvé(s)</p>
+              {documents.map((doc) => {
+                return (
+                  <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
+                      <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                      <div className="overflow-hidden min-w-0">
+                        <p className="font-medium truncate text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</p>
+                        <p className="text-xs text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+                      <Button size="sm" variant="outline" onClick={async () => {
+                        try {
+                          // Utiliser directement getPublicUrl au lieu de passer par getFileUrl
+                          const { data } = supabase.storage
+                            .from('application-documents')
+                            .getPublicUrl(doc.file_url);
+                          
+                          setPreviewModal({ isOpen: true, fileUrl: data.publicUrl, fileName: doc.file_name });
+                        } catch (error) {
+                          console.error('Error getting preview URL:', error);
+                          toast({
+                            variant: "destructive",
+                            title: "Erreur de prévisualisation",
+                            description: "Impossible de récupérer l'URL du fichier pour la prévisualisation.",
+                          });
+                        }
+                      }} className="p-1 sm:p-2">
+                        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => {
+                        downloadFile(doc.file_url, doc.file_name);
+                      }} className="p-1 sm:p-2">
+                        <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-                  <Button size="sm" variant="outline" onClick={() => handlePreview(doc.file_path, doc.file_name)} className="p-1 sm:p-2">
-                    <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => downloadFile(doc.file_path, doc.file_name)} className="p-1 sm:p-2">
-                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                </div>
-              </div>
-            ))
+                );
+              })}
+            </div>
           ) : (
-            <p className="text-center text-xs sm:text-sm text-muted-foreground py-4">Aucun document.</p>
+            <div className="text-center text-xs sm:text-sm text-muted-foreground py-4">
+              <p>Aucun document trouvé.</p>
+              <p className="text-xs mt-2">Les documents peuvent ne pas être visibles en raison de permissions ou d'un problème de récupération.</p>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -240,52 +382,68 @@ const DocumentsTab = ({ documents, documentsLoading, getFileUrl, downloadFile }:
   );
 };
 
+const EvaluationProtocol = () => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Protocole 1</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">Le module Evaluation est en cours d'intégration.</p>
+        {/* The original structure will be restored here once defined */}
+      </CardContent>
+    </Card>
+  );
+};
+
 export default function CandidateAnalysis() {
-  const { id } = useParams();
+  const { toast } = useToast();
+  const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isRecruiter } = useAuth();
+  
   const { data: application, isLoading, error } = useApplication(id);
-  const { data: documents = [], isLoading: documentsLoading } = useApplicationDocuments(id);
+  const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
   const { updateApplicationStatus } = useRecruiterApplications(application?.job_offer_id);
 
-
   const jobId = searchParams.get('jobId') || application?.job_offer_id;
+  const jobTitle = application?.job_offers?.title;
 
-  const getFileUrl = (filePath: string) => {
-    // Si le chemin est déjà une URL complète, la retourner telle quelle
-    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+  const getFileUrl = async (filePath: string): Promise<string> => {
+    if (!filePath) {
+      throw new Error('File path is invalid.');
+    }
+
+    // Si le chemin est déjà une URL complète, la retourner directement.
+    if (filePath.startsWith('http')) {
       return filePath;
     }
-    // Sinon, générer l'URL publique depuis Supabase Storage
-    const { data } = supabase.storage.from('documents').getPublicUrl(filePath);
+
+    // Pour les buckets publics, on utilise getPublicUrl.
+    const { data } = supabase.storage
+      .from('application-documents')
+      .getPublicUrl(filePath);
+
+    if (!data.publicUrl) {
+      console.error(`Error getting public URL for path: ${filePath}`);
+      throw new Error('Impossible de générer le lien public du document.');
+    }
+
     return data.publicUrl;
   };
 
-  const downloadFile = async (filePath: string, fileName: string) => {
+  const downloadFile = async (fileUrl: string, fileName: string) => {
     try {
-      // Extraire le chemin relatif si c'est une URL complète
-      const relativePath = filePath.includes('/storage/v1/object/public/documents/') 
-        ? filePath.split('/storage/v1/object/public/documents/')[1]
-        : filePath;
-      
-      const { data, error } = await supabase.storage
-        .from('documents')
-        .download(relativePath);
-      
-      if (error) throw error;
-      
-      const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const finalUrl = await getFileUrl(fileUrl);
+      window.open(finalUrl, '_blank');
     } catch (error) {
-      console.error('Erreur lors du téléchargement:', error);
-      // Fallback: ouvrir dans un nouvel onglet
-      window.open(getFileUrl(filePath), '_blank');
+      console.error('Error downloading file:', error);
+      toast({ 
+        variant: 'destructive', 
+        title: 'Erreur de téléchargement',
+        description: 'Impossible de récupérer l\'URL du fichier.'
+      });
     }
   };
 
@@ -300,7 +458,11 @@ export default function CandidateAnalysis() {
       }
     } catch (e) {
       console.error("Erreur lors du changement de statut", e);
-      // Gérer l'affichage de l'erreur à l'utilisateur
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors du changement de statut du candidat.",
+      });
     }
   };
 
@@ -346,6 +508,10 @@ export default function CandidateAnalysis() {
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-tight">{candidateName}</h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">Candidature pour le poste de {application.job_offers?.title}</p>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">Candidature reçue le {format(new Date(application.created_at), 'PPP', { locale: fr })}</p>
+          <div className="flex items-center mt-2">
+            <p className="text-xs sm:text-sm text-muted-foreground mr-2">Statut:</p>
+            <Badge variant={getBadgeVariant(application.status)}>{application.status}</Badge>
+          </div>
         </header>
 
         <Tabs defaultValue="info" className="w-full">
@@ -356,9 +522,9 @@ export default function CandidateAnalysis() {
           <TabsContent value="info" className="mt-4 sm:mt-6">
             <div className="space-y-4 sm:space-y-6">
               <ProfileTab application={application} />
-              <DocumentsTab documents={documents} documentsLoading={documentsLoading} getFileUrl={getFileUrl} downloadFile={downloadFile} />
+              <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} toast={toast} />
               <ReferencesTab application={application} />
-              <MtpAnswersDisplay mtpAnswers={application.mtp_answers} />
+              <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} />
             </div>
           </TabsContent>
           <TabsContent value="evaluation" className="mt-4 sm:mt-6">
@@ -367,16 +533,18 @@ export default function CandidateAnalysis() {
                 <EvaluationProtocol />
               </div>
               <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button className="w-full" onClick={() => handleStatusChange('incubation')}>Déplacer en Incubation</Button>
-                    <Button className="w-full" onClick={() => handleStatusChange('embauche')}>Engager</Button>
-                    <Button variant="destructive" className="w-full" onClick={() => handleStatusChange('refuse')}>Refuser</Button>
-                  </CardContent>
-                </Card>
+                {isRecruiter && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <Button className="w-full" onClick={() => handleStatusChange('incubation')}>Déplacer en Incubation</Button>
+                      <Button className="w-full" onClick={() => handleStatusChange('embauche')}>Engager</Button>
+                      <Button variant="destructive" className="w-full" onClick={() => handleStatusChange('refuse')}>Refuser</Button>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           </TabsContent>

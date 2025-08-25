@@ -1,19 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Eye, Phone, MapPin, Calendar, User, Loader2, FileText, Download } from "lucide-react";
-import { Link } from "react-router-dom";
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Search, 
+  Eye, 
+  Download, 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Calendar, 
+  Briefcase,
+  FileText,
+  ExternalLink,
+  Filter,
+  Loader2
+} from "lucide-react";
 import { useRecruiterApplications } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
 import { useFileUpload } from "@/hooks/useFileUpload";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 // Types dérivés des applications
 type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse';
@@ -31,13 +48,28 @@ interface UICandidate {
   appliedDate: string;
   status: ApplicationStatus;
   jobTitle?: string;
+  linkedin_url?: string;
+  portfolio_url?: string;
 }
 
-function CandidateDetails({ candidate }: { candidate: UICandidate }) {
-  const { data: documents = [], isLoading, error } = useApplicationDocuments(candidate.id);
-  const { getFileUrl } = useFileUpload();
+interface CandidateModalProps {
+  candidate: UICandidate;
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const toUrl = (p: string) => (p.startsWith('http://') || p.startsWith('https://')) ? p : getFileUrl(p);
+function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
+  console.log('[CANDIDATE MODAL DEBUG] Opening modal for candidate:', candidate);
+  console.log('[CANDIDATE MODAL DEBUG] Using applicationId:', candidate.id);
+  
+  const { data: documents, isLoading, error } = useApplicationDocuments(candidate.id);
+  console.log('[CANDIDATE MODAL DEBUG] Documents from hook:', documents);
+
+  const toUrl = (path: string) => {
+    if (path.startsWith('http')) return path;
+    const { data } = supabase.storage.from('application-documents').getPublicUrl(path);
+    return data.publicUrl;
+  };
 
   return (
     <div className="space-y-6">
@@ -71,8 +103,103 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
           <Label className="text-sm text-muted-foreground">Poste postulé</Label>
           <p className="font-medium">{candidate.jobTitle || 'Non spécifié'}</p>
         </div>
+        <div className="flex items-center gap-2">
+          <Label className="text-sm text-muted-foreground">Statut:</Label>
+          <Badge variant="secondary" className={statusConfig[candidate.status].color}>
+            {statusConfig[candidate.status].label}
+          </Badge>
+        </div>
+        <div className="md:col-span-2">
+          <Label className="text-sm text-muted-foreground">Poste actuel</Label>
+          <p className="font-medium">{candidate.currentPosition || 'Non renseigné'}</p>
+        </div>
+      </div>
+
+      {/* Documents */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4" />
+          <Label className="text-sm text-muted-foreground">Documents fournis</Label>
+        </div>
+        {isLoading && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" /> Chargement des documents...</div>
+        )}
+        {error && (
+          <div className="text-sm text-red-600">Erreur de chargement: {(error as any).message}</div>
+        )}
+        {!isLoading && !error && (
+          documents && documents.length > 0 ? (
+            <ul className="space-y-2">
+              {documents.map(doc => (
+                <li key={doc.id} className="flex items-center justify-between rounded border p-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{getDocumentTypeLabel(doc.document_type)} — {doc.file_name}</p>
+                    <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
+                  </div>
+                  <a
+                    href={toUrl(doc.file_url)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                  >
+                    <Download className="w-4 h-4" />
+                    Ouvrir
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">Aucun document fourni.</p>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CandidateDetails({ candidate }: { candidate: UICandidate }) {
+  const { data: documents = [], isLoading, error } = useApplicationDocuments(candidate.id);
+
+  const toUrl = (path: string) => {
+    if (path.startsWith('http')) return path;
+    const { data } = supabase.storage.from('application-documents').getPublicUrl(path);
+    return data.publicUrl;
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Informations personnelles */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label className="text-sm text-muted-foreground">Statut</Label>
+          <Label className="text-sm text-muted-foreground">Nom complet</Label>
+          <p className="font-medium">{candidate.firstName} {candidate.lastName}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Email</Label>
+          <p className="font-medium">{candidate.email}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Téléphone</Label>
+          <p className="font-medium">{candidate.phone || 'Non fourni'}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Sexe</Label>
+          <p className="font-medium">{candidate.gender || 'Non renseigné'}</p>
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Date de naissance</Label>
+          <p className="font-medium">{candidate.birthDate ? format(new Date(candidate.birthDate), 'PPP', { locale: fr }) : 'Non renseignée'}</p>
+        </div>
+      </div>
+
+      {/* Poste et statut */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label className="text-sm text-muted-foreground">Poste postulé</Label>
+          <p className="font-medium">{candidate.jobTitle || 'Non spécifié'}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Label className="text-sm text-muted-foreground">Statut:</Label>
           <Badge variant="secondary" className={statusConfig[candidate.status].color}>
             {statusConfig[candidate.status].label}
           </Badge>
@@ -105,7 +232,7 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
                     <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
                   </div>
                   <a
-                    href={toUrl(doc.file_path)}
+                    href={toUrl(doc.file_url)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 text-primary hover:underline"
@@ -126,9 +253,9 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
 }
 
 const statusConfig: Record<ApplicationStatus, { label: string; color: string }> = {
-  candidature: { label: "Candidature", color: "bg-blue-100 text-blue-800 border-blue-200" },
-  incubation: { label: "Incubation", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
-  embauche: { label: "Embauché", color: "bg-green-100 text-green-800 border-green-200" },
+  candidature: { label: "Candidat", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  incubation: { label: "Incubé", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
+  embauche: { label: "Engagé", color: "bg-green-100 text-green-800 border-green-200" },
   refuse: { label: "Refusé", color: "bg-red-100 text-red-800 border-red-200" },
 };
 
@@ -136,25 +263,53 @@ export default function CandidatesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | ApplicationStatus>("all");
   const { applications, isLoading, error } = useRecruiterApplications();
+  
+  console.log('[CANDIDATES PAGE DEBUG] Applications hook result:', { applications, isLoading, error });
+  console.log('[CANDIDATES PAGE DEBUG] Applications count:', applications?.length);
+  
+  // Log current user info for debugging
+  useEffect(() => {
+    const logUserInfo = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('[CANDIDATES DEBUG] Current recruiter user:', { 
+        id: user?.id, 
+        email: user?.email,
+        role: user?.user_metadata?.role 
+      });
+      
+      if (user?.id) {
+        const { data: userRole, error: roleError } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        console.log('[CANDIDATES DEBUG] Recruiter role from DB:', userRole, 'Error:', roleError);
+      }
+    };
+    logUserInfo();
+  }, []);
 
   const uiCandidates: UICandidate[] = useMemo(() => {
     return (applications || []).map(app => {
-      const profile = (app.users as any)?.candidate_profiles as
-        | { gender?: string; current_position?: string; date_of_birth?: string }
-        | undefined;
+      const user = (app.users as any) || {};
+      const profile = user?.candidate_profiles || {};
+      
+      
       return {
         id: app.id,
-        firstName: app.users?.first_name || "",
-        lastName: app.users?.last_name || "",
-        email: app.users?.email || "",
-        phone: app.users?.phone || undefined,
-        gender: profile?.gender || undefined,
-        birthDate: app.users?.date_of_birth || profile?.date_of_birth || undefined,
-        currentPosition: profile?.current_position || undefined,
+        firstName: user.first_name || "",
+        lastName: user.last_name || "",
+        email: user.email || "",
+        phone: user.phone || undefined,
+        gender: user.gender || profile.gender || undefined,
+        birthDate: user.date_of_birth || profile.birth_date || undefined,
+        currentPosition: profile.current_position || user.current_position || undefined,
         location: app.job_offers?.location || undefined,
         appliedDate: app.created_at,
         status: app.status as ApplicationStatus,
         jobTitle: app.job_offers?.title || undefined,
+        linkedin_url: profile.linkedin_url || user.linkedin_url || undefined,
+        portfolio_url: profile.portfolio_url || user.portfolio_url || undefined,
       };
     });
   }, [applications]);
@@ -180,10 +335,10 @@ export default function CandidatesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-              Tous les Candidats
+              Toutes les Candidatures
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Gérez et suivez tous les candidats qui ont postulé aux offres SEEG
+              Gérez et suivez tous les candidats qui ont postulé aux offres SEEG.
             </p>
           </div>
           <Link to="/recruiter">
@@ -297,6 +452,9 @@ export default function CandidatesPage() {
                           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                             <DialogHeader>
                               <DialogTitle>Détails du candidat</DialogTitle>
+                              <DialogDescription>
+                                Consulter les informations détaillées du candidat et les documents soumis.
+                              </DialogDescription>
                             </DialogHeader>
                             <CandidateDetails candidate={candidate} />
                           </DialogContent>

@@ -1,12 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, Users, Trophy, FileText, Loader2, XCircle, Calendar } from "lucide-react";
+import { ArrowLeft, CheckCircle, Users, Trophy, FileText, XCircle, Calendar } from "lucide-react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useApplication } from "@/hooks/useApplications";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Application } from "@/hooks/useApplications";
+import { ContentSpinner } from "@/components/ui/spinner";
 
 // Define the structure for a timeline step
 interface TimelineStep {
@@ -35,10 +36,10 @@ const generateTimeline = (application: Application | null | undefined): Timeline
       date: createdAt,
     },
     {
-      title: "Entretien (évaluation physique MTP)",
+      title: "Evaluation MTP",
       status: status === 'incubation' ? 'current' : (isCompleted(['embauche', 'refuse']) ? 'completed' : 'pending'),
       icon: Users,
-      description: "Entretien et évaluation MTP (Metier, Talent, Paradigme) avec l'équipe.",
+      description: "Entretien et évaluation MTP (Métier, Talent, Paradigme).",
       date: status === 'incubation' ? 'En cours' : (isCompleted(['embauche', 'refuse']) ? createdAt : 'À venir'),
     },
     {
@@ -83,12 +84,7 @@ export function ApplicationTracking() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Chargement du suivi...</p>
-      </div>
-    );
+    return <ContentSpinner text="Chargement du suivi de la candidature..." />;
   }
 
   if (error || !application) {
@@ -100,7 +96,7 @@ export function ApplicationTracking() {
           variant="outline"
           onClick={() => {
             if (id) {
-              navigate('/candidate/dashboard');
+              navigate('/candidate/dashboard?view=dashboard');
               return;
             }
             if (from === 'applications') {
@@ -124,18 +120,18 @@ export function ApplicationTracking() {
           variant="outline"
           size="sm"
           onClick={() => {
-            // Si on vient de la route paramétrée (/candidate/application/:id), retour au dashboard
-            if (id) {
-              navigate('/candidate/dashboard');
-              return;
-            }
-            // Si on vient de "Mes candidatures", retour à l'onglet applications
+            // Si on vient de "Mes candidatures", retour à l'onglet applications (priorité)
             if (from === 'applications') {
               navigate('/candidate/dashboard?view=applications');
               return;
             }
+            // Si on vient d'une route paramétrée sans indication de provenance, retour au dashboard
+            if (id) {
+              navigate('/candidate/dashboard?view=dashboard');
+              return;
+            }
             // Fallback: dashboard
-            navigate('/candidate/dashboard');
+            navigate('/candidate/dashboard?view=dashboard');
           }}
           className="gap-2"
         >

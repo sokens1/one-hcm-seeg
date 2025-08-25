@@ -19,21 +19,48 @@ export function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Vérifier si nous avons les paramètres nécessaires pour la réinitialisation
-    const accessToken = searchParams.get('access_token');
-    const refreshToken = searchParams.get('refresh_token');
-    
-    if (!accessToken || !refreshToken) {
-      toast.error("Lien de réinitialisation invalide ou expiré");
-      navigate('/login');
-      return;
-    }
+    // Gérer les deux patterns possibles de Supabase
+    // 1) Nouveau pattern: ?code=... à échanger via exchangeCodeForSession
+    // 2) Ancien pattern: ?access_token=...&refresh_token=... à passer à setSession
+    // Lecture des paramètres depuis la query ET le hash
+    const hash = window.location.hash?.startsWith('#') ? window.location.hash.substring(1) : window.location.hash;
+    const hashParams = new URLSearchParams(hash || '');
 
-    // Définir la session avec les tokens reçus
-    supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    });
+    const code = searchParams.get('code') || hashParams.get('code');
+    const accessToken = searchParams.get('access_token') || hashParams.get('access_token');
+    const refreshToken = searchParams.get('refresh_token') || hashParams.get('refresh_token');
+
+    const initSession = async () => {
+      try {
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) {
+            toast.error("Lien de réinitialisation invalide ou expiré (code)");
+            navigate('/auth');
+          }
+          return;
+        }
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (error) {
+            toast.error("Échec d'initialisation de session. Veuillez redemander un lien.");
+            navigate('/auth');
+          }
+          return;
+        }
+        // Aucun paramètre pertinent trouvé
+        toast.error("Lien de réinitialisation invalide ou expiré");
+        navigate('/auth');
+      } catch (e) {
+        toast.error("Erreur inattendue lors de l'initialisation de la session");
+        navigate('/auth');
+      }
+    };
+
+    void initSession();
   }, [searchParams, navigate]);
 
   const validatePassword = (pwd: string) => {
@@ -78,9 +105,9 @@ export function ResetPassword() {
         setIsSuccess(true);
         toast.success("Mot de passe mis à jour avec succès!");
         
-        // Rediriger vers la page de connexion après 3 secondes
+        // Rediriger vers la page d'authentification après 3 secondes
         setTimeout(() => {
-          navigate('/login');
+          navigate('/auth');
         }, 3000);
       }
     } catch (error) {
@@ -115,7 +142,7 @@ export function ResetPassword() {
               className="w-full text-sm sm:text-base"
               onClick={() => navigate('/login')}
             >
-              Aller à la connexion
+              Aller à l'authentification
             </Button>
           </CardContent>
         </Card>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -5,13 +6,13 @@ export interface JobOffer {
   id: string;
   title: string;
   description: string;
-  location: string;
+  location: string | string[];
   contract_type: string;
   profile?: string | null;
   department?: string | null;
   salary_min?: number | null;
   salary_max?: number | null;
-  requirements?: string[] | null;
+  requirements?: string | string[] | null;
   benefits?: string[] | null;
   status: string;
   application_deadline?: string | null;
@@ -25,7 +26,7 @@ export interface JobOffer {
   job_grade?: string | null;
   salary_note?: string | null;
   start_date?: string | null;
-  responsibilities?: string[] | null;
+  responsibilities?: string | string[] | null;
   candidate_count: number;
   new_candidates: number;
 }
@@ -41,17 +42,27 @@ const fetchJobOffers = async () => {
   if (error) throw error;
   if (!offers || offers.length === 0) return [];
 
-  const offerIds = offers.map(o => o.id);
-
-  // 2. Fetch all applications for those job offers, including creation date
+  // 2. Récupérer les candidatures via RPC par offre (signature 1-argument)
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: applications, error: applicationsError } = await supabase
-    .from('applications')
-    .select('job_offer_id, created_at')
-    .in('job_offer_id', offerIds);
-
-  if (applicationsError) throw new Error(applicationsError.message);
+  let applications: Array<{ job_offer_id: string; created_at: string }> = [];
+  try {
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    
+    if (rpcError) {
+      console.warn('RPC get_all_recruiter_applications failed:', rpcError.message);
+      applications = [];
+    } else {
+      applications = (rpcData || []).map((app: any) => ({
+        job_offer_id: app.application_details?.job_offer_id,
+        created_at: app.application_details?.created_at,
+      })).filter(app => app.job_offer_id && app.created_at);
+    }
+  } catch (e) {
+    // Fail soft: garder le dashboard fonctionnel même si l'agrégat échoue
+    console.warn('Error calling RPC get_all_recruiter_applications:', e);
+    applications = [];
+  }
 
   // 3. Count total and new applications for each offer
   const applicationStats = (applications || []).reduce((acc, app) => {
@@ -90,17 +101,34 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
     .eq('id', id)
     .single();
 
+  console.log('[useJobOffers DEBUG] Raw offer data from DB:', offer);
+  console.log('[useJobOffers DEBUG] DB error:', error);
+
   if (error) throw error;
   if (!offer) return null;
 
-  // 2. Fetch applications for this offer
+  // 2. Fetch applications for this offer using RPC function
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { data: applications, error: applicationsError } = await supabase
-    .from('applications')
-    .select('created_at')
-    .eq('job_offer_id', id);
-
-  if (applicationsError) throw new Error(applicationsError.message);
+  
+  let applications: Array<{ created_at: string }> = [];
+  try {
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    
+    if (rpcError) {
+      console.warn('RPC get_all_recruiter_applications failed for job offer:', rpcError.message);
+      applications = [];
+    } else {
+      applications = (rpcData || [])
+        .filter((app: any) => app.application_details?.job_offer_id === id)
+        .map((app: any) => ({
+          created_at: app.application_details?.created_at
+        }))
+        .filter(app => app.created_at);
+    }
+  } catch (e) {
+    console.warn('Error calling RPC get_all_recruiter_applications for job offer:', e);
+    applications = [];
+  }
 
   // 3. Calculate counts
   const candidate_count = applications?.length || 0;
@@ -136,17 +164,26 @@ const fetchRecruiterJobOffers = async (recruiterId: string): Promise<JobOffer[]>
   if (offersError) throw new Error(offersError.message);
   if (!offers || offers.length === 0) return [];
 
-  const offerIds = offers.map(o => o.id);
-
-  // 2. Fetch all applications for those job offers, including creation date
+  // 2. Récupérer les candidatures via RPC par offre (signature 1-argument)
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: applications, error: applicationsError } = await supabase
-    .from('applications')
-    .select('job_offer_id, created_at')
-    .in('job_offer_id', offerIds);
-
-  if (applicationsError) throw new Error(applicationsError.message);
+  let applications: Array<{ job_offer_id: string; created_at: string }> = [];
+  try {
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    
+    if (rpcError) {
+      console.warn('RPC get_all_recruiter_applications failed for recruiter:', rpcError.message);
+      applications = [];
+    } else {
+      applications = (rpcData || []).map((app: any) => ({
+        job_offer_id: app.application_details?.job_offer_id,
+        created_at: app.application_details?.created_at,
+      })).filter(app => app.job_offer_id && app.created_at);
+    }
+  } catch (e) {
+    console.warn('Error calling RPC get_all_recruiter_applications for recruiter:', e);
+    applications = [];
+  }
 
   // 3. Count total and new applications for each offer
   const applicationStats = (applications || []).reduce((acc, app) => {

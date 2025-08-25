@@ -9,37 +9,63 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { isPreLaunch } from "@/utils/launchGate";
+import { toast } from "sonner";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isCandidate, isRecruiter, isAdmin, isObserver } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const { data, isLoading, error } = useJobOffers();
   const jobOffers: JobOffer[] = data ?? [];
+  const preLaunch = isPreLaunch();
+
+  // Helper to normalize location which can be string | string[] from the API
+  const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
 
   useEffect(() => {
-    if (user) {
-      const role = user.user_metadata?.role;
-      if (role === 'candidate') {
-        navigate("/candidate/dashboard");
-      } else if (role === 'recruiter') {
-        navigate("/recruiter/dashboard");
-      }
+    if (!user) return;
+    
+    // Only redirect if user is actually on the home page (not from a page reload)
+    const currentPath = window.location.pathname;
+    if (currentPath !== "/" && currentPath !== "/index") return;
+    
+    // Use normalized role flags from useAuth to avoid FR/EN mismatch
+    if (isAdmin) {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (isRecruiter) {
+      navigate("/recruiter/dashboard", { replace: true });
+      navigate("/recruiter/dashboard");
+    } else if (isObserver) {
+      // Observateurs: accès en lecture seule au dashboard recruteur
+      navigate("/recruiter/dashboard");
+    } else if (isCandidate) {
+      navigate("/candidate/dashboard?view=dashboard", { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, isAdmin, isRecruiter, isObserver, isCandidate, navigate]);
 
-  // Ne pas afficher la page d'accueil si l'utilisateur est connecté
-  if (user) {
-    return null;
+  // Ne pas afficher la page d'accueil si l'utilisateur est connecté ET qu'il est vraiment sur la home
+  const currentPath = window.location.pathname;
+  if (user && (currentPath === "/" || currentPath === "/index")) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Redirection en cours...</span>
+        </div>
+      </div>
+    );
   }
 
-  const filteredJobs = jobOffers.filter(job => 
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobOffers.filter(job => {
+    const hayTitle = (job.title || "").toLowerCase();
+    const hayLoc = normalizeLocation(job.location).toLowerCase();
+    const needle = (searchTerm || "").toLowerCase();
+    return hayTitle.includes(needle) || hayLoc.includes(needle);
+  });
 
   return (
     <Layout showFooter={true}>
@@ -124,7 +150,7 @@ const Index = () => {
 
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-6 sm:mb-8 px-4 animate-fade-in delay-200">
-          <div className="relative flex gap-2">
+          <div className="relative flex gap-2" role="search" aria-label="Recherche d'offres">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <Input
@@ -132,6 +158,10 @@ const Index = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 h-10 sm:h-12 text-sm sm:text-base"
+                aria-label="Rechercher un poste ou une ville"
+                type="search"
+                autoComplete="off"
+                spellCheck={false}
               />
             </div>
             <Button variant="outline" size="icon" className="h-10 w-10 sm:h-12 sm:w-12">
@@ -167,11 +197,13 @@ const Index = () => {
                 <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                   <JobCard
                     title={job.title}
-                    location={job.location}
+                    location={normalizeLocation(job.location)}
                     contractType={job.contract_type}
                     description={job.description}
                     isPreview={true}
-                    onClick={() => navigate(`/jobs/${job.id}`)}
+                    onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
+                    locked={preLaunch}
+                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -179,40 +211,63 @@ const Index = () => {
           ) : (
             <div className="bg-white rounded-lg shadow-sm border overflow-hidden mx-4">
               {/* Header pour desktop seulement */}
-              <div className="hidden sm:grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
+              <div
+                className={`hidden sm:grid ${
+                  preLaunch
+                    ? "[grid-template-columns:1fr_auto]"
+                    : "[grid-template-columns:2fr_minmax(160px,1fr)_minmax(180px,1fr)_auto]"
+                } items-center gap-4 p-4 bg-gray-50 border-b font-semibold text-sm`}
+              >
                 <div>Titre du poste</div>
-                <div>Lieu</div>
-                <div>Type de contrat</div>
-                <div>Action</div>
+                {!preLaunch && <div>Lieu</div>}
+                {!preLaunch && <div>Type de contrat</div>}
+                <div className="text-center">Action</div>
               </div>
               {filteredJobs.map((job, index) => (
                 <div key={job.id} className="border-b hover:bg-gray-50 transition-colors animate-fade-in" style={{ animationDelay: `${300 + index * 50}ms` }}>
                   {/* Version mobile - empilée */}
                   <div className="sm:hidden p-4 space-y-3">
                     <div className="font-medium text-base sm:text-lg">{job.title}</div>
-                    <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                      <span className="bg-gray-100 px-2 py-1 rounded">{job.location}</span>
-                      <span className="bg-gray-100 px-2 py-1 rounded">{job.contract_type}</span>
-                    </div>
+                    {!preLaunch && (
+                      <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                        <span className="bg-gray-100 px-2 py-1 rounded">{normalizeLocation(job.location)}</span>
+                        <span className="bg-gray-100 px-2 py-1 rounded">{job.contract_type}</span>
+                      </div>
+                    )}
                     <Button 
-                      variant="outline" 
+                      variant="hero" 
                       size="sm"
-                      onClick={() => navigate(`/jobs/${job.id}`)}
-                      className="w-full"
+                      onClick={() =>
+                        preLaunch
+                          ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
+                          : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                      }
+                      className={"w-full text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
                     >
                       Voir l'offre
                     </Button>
                   </div>
                   {/* Version desktop - grille */}
-                  <div className="hidden sm:grid grid-cols-4 gap-4 p-4">
+                  <div
+                    className={`hidden sm:grid ${
+                      preLaunch
+                        ? "[grid-template-columns:1fr_auto]"
+                        : "[grid-template-columns:2fr_minmax(160px,1fr)_minmax(180px,1fr)_auto]"
+                    } items-center gap-4 p-4`}
+                  >
                     <div className="font-medium">{job.title}</div>
-                    <div className="text-muted-foreground">{job.location}</div>
-                    <div className="text-muted-foreground">{job.contract_type}</div>
-                    <div>
+                    {!preLaunch && <div className="text-muted-foreground">{normalizeLocation(job.location)}</div>}
+                    {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
+                    <div className="flex justify-center">
                       <Button 
-                        variant="outline" 
+                        variant="hero" 
                         size="sm"
-                        onClick={() => navigate(`/jobs/${job.id}`)}
+                        onClick={() =>
+                          preLaunch
+                            ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
+                            : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                        }
+                        className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
                       >
                         Voir l'offre
                       </Button>
@@ -236,7 +291,7 @@ const Index = () => {
                   À propos de l'entreprise : Contexte du recrutement
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg opacity-90 mb-4 sm:mb-6 leading-relaxed">
-                  Explorez la vision stratégique et les ambitieux portées
+                  Explorez la vision stratégique et les ambitions portées
                   par cette campagne de recrutement inédite pour
                   impulser une nouvelle ère à la SEEG
                 </p>
@@ -267,7 +322,7 @@ const Index = () => {
         <div className="text-center py-12 sm:py-16 mt-8 sm:mt-16 px-4">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">
-              Équipe RH SEEG ?
+              Espace recruteurs
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
               Accédez à l'interface de gestion des candidatures et du processus de recrutement.

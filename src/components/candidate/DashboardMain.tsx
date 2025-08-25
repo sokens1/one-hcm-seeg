@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
-import { FileText, MapPin, Calendar, Eye, Loader2 } from "lucide-react";
+import { FileText, MapPin, Calendar, Eye } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApplications } from "@/hooks/useApplications";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { ContentSpinner } from "@/components/ui/spinner";
 
 export function DashboardMain() {
   const { user } = useAuth();
@@ -29,12 +30,7 @@ export function DashboardMain() {
   const uniqueContracts = [...new Set(applications?.map(app => app.job_offers?.contract_type).filter(Boolean) as string[] || [])];
 
   if (isLoadingApps || isLoadingJobs) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Chargement du tableau de bord...</p>
-      </div>
-    );
+    return <ContentSpinner text="Chargement des données du tableau de bord..." />;
   }
 
   if (errorApps || errorJobs) {
@@ -113,7 +109,7 @@ export function DashboardMain() {
                 <SelectValue placeholder="Type de poste" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les types</SelectItem>
+                <SelectItem value="all">Types de contrats</SelectItem>
                 {uniqueContracts.map(contract => (
                   <SelectItem key={contract} value={contract}>{contract}</SelectItem>
                 ))}

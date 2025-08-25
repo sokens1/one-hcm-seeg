@@ -11,7 +11,7 @@ export function Layout({ children, className = "", showFooter = false }: LayoutP
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className={`flex-1 ${className}`}>
+      <main id="main" tabIndex={-1} className={`flex-1 ${className}`}>
         {children}
       </main>
       {showFooter && <Footer />}

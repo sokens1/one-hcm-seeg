@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,10 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { ArrowLeft, Mail, Lock, User, Building2, AlertCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Building2, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
 import { supabase } from "@/integrations/supabase/client";
-// Link already imported above
+import { isPreLaunch } from "@/utils/launchGate";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -20,9 +21,26 @@ export default function Auth() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [showSigninPassword, setShowSigninPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showSignupConfirm, setShowSignupConfirm] = useState(false);
+  const preLaunch = isPreLaunch();
+
+  // Deduplicate pre-launch toasts (shown in multiple places)
+  const lastPreLaunchToastTs = useRef<number>(0);
+  const preLaunchToast = () => {
+    const now = Date.now();
+    if (now - lastPreLaunchToastTs.current > 1200) {
+      toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
+      lastPreLaunchToastTs.current = now;
+    }
+  };
+
   const searchParams = new URLSearchParams(location.search);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
+
+  // Prevent duplicate success toasts on login (e.g., unexpected double submits)
+  const lastLoginToastTs = useRef<number>(0);
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -31,13 +49,11 @@ export default function Auth() {
     }
   }, [cooldown]);
 
-  // Sign in form state
   const [signInData, setSignInData] = useState({
     email: "",
     password: ""
   });
 
-  // Sign up form state
   const [signUpData, setSignUpData] = useState({
     email: "",
     password: "",
@@ -48,18 +64,15 @@ export default function Auth() {
     matricule: ""
   });
 
-  // Matricule validation state
   const [matriculeError, setMatriculeError] = useState<string>("");
   const [isMatriculeValid, setIsMatriculeValid] = useState<boolean>(false);
   const [isVerifyingMatricule, setIsVerifyingMatricule] = useState<boolean>(false);
 
-  // Reset matricule validation when matricule changes
   useEffect(() => {
     setIsMatriculeValid(false);
     setMatriculeError("");
   }, [signUpData.matricule]);
 
-  // Verify matricule against database (secure RPC, matricule only)
   const verifyMatricule = async (): Promise<boolean> => {
     const matricule = signUpData.matricule.trim();
     if (!matricule) {
@@ -70,18 +83,19 @@ export default function Auth() {
 
     try {
       setIsVerifyingMatricule(true);
-      const { data: isValid, error } = await supabase.rpc('verify_matricule', {
+      const { data: isValid, error } = await supabase.rpc('verify_seeg_matricule', {
         p_matricule: matricule,
       });
 
       if (error) {
-        setMatriculeError("Erreur lors de la vérification du matricule.");
+        console.error('Erreur vérification matricule:', error);
+        setMatriculeError(`Erreur lors de la vérification du matricule: ${error.message}`);
         setIsMatriculeValid(false);
         return false;
       }
 
       if (!isValid) {
-        setMatriculeError("Matricule non valide.");
+        setMatriculeError("Ce matricule n'est pas autorisé. Vérifiez qu'il correspond à un agent SEEG actif.");
         setIsMatriculeValid(false);
         return false;
       }
@@ -99,14 +113,12 @@ export default function Auth() {
     }
   };
 
-  // Debounced automatic verification on matricule changes
   useEffect(() => {
     if (!signUpData.matricule) return;
     const timer = setTimeout(() => {
       verifyMatricule();
     }, 500);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signUpData.matricule]);
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -127,27 +139,42 @@ export default function Auth() {
         return;
       }
 
-      toast.success("Connexion réussie !");
-      // If a redirect param is present, go there first
+      const now = Date.now();
+      if (now - lastLoginToastTs.current > 1500) {
+        toast.success("Connexion réussie !");
+        lastLoginToastTs.current = now;
+      }
       if (redirectParam) {
         navigate(redirectParam);
       } else {
-        // Prefer role from DB for accurate redirection
         try {
-          const { data: profile } = await supabase
+          const { data: userRow, error: userRowError } = await supabase
             .from('users')
             .select('role')
             .eq('id', data.user.id)
             .single();
 
-          const dbRole = (profile as { role?: string } | null)?.role;
-          const role = dbRole || data.user.user_metadata?.role || 'candidat';
-          const isRecruiter = role === 'recruiter' || role === 'recruteur';
-          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+          const rawRole = String((!userRowError && (userRow as { role?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
+          const isAdmin = rawRole === 'admin';
+          const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
+          const isObserver = rawRole === 'observateur' || rawRole === 'observer';
+
+          if (isAdmin) {
+            navigate('/admin/dashboard');
+          } else if (isRecruiter || isObserver) {
+            navigate('/recruiter/dashboard');
+          } else {
+            navigate('/candidate/dashboard');
+          }
         } catch {
-          const role = data.user.user_metadata?.role || 'candidat';
-          const isRecruiter = role === 'recruiter' || role === 'recruteur';
-          navigate(isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard?view=jobs');
+          const rawRole = String(data.user.user_metadata?.role ?? '').toLowerCase();
+          if (rawRole === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (rawRole === 'recruteur' || rawRole === 'recruiter' || rawRole === 'observateur' || rawRole === 'observer') {
+            navigate('/recruiter/dashboard');
+          } else {
+            navigate('/candidate/dashboard');
+          }
         }
       }
     } catch (error) {
@@ -160,6 +187,12 @@ export default function Auth() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    if (preLaunch) {
+      toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
+      setIsSubmitting(false);
+      return;
+    }
 
     if (signUpData.password !== signUpData.confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas");
@@ -256,7 +289,7 @@ export default function Auth() {
           <div className="text-center space-y-2 sm:space-y-3 lg:space-y-4">
             <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
               <Building2 className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
-              Plateforme SEEG
+              Plateforme OneHCM | Talent source
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold">Accès à votre compte</h1>
             <p className="text-xs sm:text-sm lg:text-base xl:text-lg opacity-90 max-w-2xl mx-auto px-2 sm:px-4 leading-relaxed">
@@ -265,209 +298,259 @@ export default function Auth() {
           </div>
         </div>
       </div>
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+        <div className="max-w-sm sm:max-w-md mx-auto">
+          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="text-center pb-4 sm:pb-6">
+              <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Authentification</CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 sm:px-6">
+              {showForgotPassword ? (
+                <ForgotPassword onBack={() => setShowForgotPassword(false)} />
+              ) : (
+                <Tabs
+                  value={activeTab}
+                  onValueChange={(val) => {
+                    if (val === "signup" && preLaunch) {
+                      preLaunchToast();
+                      return; // bloque la navigation vers l'onglet inscription
+                    }
+                    setActiveTab(val);
+                  }}
+                >
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="signin">Connexion</TabsTrigger>
+                    <TabsTrigger value="signup" aria-disabled={preLaunch} className={preLaunch ? "cursor-not-allowed" : undefined}>
+                      Inscription
+                    </TabsTrigger>
+                  </TabsList>
 
-    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
-      <div className="max-w-sm sm:max-w-md mx-auto">
-        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="text-center pb-4 sm:pb-6">
-            <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Authentification</CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 sm:px-6">
-                          {showForgotPassword ? (
-              <ForgotPassword onBack={() => setShowForgotPassword(false)} />
-            ) : (
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Connexion</TabsTrigger>
-                <TabsTrigger value="signup">Inscription</TabsTrigger>
-              </TabsList>
-
-              {/* Sign In Tab */}
-              <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signin-email"
-                        type="email"
-                        placeholder="votre.email@exemple.com"
-                        value={signInData.email}
-                        onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Mot de passe</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signin-password"
-                        type="password"
-                        placeholder="Votre mot de passe"
-                        value={signInData.password}
-                        onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="text-right text-sm">
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="p-0 h-auto font-normal"
-                      onClick={() => setShowForgotPassword(true)}
-                    >
-                      Mot de passe oublié ?
-                    </Button>
-                  </div>
-
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? "Connexion..." : "Se connecter"}
-                  </Button>
-                </form>
-              </TabsContent>
-
-                {/* Sign Up Tab */}
-                <TabsContent value="signup">
-                  <form onSubmit={handleSignUp} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  {/* Sign In Tab */}
+                  <TabsContent value="signin">
+                    <form onSubmit={handleSignIn} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="firstName" className="text-sm">Prénom</Label>
-                        <Input
-                          id="firstName"
-                          placeholder="Prénom"
-                          value={signUpData.firstName}
-                          onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
-                          className="text-sm"
-                          required
-                        />
+                        <Label htmlFor="signin-email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="signin-email"
+                            type="email"
+                            placeholder="votre.email@exemple.com"
+                            value={signInData.email}
+                            onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
+                            className="pl-10"
+                            required
+                          />
+                        </div>
                       </div>
+                      
                       <div className="space-y-2">
-                        <Label htmlFor="lastName" className="text-sm">Nom</Label>
-                        <Input
-                          id="lastName"
-                          placeholder="Nom"
-                          value={signUpData.lastName}
-                          onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
-                          className="text-sm"
-                          required
-                        />
+                        <Label htmlFor="signin-password">Mot de passe</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="signin-password"
+                            type={showSigninPassword ? "text" : "password"}
+                            placeholder="Votre mot de passe"
+                            value={signInData.password}
+                            onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
+                            className="pl-10 pr-10"
+                            required
+                          />
+                          <button
+                            type="button"
+                            aria-label={showSigninPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                            onClick={() => setShowSigninPassword((v) => !v)}
+                            className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                          >
+                            {showSigninPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="signup-email"
-                          type="email"
-                          placeholder="votre.email@exemple.com"
-                          value={signUpData.email}
-                          onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
-                          className="pl-10"
-                          required
-                        />
+                      <div className="text-right text-sm">
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="p-0 h-auto font-normal"
+                          onClick={() => setShowForgotPassword(true)}
+                        >
+                          Mot de passe oublié ?
+                        </Button>
                       </div>
-                    </div>
 
-                    {/* Matricule field (required, gates the rest of the form) */}
-                    <div className="space-y-2">
-                      <Label htmlFor="matricule">Matricule</Label>
-                      <div className="relative">
-                        <Input
-                          id="matricule"
-                          type="text"
-                          inputMode="numeric"
-                          pattern="\\d+"
-                          placeholder="4517"
-                          value={signUpData.matricule}
-                          onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
-                          onBlur={verifyMatricule}
-                          required
-                          className="pr-10"
+                      <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? "Connexion..." : "Se connecter"}
+                      </Button>
+                    </form>
+                  </TabsContent>
+
+                  {/* Sign Up Tab */}
+                  <TabsContent value="signup">
+                    <div className="relative">
+                      {preLaunch && (
+                        <div
+                          className="absolute inset-0 z-10 cursor-not-allowed"
+                          onClick={preLaunchToast}
+                          aria-hidden="true"
                         />
-                        {isVerifyingMatricule && (
-                          <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
-                        )}
-                      </div>
-                      {matriculeError && (
-                        <Card className="border-red-200 bg-red-50">
-                          <CardContent className="py-3 flex items-start gap-2 text-red-700">
-                            <AlertCircle className="w-4 h-4 mt-0.5" />
-                            <div>
-                              <p className="text-sm font-medium">Vérification du matricule</p>
-                              <p className="text-sm">{matriculeError}</p>
-                            </div>
-                          </CardContent>
-                        </Card>
                       )}
-                    </div>
+                      <form onSubmit={handleSignUp} className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="firstName" className="text-sm">Prénom</Label>
+                            <Input
+                              id="firstName"
+                              placeholder="Prénom"
+                              value={signUpData.firstName}
+                              onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
+                              className="text-sm"
+                              required
+                              disabled={preLaunch}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="lastName" className="text-sm">Nom</Label>
+                            <Input
+                              id="lastName"
+                              placeholder="Nom"
+                              value={signUpData.lastName}
+                              onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
+                              className="text-sm"
+                              required
+                              disabled={preLaunch}
+                            />
+                          </div>
+                        </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Téléphone</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+241 01 23 45 67"
-                        value={signUpData.phone}
-                        onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
-                        disabled={!isMatriculeValid}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-password">Mot de passe</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="signup-password"
-                          type="password"
-                          placeholder="Mot de passe (min. 6 caractères)"
-                          value={signUpData.password}
-                          onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
-                          className="pl-10"
-                          required
-                          disabled={!isMatriculeValid}
-                        />
-                      </div>
-                    </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-email">Email</Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="signup-email"
+                              type="email"
+                              placeholder="votre.email@exemple.com"
+                              value={signUpData.email}
+                              onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
+                              className="pl-10"
+                              required
+                              disabled={preLaunch}
+                            />
+                          </div>
+                        </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="confirmPassword"
-                          type="password"
-                          placeholder="Confirmez votre mot de passe"
-                          value={signUpData.confirmPassword}
-                          onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
-                          className="pl-10"
-                          required
-                          disabled={!isMatriculeValid}
-                        />
-                      </div>
-                    </div>
+                        {/* Matricule field (required, gates the rest of the form) */}
+                        <div className="space-y-2">
+                          <Label htmlFor="matricule">Matricule</Label>
+                          <div className="relative">
+                            <Input
+                              id="matricule"
+                              placeholder="Ex: 1234"
+                              title="Le matricule ne doit contenir que des chiffres."
+                              value={signUpData.matricule}
+                              onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
+                              required
+                              className={matriculeError ? "border-destructive" : isMatriculeValid ? "border-green-500" : ""}
+                              disabled={preLaunch}
+                            />
+                            {isVerifyingMatricule && (
+                              <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+                            )}
+                          </div>
+                          {matriculeError && (
+                            <Card className="border-red-200 bg-red-50">
+                              <CardContent className="py-3 flex items-start gap-2 text-red-700">
+                                <AlertCircle className="w-4 h-4 mt-0.5" />
+                                <div>
+                                  <p className="text-sm font-medium">Vérification du matricule</p>
+                                  <p className="text-sm">{matriculeError}</p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
 
-                    <Button type="submit" className="w-full" disabled={isSubmitting || cooldown > 0 || !isMatriculeValid}>
-                      {isSubmitting
-                        ? "Inscription..."
-                        : cooldown > 0
-                        ? `Réessayez dans ${cooldown}s`
-                        : "S'inscrire"}
-                    </Button>
-                  </form>
-                </TabsContent>
-                            </Tabs>
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Téléphone</Label>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="+241 01 23 45 67"
+                            value={signUpData.phone}
+                            onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
+                            disabled={preLaunch || !isMatriculeValid}
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-password">Mot de passe</Label>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="signup-password"
+                              type={showSignupPassword ? "text" : "password"}
+                              placeholder="Mot de passe (min. 6 caractères)"
+                              value={signUpData.password}
+                              onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
+                              className="pl-10 pr-10"
+                              required
+                              disabled={preLaunch || !isMatriculeValid}
+                            />
+                            <button
+                              type="button"
+                              aria-label={showSignupPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                              onClick={() => setShowSignupPassword((v) => !v)}
+                              className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                              disabled={preLaunch}
+                            >
+                              {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="confirmPassword"
+                              type={showSignupConfirm ? "text" : "password"}
+                              placeholder="Confirmez votre mot de passe"
+                              value={signUpData.confirmPassword}
+                              onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
+                              className="pl-10 pr-10"
+                              required
+                              disabled={preLaunch || !isMatriculeValid}
+                            />
+                            <button
+                              type="button"
+                              aria-label={showSignupConfirm ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                              onClick={() => setShowSignupConfirm((v) => !v)}
+                              className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                              disabled={preLaunch}
+                            >
+                              {showSignupConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <Button type="submit" className="w-full" disabled={preLaunch || isSubmitting || cooldown > 0 || !isMatriculeValid}
+                          onClick={() => {
+                            if (preLaunch) preLaunchToast();
+                          }}
+                        >
+                          {isSubmitting
+                            ? "Inscription..."
+                            : cooldown > 0
+                              ? `Réessayez dans ${cooldown}s`
+                              : "S'inscrire"}
+                        </Button>
+                      </form>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               )}
             </CardContent>
           </Card>

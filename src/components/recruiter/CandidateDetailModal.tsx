@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +32,17 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
   const { data: application, isLoading, error } = useApplication(applicationId);
   const queryClient = useQueryClient();
   const { data: documents = [] } = useApplicationDocuments(applicationId);
+
+  // Normalise une URL de document pour pointer vers le bucket public Supabase
+  const ensureAbsoluteUrl = (path?: string | null) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const base = import.meta.env.VITE_SUPABASE_URL?.replace(/\/$/, '') || '';
+    const p = String(path).trim().replace(/^\/+/, '');
+    if (p.startsWith('storage/v1/object/public/')) return `${base}/${p}`;
+    if (p.startsWith('application-documents/')) return `${base}/storage/v1/object/public/${p}`;
+    return `${base}/storage/v1/object/public/application-documents/${p}`;
+  };
 
   // Temps réel: rafraîchir si le profil candidat (table users) ou la candidature change
   useEffect(() => {
@@ -101,6 +112,9 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
             <User className="w-4 h-4 sm:w-5 sm:h-5" />
             Détails du candidat
           </DialogTitle>
+          <DialogDescription>
+            Informations détaillées sur le candidat, sa candidature et les documents associés.
+          </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
@@ -211,7 +225,7 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
                       <div className="font-medium text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</div>
                       <div className="text-xs text-muted-foreground truncate">{doc.file_name} · {formatFileSize(doc.file_size)}</div>
                     </div>
-                    <a href={doc.file_path} target="_blank" rel="noreferrer" className="flex-shrink-0">
+                    <a href={ensureAbsoluteUrl(doc.file_url)} target="_blank" rel="noreferrer" className="flex-shrink-0">
                       <Button variant="outline" size="sm" className="text-xs sm:text-sm">
                         <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Télécharger
                       </Button>

@@ -5,9 +5,9 @@ import { useAuth } from "@/hooks/useAuth";
 export interface Document {
   id: number;
   application_id: string;
-  document_type: 'cv' | 'cover_letter' | 'diploma' | 'recommendation' | 'integrity_letter' | 'project_idea';
+  document_type: 'cv' | 'cover_letter' | 'diploma' | 'additional_certificate' | 'recommendation' | 'integrity_letter' | 'project_idea';
   file_name: string;
-  file_path: string;
+  file_url: string; // Corrigé: utilise file_url au lieu de file_path
   file_size: number | null;
   uploaded_at: string;
 }
@@ -17,15 +17,23 @@ export function useApplicationDocuments(applicationId: string | undefined) {
     queryKey: ['documents', applicationId],
     queryFn: async () => {
       if (!applicationId) return [];
-      
-      const { data, error } = await supabase
-        .from('documents')
-        .select('*')
-        .eq('application_id', applicationId)
-        .order('uploaded_at', { ascending: false });
-      
-      if (error) throw new Error(error.message);
-      return data || [];
+
+      // 1) Récupérer les enregistrements de documents
+      const { data: documents, error } = await supabase
+        .from('application_documents')
+        .select('id, application_id, document_type, file_name, file_url, file_size, uploaded_at')
+        .eq('application_id', applicationId);
+
+      if (error) {
+        console.error('Error fetching document records:', error);
+        throw error;
+      }
+
+      if (!documents || documents.length === 0) return [];
+
+      // Utiliser directement les URLs publiques stockées en DB
+      // Plus besoin d'appel RPC car les URLs sont déjà correctes
+      return documents;
     },
     enabled: !!applicationId,
   });
@@ -48,7 +56,7 @@ export function useCandidateDocuments() {
       if (appIds.length === 0) return [];
 
       const { data, error } = await supabase
-        .from('documents')
+        .from('application_documents')
         .select('*')
         .in('application_id', appIds)
         .order('uploaded_at', { ascending: false });
@@ -63,7 +71,8 @@ export function getDocumentTypeLabel(type: string): string {
   switch (type) {
     case 'cv': return 'CV';
     case 'cover_letter': return 'Lettre de motivation';
-    case 'diploma': return 'Certificat';
+    case 'diploma': return 'Diplôme';
+    case 'additional_certificate': return 'Certificat supplémentaire';
     case 'recommendation': return 'Lettre de recommandation';
     case 'integrity_letter': return 'Lettre d\'intégrité professionnelle';
     case 'project_idea': return 'Idée de projet';

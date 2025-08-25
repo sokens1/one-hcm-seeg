@@ -120,7 +120,7 @@ export function JobCatalog() {
       <div className="text-center px-3 sm:px-4">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Catalogue des offres</h2>
         <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Découvrez toutes les opportunités disponibles au sein du comité de direction
+          Découvrez toutes les opportunités disponibles au sein du comité de direction.
         </p>
       </div>
 
@@ -277,7 +277,7 @@ export function JobCatalog() {
                   contractType={job.contract_type}
                   description={job.description}
                   isPreview={true}
-                  candidateCount={job.application_count}
+                  candidateCount={job.candidate_count}
                   onClick={() => handleJobClick(job.id)}
                 />
               </div>
@@ -286,18 +286,18 @@ export function JobCatalog() {
         ) : (
           <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
             {/* Header - Hidden on mobile, visible on tablet+ */}
-            <div className="hidden md:grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm">
-              <div>Titre du poste</div>
-              <div>Lieu</div>
-              <div>Type de contrat</div>
-              <div>Action</div>
+            <div className="hidden md:grid bg-gray-50 border-b font-semibold text-sm" style={{ gridTemplateColumns: '2fr 1fr 1fr 120px' }}>
+              <div className="px-6 py-4">Titre du poste</div>
+              <div className="px-6 py-4">Lieu</div>
+              <div className="px-6 py-4">Type de contrat</div>
+              <div className="px-6 py-4 text-center">Action</div>
             </div>
             {filteredJobs.map((job, index) => (
-              <div key={job.id} className="md:grid md:grid-cols-4 gap-4 p-4 border-b hover:bg-gray-50 transition-colors animate-fade-in flex flex-col md:flex-none space-y-2 md:space-y-0" style={{ animationDelay: `${300 + index * 50}ms` }}>
-                <div className="font-medium text-sm md:text-base">{job.title}</div>
-                <div className="text-muted-foreground text-xs md:text-sm">{job.location}</div>
-                <div className="text-muted-foreground text-xs md:text-sm">{job.contract_type}</div>
-                <div className="flex justify-start md:justify-center">
+              <div key={job.id} className="md:grid border-b hover:bg-gray-50 transition-colors animate-fade-in flex flex-col md:flex-none space-y-2 md:space-y-0" style={{ gridTemplateColumns: '2fr 1fr 1fr 120px', animationDelay: `${300 + index * 50}ms` }}>
+                <div className="font-medium text-sm md:text-base px-6 py-4">{job.title}</div>
+                <div className="text-muted-foreground text-xs md:text-sm px-6 py-4">{job.location}</div>
+                <div className="text-muted-foreground text-xs md:text-sm px-6 py-4">{job.contract_type}</div>
+                <div className="flex justify-start md:justify-center px-6 py-4">
                   <Button 
                     variant="outline" 
                     size="sm"
