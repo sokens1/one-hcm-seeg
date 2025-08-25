@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 export interface Document {
   id: number;
   application_id: string;
-  document_type: 'cv' | 'cover_letter' | 'diploma' | 'additional_certificate' | 'recommendation' | 'integrity_letter' | 'project_idea';
+  document_type: 'cv' | 'cover_letter' | 'diploma' | 'certificate' | 'recommendation' | 'integrity_letter' | 'project_idea';
   file_name: string;
   file_url: string; // Corrigé: utilise file_url au lieu de file_path
   file_size: number | null;
@@ -72,7 +72,7 @@ export function getDocumentTypeLabel(type: string): string {
     case 'cv': return 'CV';
     case 'cover_letter': return 'Lettre de motivation';
     case 'diploma': return 'Diplôme';
-    case 'additional_certificate': return 'Certificat supplémentaire';
+    case 'certificate': return 'Certificat supplémentaire';
     case 'recommendation': return 'Lettre de recommandation';
     case 'integrity_letter': return 'Lettre d\'intégrité professionnelle';
     case 'project_idea': return 'Idée de projet';

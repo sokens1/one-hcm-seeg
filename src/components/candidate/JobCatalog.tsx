@@ -24,17 +24,33 @@ export function JobCatalog() {
 
   const { data: jobs, isLoading, error } = useJobOffers();
 
+  // Helper to normalize fields that can be string or string[]
+  const toText = (val?: string | string[] | null) =>
+    Array.isArray(val) ? val.filter(Boolean).join(", ") : (val ?? "");
+
   const filteredJobs = jobs?.filter(job => {
+    const locationText = toText(job.location);
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         locationText.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLocation = locationFilter === "all" || job.location === locationFilter;
+    const matchesLocation =
+      locationFilter === "all" ||
+      (Array.isArray(job.location)
+        ? job.location.includes(locationFilter)
+        : job.location === locationFilter);
     const matchesContract = contractFilter === "all" || job.contract_type === contractFilter;
     
     return matchesSearch && matchesLocation && matchesContract;
   }) || [];
 
-  const uniqueLocations = [...new Set(jobs?.map(job => job.location) || [])];
+  const uniqueLocations = [
+    ...new Set(
+      (jobs || [])
+        .flatMap(job => (Array.isArray(job.location) ? job.location : [job.location]))
+        .filter((v): v is string => typeof v === "string" && v.trim().length > 0)
+    ),
+  ];
+
   const uniqueContracts = [...new Set(jobs?.map(job => job.contract_type) || [])];
 
   const handleJobClick = (jobId: string) => {
@@ -123,7 +139,7 @@ export function JobCatalog() {
           Découvrez toutes les opportunités disponibles au sein du comité de direction.
         </p>
       </div>
-
+  
       {/* Sélecteur de vue */}
       <div className="flex justify-center px-3 sm:px-4">
         <div className="bg-white rounded-lg p-1 shadow-sm border w-full sm:w-auto">
@@ -147,7 +163,7 @@ export function JobCatalog() {
           </Button>
         </div>
       </div>
-
+  
       {/* Search Bar with Filters */}
       <div className="max-w-4xl mx-auto px-3 sm:px-4">
         <div className="relative flex flex-col sm:flex-row gap-2">
@@ -273,7 +289,7 @@ export function JobCatalog() {
               <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                 <JobCard
                   title={job.title}
-                  location={job.location}
+                  location={toText(job.location)}
                   contractType={job.contract_type}
                   description={job.description}
                   isPreview={true}
@@ -292,27 +308,30 @@ export function JobCatalog() {
               <div className="px-6 py-4">Type de contrat</div>
               <div className="px-6 py-4 text-center">Action</div>
             </div>
+
             {filteredJobs.map((job, index) => (
-              <div key={job.id} className="md:grid border-b hover:bg-gray-50 transition-colors animate-fade-in flex flex-col md:flex-none space-y-2 md:space-y-0" style={{ gridTemplateColumns: '2fr 1fr 1fr 120px', animationDelay: `${300 + index * 50}ms` }}>
+              <div
+                key={job.id}
+                className="md:grid border-b hover:bg-gray-50 transition-colors animate-fade-in flex flex-col md:flex-none space-y-2 md:space-y-0"
+                style={{ gridTemplateColumns: '2fr 1fr 1fr 120px', animationDelay: `${300 + index * 50}ms` }}
+              >
                 <div className="font-medium text-sm md:text-base px-6 py-4">{job.title}</div>
-                <div className="text-muted-foreground text-xs md:text-sm px-6 py-4">{job.location}</div>
+                <div className="text-muted-foreground text-xs md:text-sm px-6 py-4">{toText(job.location)}</div>
                 <div className="text-muted-foreground text-xs md:text-sm px-6 py-4">{job.contract_type}</div>
                 <div className="flex justify-start md:justify-center px-6 py-4">
                   <Button 
-                    variant="outline" 
+                    variant="hero" 
                     size="sm"
-                    className="text-xs md:text-sm h-8 md:h-9"
+                    className="w-full md:w-auto text-xs md:text-sm h-8 md:h-9"
                     onClick={() => handleJobClick(job.id)}
                   >
-                    Voir détails
+                    Voir l'offre
                   </Button>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
-
       {filteredJobs.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">Aucune offre ne correspond à vos critères de recherche.</p>
@@ -330,6 +349,7 @@ export function JobCatalog() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

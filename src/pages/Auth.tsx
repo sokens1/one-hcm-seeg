@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,13 +67,15 @@ export default function Auth() {
   const [matriculeError, setMatriculeError] = useState<string>("");
   const [isMatriculeValid, setIsMatriculeValid] = useState<boolean>(false);
   const [isVerifyingMatricule, setIsVerifyingMatricule] = useState<boolean>(false);
+  const [lastVerifiedMatricule, setLastVerifiedMatricule] = useState<string>("");
 
   useEffect(() => {
     setIsMatriculeValid(false);
     setMatriculeError("");
+    setLastVerifiedMatricule("");
   }, [signUpData.matricule]);
 
-  const verifyMatricule = async (): Promise<boolean> => {
+  const verifyMatricule = useCallback(async (): Promise<boolean> => {
     const matricule = signUpData.matricule.trim();
     if (!matricule) {
       setMatriculeError("Le matricule est requis.");
@@ -89,7 +91,12 @@ export default function Auth() {
 
       if (error) {
         console.error('Erreur vérification matricule:', error);
-        setMatriculeError(`Erreur lors de la vérification du matricule: ${error.message}`);
+        // Gestion spécifique du rate limiting
+        if (error.message.includes('rate limit') || error.code === 'PGRST301') {
+          setMatriculeError("Trop de vérifications. Attendez quelques secondes avant de réessayer.");
+        } else {
+          setMatriculeError(`Erreur lors de la vérification du matricule: ${error.message}`);
+        }
         setIsMatriculeValid(false);
         return false;
       }
@@ -102,6 +109,7 @@ export default function Auth() {
 
       setMatriculeError("");
       setIsMatriculeValid(true);
+      setLastVerifiedMatricule(matricule);
       return true;
     } catch (e) {
       setMatriculeError("Erreur lors de la vérification du matricule.");
@@ -111,15 +119,15 @@ export default function Auth() {
     finally {
       setIsVerifyingMatricule(false);
     }
-  };
+  }, [signUpData.matricule]);
 
   useEffect(() => {
     if (!signUpData.matricule) return;
     const timer = setTimeout(() => {
       verifyMatricule();
-    }, 500);
+    }, 1000); // Augmenté de 500ms à 1000ms pour réduire les appels
     return () => clearTimeout(timer);
-  }, [signUpData.matricule]);
+  }, [signUpData.matricule, verifyMatricule]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,10 +215,16 @@ export default function Auth() {
     }
 
     // Ensure matricule is valid before proceeding
-    const ok = await verifyMatricule();
+    // Eviter l'appel redondant si le matricule est déjà validé
+    const currentMatricule = signUpData.matricule.trim();
+    let ok = isMatriculeValid && lastVerifiedMatricule === currentMatricule;
+    
+    if (!ok) {
+      ok = await verifyMatricule();
+    }
+    
     if (!ok) {
       toast.error("Vérifiez votre matricule pour continuer.");
-
       setIsSubmitting(false);
       return;
     }
@@ -228,17 +242,12 @@ export default function Auth() {
       });
       
       if (error) {
-        if (error.status === 429) {
-          toast.error("Trop de tentatives. Veuillez réessayer dans 60 secondes.");
-        } else if (error.message.includes('rate limit')) {
-          toast.error("Limite d'envoi d'emails atteinte. En mode développement, vous pouvez vous connecter directement.");
-          setCooldown(120); // 2 minutes de cooldown
-          // En développement, on peut suggérer de se connecter directement
-          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            setTimeout(() => {
-              toast.info("💡 Astuce: En développement, essayez de vous connecter directement avec vos identifiants.");
-            }, 2000);
-          }
+        if (error.status === 429 || error.message.includes('rate limit')) {
+          toast.error("Trop de tentatives de vérification. Attendez 60 secondes avant de réessayer.");
+          setCooldown(60); // 1 minute de cooldown
+          setTimeout(() => {
+            toast.info("💡 Astuce: Attendez que la vérification du matricule soit terminée avant de cliquer sur S'inscrire.");
+          }, 2000);
         } else if (error.message.includes("already registered")) {
           toast.error("Cette adresse email est déjà utilisée. Essayez de vous connecter.");
           setActiveTab("signin");
@@ -248,6 +257,27 @@ export default function Auth() {
           toast.error("Erreur d'inscription: " + error.message);
         }
       } else {
+        // Tenter une connexion immédiate si l'email de confirmation n'est pas requis côté Supabase
+        try {
+          const { data: sess } = await supabase.auth.getSession();
+          if (!sess.session) {
+            const { data: siData, error: siErr } = await signIn(signUpData.email, signUpData.password);
+            if (!siErr && siData.user) {
+              toast.success("Inscription réussie ! Vous êtes connecté.");
+              navigate('/candidate/dashboard');
+              return;
+            }
+          } else {
+            toast.success("Inscription réussie ! Vous êtes connecté.");
+            navigate('/candidate/dashboard');
+            return;
+          }
+        } catch {
+          // ignore and fall back to classic flow
+        }
+
+        // Fallback: si la connexion immédiate n'est pas possible (ex: email requis),
+        // on garde l'UX existante
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         if (isDevelopment) {
           toast.success("Inscription réussie! Vous pouvez maintenant vous connecter.");
@@ -255,7 +285,6 @@ export default function Auth() {
           toast.success("Inscription réussie! Vérifiez votre email pour confirmer votre compte.");
         }
         setActiveTab("signin");
-        // Pré-remplir l'email dans le formulaire de connexion
         setSignInData(prev => ({ ...prev, email: signUpData.email }));
       }
     } catch (error) {

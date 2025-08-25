@@ -7,6 +7,7 @@ import { JobCard } from "@/components/ui/job-card";
 import { ApplicationDeadlineCounter } from "@/components/ApplicationDeadlineCounter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Chatbot } from "@/components/ui/Chatbot";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { isPreLaunch } from "@/utils/launchGate";
@@ -201,7 +202,7 @@ const Index = () => {
                     contractType={job.contract_type}
                     description={job.description}
                     isPreview={true}
-                    onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
+                    onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
                     onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")}
                   />
@@ -235,14 +236,14 @@ const Index = () => {
                       </div>
                     )}
                     <Button 
-                      variant="hero" 
+                      variant="default" 
                       size="sm"
                       onClick={() =>
                         preLaunch
                           ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
-                          : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                          : navigate(`/jobs/${job.id}`)
                       }
-                      className={"w-full text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
+                      className={"w-full text-xs sm:text-sm h-8 md:h-9"}
                     >
                       Voir l'offre
                     </Button>
@@ -260,14 +261,14 @@ const Index = () => {
                     {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
                     <div className="flex justify-center">
                       <Button 
-                        variant="hero" 
+                        variant="default" 
                         size="sm"
                         onClick={() =>
                           preLaunch
                             ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
-                            : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                            : navigate(`/jobs/${job.id}`)
                         }
-                        className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
+                        className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9"}
                       >
                         Voir l'offre
                       </Button>
@@ -335,6 +336,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+      
+      {/* Chatbot */}
+      <Chatbot />
     </Layout>
   );
 };
