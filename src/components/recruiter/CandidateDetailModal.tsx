@@ -165,6 +165,42 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
                         <span className="text-xs sm:text-sm">{candidate.phone}</span>
                       </div>
                     )}
+                    {candidate.candidate_profiles?.gender && (
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <div className="flex items-center gap-2">
+                          <User className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium text-xs sm:text-sm">Genre :</span>
+                        </div>
+                        <span className="text-xs sm:text-sm">{candidate.candidate_profiles.gender}</span>
+                      </div>
+                    )}
+                    {candidate.date_of_birth && (
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium text-xs sm:text-sm">Date de naissance :</span>
+                        </div>
+                        <span className="text-xs sm:text-sm">{new Date(candidate.date_of_birth).toLocaleDateString('fr-FR')}</span>
+                      </div>
+                    )}
+                    {candidate.candidate_profiles?.current_position && (
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium text-xs sm:text-sm">Poste actuel :</span>
+                        </div>
+                        <span className="text-xs sm:text-sm">{candidate.candidate_profiles.current_position}</span>
+                      </div>
+                    )}
+                    {candidate.candidate_profiles?.address && (
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium text-xs sm:text-sm">Adresse :</span>
+                        </div>
+                        <span className="text-xs sm:text-sm">{candidate.candidate_profiles.address}</span>
+                      </div>
+                    )}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />

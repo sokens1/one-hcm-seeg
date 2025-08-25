@@ -165,6 +165,13 @@ export function useApplications() {
         talent: string[];
         paradigme: string[];
       };
+      // Ajout des données de profil candidat
+      profile_data?: {
+        gender?: string;
+        current_position?: string;
+        date_of_birth?: string;
+        years_of_experience?: string;
+      };
     }) => {
       if (!user) throw new Error("User not authenticated");
 
@@ -248,6 +255,37 @@ export function useApplications() {
           throw new Error("Vous avez déjà postulé à cette offre.");
         }
         throw new Error(error.message);
+      }
+
+      // Sauvegarder les données de profil candidat si fournies
+      if (applicationData.profile_data && user?.id) {
+        const profilePayload: { [key: string]: unknown } = { user_id: user.id };
+
+        if (applicationData.profile_data.gender) {
+          profilePayload.gender = applicationData.profile_data.gender;
+        }
+        if (applicationData.profile_data.current_position) {
+          profilePayload.current_position = applicationData.profile_data.current_position;
+        }
+        // Assurer que years_experience est une chaîne, même si vide, pour correspondre au type de la DB
+        if (applicationData.profile_data.years_of_experience !== undefined) {
+          profilePayload.years_experience = String(applicationData.profile_data.years_of_experience);
+        }
+        if (applicationData.profile_data.date_of_birth) {
+          profilePayload.birth_date = applicationData.profile_data.date_of_birth;
+        }
+
+        // Ne tenter l'upsert que si on a plus que user_id
+        if (Object.keys(profilePayload).length > 1) {
+          const { error: profileError } = await supabase
+            .from('candidate_profiles')
+            .upsert(profilePayload, { onConflict: 'user_id' });
+
+          if (profileError) {
+            console.warn('Erreur lors de la mise à jour du profil candidat:', profileError);
+            // Ne pas faire échouer la candidature si le profil ne peut pas être sauvegardé
+          }
+        }
       }
 
       return data;

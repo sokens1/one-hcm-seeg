@@ -413,6 +413,26 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           })
           .eq('id', applicationId);
         if (updError) throw updError;
+
+        // Mettre à jour aussi le profil candidat en mode édition
+        if (user?.id) {
+          const profilePayload: Record<string, unknown> = {
+            user_id: user.id,
+          };
+          
+          if (formData.gender) profilePayload.gender = formData.gender;
+          if (formData.currentPosition) profilePayload.current_position = formData.currentPosition;
+          if (formData.yearsOfExperience) profilePayload.years_of_experience = parseInt(formData.yearsOfExperience) || 0;
+
+          const { error: profileError } = await supabase
+            .from('candidate_profiles')
+            .upsert(profilePayload, { onConflict: 'user_id' });
+
+          if (profileError) {
+            console.warn('Erreur lors de la mise à jour du profil candidat:', profileError);
+          }
+        }
+
         applicationIdForDocs = applicationId;
       } else {
         if (!jobId) throw new Error('Job ID manquant.');
@@ -423,6 +443,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
             talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
             paradigme: mtpQuestions.paradigme.map((_, i) => formData[`paradigme${i + 1}`]),
+          },
+          profile_data: {
+            gender: formData.gender,
+            current_position: formData.currentPosition,
+            years_of_experience: formData.yearsOfExperience,
+            date_of_birth: formData.dateOfBirth ? format(formData.dateOfBirth, 'yyyy-MM-dd') : undefined,
           },
         });
         applicationIdForDocs = application.id as string;
