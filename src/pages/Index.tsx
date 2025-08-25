@@ -128,7 +128,7 @@ const Index = () => {
                 <Button 
                   variant="outline"
                   size="lg"
-                  className="border-2 border-white bg-transparent hover:bg-white/10 text-white w-full sm:w-auto"
+                  className="border-2 border-white bg-transparent text-white w-full sm:w-auto"
                   onClick={() => navigate('/company-context')}
                 >
                   Contexte de recrutement

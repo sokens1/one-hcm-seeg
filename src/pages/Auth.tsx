@@ -308,7 +308,7 @@ export default function Auth() {
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-4 sm:py-6">
         <div className="container mx-auto px-3 sm:px-4">
           <Link to="/">
-            <Button variant="ghost" className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-xs sm:text-sm">
+            <Button variant="ghost" className="mb-3 sm:mb-4 text-blue-600 bg-white text-xs sm:text-sm">
               <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Retour à l'accueil</span>
               <span className="sm:hidden">Retour</span>
