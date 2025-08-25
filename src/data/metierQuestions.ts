@@ -348,7 +348,7 @@ const mtpQuestionsByOfferNormalized: Record<string, MTPQuestions> = {
     ]
   },
   
-    [normalize("Directeur des Moyens Généraux")]: {
+    [normalize("Directeur Moyens Généraux")]: {
     metier: [
         "Quelles sont les problématiques que vous identifiez aujourd'hui à la SEEG, pour ce poste ? Quelles solutions préconisez-vous ? Quels pourraient être les obstacles au déploiement de votre solution ?",
         "Quels sont les trois principaux challenges que vous comptez relever en tant que dirigeant des moyens généraux à la SEEG ?",
