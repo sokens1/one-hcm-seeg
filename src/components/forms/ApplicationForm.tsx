@@ -177,7 +177,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const { data, error } = await supabase
           .from('applications')
           .select(`
-            ref_contacts, 
+            reference_contacts,
             mtp_answers,
             candidate_id
           `)
@@ -187,7 +187,38 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         if (error) throw error;
         if (aborted || !data) return;
         
-        // Récupérer les informations utilisateur et profil séparément
+        // Pré-remplissage MTP et références indépendamment des données profil/utilisateur
+        const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
+        const refContacts = (data as any).reference_contacts ?? (data as any).ref_contacts;
+
+        setFormData(prev => ({
+          ...prev,
+          // Références et MTP
+          references: refContacts ?? prev.references,
+          metier1: mtp?.metier?.[0] ?? prev.metier1,
+          metier2: mtp?.metier?.[1] ?? prev.metier2,
+          metier3: mtp?.metier?.[2] ?? prev.metier3,
+          metier4: mtp?.metier?.[3] ?? prev.metier4,
+          metier5: mtp?.metier?.[4] ?? prev.metier5,
+          metier6: mtp?.metier?.[5] ?? prev.metier6,
+          metier7: mtp?.metier?.[6] ?? prev.metier7,
+          talent1: mtp?.talent?.[0] ?? prev.talent1,
+          talent2: mtp?.talent?.[1] ?? prev.talent2,
+          talent3: mtp?.talent?.[2] ?? prev.talent3,
+          talent4: mtp?.talent?.[3] ?? prev.talent4,
+          talent5: mtp?.talent?.[4] ?? prev.talent5,
+          talent6: mtp?.talent?.[5] ?? prev.talent6,
+          talent7: mtp?.talent?.[6] ?? prev.talent7,
+          paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
+          paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
+          paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
+          paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
+          paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
+          paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
+          paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
+        }));
+
+        // Récupérer les informations utilisateur et profil séparément (enrichissement, non bloquant)
         const candidateId = (data as any).candidate_id;
         if (candidateId) {
           const [{ data: userData }, { data: profileData }] = await Promise.all([
@@ -202,9 +233,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               .eq('user_id', candidateId)
               .maybeSingle()
           ]);
-          
-          const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
-          
+
           setFormData(prev => ({
             ...prev,
             // Informations personnelles depuis la candidature existante
@@ -214,29 +243,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
             gender: profileData?.gender || prev.gender,
             currentPosition: profileData?.current_position || prev.currentPosition,
-            // Références et MTP
-            references: (data as any).ref_contacts ?? prev.references,
-            metier1: mtp?.metier?.[0] ?? prev.metier1,
-            metier2: mtp?.metier?.[1] ?? prev.metier2,
-            metier3: mtp?.metier?.[2] ?? prev.metier3,
-            metier4: mtp?.metier?.[3] ?? prev.metier4,
-            metier5: mtp?.metier?.[4] ?? prev.metier5,
-            metier6: mtp?.metier?.[5] ?? prev.metier6,
-            metier7: mtp?.metier?.[6] ?? prev.metier7,
-            talent1: mtp?.talent?.[0] ?? prev.talent1,
-            talent2: mtp?.talent?.[1] ?? prev.talent2,
-            talent3: mtp?.talent?.[2] ?? prev.talent3,
-            talent4: mtp?.talent?.[3] ?? prev.talent4,
-            talent5: mtp?.talent?.[4] ?? prev.talent5,
-            talent6: mtp?.talent?.[5] ?? prev.talent6,
-            talent7: mtp?.talent?.[6] ?? prev.talent7,
-            paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
-            paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
-            paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
-            paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
-            paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
-            paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
-            paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
           }));
         }
       } catch (e) {
@@ -270,7 +276,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const cv = data.find(d => d.document_type === 'cv');
         const cover = data.find(d => d.document_type === 'cover_letter');
                 const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
-        const additionalCertificates = data.filter(d => d.document_type === 'additional_certificate').map(makeUploaded);
+        const additionalCertificates = data.filter(d => d.document_type === 'certificate').map(makeUploaded);
 
         setFormData(prev => ({
           ...prev,
@@ -397,7 +403,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const { error: updError } = await supabase
           .from('applications')
           .update({
-            ref_contacts: formData.references,
+            reference_contacts: formData.references,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
               talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -465,7 +471,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       for (const cert of formData.additionalCertificates) {
         docsPayload.push({
           application_id: applicationIdForDocs as string,
-          document_type: 'additional_certificate',
+          document_type: 'certificate',
           file_name: cert.name,
           file_url: toFileUrl(cert.path),
           file_size: cert.size ?? null,
