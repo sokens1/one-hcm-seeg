@@ -1,6 +1,7 @@
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Bell } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,18 +9,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-// Notifications UI masqué pour le moment
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale/fr';
+import { useState } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-// import { useNotifications } from "@/hooks/useNotifications";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export function CandidateHeader() {
   const { user, signOut: logout } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  // Notifications désactivées pour le moment
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -41,7 +46,67 @@ export function CandidateHeader() {
 
       {/* Actions à droite */}
       <div className="flex items-center gap-2 sm:gap-4">
-        {/* Notifications masquées pour le moment */}
+        {/* Notifications */}
+        <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative rounded-full">
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0 text-xs">
+                  {unreadCount}
+                </Badge>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80" align="end">
+            <div className="p-2">
+              <div className="flex justify-between items-center mb-4 px-2">
+                <h4 className="font-medium">Notifications</h4>
+                {unreadCount > 0 && (
+                  <Button variant="link" size="sm" onClick={() => markAllAsRead()}>
+                    Tout marquer comme lu
+                  </Button>
+                )}
+              </div>
+              <div className="max-h-96 overflow-y-auto">
+                {notifications.length > 0 ? (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-2 rounded-lg mb-1 cursor-pointer transition-colors ${
+                        !notif.read ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-muted'
+                      }`}
+                      onClick={() => {
+                        if (!notif.read) {
+                          markAsRead(notif.id);
+                        }
+                        if (notif.link) {
+                          navigate(notif.link);
+                          setNotificationOpen(false);
+                        }
+                      }}
+                    >
+                      <div className="flex items-start">
+                        {!notif.read && <div className="h-2 w-2 rounded-full bg-primary mr-3 mt-1.5 flex-shrink-0" />}
+                        <div className="flex-grow">
+                          <p className="font-semibold text-sm">{notif.title}</p>
+                          <p className="text-xs text-muted-foreground">{notif.message}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true, locale: fr })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-sm text-muted-foreground py-4">
+                    Aucune notification pour le moment.
+                  </p>
+                )}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
 
         {/* Profil utilisateur avec dropdown */}
         <DropdownMenu>

@@ -72,11 +72,12 @@ const ProfileTab = ({ application }: { application: Application }) => {
           </div>
           <div className="space-y-3 sm:space-y-4">
             <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />
-            <InfoRow icon={Calendar} label="Date de naissance" value={user?.date_of_birth ? format(new Date(user.date_of_birth), 'PPP', { locale: fr }) : undefined} />
+            <InfoRow icon={Calendar} label="Date de naissance" value={profile?.date_of_birth ? format(new Date(profile.date_of_birth), 'PPP', { locale: fr }) : undefined} />
             <InfoRow icon={Info} label="Sexe" value={profile?.gender} />
           </div>
           <div className="space-y-3 sm:space-y-4">
             <InfoRow icon={Briefcase} label="Poste actuel" value={profile?.current_position} />
+            <InfoRow icon={Briefcase} label="Années d'expérience" value={profile?.years_of_experience?.toString()} />
             <InfoRow icon={MapPin} label="Adresse" value={profile?.address} />
           </div>
         </div>

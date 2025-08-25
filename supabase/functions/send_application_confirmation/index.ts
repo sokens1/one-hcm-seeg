@@ -38,10 +38,24 @@ Cordialement,
 SEEG – Recrutement
 `;
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 Deno.serve(async (req) => {
-  if (req.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405 });
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
   }
+
+  if (req.method !== "POST") {
+    return new Response("Method Not Allowed", { 
+      status: 405, 
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const payload = (await req.json()) as Payload;
     const { to, firstName, jobTitle } = payload || {} as any;
@@ -49,7 +63,7 @@ Deno.serve(async (req) => {
     if (!to || !jobTitle) {
       return new Response(JSON.stringify({ error: "Missing 'to' or 'jobTitle'" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -57,10 +71,12 @@ Deno.serve(async (req) => {
     const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "SEEG Recrutement <no-reply@example.com>";
 
     if (!RESEND_API_KEY) {
-      // Not configured; return 501 to indicate not implemented in this environment
       return new Response(JSON.stringify({
         error: "RESEND_API_KEY not set. Configure via 'supabase secrets set RESEND_API_KEY=...'.",
-      }), { status: 501, headers: { "Content-Type": "application/json" } });
+      }), { 
+        status: 501, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      });
     }
 
     const res = await fetch("https://api.resend.com/emails", {
@@ -82,18 +98,18 @@ Deno.serve(async (req) => {
     if (!res.ok) {
       return new Response(JSON.stringify({ error: data?.message || "Failed to send email" }), {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     return new Response(JSON.stringify({ ok: true, id: data?.id }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
