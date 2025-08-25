@@ -11,6 +11,8 @@ import { useJobOffers } from "@/hooks/useJobOffers";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { ContentSpinner } from "@/components/ui/spinner";
+import { ApplicationActionsMenu } from './ApplicationActionsMenu';
+import type { Application } from '@/types/application';
 
 export function DashboardMain() {
   const { user } = useAuth();
@@ -122,8 +124,14 @@ export function DashboardMain() {
           {/* Vue Carte des Candidatures */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {filteredApplications.map((application) => (
-              <Card key={application.id} className="border hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
+              <Card key={application.id} className="border hover:shadow-md transition-shadow relative">
+                <div className="absolute top-3 right-3 z-10">
+                  <ApplicationActionsMenu 
+                    application={application} 
+                    jobTitle={application.job_offers?.title || 'Sans titre'} 
+                  />
+                </div>
+                <CardHeader className="pb-3 pr-12">
                   <CardTitle className="text-base sm:text-lg line-clamp-2">{application.job_offers?.title}</CardTitle>
                   <p className="text-xs sm:text-sm text-muted-foreground">{application.job_offers?.contract_type}</p>
                 </CardHeader>
@@ -141,13 +149,13 @@ export function DashboardMain() {
                       {application.status}
                     </Badge>
                   </div>
-                  <Button asChild className="w-full gap-2 text-xs sm:text-sm">
+                  {/* <Button asChild className="w-full gap-2 text-xs sm:text-sm">
                     <Link to={`/candidate/application/${application.id}`}>
                       <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span className="hidden sm:inline">Voir le suivi détaillé</span>
                       <span className="sm:hidden">Voir détails</span>
                     </Link>
-                  </Button>
+                  </Button> */}
                 </CardContent>
               </Card>
             ))}
