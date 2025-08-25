@@ -9,7 +9,10 @@ import {
   Bot, 
   User,
   Minimize2,
-  Maximize2
+  Maximize2,
+  Phone,
+  Mail,
+  MessageSquare
 } from "lucide-react";
 import { 
   ChatMessage, 
@@ -26,6 +29,7 @@ interface ChatbotProps {
 export function Chatbot({ className }: ChatbotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [showMenu, setShowMenu] = useState(true);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -34,7 +38,7 @@ export function Chatbot({ className }: ChatbotProps) {
 
   // Initialize with welcome messages
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    if (isOpen && !showMenu && messages.length === 0) {
       const welcomeMessages: ChatMessage[] = defaultMessages.map((text, index) => ({
         id: `welcome-${index}`,
         text,
@@ -43,19 +47,19 @@ export function Chatbot({ className }: ChatbotProps) {
       }));
       setMessages(welcomeMessages);
     }
-  }, [isOpen, messages.length]);
+  }, [isOpen, showMenu, messages.length]);
 
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Focus input when opened
+  // Focus input when opened and in chat mode
   useEffect(() => {
-    if (isOpen && !isMinimized && inputRef.current) {
+    if (isOpen && !isMinimized && !showMenu && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [isOpen, isMinimized]);
+  }, [isOpen, isMinimized, showMenu]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -91,10 +95,29 @@ export function Chatbot({ className }: ChatbotProps) {
     setTimeout(() => handleSendMessage(), 100);
   };
 
+  // Menu actions
+  const handleStartChat = () => {
+    setShowMenu(false);
+  };
+
+  const handleCallSupport = () => {
+    window.open("tel:+241076402886", "_self");
+  };
+
+  const handleSendEmail = () => {
+    window.open("mailto:support@cnx4-0.com?subject=Demande de support - OneHCM Talent Flow", "_self");
+  };
+
+  const handleBackToMenu = () => {
+    setShowMenu(true);
+    setMessages([]);
+  };
+
   const toggleChatbot = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
       setIsMinimized(false);
+      setShowMenu(true); // Toujours commencer par le menu
     }
   };
 
@@ -107,6 +130,13 @@ export function Chatbot({ className }: ChatbotProps) {
       timestamp: new Date()
     }));
     setMessages(welcomeMessages);
+  };
+
+  const resetToMenu = () => {
+    setShowMenu(true);
+    setMessages([]);
+    setInputValue("");
+    setIsTyping(false);
   };
 
   return (
@@ -133,8 +163,12 @@ export function Chatbot({ className }: ChatbotProps) {
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm">Assistant SEEG</h3>
-                <p className="text-xs opacity-90">En ligne</p>
+                <h3 className="font-semibold text-sm">
+                  {showMenu ? "Support SEEG" : "Assistant SEEG"}
+                </h3>
+                <p className="text-xs opacity-90">
+                  {showMenu ? "Comment pouvons-nous vous aider ?" : "En ligne"}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -157,127 +191,194 @@ export function Chatbot({ className }: ChatbotProps) {
             </div>
           </div>
 
-          {/* Chat Content */}
+          {/* Content */}
           {!isMinimized && (
-            <>
-              <CardContent className="flex flex-col h-96 p-0">
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={cn(
-                        "flex gap-2",
-                        message.isBot ? "justify-start" : "justify-end"
-                      )}
+            <CardContent className="flex flex-col h-96 p-0">
+              {showMenu ? (
+                /* Menu Principal */
+                <div className="flex flex-col h-full justify-center items-center p-6 space-y-4">
+                  <div className="text-center mb-6">
+                    <Bot className="h-16 w-16 mx-auto text-blue-600 mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      Comment souhaitez-vous nous contacter ?
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Choisissez l'option qui vous convient le mieux
+                    </p>
+                  </div>
+                  
+                  <div className="w-full space-y-3">
+                    <Button
+                      onClick={handleStartChat}
+                      className="w-full h-14 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white justify-start gap-4"
+                      size="lg"
                     >
-                      {message.isBot && (
+                      <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <MessageSquare className="h-5 w-5" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Discuter avec l'assistant</p>
+                        <p className="text-xs opacity-90">Chat en direct avec notre IA</p>
+                      </div>
+                    </Button>
+                    
+                    <Button
+                      onClick={handleCallSupport}
+                      variant="outline"
+                      className="w-full h-14 border-2 border-green-200 hover:bg-green-50 text-green-700 justify-start gap-4"
+                      size="lg"
+                    >
+                      <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <Phone className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Appeler le support</p>
+                        <p className="text-xs opacity-70">+241 076402886</p>
+                      </div>
+                    </Button>
+                    
+                    <Button
+                      onClick={handleSendEmail}
+                      variant="outline"
+                      className="w-full h-14 border-2 border-purple-200 hover:bg-purple-50 text-purple-700 justify-start gap-4"
+                      size="lg"
+                    >
+                      <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <Mail className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Envoyer un email</p>
+                        {/* <p className="text-xs opacity-70">support@cnx4-0.com</p> */}
+                      </div>
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                /* Interface de Chat */
+                <>
+                  {/* Messages */}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={cn(
+                          "flex gap-2",
+                          message.isBot ? "justify-start" : "justify-end"
+                        )}
+                      >
+                        {message.isBot && (
+                          <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                            <Bot className="h-4 w-4 text-blue-600" />
+                          </div>
+                        )}
+                        <div
+                          className={cn(
+                            "max-w-[80%] px-3 py-2 rounded-lg text-sm",
+                            message.isBot
+                              ? "bg-gray-100 text-gray-900"
+                              : "bg-blue-600 text-white ml-auto"
+                          )}
+                        >
+                          <p className="whitespace-pre-wrap">{message.text}</p>
+                          <p className={cn(
+                            "text-xs mt-1 opacity-70",
+                            message.isBot ? "text-gray-500" : "text-blue-100"
+                          )}>
+                            {message.timestamp.toLocaleTimeString("fr-FR", {
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })}
+                          </p>
+                        </div>
+                        {!message.isBot && (
+                          <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                            <User className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    
+                    {/* Typing Indicator */}
+                    {isTyping && (
+                      <div className="flex gap-2 justify-start">
                         <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                           <Bot className="h-4 w-4 text-blue-600" />
                         </div>
-                      )}
-                      <div
-                        className={cn(
-                          "max-w-[80%] px-3 py-2 rounded-lg text-sm",
-                          message.isBot
-                            ? "bg-gray-100 text-gray-900"
-                            : "bg-blue-600 text-white ml-auto"
-                        )}
-                      >
-                        <p className="whitespace-pre-wrap">{message.text}</p>
-                        <p className={cn(
-                          "text-xs mt-1 opacity-70",
-                          message.isBot ? "text-gray-500" : "text-blue-100"
-                        )}>
-                          {message.timestamp.toLocaleTimeString("fr-FR", {
-                            hour: "2-digit",
-                            minute: "2-digit"
-                          })}
-                        </p>
-                      </div>
-                      {!message.isBot && (
-                        <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                          <User className="h-4 w-4 text-white" />
+                        <div className="bg-gray-100 px-3 py-2 rounded-lg">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  ))}
-                  
-                  {/* Typing Indicator */}
-                  {isTyping && (
-                    <div className="flex gap-2 justify-start">
-                      <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                        <Bot className="h-4 w-4 text-blue-600" />
                       </div>
-                      <div className="bg-gray-100 px-3 py-2 rounded-lg">
-                        <div className="flex gap-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+
+                  {/* Quick Questions */}
+                  {messages.length <= defaultMessages.length && (
+                    <div className="p-3 border-t bg-gray-50">
+                      <p className="text-xs text-gray-600 mb-2">Questions fréquentes :</p>
+                      <div className="flex flex-wrap gap-1">
+                        {predefinedQuestions.slice(0, 3).map((q) => (
+                          <Button
+                            key={q.id}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleQuickQuestion(q.question)}
+                            className="text-xs h-7 px-2 border-blue-200 text-blue-700 hover:bg-blue-50"
+                          >
+                            {q.question}
+                          </Button>
+                        ))}
                       </div>
                     </div>
                   )}
-                  <div ref={messagesEndRef} />
-                </div>
 
-                {/* Quick Questions */}
-                {messages.length <= defaultMessages.length && (
-                  <div className="p-3 border-t bg-gray-50">
-                    <p className="text-xs text-gray-600 mb-2">Questions fréquentes :</p>
-                    <div className="flex flex-wrap gap-1">
-                      {predefinedQuestions.slice(0, 3).map((q) => (
-                        <Button
-                          key={q.id}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleQuickQuestion(q.question)}
-                          className="text-xs h-7 px-2 border-blue-200 text-blue-700 hover:bg-blue-50"
-                        >
-                          {q.question}
-                        </Button>
-                      ))}
+                  {/* Input */}
+                  <div className="p-4 border-t">
+                    <div className="flex gap-2">
+                      <Input
+                        ref={inputRef}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                        placeholder="Tapez votre message..."
+                        className="flex-1 h-9 text-sm"
+                        disabled={isTyping}
+                      />
+                      <Button
+                        onClick={handleSendMessage}
+                        disabled={!inputValue.trim() || isTyping}
+                        className="h-9 w-9 bg-blue-600 hover:bg-blue-700"
+                        size="icon"
+                      >
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex justify-between items-center mt-3 gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={resetToMenu}
+                        className="flex-1 h-8 text-xs font-medium border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300"
+                      >
+                        ← Retour au menu
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={clearChat}
+                        className="flex-1 h-8 text-xs font-medium border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300"
+                      >
+                        🔄 Nouveau chat
+                      </Button>
                     </div>
                   </div>
-                )}
-
-                {/* Input */}
-                <div className="p-4 border-t">
-                  <div className="flex gap-2">
-                    <Input
-                      ref={inputRef}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                      placeholder="Tapez votre message..."
-                      className="flex-1 h-9 text-sm"
-                      disabled={isTyping}
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={!inputValue.trim() || isTyping}
-                      className="h-9 w-9 bg-blue-600 hover:bg-blue-700"
-                      size="icon"
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <p className="text-xs text-gray-500">
-                      Assistant virtuel SEEG
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={clearChat}
-                      className="text-xs h-6 px-2 text-gray-500 hover:text-gray-700"
-                    >
-                      Nouveau chat
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </>
+                </>
+              )}
+            </CardContent>
           )}
         </Card>
       )}
