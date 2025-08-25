@@ -105,48 +105,81 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('2. Documents', margin, yPos);
   yPos += 10;
 
+  // Vérifier et formater les documents
   const documents = [
-    { label: 'CV', value: data.cv?.name || 'Non fourni' },
-    { label: 'Lettre de Motivation', value: data.coverLetter?.name || 'Non fournie' },
-    { label: 'Lettre d\'Intégrité', value: data.integrityLetter?.name || 'Non fournie' },
-    { label: 'Idée de Projet', value: data.projectIdea?.name || 'Non fournie' },
+    { 
+      label: 'CV', 
+      value: data.cv?.name || 'Non fourni',
+      isFilled: !!data.cv?.name
+    },
+    { 
+      label: 'Lettre de Motivation', 
+      value: data.coverLetter?.name || 'Non fournie',
+      isFilled: !!data.coverLetter?.name
+    },
+    { 
+      label: 'Lettre d\'intégrité', 
+      value: data.integrityLetter?.name || 'Non fournie',
+      isFilled: !!data.integrityLetter?.name
+    },
+    { 
+      label: 'Idée de Projet', 
+      value: data.projectIdea?.name || 'Non fournie',
+      isFilled: !!data.projectIdea?.name
+    },
     { 
       label: 'Certificats', 
-      value: data.certificates.length > 0 
+      value: data.certificates?.length > 0 
         ? `${data.certificates.length} fichier(s)` 
-        : 'Aucun fichier' 
+        : 'Aucun fichier',
+      isFilled: data.certificates?.length > 0
     },
     { 
       label: 'Lettres de Recommandation', 
-      value: data.recommendations.length > 0 
+      value: data.recommendations?.length > 0 
         ? `${data.recommendations.length} fichier(s)` 
-        : 'Aucun fichier' 
+        : 'Aucun fichier',
+      isFilled: data.recommendations?.length > 0
     },
   ];
 
+  // Afficher les documents
   doc.setFont('helvetica', 'normal');
   documents.forEach(docItem => {
-    doc.setFontSize(11);
-    doc.setTextColor(31, 41, 55);
-    doc.text(`${docItem.label}:`, margin, yPos);
-    
-    const status = docItem.value.includes('Non fourn') || docItem.value.includes('Aucun') 
-      ? 'Non renseigné' 
-      : 'Renseigné';
-      
-    const statusX = pageWidth - margin - doc.getTextWidth(status);
-    doc.text(status, statusX, yPos);
-    
-    doc.setTextColor(75, 85, 99);
-    doc.text(docItem.value, margin + 60, yPos);
-    yPos += 7;
-    
-    // Add a new page if we're near the bottom
-    if (yPos > 270) {
+    // Vérifier l'espace avant d'ajouter un nouveau document
+    if (yPos > doc.internal.pageSize.height - 30) {
       doc.addPage();
       yPos = 20;
     }
+    
+    // Afficher le label du document
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(31, 41, 55);
+    doc.text(`${docItem.label}:`, margin, yPos);
+    
+    // Afficher la valeur du document
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(75, 85, 99);
+    doc.text(docItem.value, margin + 60, yPos);
+    
+    // Afficher le statut avec la couleur appropriée
+    const status = docItem.isFilled ? 'Renseigné' : 'Non renseigné';
+    doc.setFont('helvetica', 'bold');
+    if (docItem.isFilled) {
+      doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
+    } else {
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+    }
+    
+    const statusX = pageWidth - margin - doc.getTextWidth(status);
+    doc.text(status, statusX, yPos);
+    
+    yPos += 10; // Plus d'espace entre les documents
   });
+  
+  // Ajouter un espace supplémentaire après la section des documents
+  yPos += 5;
 
   // MTP Section
   yPos += 10;
@@ -196,18 +229,20 @@ export const generateApplicationPdf = (data: ApplicationData) => {
 
   // Fonction pour ajouter un texte avec gestion de la pagination
   const addWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight = 5) => {
-    const splitText = doc.splitTextToSize(text, maxWidth - 10);
+    if (!text) return 0; // Ne rien faire si le texte est vide
+    
+    const splitText = doc.splitTextToSize(text, maxWidth - 15); // Marge réduite pour le texte
     let currentY = y;
     
     // Ajouter chaque ligne de texte
     for (let i = 0; i < splitText.length; i++) {
       // Vérifier si on doit ajouter une nouvelle page
-      if (currentY > doc.internal.pageSize.height - 20) {
+      if (currentY > doc.internal.pageSize.height - 30) {
         doc.addPage();
         currentY = 20;
       }
       
-      doc.text(splitText[i], x + 10, currentY);
+      doc.text(splitText[i], x + 5, currentY);
       currentY += lineHeight;
     }
     
@@ -222,6 +257,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       yPos = 20;
     }
     
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+    if (yPos > doc.internal.pageSize.height - 40) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
     // Afficher la question
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
@@ -230,11 +271,6 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     // Gestion du texte long pour la question
     const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
     doc.text(questionLines, margin + 5, yPos);
-    
-    // Afficher le statut
-    const status = checkIfFilled(q.value);
-    const statusX = pageWidth - margin - doc.getTextWidth(status);
-    doc.text(status, statusX, yPos);
     
     yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
     
@@ -252,8 +288,20 @@ export const generateApplicationPdf = (data: ApplicationData) => {
         pageWidth - 2 * margin
       );
       
-      yPos += textHeight + 5; // Ajouter un espacement après la réponse
+      yPos += textHeight + 2; // Espacement réduit après la réponse
+      
+      // Afficher le statut "Renseigné" en vert juste après la réponse
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
+      doc.text('Renseigné', margin + 5, yPos);
+      yPos += 5; // Espacement après le statut
     } else {
+      // Afficher "Non renseigné" en rouge si pas de réponse
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+      doc.text('Non renseigné', margin + 5, yPos);
       yPos += 7; // Espacement si pas de réponse
     }
     
@@ -293,6 +341,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       yPos = 20;
     }
     
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+    if (yPos > doc.internal.pageSize.height - 40) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
     // Afficher la question
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
@@ -301,11 +355,6 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     // Gestion du texte long pour la question
     const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
     doc.text(questionLines, margin + 5, yPos);
-    
-    // Afficher le statut
-    const status = checkIfFilled(q.value);
-    const statusX = pageWidth - margin - doc.getTextWidth(status);
-    doc.text(status, statusX, yPos);
     
     yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
     
@@ -323,8 +372,20 @@ export const generateApplicationPdf = (data: ApplicationData) => {
         pageWidth - 2 * margin
       );
       
-      yPos += textHeight + 5; // Ajouter un espacement après la réponse
+      yPos += textHeight + 2; // Espacement réduit après la réponse
+      
+      // Afficher le statut "Renseigné" en vert juste après la réponse
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
+      doc.text('Renseigné', margin + 5, yPos);
+      yPos += 5; // Espacement après le statut
     } else {
+      // Afficher "Non renseigné" en rouge si pas de réponse
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+      doc.text('Non renseigné', margin + 5, yPos);
       yPos += 7; // Espacement si pas de réponse
     }
     
@@ -364,6 +425,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       yPos = 20;
     }
     
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+    if (yPos > doc.internal.pageSize.height - 40) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
     // Afficher la question
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
@@ -372,11 +439,6 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     // Gestion du texte long pour la question
     const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
     doc.text(questionLines, margin + 5, yPos);
-    
-    // Afficher le statut
-    const status = checkIfFilled(q.value);
-    const statusX = pageWidth - margin - doc.getTextWidth(status);
-    doc.text(status, statusX, yPos);
     
     yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
     
@@ -394,8 +456,20 @@ export const generateApplicationPdf = (data: ApplicationData) => {
         pageWidth - 2 * margin
       );
       
-      yPos += textHeight + 5; // Ajouter un espacement après la réponse
+      yPos += textHeight + 2; // Espacement réduit après la réponse
+      
+      // Afficher le statut "Renseigné" en vert juste après la réponse
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
+      doc.text('Renseigné', margin + 5, yPos);
+      yPos += 5; // Espacement après le statut
     } else {
+      // Afficher "Non renseigné" en rouge si pas de réponse
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+      doc.text('Non renseigné', margin + 5, yPos);
       yPos += 7; // Espacement si pas de réponse
     }
     
