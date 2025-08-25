@@ -11,7 +11,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { useQueryClient } from "@tanstack/react-query";
 import { useApplications } from "@/hooks/useApplications";
 import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
@@ -81,7 +80,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   const [activeTab, setActiveTab] = useState<'metier' | 'talent' | 'paradigme'>('metier');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const queryClient = useQueryClient();
   const { submitApplication } = useApplications();
   const { uploadFile, isUploading, getFileUrl, deleteFile } = useFileUpload();
   const { user } = useAuth();
@@ -179,16 +177,48 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const { data, error } = await supabase
           .from('applications')
           .select(`
-            reference_contacts, 
+            reference_contacts,
             mtp_answers,
             candidate_id
           `)
           .eq('id', applicationId)
           .single();
+
         if (error) throw error;
         if (aborted || !data) return;
         
-        // Récupérer les informations utilisateur et profil séparément
+        // Pré-remplissage MTP et références indépendamment des données profil/utilisateur
+        const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
+        const refContacts = (data as any).reference_contacts ?? (data as any).ref_contacts;
+
+        setFormData(prev => ({
+          ...prev,
+          // Références et MTP
+          references: refContacts ?? prev.references,
+          metier1: mtp?.metier?.[0] ?? prev.metier1,
+          metier2: mtp?.metier?.[1] ?? prev.metier2,
+          metier3: mtp?.metier?.[2] ?? prev.metier3,
+          metier4: mtp?.metier?.[3] ?? prev.metier4,
+          metier5: mtp?.metier?.[4] ?? prev.metier5,
+          metier6: mtp?.metier?.[5] ?? prev.metier6,
+          metier7: mtp?.metier?.[6] ?? prev.metier7,
+          talent1: mtp?.talent?.[0] ?? prev.talent1,
+          talent2: mtp?.talent?.[1] ?? prev.talent2,
+          talent3: mtp?.talent?.[2] ?? prev.talent3,
+          talent4: mtp?.talent?.[3] ?? prev.talent4,
+          talent5: mtp?.talent?.[4] ?? prev.talent5,
+          talent6: mtp?.talent?.[5] ?? prev.talent6,
+          talent7: mtp?.talent?.[6] ?? prev.talent7,
+          paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
+          paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
+          paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
+          paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
+          paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
+          paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
+          paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
+        }));
+
+        // Récupérer les informations utilisateur et profil séparément (enrichissement, non bloquant)
         const candidateId = (data as any).candidate_id;
         if (candidateId) {
           const [{ data: userData }, { data: profileData }] = await Promise.all([
@@ -203,9 +233,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               .eq('user_id', candidateId)
               .maybeSingle()
           ]);
-          
-          const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
-          
+
           setFormData(prev => ({
             ...prev,
             // Informations personnelles depuis la candidature existante
@@ -215,29 +243,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
             gender: profileData?.gender || prev.gender,
             currentPosition: profileData?.current_position || prev.currentPosition,
-            // Références et MTP
-            references: (data as any).reference_contacts ?? prev.references,
-            metier1: mtp?.metier?.[0] ?? prev.metier1,
-            metier2: mtp?.metier?.[1] ?? prev.metier2,
-            metier3: mtp?.metier?.[2] ?? prev.metier3,
-            metier4: mtp?.metier?.[3] ?? prev.metier4,
-            metier5: mtp?.metier?.[4] ?? prev.metier5,
-            metier6: mtp?.metier?.[5] ?? prev.metier6,
-            metier7: mtp?.metier?.[6] ?? prev.metier7,
-            talent1: mtp?.talent?.[0] ?? prev.talent1,
-            talent2: mtp?.talent?.[1] ?? prev.talent2,
-            talent3: mtp?.talent?.[2] ?? prev.talent3,
-            talent4: mtp?.talent?.[3] ?? prev.talent4,
-            talent5: mtp?.talent?.[4] ?? prev.talent5,
-            talent6: mtp?.talent?.[5] ?? prev.talent6,
-            talent7: mtp?.talent?.[6] ?? prev.talent7,
-            paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
-            paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
-            paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
-            paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
-            paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
-            paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
-            paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
           }));
         }
       } catch (e) {
@@ -271,7 +276,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const cv = data.find(d => d.document_type === 'cv');
         const cover = data.find(d => d.document_type === 'cover_letter');
                 const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
-        const additionalCertificates = data.filter(d => d.document_type === 'additional_certificate').map(makeUploaded);
+        const additionalCertificates = data.filter(d => d.document_type === 'certificate').map(makeUploaded);
 
         setFormData(prev => ({
           ...prev,
@@ -388,14 +393,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const handleSubmit = async () => {
-    if (mode !== 'edit' && !jobId) {
-      toast.error("ID de l'offre d'emploi manquant");
-      return;
-    }
-
+    if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      let applicationIdForDocs: string | null = null;
+      const isCreateMode = mode === 'create';
+      let applicationIdForDocs: string | undefined;
+
       if (mode === 'edit' && applicationId) {
         const { error: updError } = await supabase
           .from('applications')
@@ -412,6 +415,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         if (updError) throw updError;
         applicationIdForDocs = applicationId;
       } else {
+        if (!jobId) throw new Error('Job ID manquant.');
         const application = await submitApplication({
           job_offer_id: jobId as string,
           ref_contacts: formData.references,
@@ -421,109 +425,88 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             paradigme: mtpQuestions.paradigme.map((_, i) => formData[`paradigme${i + 1}`]),
           },
         });
-        applicationIdForDocs = application.id;
+        applicationIdForDocs = application.id as string;
       }
 
       // Gérer les documents lors de l'édition ou création
-      try {
-        if (mode === 'edit' && applicationIdForDocs) {
-          // En mode édition, supprimer d'abord tous les anciens documents
-          await supabase
-            .from('application_documents')
-            .delete()
-            .eq('application_id', applicationIdForDocs);
-        }
-
-        const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_url: string; file_size: number | null; }> = [];
-        
-        const toFileUrl = (p: string) => (isPublicUrl(p)) ? p : getFileUrl(p);
-
-        const filesToUpload: { file: UploadedFile | null, type: string }[] = [
-          { file: formData.cv, type: 'cv' },
-          { file: formData.coverLetter, type: 'cover_letter' },
-        ];
-
-        for (const { file, type } of filesToUpload) {
-          if (file) {
-            docsPayload.push({
-              application_id: applicationIdForDocs as string,
-              document_type: type,
-              file_name: file.name,
-              file_url: toFileUrl(file.path),
-              file_size: file.size ?? null,
-            });
-          }
-        }
-
-        for (const cert of formData.certificates) {
-          docsPayload.push({
-            application_id: applicationIdForDocs as string,
-            document_type: 'diploma',
-            file_name: cert.name,
-            file_url: toFileUrl(cert.path),
-            file_size: cert.size ?? null,
-          });
-        }
-
-        for (const cert of formData.additionalCertificates) {
-          docsPayload.push({
-            application_id: applicationIdForDocs as string,
-            document_type: 'certificate',
-            file_name: cert.name,
-            file_url: toFileUrl(cert.path),
-            file_size: cert.size ?? null,
-          });
-        }
-
-        // Les recommandations sont désormais masquées et non traitées
-
-        if (docsPayload.length > 0) {
-          const { error: docsError } = await supabase
-            .from('application_documents')
-            .insert(docsPayload);
-          if (docsError) {
-            console.warn('Insertion documents échouée:', docsError.message);
-          }
-        }
-      } catch (docsEx: any) {
-        console.warn('Erreur lors de la gestion des documents:', docsEx?.message || docsEx);
+      if (mode === 'edit' && applicationIdForDocs) {
+        // En mode édition, supprimer d'abord tous les anciens documents
+        await supabase
+          .from('application_documents')
+          .delete()
+          .eq('application_id', applicationIdForDocs);
       }
 
-      // Sync profile with form data, do not block on this
-      if (user?.id) {
-        Promise.allSettled([
-          supabase.from('users').update({ 
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            date_of_birth: formData.dateOfBirth ? formData.dateOfBirth.toISOString() : null,
-          }).eq('id', user.id),
-          supabase.from('candidate_profiles').upsert({
-            user_id: user.id,
-            current_position: formData.currentPosition,
-            gender: formData.gender,
-            yearsOfExperience: formData.yearsOfExperience ? parseInt(formData.yearsOfExperience, 10) : null,
-            cv_url: formData.cv ? (isPublicUrl(formData.cv.path) ? formData.cv.path : getFileUrl(formData.cv.path)) : undefined,
-          }, { onConflict: 'user_id' }),
-        ]).then(results => {
-          results.forEach(result => {
-            if (result.status === 'rejected') {
-              console.warn('Profile sync failed for a field:', result.reason);
-            }
+      const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_url: string; file_size: number | null; }> = [];
+      
+      const toFileUrl = (p: string) => (isPublicUrl(p)) ? p : getFileUrl(p);
+
+      const filesToUpload: { file: UploadedFile | null, type: string }[] = [
+        { file: formData.cv, type: 'cv' },
+        { file: formData.coverLetter, type: 'cover_letter' },
+      ];
+
+      for (const { file, type } of filesToUpload) {
+        if (file) {
+          docsPayload.push({
+            application_id: applicationIdForDocs as string,
+            document_type: type,
+            file_name: file.name,
+            file_url: toFileUrl(file.path),
+            file_size: file.size ?? null,
           });
+        }
+      }
+
+      for (const cert of formData.certificates) {
+        docsPayload.push({
+          application_id: applicationIdForDocs as string,
+          document_type: 'diploma',
+          file_name: cert.name,
+          file_url: toFileUrl(cert.path),
+          file_size: cert.size ?? null,
         });
       }
 
-      // Manually update the recruiter's application list cache
-      queryClient.setQueryData(['recruiterApplications', user?.id, undefined], (oldData: any) => {
-        // This is a placeholder update. A more robust solution would be to fetch the new application
-        // and add it here, but invalidation should be triggered by the hook itself.
-        // For now, we trigger a refetch, which is more reliable than simple invalidation.
-        return oldData;
-      });
-      queryClient.refetchQueries({ queryKey: ['recruiterApplications'] });
+      for (const cert of formData.additionalCertificates) {
+        docsPayload.push({
+          application_id: applicationIdForDocs as string,
+          document_type: 'certificate',
+          file_name: cert.name,
+          file_url: toFileUrl(cert.path),
+          file_size: cert.size ?? null,
+        });
+      }
 
-      // Create a notification for the candidate on new application
-      if (user?.id && mode === 'create') {
+      // Les recommandations sont désormais masquées et non traitées
+
+      if (docsPayload.length > 0) {
+        const { error: docsError } = await supabase
+          .from('application_documents')
+          .insert(docsPayload);
+        if (docsError) throw docsError;
+      }
+
+      // Send confirmation email (non-blocking)
+      try {
+        const toEmail = (formData.email || user?.email || '').trim();
+        if (toEmail) {
+          await supabase.functions.invoke('send_application_confirmation', {
+            body: {
+              to: toEmail,
+              firstName: formData.firstName,
+              jobTitle,
+              applicationId: applicationIdForDocs,
+            },
+          });
+        } else {
+          console.warn('Confirmation email skipped: no recipient email.');
+        }
+      } catch (mailErr) {
+        console.warn('Failed to send confirmation email (non-blocking):', (mailErr as any)?.message || mailErr);
+      }
+
+      if (user?.id && isCreateMode) {
         try {
           await supabase.rpc('create_application_notification', {
             p_user_id: user.id,
@@ -538,6 +521,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       setIsSubmitted(true);
       toast.success(mode === 'edit' ? "Candidature modifiée avec succès!" : "Candidature envoyée avec succès!", {
         duration: Infinity,
+        closeButton: true,
+      });
+      // Information additionnelle: non-modifiabilité après envoi
+      toast.info("Votre candidature a été envoyée et ne sera plus modifiable.", {
+        duration: 8000,
         closeButton: true,
       });
       
@@ -1330,7 +1318,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     />
                     <Label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed">
                       J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature
-                      conformément à la <Link to="/privacy-policy" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link>.
+                      conformément à la <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link>.
                     </Label>
                   </div>
                   <div className="flex items-center justify-between mt-6">
