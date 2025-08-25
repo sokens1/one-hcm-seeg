@@ -74,27 +74,67 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   yPos += 10;
 
   const personalInfo = [
-    { label: 'Nom Complet', value: `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Non renseigné' },
-    { label: 'Email', value: data.email || 'Non renseigné' },
+    { 
+      label: 'Nom Complet', 
+      value: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
+      isFilled: !!(data.firstName || data.lastName)
+    },
+    { 
+      label: 'Email', 
+      value: data.email,
+      isFilled: !!data.email
+    },
     { 
       label: 'Date de Naissance', 
-      value: data.dateOfBirth ? format(new Date(data.dateOfBirth), 'dd MMMM yyyy', { locale: fr }) : 'Non renseignée' 
+      value: data.dateOfBirth ? format(new Date(data.dateOfBirth), 'dd MMMM yyyy', { locale: fr }) : 'Non renseignée',
+      isFilled: !!data.dateOfBirth
     },
-    { label: 'Sexe', value: data.gender || 'Non renseigné' },
-    { label: 'Poste Actuel', value: data.currentPosition || 'Non renseigné' },
+    { 
+      label: 'Sexe', 
+      value: data.gender || 'Non renseigné',
+      isFilled: !!data.gender
+    },
+    { 
+      label: 'Poste Actuel', 
+      value: data.currentPosition || 'Non renseigné',
+      isFilled: !!data.currentPosition
+    },
   ];
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
   personalInfo.forEach(info => {
-    doc.setTextColor(31, 41, 55); // Gray-800
+    // Vérifier l'espace disponible
+    if (yPos > doc.internal.pageSize.height - 20) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.setFontSize(11);
+    
+    // Afficher le label
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(31, 41, 55);
     doc.text(`${info.label}:`, margin, yPos);
-    const status = info.value === 'Non renseigné' ? 'Non renseigné' : 'Renseigné';
+    
+    // Afficher la valeur
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(75, 85, 99);
+    doc.text(info.value || 'Non renseigné', margin + 60, yPos);
+    
+    // Afficher le statut avec la couleur appropriée
+    const status = info.isFilled ? 'Renseigné' : 'Non renseigné';
+    doc.setFont('helvetica', 'bold');
+    if (info.isFilled) {
+      doc.setTextColor(22, 163, 74); // Vert
+    } else {
+      doc.setTextColor(239, 68, 68); // Rouge
+    }
+    
     const statusX = pageWidth - margin - doc.getTextWidth(status);
     doc.text(status, statusX, yPos);
-    doc.setTextColor(75, 85, 99); // Gray-600
-    doc.text(info.value, margin + 60, yPos);
-    yPos += 7;
+    
+    yPos += 10; // Espacement entre les lignes
   });
 
   // Documents Section
@@ -292,17 +332,17 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       
       // Afficher le statut "Renseigné" en vert juste après la réponse
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
-      doc.text('Renseigné', margin + 5, yPos);
-      yPos += 5; // Espacement après le statut
+      doc.text('✓ Renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement après le statut réduit
     } else {
       // Afficher "Non renseigné" en rouge si pas de réponse
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
-      doc.text('Non renseigné', margin + 5, yPos);
-      yPos += 7; // Espacement si pas de réponse
+      doc.text('✗ Non renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement réduit
     }
     
     if (yPos > 270) {
@@ -376,17 +416,17 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       
       // Afficher le statut "Renseigné" en vert juste après la réponse
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
-      doc.text('Renseigné', margin + 5, yPos);
-      yPos += 5; // Espacement après le statut
+      doc.text('✓ Renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement après le statut réduit
     } else {
       // Afficher "Non renseigné" en rouge si pas de réponse
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
-      doc.text('Non renseigné', margin + 5, yPos);
-      yPos += 7; // Espacement si pas de réponse
+      doc.text('✗ Non renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement réduit
     }
     
     if (yPos > doc.internal.pageSize.height - 20) {
@@ -460,17 +500,17 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       
       // Afficher le statut "Renseigné" en vert juste après la réponse
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
-      doc.text('Renseigné', margin + 5, yPos);
-      yPos += 5; // Espacement après le statut
+      doc.text('✓ Renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement après le statut réduit
     } else {
       // Afficher "Non renseigné" en rouge si pas de réponse
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
-      doc.text('Non renseigné', margin + 5, yPos);
-      yPos += 7; // Espacement si pas de réponse
+      doc.text('✗ Non renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement réduit
     }
     
     if (yPos > doc.internal.pageSize.height - 20) {
