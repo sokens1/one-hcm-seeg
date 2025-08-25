@@ -7,6 +7,8 @@ import { JobCard } from "@/components/ui/job-card";
 import { ApplicationDeadlineCounter } from "@/components/ApplicationDeadlineCounter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Chatbot } from "@/components/ui/Chatbot";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -20,12 +22,26 @@ const Index = () => {
   const { user, isCandidate, isRecruiter, isAdmin, isObserver } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [contractFilter, setContractFilter] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
   const { data, isLoading, error } = useJobOffers();
   const jobOffers: JobOffer[] = data ?? [];
   const preLaunch = isPreLaunch();
 
   // Helper to normalize location which can be string | string[] from the API
   const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
+
+  // Create unique location and contract options for filters
+  const uniqueLocations = [
+    ...new Set(
+      jobOffers
+        .flatMap(job => (Array.isArray(job.location) ? job.location : [job.location]))
+        .filter((v): v is string => typeof v === "string" && v.trim().length > 0)
+    ),
+  ];
+
+  const uniqueContracts = [...new Set(jobOffers.map(job => job.contract_type) || [])];
 
   useEffect(() => {
     if (!user) return;
@@ -65,7 +81,17 @@ const Index = () => {
     const hayTitle = (job.title || "").toLowerCase();
     const hayLoc = normalizeLocation(job.location).toLowerCase();
     const needle = (searchTerm || "").toLowerCase();
-    return hayTitle.includes(needle) || hayLoc.includes(needle);
+    const matchesSearch = hayTitle.includes(needle) || hayLoc.includes(needle);
+    
+    const matchesLocation =
+      locationFilter === "all" ||
+      (Array.isArray(job.location)
+        ? job.location.includes(locationFilter)
+        : job.location === locationFilter);
+        
+    const matchesContract = contractFilter === "all" || job.contract_type === contractFilter;
+    
+    return matchesSearch && matchesLocation && matchesContract;
   });
 
   return (
@@ -165,9 +191,66 @@ const Index = () => {
                 spellCheck={false}
               />
             </div>
-            <Button variant="outline" size="icon" className="h-10 w-10 sm:h-12 sm:w-12">
-              <Filter className="w-4 h-4" />
-            </Button>
+            <Popover open={showFilters} onOpenChange={setShowFilters}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="h-10 sm:h-12 gap-1 sm:gap-2 w-10 sm:w-auto justify-center text-xs sm:text-sm">
+                  <Filter className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Filtres</span>
+                  {(locationFilter !== "all" || contractFilter !== "all") && (
+                    <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 sm:w-5 sm:h-5 text-xs flex items-center justify-center">
+                      {(locationFilter !== "all" ? 1 : 0) + (contractFilter !== "all" ? 1 : 0)}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Filtres de recherche</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setLocationFilter("all");
+                        setContractFilter("all");
+                      }}
+                    >
+                      Effacer tout
+                    </Button>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Localisation</label>
+                    <Select value={locationFilter} onValueChange={setLocationFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Toutes les villes" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Toutes les villes</SelectItem>
+                        {uniqueLocations.map(location => (
+                          <SelectItem key={location} value={location}>{location}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Type de contrat</label>
+                    <Select value={contractFilter} onValueChange={setContractFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Tous les contrats" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les contrats</SelectItem>
+                        {uniqueContracts.map(contract => (
+                          <SelectItem key={contract} value={contract}>{contract}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
