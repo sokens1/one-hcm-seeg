@@ -1,9 +1,9 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { CandidateLayout } from '@/components/layout/CandidateLayout';
-import { ApplicationForm } from '@/components/forms/ApplicationForm';
 import { useApplication } from '@/hooks/useApplications';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ContentSpinner } from '@/components/ui/spinner';
+import { Button } from '@/components/ui/button';
 
 export default function EditApplication() {
   const { id } = useParams<{ id: string }>();
@@ -34,30 +34,27 @@ export default function EditApplication() {
 
   return (
     <CandidateLayout>
-      <h1 className="text-2xl font-bold mb-4">Modifier ma candidature</h1>
-      {application && (
-        <ApplicationForm
-          jobTitle={application.job_offers?.title ?? 'Offre'}
-          jobId={application.job_offer_id}
-          onBack={() => {
-            if (from === 'applications') {
-              navigate('/candidate/dashboard?view=applications');
-            } else {
-              navigate(-1);
-            }
-          }}
-          onSubmit={() => {
-            if (from === 'applications') {
-              navigate('/candidate/dashboard?view=applications');
-            } else {
-              navigate('/candidate/dashboard?view=dashboard');
-            }
-          }}
-          applicationId={id}
-          mode="edit"
-          initialStep={Number.isFinite(initialStep) ? initialStep : 4}
-        />
-      )}
+      <h1 className="text-2xl font-bold mb-4">Modification de candidature désactivée</h1>
+      <Alert>
+        <AlertTitle>Édition indisponible</AlertTitle>
+        <AlertDescription>
+          Les candidatures soumises ne sont plus modifiables. Vous pouvez toutefois consulter le suivi de votre candidature.
+        </AlertDescription>
+      </Alert>
+      <div className="mt-6 flex flex-col sm:flex-row gap-2">
+        <Button
+          variant="default"
+          onClick={() => navigate(`/candidate/dashboard?view=tracking&id=${id}&from=applications`)}
+        >
+          Voir le suivi de ma candidature
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => navigate('/candidate/dashboard?view=applications')}
+        >
+          Retour à mes candidatures
+        </Button>
+      </div>
     </CandidateLayout>
   );
 }

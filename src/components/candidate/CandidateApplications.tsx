@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Briefcase, Plus, Edit, LayoutGrid, List } from "lucide-react";
+import { Eye, Briefcase, Plus, LayoutGrid, List } from "lucide-react";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -67,8 +67,7 @@ export function CandidateApplications() {
         <div className={viewMode === 'grid' ? "grid gap-4 sm:gap-6 md:grid-cols-1 lg:grid-cols-2" : "flex flex-col gap-3 sm:gap-4"}>
           {applications.map((application) => {
             const statusInfo = statusConfig[application.status] || { label: application.status, color: "bg-gray-100 text-gray-800" };
-            const deadline = application.job_offers?.date_limite;
-            const canModify = deadline ? new Date(deadline) > new Date() : false;
+            // L'édition est désactivée, calcul de canModify supprimé
 
             return (
               <Card key={application.id} className="hover:shadow-lg transition-shadow">
@@ -97,17 +96,7 @@ export function CandidateApplications() {
                 <CardContent className="pt-0">
                   <div className="flex flex-col md:flex-row items-stretch md:items-center justify-end gap-2 md:gap-3">
                     <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
-                      {canModify && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="gap-1 md:gap-2 text-xs sm:text-sm md:text-sm h-8 md:h-9"
-                          onClick={() => navigate(`/candidate/applications/${application.id}/edit?step=4&from=applications`)}
-                        >
-                          <Edit className="w-3 h-3 md:w-4 md:h-4" />
-                          Modifier
-                        </Button>
-                      )}
+                      {/* Edition de candidature désactivée */}
                       <Button 
                         variant="outline" 
                         size="sm"
