@@ -7,11 +7,45 @@ export const exportApplicationPdf = (application: Application, jobTitle: string)
     const user = application.users;
     const profile = user?.candidate_profiles;
     
-    // Get MTP answers
+    // Get MTP answers - handle both array and object formats
     const mtpAnswers = application.mtp_answers || {};
-    const [metier1, metier2, metier3] = mtpAnswers.metier || [];
-    const [talent1, talent2, talent3] = mtpAnswers.talent || [];
-    const [paradigme1, paradigme2, paradigme3] = mtpAnswers.paradigme || [];
+    
+    // Handle metier as array or object with numeric keys
+    const metierArray = Array.isArray(mtpAnswers.metier) 
+      ? mtpAnswers.metier 
+      : mtpAnswers.metier 
+        ? Object.values(mtpAnswers.metier).filter(Boolean) 
+        : [];
+        
+    // Handle talent as array or object with numeric keys
+    const talentArray = Array.isArray(mtpAnswers.talent)
+      ? mtpAnswers.talent
+      : mtpAnswers.talent
+        ? Object.values(mtpAnswers.talent).filter(Boolean)
+        : [];
+        
+    // Handle paradigme as array or object with numeric keys
+    const paradigmeArray = Array.isArray(mtpAnswers.paradigme)
+      ? mtpAnswers.paradigme
+      : mtpAnswers.paradigme
+        ? Object.values(mtpAnswers.paradigme).filter(Boolean)
+        : [];
+        
+    // Extract answers with fallback to empty string
+    const [metier1, metier2, metier3, metier4, metier5, metier6, metier7] = [
+      ...metierArray,
+      ...Array(Math.max(0, 7 - metierArray.length)).fill('')
+    ];
+    
+    const [talent1, talent2, talent3] = [
+      ...talentArray,
+      ...Array(Math.max(0, 3 - talentArray.length)).fill('')
+    ];
+    
+    const [paradigme1, paradigme2, paradigme3] = [
+      ...paradigmeArray,
+      ...Array(Math.max(0, 3 - paradigmeArray.length)).fill('')
+    ];
     
     // Convert Application to ApplicationData
     const applicationData = {
@@ -23,15 +57,19 @@ export const exportApplicationPdf = (application: Application, jobTitle: string)
       cv: application.cv || null,
       certificates: application.certificates || [],
       recommendations: application.recommendations || [],
-      metier1,
-      metier2,
-      metier3,
-      talent1,
-      talent2,
-      talent3,
-      paradigme1,
-      paradigme2,
-      paradigme3,
+      metier1: metier1 || '',
+      metier2: metier2 || '',
+      metier3: metier3 || '',
+      metier4: metier4 || '',
+      metier5: metier5 || '',
+      metier6: metier6 || '',
+      metier7: metier7 || '',
+      talent1: talent1 || '',
+      talent2: talent2 || '',
+      talent3: talent3 || '',
+      paradigme1: paradigme1 || '',
+      paradigme2: paradigme2 || '',
+      paradigme3: paradigme3 || '',
       
       // Additional/transformed fields
       firstName: user?.first_name || '',

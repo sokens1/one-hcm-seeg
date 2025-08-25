@@ -194,24 +194,67 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     }
   ];
 
+  // Fonction pour ajouter un texte avec gestion de la pagination
+  const addWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight = 5) => {
+    const splitText = doc.splitTextToSize(text, maxWidth - 10);
+    let currentY = y;
+    
+    // Ajouter chaque ligne de texte
+    for (let i = 0; i < splitText.length; i++) {
+      // Vérifier si on doit ajouter une nouvelle page
+      if (currentY > doc.internal.pageSize.height - 20) {
+        doc.addPage();
+        currentY = 20;
+      }
+      
+      doc.text(splitText[i], x + 10, currentY);
+      currentY += lineHeight;
+    }
+    
+    return currentY - y + 2; // Retourne la hauteur totale utilisée
+  };
+
   doc.setFont('helvetica', 'normal');
-  metierQuestions.forEach((q, index) => {
+  metierQuestions.forEach((q) => {
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+    if (yPos > doc.internal.pageSize.height - 50) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    // Afficher la question
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(31, 41, 55);
-    doc.text(q.label, margin + 5, yPos);
     
+    // Gestion du texte long pour la question
+    const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
+    doc.text(questionLines, margin + 5, yPos);
+    
+    // Afficher le statut
     const status = checkIfFilled(q.value);
     const statusX = pageWidth - margin - doc.getTextWidth(status);
     doc.text(status, statusX, yPos);
     
+    yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
+    
+    // Afficher la réponse si elle existe
     if (q.value) {
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(75, 85, 99);
-      const splitText = doc.splitTextToSize(q.value, pageWidth - 2 * margin - 10);
-      doc.text(splitText, margin + 10, yPos + 5);
-      yPos += 5 + (splitText.length * 4);
+      
+      // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+      const textHeight = addWrappedText(
+        q.value, 
+        margin, 
+        yPos, 
+        pageWidth - 2 * margin
+      );
+      
+      yPos += textHeight + 5; // Ajouter un espacement après la réponse
     } else {
-      yPos += 7;
+      yPos += 7; // Espacement si pas de réponse
     }
     
     if (yPos > 270) {
@@ -221,12 +264,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   });
 
   // Talent
-  yPos += 5;
+  yPos += 10; // Plus d'espace avant la section
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(12);
+  doc.setFontSize(14);
   doc.setTextColor(22, 163, 74); // Green-600
   doc.text('Talent', margin, yPos);
-  yPos += 7;
+  yPos += 10;
 
   const talentQuestions = [
     { 
@@ -243,39 +286,61 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     }
   ];
 
-  doc.setFont('helvetica', 'normal');
-  talentQuestions.forEach((q, index) => {
+  talentQuestions.forEach((q) => {
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+    if (yPos > doc.internal.pageSize.height - 50) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    // Afficher la question
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(31, 41, 55);
-    doc.text(q.label, margin + 5, yPos);
     
+    // Gestion du texte long pour la question
+    const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
+    doc.text(questionLines, margin + 5, yPos);
+    
+    // Afficher le statut
     const status = checkIfFilled(q.value);
     const statusX = pageWidth - margin - doc.getTextWidth(status);
     doc.text(status, statusX, yPos);
     
+    yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
+    
+    // Afficher la réponse si elle existe
     if (q.value) {
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(75, 85, 99);
-      const splitText = doc.splitTextToSize(q.value, pageWidth - 2 * margin - 10);
-      doc.text(splitText, margin + 10, yPos + 5);
-      yPos += 5 + (splitText.length * 4);
+      
+      // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+      const textHeight = addWrappedText(
+        q.value, 
+        margin, 
+        yPos, 
+        pageWidth - 2 * margin
+      );
+      
+      yPos += textHeight + 5; // Ajouter un espacement après la réponse
     } else {
-      yPos += 7;
+      yPos += 7; // Espacement si pas de réponse
     }
     
-    if (yPos > 270) {
+    if (yPos > doc.internal.pageSize.height - 20) {
       doc.addPage();
       yPos = 20;
     }
   });
 
   // Paradigme
-  yPos += 5;
+  yPos += 10; // Plus d'espace avant la section
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(12);
+  doc.setFontSize(14);
   doc.setTextColor(168, 85, 247); // Purple-500
   doc.text('Paradigme', margin, yPos);
-  yPos += 7;
+  yPos += 10;
 
   const paradigmeQuestions = [
     { 
@@ -292,27 +357,49 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     }
   ];
 
-  doc.setFont('helvetica', 'normal');
-  paradigmeQuestions.forEach((q, index) => {
+  paradigmeQuestions.forEach((q) => {
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+    if (yPos > doc.internal.pageSize.height - 50) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    // Afficher la question
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(31, 41, 55);
-    doc.text(q.label, margin + 5, yPos);
     
+    // Gestion du texte long pour la question
+    const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
+    doc.text(questionLines, margin + 5, yPos);
+    
+    // Afficher le statut
     const status = checkIfFilled(q.value);
     const statusX = pageWidth - margin - doc.getTextWidth(status);
     doc.text(status, statusX, yPos);
     
+    yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
+    
+    // Afficher la réponse si elle existe
     if (q.value) {
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(75, 85, 99);
-      const splitText = doc.splitTextToSize(q.value, pageWidth - 2 * margin - 10);
-      doc.text(splitText, margin + 10, yPos + 5);
-      yPos += 5 + (splitText.length * 4);
+      
+      // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+      const textHeight = addWrappedText(
+        q.value, 
+        margin, 
+        yPos, 
+        pageWidth - 2 * margin
+      );
+      
+      yPos += textHeight + 5; // Ajouter un espacement après la réponse
     } else {
-      yPos += 7;
+      yPos += 7; // Espacement si pas de réponse
     }
     
-    if (yPos > 270) {
+    if (yPos > doc.internal.pageSize.height - 20) {
       doc.addPage();
       yPos = 20;
     }
