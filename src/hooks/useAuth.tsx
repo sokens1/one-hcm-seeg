@@ -142,16 +142,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Remove this redundant useEffect as role is already fetched in the main effect above
 
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
-    // Base URL selon l'environnement (dev/prod)
+    // Désactivation de l'email de confirmation côté client: ne pas fournir emailRedirectTo
+    // Pour une désactivation complète, configurer Supabase (Auth -> Email -> désactiver "Confirm email").
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
-    const redirectUrl = `${siteBaseUrl}/`;
-    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl,
         data: metadata,
       }
     });

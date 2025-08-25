@@ -25,6 +25,7 @@ import { CandidateApplications } from "@/components/candidate/CandidateApplicati
 import { ApplicationTracking } from "@/components/candidate/ApplicationTracking";
 import { CandidateProfile } from "@/components/candidate/CandidateProfile";
 import { CandidateSettings } from "@/components/candidate/CandidateSettings";
+import { Chatbot } from "@/components/ui/Chatbot";
 
 type ViewType = "dashboard" | "jobs" | "applications" | "profile" | "settings" | "tracking";
 
@@ -207,6 +208,9 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
             </div>
           </div>
         </div>
+        
+        {/* Chatbot */}
+        <Chatbot />
       </SidebarProvider>
     </CandidateLayoutContext.Provider>
   );
