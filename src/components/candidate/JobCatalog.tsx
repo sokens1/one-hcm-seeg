@@ -139,7 +139,7 @@ export function JobCatalog() {
           Découvrez toutes les opportunités disponibles au sein du comité de direction.
         </p>
       </div>
-
+  
       {/* Sélecteur de vue */}
       <div className="flex justify-center px-3 sm:px-4">
         <div className="bg-white rounded-lg p-1 shadow-sm border w-full sm:w-auto">
@@ -163,7 +163,7 @@ export function JobCatalog() {
           </Button>
         </div>
       </div>
-
+  
       {/* Search Bar with Filters */}
       <div className="max-w-4xl mx-auto px-3 sm:px-4">
         <div className="relative flex flex-col sm:flex-row gap-2">
