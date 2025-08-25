@@ -153,6 +153,7 @@ export default function Auth() {
         lastLoginToastTs.current = now;
       }
       if (redirectParam) {
+        await syncUsersRowFromAuth();
         navigate(redirectParam);
       } else {
         try {
@@ -167,6 +168,7 @@ export default function Auth() {
           const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
           const isObserver = rawRole === 'observateur' || rawRole === 'observer';
 
+          await syncUsersRowFromAuth();
           if (isAdmin) {
             navigate('/admin/dashboard');
           } else if (isRecruiter || isObserver) {
@@ -176,6 +178,7 @@ export default function Auth() {
           }
         } catch {
           const rawRole = String(data.user.user_metadata?.role ?? '').toLowerCase();
+          await syncUsersRowFromAuth();
           if (rawRole === 'admin') {
             navigate('/admin/dashboard');
           } else if (rawRole === 'recruteur' || rawRole === 'recruiter' || rawRole === 'observateur' || rawRole === 'observer') {
@@ -263,11 +266,13 @@ export default function Auth() {
           if (!sess.session) {
             const { data: siData, error: siErr } = await signIn(signUpData.email, signUpData.password);
             if (!siErr && siData.user) {
+              await syncUsersRowFromAuth();
               toast.success("Inscription réussie ! Vous êtes connecté.");
               navigate('/candidate/dashboard');
               return;
             }
           } else {
+            await syncUsersRowFromAuth();
             toast.success("Inscription réussie ! Vous êtes connecté.");
             navigate('/candidate/dashboard');
             return;
@@ -291,6 +296,33 @@ export default function Auth() {
       toast.error("Une erreur est survenue");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const syncUsersRowFromAuth = async () => {
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const authUser = sess.session?.user;
+      if (!authUser) return;
+      const meta = (authUser as unknown as { user_metadata?: Record<string, unknown> })?.user_metadata || {};
+      const get = (k: string) => (meta as Record<string, unknown>)[k];
+      const upsertPayload: Record<string, unknown> = {
+        id: authUser.id,
+        email: authUser.email,
+      };
+      if (typeof get('first_name') === 'string') upsertPayload.first_name = get('first_name');
+      if (typeof get('last_name') === 'string') upsertPayload.last_name = get('last_name');
+      if (typeof get('phone') === 'string') upsertPayload.phone = get('phone');
+      if (typeof get('matricule') === 'string') upsertPayload.matricule = get('matricule');
+      // Do NOT set role here from client
+      const { error: upErr } = await supabase
+        .from('users')
+        .upsert(upsertPayload as any, { onConflict: 'id' });
+      if (upErr) {
+        console.warn('users upsert after signup failed (non-blocking):', upErr.message);
+      }
+    } catch (err) {
+      console.warn('users upsert sync error (non-blocking):', err);
     }
   };
 
