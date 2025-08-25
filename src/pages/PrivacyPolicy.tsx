@@ -121,7 +121,7 @@ export default function PrivacyPolicy() {
                     Revenez aux offres et poursuivez votre parcours.
                   </p>
                   <Button variant="secondary" size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-bold" asChild>
-                    <a href="/jobs">Voir les Offres Disponibles</a>
+                    <a href="/">Voir les Offres Disponibles</a>
                   </Button>
                 </CardContent>
               </Card>
