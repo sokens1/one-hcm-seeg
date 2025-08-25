@@ -2,20 +2,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { FileText, MapPin, Calendar, Eye } from "lucide-react";
+import { FileText, MapPin, Calendar, Eye, MoreVertical } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useApplications } from "@/hooks/useApplications";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { ContentSpinner } from "@/components/ui/spinner";
-import { ApplicationActionsMenu } from './ApplicationActionsMenu';
 import type { Application } from '@/types/application';
+import { exportApplicationPdf } from '@/utils/exportPdfUtils';
 
 export function DashboardMain() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: applications, isLoading: isLoadingApps, error: errorApps } = useApplications();
   const { data: jobOffers, isLoading: isLoadingJobs, error: errorJobs } = useJobOffers();
 
@@ -126,10 +128,41 @@ export function DashboardMain() {
             {filteredApplications.map((application) => (
               <Card key={application.id} className="border hover:shadow-md transition-shadow relative">
                 <div className="absolute top-3 right-3 z-10">
-                  <ApplicationActionsMenu 
-                    application={application} 
-                    jobTitle={application.job_offers?.title || 'Sans titre'} 
-                  />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                        <MoreVertical className="h-4 w-4" />
+                        <span className="sr-only">Actions</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          // Naviguer vers la page de suivi
+                          navigate(`/candidate/application/${application.id}`);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        <span>Voir le suivi</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          try {
+                            await exportApplicationPdf(application, application.job_offers?.title || 'Candidature');
+                          } catch (error) {
+                            console.error('Error exporting PDF:', error);
+                            // Vous pourriez vouloir afficher une notification d'erreur ici
+                          }
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <FileText className="mr-2 h-4 w-4" />
+                        <span>Télécharger PDF</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <CardHeader className="pb-3 pr-12">
                   <CardTitle className="text-base sm:text-lg line-clamp-2">{application.job_offers?.title}</CardTitle>

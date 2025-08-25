@@ -1,16 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Briefcase, Plus, Edit, LayoutGrid, List, Download } from "lucide-react";
+import { Eye, Briefcase, Plus, Edit, LayoutGrid, List, Download, Loader2 } from "lucide-react";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import { useApplications } from "@/hooks/useApplications";
 import { ApplicationActionsMenu } from "./ApplicationActionsMenu";
-import { Loader2 } from "lucide-react";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { exportApplicationPdf } from '@/utils/exportPdfUtils';
 
 // Statuts et couleurs correspondants
 const statusConfig = {
@@ -97,20 +97,49 @@ export function CandidateApplications() {
                 <CardContent className="pt-0">
                   <div className="flex flex-col md:flex-row items-stretch md:items-center justify-end gap-2 md:gap-3">
                     <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
-                      {/* Edition de candidature désactivée */}
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="gap-1 md:gap-2 text-xs sm:text-sm md:text-sm h-8 md:h-9"
-                        onClick={() => {
-                          setCurrentView("tracking");
-                          navigate(`/candidate/dashboard?view=tracking&id=${application.id}&from=applications`);
-                        }}
-                      >
-                        <Eye className="w-3 h-3 md:w-4 md:h-4" />
-                        <span className="hidden md:inline">Voir le suivi détaillé</span>
-                        <span className="md:hidden">Suivi détaillé</span>
-                      </Button>
+                      <div className="flex items-center gap-2 w-full">
+                        <div className="flex-1 flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="gap-1 md:gap-2 text-xs sm:text-sm md:text-sm h-8 md:h-9 flex-1"
+                            onClick={() => {
+                              setCurrentView("tracking");
+                              navigate(`/candidate/dashboard?view=tracking&id=${application.id}&from=applications`);
+                            }}
+                          >
+                            <Eye className="w-3 h-3 md:w-4 md:h-4" />
+                            <span className="hidden md:inline">Voir le suivi</span>
+                            <span className="md:hidden">Suivi</span>
+                          </Button>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="gap-1 md:gap-2 text-xs sm:text-sm md:text-sm h-8 md:h-9 flex-1"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              try {
+                                await exportApplicationPdf(application, application.job_offers?.title || 'Candidature');
+                              } catch (error) {
+                                console.error('Error exporting PDF:', error);
+                                // Vous pourriez vouloir afficher une notification d'erreur ici
+                              }
+                            }}
+                          >
+                            <Download className="w-3 h-3 md:w-4 md:h-4" />
+                            <span className="hidden md:inline">Télécharger PDF</span>
+                            <span className="md:hidden">PDF</span>
+                          </Button>
+                        </div>
+                        
+                        <ApplicationActionsMenu 
+                          application={application} 
+                          jobTitle={application.job_offers?.title || 'Candidature'} 
+                          className="h-8 md:h-9"
+                          variant="menu-item"
+                        />
+                      </div>
                     </div>
                   </div>
                 </CardContent>
