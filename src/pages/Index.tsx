@@ -7,6 +7,7 @@ import { JobCard } from "@/components/ui/job-card";
 import { ApplicationDeadlineCounter } from "@/components/ApplicationDeadlineCounter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Chatbot } from "@/components/ui/Chatbot";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { isPreLaunch } from "@/utils/launchGate";
@@ -335,6 +336,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+      
+      {/* Chatbot */}
+      <Chatbot />
     </Layout>
   );
 };
