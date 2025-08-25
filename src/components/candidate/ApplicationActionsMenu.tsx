@@ -36,13 +36,14 @@ export function ApplicationActionsMenu({ application, jobTitle, className = '', 
 
   if (variant === 'menu-item') {
     return (
-      <DropdownMenuItem 
+      <Button 
+        variant="ghost"
+        className="w-full justify-start cursor-pointer"
         onClick={(e) => {
           e.stopPropagation();
           handleExportPdf();
-        }} 
+        }}
         disabled={isLoading}
-        className="cursor-pointer"
       >
         {isLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -50,7 +51,7 @@ export function ApplicationActionsMenu({ application, jobTitle, className = '', 
           <FileText className="mr-2 h-4 w-4" />
         )}
         <span>Exporter en PDF</span>
-      </DropdownMenuItem>
+      </Button>
     );
   }
 

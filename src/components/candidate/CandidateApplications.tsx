@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import { useApplications } from "@/hooks/useApplications";
-import { ApplicationActionsMenu } from "./ApplicationActionsMenu";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { exportApplicationPdf } from '@/utils/exportPdfUtils';
@@ -97,8 +96,7 @@ export function CandidateApplications() {
                 <CardContent className="pt-0">
                   <div className="flex flex-col md:flex-row items-stretch md:items-center justify-end gap-2 md:gap-3">
                     <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
-                      <div className="flex items-center gap-2 w-full">
-                        <div className="flex-1 flex gap-2">
+                        <div className="flex items-center gap-2 w-full">
                           <Button 
                             variant="outline" 
                             size="sm"
@@ -132,14 +130,6 @@ export function CandidateApplications() {
                             <span className="md:hidden">PDF</span>
                           </Button>
                         </div>
-                        
-                        <ApplicationActionsMenu 
-                          application={application} 
-                          jobTitle={application.job_offers?.title || 'Candidature'} 
-                          className="h-8 md:h-9"
-                          variant="menu-item"
-                        />
-                      </div>
                     </div>
                   </div>
                 </CardContent>
