@@ -13,7 +13,6 @@ import { useJobOffers } from "@/hooks/useJobOffers";
 export default function RecruiterJobs() {
   const navigate = useNavigate();
   const { user, isRecruiter } = useAuth();
-  const recruiterId = user?.id;
   const { data: jobs = [], isLoading, error } = useJobOffers();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -109,9 +108,6 @@ export default function RecruiterJobs() {
                             {job.new_candidates} {job.new_candidates === 1 ? 'nouveau' : 'nouveaux'}
                           </Badge>
                         )}
-                        <Badge variant={job.status === 'active' ? 'secondary' : job.status === 'draft' ? 'warning' : 'default'}>
-                          {job.status === 'active' ? 'Actif' : 'Brouillon'}
-                        </Badge>
                       </div>
                     </div>
 
@@ -148,7 +144,6 @@ export default function RecruiterJobs() {
                 <TableRow>
                   <TableHead>Titre du poste</TableHead>
                   <TableHead>Candidatures</TableHead>
-                  <TableHead>Statut</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -160,11 +155,6 @@ export default function RecruiterJobs() {
                       <div className="text-sm text-muted-foreground">{job.location} • {job.contract_type}</div>
                     </TableCell>
                     <TableCell>{job.candidate_count}</TableCell>
-                    <TableCell>
-                      <Badge variant={job.status === 'active' ? 'secondary' : job.status === 'draft' ? 'warning' : 'default'}>
-                        {job.status === 'active' ? 'Actif' : job.status === 'draft' ? 'Brouillon' : job.status}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
                         <Link to={`/recruiter/jobs/${job.id}/pipeline`}>
