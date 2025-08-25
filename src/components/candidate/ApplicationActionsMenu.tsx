@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MoreVertical, FileText, Download, Eye } from 'lucide-react';
+import { MoreVertical, FileText, Download, Eye, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ interface ApplicationActionsMenuProps {
 
 export function ApplicationActionsMenu({ application, jobTitle, className = '' }: ApplicationActionsMenuProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleExportPdf = async () => {
     try {
@@ -84,29 +85,50 @@ export function ApplicationActionsMenu({ application, jobTitle, className = '' }
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className={`h-8 w-8 p-0 ${className}`}>
-          <span className="sr-only">Ouvrir le menu</span>
-          <MoreVertical className="h-4 w-4" />
+        <Button 
+          variant="outline" 
+          size="sm"
+          className={`w-full justify-between gap-1 md:gap-2 text-xs sm:text-sm md:text-sm h-8 md:h-9 ${className}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsMenuOpen(true);
+          }}
+        >
+          <span className="flex items-center gap-1 flex-1 justify-center md:justify-start">
+            <Download className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden md:inline">Télécharger</span>
+            <span className="md:hidden">Télécharger</span>
+          </span>
+          <svg 
+            className="w-4 h-4 text-muted-foreground" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M19 9l-7 7-7-7" 
+            />
+          </svg>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem asChild className="cursor-pointer">
-          <Link to={`/candidate/application/${application.id}`} className="flex items-center gap-2 w-full">
-            <Eye className="h-4 w-4" />
-            <span>Voir détails</span>
-          </Link>
-        </DropdownMenuItem>
         <DropdownMenuItem 
-          onClick={handleExportPdf}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleExportPdf();
+          }} 
           disabled={isLoading}
-          className="flex items-center gap-2 cursor-pointer"
+          className="cursor-pointer"
         >
           {isLoading ? (
-            <span className="h-4 w-4 animate-spin">↻</span>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <Download className="h-4 w-4" />
+            <FileText className="mr-2 h-4 w-4" />
           )}
           <span>Exporter en PDF</span>
         </DropdownMenuItem>

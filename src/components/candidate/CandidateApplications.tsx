@@ -1,12 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Briefcase, Plus, Edit, LayoutGrid, List } from "lucide-react";
+import { Eye, Briefcase, Plus, Edit, LayoutGrid, List, Download } from "lucide-react";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import { useApplications } from "@/hooks/useApplications";
+import { ApplicationActionsMenu } from "./ApplicationActionsMenu";
 import { Loader2 } from "lucide-react";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -97,6 +98,28 @@ export function CandidateApplications() {
                 <CardContent className="pt-0">
                   <div className="flex flex-col md:flex-row items-stretch md:items-center justify-end gap-2 md:gap-3">
                     <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="gap-1 md:gap-2 text-xs sm:text-sm md:text-sm h-8 md:h-9"
+                        onClick={() => {
+                          setCurrentView("tracking");
+                          navigate(`/candidate/dashboard?view=tracking&id=${application.id}&from=applications`);
+                        }}
+                      >
+                        <Eye className="w-3 h-3 md:w-4 md:h-4" />
+                        <span className="hidden md:inline">Voir le suivi</span>
+                        <span className="md:hidden">Suivi</span>
+                      </Button>
+                      
+                      <div className="w-full">
+                        <ApplicationActionsMenu 
+                          application={application} 
+                          jobTitle={application.job_offers?.title || 'Candidature'} 
+                          className="h-8 md:h-9 w-full"
+                        />
+                      </div>
+                      
                       {canModify && (
                         <Button
                           variant="secondary"
@@ -108,19 +131,6 @@ export function CandidateApplications() {
                           Modifier
                         </Button>
                       )}
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="gap-1 md:gap-2 text-xs sm:text-sm md:text-sm h-8 md:h-9"
-                        onClick={() => {
-                          setCurrentView("tracking");
-                          navigate(`/candidate/dashboard?view=tracking&id=${application.id}&from=applications`);
-                        }}
-                      >
-                        <Eye className="w-3 h-3 md:w-4 md:h-4" />
-                        <span className="hidden md:inline">Voir le suivi détaillé</span>
-                        <span className="md:hidden">Suivi détaillé</span>
-                      </Button>
                     </div>
                   </div>
                 </CardContent>
