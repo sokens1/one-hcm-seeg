@@ -350,6 +350,5 @@ export function JobCatalog() {
         </div>
       )}
     </div>
-    </div>
   );
 }
