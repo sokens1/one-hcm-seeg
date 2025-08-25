@@ -52,7 +52,7 @@ export default function CompanyContext() {
           <div className="max-w-4xl mx-auto">
             {/* Bouton retour */}
             <Button variant="outline" className="mb-8 bg-white text-blue-600 backdrop-blur-sm" asChild>
-              <a href="/jobs">
+              <a href="/#job-list">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour aux offres
               </a>

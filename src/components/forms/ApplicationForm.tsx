@@ -523,6 +523,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         duration: Infinity,
         closeButton: true,
       });
+      // Information additionnelle: non-modifiabilité après envoi
+      toast.info("Votre candidature a été envoyée et ne sera plus modifiable.", {
+        duration: 8000,
+        closeButton: true,
+      });
       
       // Appeler onSubmit si fourni après un délai
       setTimeout(() => {
@@ -1313,7 +1318,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     />
                     <Label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed">
                       J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature
-                      conformément à la <Link to="/privacy-policy" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link>.
+                      conformément à la <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link>.
                     </Label>
                   </div>
                   <div className="flex items-center justify-between mt-6">
