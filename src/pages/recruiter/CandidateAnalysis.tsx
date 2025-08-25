@@ -9,12 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, GraduationCap, Star, Info, FileText, Eye, Download, Users, X } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
@@ -107,107 +105,31 @@ const ReferencesTab = ({ application }: { application: Application }) => {
 };
 
 const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
-  // Récupérer les questions métier spécifiques pour ce poste
-  const metierQuestions = getMetierQuestionsForTitle(jobTitle);
-  
-  
+  // Récupérer les questions MTP spécifiques pour ce poste
+  const questions = getMetierQuestionsForTitle(jobTitle);
+
   if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
 
-  // Questions Talent fixes (7 questions)
-  const talentQuestions = [
-    "1. Décrivez une situation où votre créativité et innovation ont permis de proposer des solutions stratégiques pour optimiser des processus, comme réduire l'utilisation de gasoil dans un système énergétique, en inspirant vos équipes dirigeantes.",
-    "2. Comment démontrez-vous votre initiative et votre autonomie dans des tâches imprévues à haut niveau, par exemple lors d'une campagne de recouvrement d'impayés ou de réparation critique d'équipements, en mobilisant des ressources exécutives ?",
-    "3. Fournissez un exemple où votre raisonnement analytique a aidé à synthétiser des informations complexes, analyser des allégations de détournements ou des données sur la performance des réseaux, pour orienter des décisions board-level.",
-    "4. Expliquez comment vous gérez le stress et les crises à un niveau dirigeant, par exemple en maintenant votre leadership lors de tensions récurrentes comme des délestages électriques affectant populations et industries.",
-    "5. Décrivez votre capacité à prendre des décisions en situations difficiles, comme allouer des ressources limitées pour une maintenance rigoureuse des infrastructures existantes, en alignant avec la vision globale de l'entreprise.",
-    "6. Comment votre aptitude à l'apprentissage continu vous a permis de vous perfectionner en technologies émergentes, par exemple les compteurs connectés pour la gestion des réseaux au Gabon, et de cascader cela à vos équipes de direction ?",
-    "7. Partagez une expérience où votre travail en équipe a favorisé la coordination à un niveau exécutif, par exemple dans un dialogue constructif avec des parties prenantes comme l'État ou des associations de consommateurs."
-  ];
+  const renderSection = (title, section, color, answers) => {
+    const validAnswers = (answers || []).filter(answer => answer && answer.trim() !== '');
+    const sectionQuestions = questions[section] || [];
 
-  // Questions Paradigme fixes (7 questions)
-  const paradigmeQuestions = [
-    "1. Comment alignez-vous votre vision professionnelle en tant que dirigeant avec une approche holistique de renaissance d'une entreprise comme la SEEG, combinant rigueur managériale et investissements stratégiques pour le développement national du Gabon ?",
-    "2. Décrivez comment vous avez manifesté votre intégrité professionnelle ainsi que vos valeurs de transparence et de gouvernance renforcée dans un précédent rôle, par exemple en gérant un dilemme éthique ou en prenant une décision difficile alignée avec vos valeurs éthiques.",
-    "3. Expliquez votre adhésion à un paradigme de transition énergétique durable, en promouvant des énergies renouvelables et des standards de service comparables aux pays développés d'ici 2035, sous votre direction stratégique.",
-    "4. Comment votre paradigme professionnel soutient l'implication des parties prenantes, comme la participation active des consommateurs et la motivation des employés dans une restructuration organisationnelle à grande échelle ?",
-    "5. Fournissez un exemple où vous avez promu un modèle économique viable, en résolvant des impayés et en appliquant une tarification sociale réaliste pour un accès universel à l'eau et l'électricité, en tant que dirigeant financier.",
-    "6. Décrivez comment vous anticipez et gérez le changement dans un paradigme d'autosuffisance énergétique et hydrique, en visant une capacité de 2 à 4 Gigawatts à horizon 2030 au Gabon, via des roadmaps exécutives.",
-    "7. Expliquez votre alignement avec un paradigme d'innovation et d'excellence régionale, en positionnant une société comme la SEEG comme référence en Afrique centrale pour la performance et la durabilité, sous votre vision leadership."
-  ];
-
-  const renderMetierAnswers = () => {
-    // Récupérer toutes les réponses métier depuis le tableau
-    const metierAnswers = mtpAnswers.metier || [];
-    
-    
     return (
       <div className="mb-6">
-        <h4 className="font-semibold text-sm sm:text-base mb-3">Questions Métier ({metierAnswers.length}/7 réponses)</h4>
-        {metierAnswers.length > 0 ? (
+        <h4 className="font-semibold text-sm sm:text-base mb-3">{title} ({validAnswers.length}/{sectionQuestions.length} réponses)</h4>
+        {validAnswers.length > 0 ? (
           <div className="space-y-3">
-            {metierAnswers.map((answer, index) => (
-              <div key={index} className="border-l-2 border-blue-500 pl-3">
+            {validAnswers.map((answer, index) => (
+              <div key={index} className={`border-l-2 ${color} pl-3`}>
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
-                  {metierQuestions[index] || `Question ${index + 1}`}
+                  {sectionQuestions[index] || `Question ${index + 1}`}
                 </p>
                 <p className="text-xs sm:text-sm text-foreground">{answer}</p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse aux questions métier.</p>
-        )}
-      </div>
-    );
-  };
-
-  const renderTalentAnswers = () => {
-    // Récupérer toutes les réponses talent depuis le tableau
-    const talentAnswers = (mtpAnswers.talent || []).filter(answer => answer && answer.trim() !== '');
-    
-    
-    return (
-      <div className="mb-6">
-        <h4 className="font-semibold text-sm sm:text-base mb-3">Questions Talent ({talentAnswers.length}/7 réponses)</h4>
-        {talentAnswers.length > 0 ? (
-          <div className="space-y-3">
-            {talentAnswers.map((answer, index) => (
-              <div key={index} className="border-l-2 border-green-500 pl-3">
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
-                  {talentQuestions[index] || `Question ${index + 1}`}
-                </p>
-                <p className="text-xs sm:text-sm text-foreground">{answer}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse aux questions talent.</p>
-        )}
-      </div>
-    );
-  };
-
-  const renderParadigmeAnswers = () => {
-    // Récupérer toutes les réponses paradigme depuis le tableau
-    const paradigmeAnswers = (mtpAnswers.paradigme || []).filter(answer => answer && answer.trim() !== '');
-    
-    
-    return (
-      <div className="mb-4">
-        <h4 className="font-semibold text-sm sm:text-base mb-3">Questions Paradigme ({paradigmeAnswers.length}/7 réponses)</h4>
-        {paradigmeAnswers.length > 0 ? (
-          <div className="space-y-3">
-            {paradigmeAnswers.map((answer, index) => (
-              <div key={index} className="border-l-2 border-purple-500 pl-3">
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
-                  {paradigmeQuestions[index] || `Question ${index + 1}`}
-                </p>
-                <p className="text-xs sm:text-sm text-foreground">{answer}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse aux questions paradigme.</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Aucune réponse aux questions {title.toLowerCase()}.</p>
         )}
       </div>
     );
@@ -219,9 +141,9 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
         <CardTitle className="text-base sm:text-lg">Réponses au Questionnaire MTP</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 p-4 sm:p-6">
-        {renderMetierAnswers()}
-        {renderTalentAnswers()}
-        {renderParadigmeAnswers()}
+        {renderSection('Questions Métier', 'metier', 'border-blue-500', mtpAnswers.metier)}
+        {renderSection('Questions Talent', 'talent', 'border-green-500', mtpAnswers.talent)}
+        {renderSection('Questions Paradigme', 'paradigme', 'border-purple-500', mtpAnswers.paradigme)}
       </CardContent>
     </Card>
   );
@@ -536,7 +458,11 @@ export default function CandidateAnalysis() {
       }
     } catch (e) {
       console.error("Erreur lors du changement de statut", e);
-      // Gérer l'affichage de l'erreur à l'utilisateur
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors du changement de statut du candidat.",
+      });
     }
   };
 

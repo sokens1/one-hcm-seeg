@@ -192,7 +192,7 @@ export default function JobDetail() {
               {(jobOffer.profile || (jobOffer.requirements && jobOffer.requirements.length > 0)) && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg sm:text-xl">CONNAISSANCE SAVOIR ET REQUIS</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">CONNAISSANCES, SAVOIRS-FAIRE ET PRE-REQUIS</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div
