@@ -105,7 +105,7 @@ export function Chatbot({ className }: ChatbotProps) {
   };
 
   const handleSendEmail = () => {
-    window.open("mailto:support@cnx4-0.com?subject=Demande de support - OneHCM Talent Flow", "_self");
+    window.open("mailto:support@seeg-talentsource.com?subject=Demande de support - OneHCM Talent Flow", "_self");
   };
 
   const handleBackToMenu = () => {
