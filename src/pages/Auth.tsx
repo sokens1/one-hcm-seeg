@@ -257,6 +257,27 @@ export default function Auth() {
           toast.error("Erreur d'inscription: " + error.message);
         }
       } else {
+        // Tenter une connexion immédiate si l'email de confirmation n'est pas requis côté Supabase
+        try {
+          const { data: sess } = await supabase.auth.getSession();
+          if (!sess.session) {
+            const { data: siData, error: siErr } = await signIn(signUpData.email, signUpData.password);
+            if (!siErr && siData.user) {
+              toast.success("Inscription réussie ! Vous êtes connecté.");
+              navigate('/candidate/dashboard');
+              return;
+            }
+          } else {
+            toast.success("Inscription réussie ! Vous êtes connecté.");
+            navigate('/candidate/dashboard');
+            return;
+          }
+        } catch {
+          // ignore and fall back to classic flow
+        }
+
+        // Fallback: si la connexion immédiate n'est pas possible (ex: email requis),
+        // on garde l'UX existante
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         if (isDevelopment) {
           toast.success("Inscription réussie! Vous pouvez maintenant vous connecter.");
@@ -264,7 +285,6 @@ export default function Auth() {
           toast.success("Inscription réussie! Vérifiez votre email pour confirmer votre compte.");
         }
         setActiveTab("signin");
-        // Pré-remplir l'email dans le formulaire de connexion
         setSignInData(prev => ({ ...prev, email: signUpData.email }));
       }
     } catch (error) {
