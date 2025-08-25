@@ -17,13 +17,19 @@ interface ApplicationData {
   projectIdea?: { name: string } | null;
   certificates?: { name: string }[];
   recommendations?: { name: string }[];
-  // MTP Questions
+  // MTP Questions - Métier
   metier1?: string;
   metier2?: string;
   metier3?: string;
+  metier4?: string;
+  metier5?: string;
+  metier6?: string;
+  metier7?: string;
+  // MTP Questions - Talent
   talent1?: string;
   talent2?: string;
   talent3?: string;
+  // MTP Questions - Paradigme
   paradigme1?: string;
   paradigme2?: string;
   paradigme3?: string;
@@ -158,9 +164,34 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   yPos += 7;
 
   const metierQuestions = [
-    { label: '1. Compétences techniques', value: data.metier1 },
-    { label: '2. Expérience professionnelle', value: data.metier2 },
-    { label: '3. Défis techniques', value: data.metier3 },
+    { 
+      label: '1. Quelles sont les problématiques que vous identifiez aujourd\'hui à la SEEG, pour ce poste ? Quelles solutions préconisez-vous ? Quels pourraient être les obstacles au déploiement de votre solution ?',
+      value: data.metier1 
+    },
+    { 
+      label: '2. Quels sont les trois principaux challenges que vous comptez relever en tant que dirigeant de l\'exploitation électricité à la SEEG ?',
+      value: data.metier2 
+    },
+    { 
+      label: '3. Expliquez ce que vous savez des normes d\'exploitation requises pour gérer une concession électrique.',
+      value: data.metier3 
+    },
+    { 
+      label: '4. Racontez une expérience où vous avez dirigé un projet d\'investissement orienté réseaux électriques.',
+      value: data.metier4 
+    },
+    { 
+      label: '5. Décrivez deux réalisations majeures que vous avez accomplies dans votre carrière, en lien avec l\'exploitation des réseaux électriques.',
+      value: data.metier5 
+    },
+    { 
+      label: '6. Donnez un exemple concret illustrant la meilleure façon d\'assurer l\'exploitation optimale et la continuité du service électrique à la SEEG.',
+      value: data.metier6 
+    },
+    { 
+      label: '7. Comment garantirez-vous que l\'exploitation électrique respecte les normes légales et réglementaires afin de réduire les risques de panne et d\'assurer un service continu aux usagers ?',
+      value: data.metier7 
+    }
   ];
 
   doc.setFont('helvetica', 'normal');
@@ -198,9 +229,18 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   yPos += 7;
 
   const talentQuestions = [
-    { label: '1. Talent distinctif', value: data.talent1 },
-    { label: '2. Impact du talent', value: data.talent2 },
-    { label: '3. Exemple concret', value: data.talent3 },
+    { 
+      label: '1. Comment assureriez-vous la continuité du service malgré des infrastructures fragiles ?',
+      value: data.talent1 
+    },
+    { 
+      label: '2. Quelle méthode appliqueriez-vous pour réduire les délestages électriques ?',
+      value: data.talent2 
+    },
+    { 
+      label: '3. Comment organiseriez-vous vos équipes pour optimiser la performance et la sécurité du réseau ?',
+      value: data.talent3 
+    }
   ];
 
   doc.setFont('helvetica', 'normal');
@@ -233,14 +273,23 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   yPos += 5;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
-  doc.setTextColor(124, 58, 237); // Purple-600
+  doc.setTextColor(168, 85, 247); // Purple-500
   doc.text('Paradigme', margin, yPos);
   yPos += 7;
 
   const paradigmeQuestions = [
-    { label: '1. Valeurs professionnelles', value: data.paradigme1 },
-    { label: '2. Alignement avec OneHCM', value: data.paradigme2 },
-    { label: '3. Contribution culturelle', value: data.paradigme3 },
+    { 
+      label: '1. Quel est le devoir premier d\'un responsable exploitation : réduire les coûts ou garantir la continuité du service ?',
+      value: data.paradigme1 
+    },
+    { 
+      label: '2. Comment hiérarchisez-vous sécurité, rapidité d\'intervention et satisfaction client ?',
+      value: data.paradigme2 
+    },
+    { 
+      label: '3. Quelle est votre vision d\'une exploitation électrique responsable ?',
+      value: data.paradigme3 
+    }
   ];
 
   doc.setFont('helvetica', 'normal');
