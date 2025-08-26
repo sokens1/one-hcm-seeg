@@ -2,29 +2,64 @@ import { useEffect, useState } from 'react';
 import '../index.css';
 
 const Maintenance = () => {
-    const [timeLeft, setTimeLeft] = useState(40 * 60); // 40 minutes en secondes
+    const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            document.title = 'Maintenance en cours - SEEG TalentSource';
-        }
-    }, []);
+        // Calculer le temps restant jusqu'à 00:40
+        const calculateTimeLeft = () => {
+            const now = new Date();
+            const startTime = new Date();
+            const endTime = new Date();
+            
+            // Définir l'heure de début à minuit (00:00)
+            startTime.setHours(0, 0, 0, 0);
+            
+            // Définir l'heure de fin à 00:40
+            endTime.setHours(0, 40, 0, 0);
+            
+            // Si nous sommes avant minuit, on part de minuit du jour même
+            if (now < startTime) {
+                // Si on est avant minuit, on attend minuit
+                return Math.floor((startTime.getTime() - now.getTime()) / 1000);
+            } 
+            // Si nous sommes entre minuit et 00:40, on affiche le temps restant
+            else if (now < endTime) {
+                return Math.floor((endTime.getTime() - now.getTime()) / 1000);
+            }
+            // Si nous sommes après 00:40, on affiche 0
+            return 0;
+        };
 
-    useEffect(() => {
-        if (timeLeft === 0) return;
+        // Mettre à jour immédiatement
+        setTimeLeft(calculateTimeLeft());
 
+        // Mettre à jour toutes les secondes
         const timer = setInterval(() => {
-            setTimeLeft(prev => Math.max(0, prev - 1));
+            const remaining = calculateTimeLeft();
+            setTimeLeft(remaining);
+            
+            // Si le temps est écoulé, on peut arrêter le timer
+            if (remaining <= 0) {
+                clearInterval(timer);
+            }
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [timeLeft]);
-
+    }, []);
 
     // Mettre à jour le titre de la page
     useEffect(() => {
         document.title = 'Maintenance en cours - SEEG TalentSource';
-    }, []);
+        
+        // Rediriger vers la page d'accueil si la maintenance est terminée
+        if (timeLeft <= 0) {
+            const timer = setTimeout(() => {
+                window.location.href = '/';
+            }, 5000); // Rediriger après 5 secondes
+            
+            return () => clearTimeout(timer);
+        }
+    }, [timeLeft]);
 
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -44,18 +79,28 @@ const Maintenance = () => {
                             🚧 Maintenance en cours
                         </h1>
 
-                        <p className="text-gray-600 text-sm sm:text-base">
-                            Notre site est actuellement en cours de mise à jour pour vous offrir une meilleure expérience.
-                            Nous serons de retour dans :
+<p className="text-gray-600 text-sm sm:text-base">
+                            Notre site est actuellement en cours de maintenance programmée.
+                            {timeLeft > 0 ? (
+                                <>
+                                    La maintenance est prévue jusqu'à 00h40.
+                                    <br />
+                                    Temps restant :
+                                </>
+                            ) : (
+                                "La maintenance est en cours et se terminera bientôt."
+                            )}
                         </p>
 
-                        <div className="py-2 sm:py-4">
-                            <div className="inline-block bg-gray-50 rounded-lg px-6 py-3 sm:px-8 sm:py-4">
-                                <div className="text-4xl sm:text-5xl font-mono font-bold text-blue-600">
-                                    {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                        {timeLeft > 0 && (
+                            <div className="py-2 sm:py-4">
+                                <div className="inline-block bg-gray-50 rounded-lg px-6 py-3 sm:px-8 sm:py-4">
+                                    <div className="text-4xl sm:text-5xl font-mono font-bold text-blue-600">
+                                        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         <p className="text-xs sm:text-sm text-gray-500">
                             Nous nous excusons pour la gêne occasionnée. Merci de votre patience.
