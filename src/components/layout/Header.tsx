@@ -61,7 +61,7 @@ export function Header() {
               <div className="container mx-auto">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
                   <span className="font-bold whitespace-nowrap">MISE À JOUR :</span>
-                  <span className="text-sm sm:text-base">Une indisponibilité du site est prévue de 22h00 à 22h40</span>
+                  <span className="text-white text-sm sm:text-base">Une indisponibilité du site est prévue de 22h00 à 22h40</span>
                 </div>
               </div>
             </div>
