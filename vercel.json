@@ -6,7 +6,7 @@
     { "src": "/_next/(.*)", "dest": "/_next/$1" },
     { "src": "/static/(.*)", "dest": "/static/$1" },
     { "src": "/favicon.ico", "dest": "/favicon.svg" },
-    { "src": "/maintenance", "dest": "/index.html" },
+    { "src": "/Maintenance", "dest": "/index.html" },
     { "src": "^/((?!_next|static|api|assets|favicon).*)", "dest": "/maintenance" }
   ]
 }
