@@ -43,9 +43,9 @@ export function Header() {
     // Vérifier si nous sommes dans la plage de maintenance
     const now = new Date();
     const maintenanceStart = new Date();
-    maintenanceStart.setHours(17, 4, 5); // 22h00
+    maintenanceStart.setHours(24, 0, 0); // 24h00
     const maintenanceEnd = new Date();
-    maintenanceEnd.setHours(22, 40, 0); // 22h40
+    maintenanceEnd.setHours(24, 40, 0); // 24h40
 
     if (now >= maintenanceStart && now <= maintenanceEnd) {
       setShowMaintenanceBanner(true);
@@ -61,7 +61,7 @@ export function Header() {
               <div className="container mx-auto">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
                   <span className="font-bold whitespace-nowrap">MISE À JOUR :</span>
-                  <span className="text-white text-sm sm:text-base">Une indisponibilité du site est prévue de 22h00 à 22h40</span>
+                  <span className="text-white text-sm sm:text-base">Une indisponibilité du site est prévue de 00h00 à 00h40</span>
                 </div>
               </div>
             </div>
