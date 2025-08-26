@@ -474,7 +474,10 @@ export function useRecruiterApplications(jobOfferId?: string) {
     const applications = (entries || []).map((app: any) => ({
       ...app.application_details,
       job_offers: app.job_offer_details,
-      users: app.candidate_details,
+      users: {
+        ...app.candidate_details,
+        candidate_profiles: app.candidate_details?.candidate_profiles
+      },
     }));
 
     return applications as Application[];

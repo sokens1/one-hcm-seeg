@@ -1,11 +1,29 @@
 import { Application } from '@/types/application';
 import { generateApplicationPdf } from './generateApplicationPdf';
+import { supabase } from '@/integrations/supabase/client';
 
-export const exportApplicationPdf = (application: Application, jobTitle: string) => {
+export const exportApplicationPdf = async (application: Application, jobTitle: string) => {
   try {
     // Get user data from the application
     const user = application.users;
     const profile = user?.candidate_profiles;
+    
+    // Fetch application documents
+    const { data: documents, error: documentsError } = await supabase
+      .from('application_documents')
+      .select('document_type, file_name, file_url')
+      .eq('application_id', application.id);
+
+    if (documentsError) {
+      console.error('Error fetching documents:', documentsError);
+    }
+
+    // Group documents by type
+    const documentsByType = (documents || []).reduce((acc, doc) => {
+      acc[doc.document_type] = acc[doc.document_type] || [];
+      acc[doc.document_type].push(doc);
+      return acc;
+    }, {} as Record<string, Array<{ document_type: string; file_name: string; file_url: string }>>);
     
     // Get MTP answers - handle both array and object formats
     const mtpAnswers = application.mtp_answers || {};
@@ -54,9 +72,6 @@ export const exportApplicationPdf = (application: Application, jobTitle: string)
       created_at: application.created_at,
       status: application.status,
       gender: profile?.gender || '',
-      cv: application.cv || null,
-      certificates: application.certificates || [],
-      recommendations: application.recommendations || [],
       metier1: metier1 || '',
       metier2: metier2 || '',
       metier3: metier3 || '',
@@ -75,14 +90,28 @@ export const exportApplicationPdf = (application: Application, jobTitle: string)
       firstName: user?.first_name || '',
       lastName: user?.last_name || '',
       email: user?.email || '',
-      dateOfBirth: user?.date_of_birth ? new Date(user.date_of_birth) : null,
+      dateOfBirth: profile?.date_of_birth ? new Date(profile.date_of_birth) : null,
       currentPosition: profile?.current_position || '',
-      coverLetter: application.cover_letter ? { 
-        name: 'Lettre de motivation', 
-        url: application.cover_letter 
+      
+      // Map documents from database
+      cv: documentsByType.cv?.[0] ? { 
+        name: documentsByType.cv[0].file_name,
+        url: documentsByType.cv[0].file_url 
       } : null,
-      integrityLetter: application.integrity_letter || null,
-      projectIdea: application.project_idea || null,
+      coverLetter: documentsByType.cover_letter?.[0] ? { 
+        name: documentsByType.cover_letter[0].file_name,
+        url: documentsByType.cover_letter[0].file_url 
+      } : null,
+      integrityLetter: documentsByType.integrity_letter?.[0] ? { 
+        name: documentsByType.integrity_letter[0].file_name,
+        url: documentsByType.integrity_letter[0].file_url 
+      } : null,
+      projectIdea: documentsByType.project_idea?.[0] ? { 
+        name: documentsByType.project_idea[0].file_name,
+        url: documentsByType.project_idea[0].file_url 
+      } : null,
+      certificates: (documentsByType.certificate || documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
+      recommendations: (documentsByType.recommendation || []).map(doc => ({ name: doc.file_name })),
       jobTitle,
       applicationDate: new Date(application.created_at).toLocaleDateString('fr-FR', {
         year: 'numeric',

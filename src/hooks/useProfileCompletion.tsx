@@ -30,12 +30,12 @@ export function useProfileCompletion() {
       const [{ data: userData }, { data: profileData }] = await Promise.all([
         supabase
           .from('users')
-          .select('matricule, phone, date_of_birth')
+          .select('phone')
           .eq('id', user.id)
           .maybeSingle(),
         supabase
           .from('candidate_profiles')
-          .select('gender, current_position, years_experience, address')
+          .select('gender, current_position, years_experience, address, birth_date')
           .eq('user_id', user.id)
           .maybeSingle()
       ]);
@@ -43,9 +43,8 @@ export function useProfileCompletion() {
       const missingFields: string[] = [];
       
       // Vérifier les champs obligatoires
-      if (!userData?.matricule) missingFields.push('matricule');
       if (!userData?.phone) missingFields.push('téléphone');
-      if (!userData?.date_of_birth) missingFields.push('date de naissance');
+      if (!profileData?.birth_date) missingFields.push('date de naissance');
       
       if (!profileData?.gender || profileData.gender === 'Non renseigné') {
         missingFields.push('sexe');
@@ -55,7 +54,7 @@ export function useProfileCompletion() {
       }
       if (!profileData?.address) missingFields.push('adresse');
 
-      const totalFields = 6; // matricule, phone, date_of_birth, gender, current_position, address
+      const totalFields = 5; // phone, birth_date, gender, current_position, address
       const completedFields = totalFields - missingFields.length;
       const completionPercentage = Math.round((completedFields / totalFields) * 100);
 
