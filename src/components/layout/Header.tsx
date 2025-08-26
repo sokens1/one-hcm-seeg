@@ -43,7 +43,7 @@ export function Header() {
     // Vérifier si nous sommes dans la plage de maintenance
     const now = new Date();
     const maintenanceStart = new Date();
-    maintenanceStart.setHours(24, 0, 0); // 24h00
+    maintenanceStart.setHours(19, 5, 6); // 19h56
     const maintenanceEnd = new Date();
     maintenanceEnd.setHours(24, 40, 0); // 24h40
 
