@@ -16,9 +16,8 @@ import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterR
 import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
 import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecruiterReadRoute";
 import { Loader2 } from 'lucide-react';
-
-//Maintenance page
-const Maintenance = lazy(() => import("./pages/maintenance"));
+import './index.css';
+import Maintenance from "./pages/maintenance";
 
 // Lazily load page components
 const Index = lazy(() => import("./pages/Index"));
