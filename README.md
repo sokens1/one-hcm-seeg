@@ -164,8 +164,4 @@ Si vous ne gérez pas la DB locale et souhaitez appliquer uniquement la RPC côt
 
 
 
- <!-- {
-   "source": "/((?!maintenance).*)",
-   "destination": "/maintenance",
-   "permanent": false
-} -->
+ <!-- Pour activer/desactiver la maintenance il suffit de modifier la constante MAINTENANCE_MODE dans le fichier src/config/maintenance.ts -->

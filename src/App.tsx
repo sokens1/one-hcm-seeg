@@ -120,28 +120,53 @@ const LoadingFallback = () => (
 
 // Vérifier si nous sommes en période de maintenance
 const isMaintenanceTime = () => {
-  if (MAINTENANCE_MODE) return true;
+  // Si MAINTENANCE_MODE est défini, on suit strictement cette valeur
+  if (MAINTENANCE_MODE !== undefined) {
+    console.log(`Maintenance ${MAINTENANCE_MODE ? 'activée' : 'désactivée'} manuellement`);
+    return MAINTENANCE_MODE;
+  }
   
+  // Vérification de la plage horaire
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
   
-  return (
-    (currentHour === MAINTENANCE_HOURS.start.hour && 
-     currentMinute >= MAINTENANCE_HOURS.start.minute) ||
-    (currentHour > MAINTENANCE_HOURS.start.hour && 
-     currentHour < MAINTENANCE_HOURS.end.hour) ||
-    (currentHour === MAINTENANCE_HOURS.end.hour && 
-     currentMinute < MAINTENANCE_HOURS.end.minute)
-  );
+  // Calcul en minutes depuis minuit pour faciliter la comparaison
+  const currentTimeInMinutes = currentHour * 60 + currentMinute;
+  const startTimeInMinutes = MAINTENANCE_HOURS.start.hour * 60 + MAINTENANCE_HOURS.start.minute;
+  const endTimeInMinutes = MAINTENANCE_HOURS.end.hour * 60 + MAINTENANCE_HOURS.end.minute;
+  
+  // Déterminer si on est dans la plage de maintenance
+  let isInMaintenanceWindow = false;
+  
+  if (startTimeInMinutes < endTimeInMinutes) {
+    // Plage normale dans la même journée (ex: 14h-16h)
+    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes && 
+                           currentTimeInMinutes < endTimeInMinutes;
+  } else {
+    // Plage qui passe minuit (ex: 22h-02h)
+    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes || 
+                           currentTimeInMinutes < endTimeInMinutes;
+  }
+  
+  return isInMaintenanceWindow;
 };
 
 // Créer un wrapper pour les routes protégées par maintenance
 const withMaintenanceCheck = (element: React.ReactNode) => {
-  if (isMaintenanceTime() && window.location.pathname !== '/maintenance') {
+  const isMaintenance = isMaintenanceTime();
+  const isOnMaintenancePage = window.location.pathname === '/maintenance';
+  
+  if (isMaintenance && !isOnMaintenancePage) {
+    // Rediriger vers la page de maintenance si nécessaire
     window.location.href = '/maintenance';
     return <LoadingFallback />;
+  } else if (!isMaintenance && isOnMaintenancePage) {
+    // Rediriger vers la page d'accès si on est sur la page de maintenance mais qu'elle n'est plus nécessaire
+    window.location.href = '/';
+    return <LoadingFallback />;
   }
+  
   return element;
 };
 
