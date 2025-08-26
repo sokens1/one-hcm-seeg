@@ -18,7 +18,7 @@ import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecrui
 import { Loader2 } from 'lucide-react';
 
 //Maintenance page
-const Maintenance = lazy(() => import("./pages/maintenance"));
+const Maintenance = lazy(() => import("./pages/Maintenance"));
 
 // Lazily load page components
 const Index = lazy(() => import("./pages/Index"));
