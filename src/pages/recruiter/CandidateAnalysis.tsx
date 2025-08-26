@@ -35,7 +35,7 @@ const getBadgeVariant = (status: Application['status']) => {
 };
 
 const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, label: string, value?: string | null, isLink?: boolean }) => {
-  if (!value) return null;
+  if (value === null || value === undefined || value === '') return null;
   return (
     <div className="flex items-start gap-2 sm:gap-3">
       <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
