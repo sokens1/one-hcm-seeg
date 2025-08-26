@@ -50,7 +50,7 @@ export default function Maintenance() {
 
                             <div className="pt-4 border-t border-gray-100">
                                 <p className="text-xs text-gray-400">
-                                    Si vous avez besoin d'assistance, veuillez nous contacter à contact@votresite.com
+                                    Si vous avez besoin d'assistance, veuillez nous contacter à <span className="text-blue-600 hover:underline"><a href="mailto:support@seeg-talentsource.com">support@seeg-talentsource.com</a></span>
                                 </p>
                             </div>
                         </div>
