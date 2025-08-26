@@ -33,6 +33,7 @@ export interface CandidateProfile {
   gender: string;
   date_of_birth: string;
   current_position: string;
+  years_experience: number | string;
   address: string;
   linkedin_profile: string;
   portfolio_url: string;
@@ -220,9 +221,9 @@ export function useApplications() {
         if (applicationData.profile_data.current_position) {
           profilePayload.current_position = applicationData.profile_data.current_position;
         }
-        // Assurer que years_experience est une chaîne, même si vide, pour correspondre au type de la DB
+        // Assurer que years_experience est un nombre pour correspondre au type de la DB
         if (applicationData.profile_data.years_of_experience !== undefined) {
-          profilePayload.years_experience = String(applicationData.profile_data.years_of_experience);
+          profilePayload.years_experience = parseInt(applicationData.profile_data.years_of_experience) || 0;
         }
         if (applicationData.profile_data.date_of_birth) {
           profilePayload.birth_date = applicationData.profile_data.date_of_birth;
