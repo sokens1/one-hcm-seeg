@@ -165,56 +165,16 @@ export function useApplications() {
         talent: string[];
         paradigme: string[];
       };
+      // Ajout des données de profil candidat
+      profile_data?: {
+        gender?: string;
+        current_position?: string;
+        date_of_birth?: string;
+        years_of_experience?: string;
+      };
     }) => {
       if (!user) throw new Error("User not authenticated");
 
-      // Vérifier que l'utilisateur existe dans la table users
-      const { data: userRow, error: userSelectError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (userSelectError) {
-        throw new Error(`Impossible de vérifier votre profil utilisateur: ${userSelectError.message}`);
-      }
-
-      if (!userRow) {
-        // Tentative d'auto-réparation: créer le profil utilisateur minimal depuis les métadonnées auth
-        const meta = (
-          (user as unknown as { user_metadata?: Record<string, unknown> })?.user_metadata
-        ) ?? {};
-
-        const getStr = (key: string): string | undefined => {
-          const val = (meta as Record<string, unknown>)[key];
-          return typeof val === 'string' ? val : undefined;
-        };
-
-        let firstName: string | undefined = getStr('first_name') || getStr('prenom') || getStr('given_name');
-        let lastName: string | undefined = getStr('last_name') || getStr('nom') || getStr('family_name');
-        const fullName: string | undefined = getStr('name');
-        if ((!firstName || !lastName) && typeof fullName === 'string') {
-          const parts = fullName.trim().split(/\s+/);
-          if (!firstName && parts.length > 0) firstName = parts[0];
-          if (!lastName && parts.length > 1) lastName = parts.slice(1).join(' ');
-        }
-
-        const upsertPayload: Record<string, unknown> = {
-          id: user.id,
-          email: user.email,
-        };
-        if (firstName) upsertPayload.first_name = firstName;
-        if (lastName) upsertPayload.last_name = lastName;
-
-        const { error: upsertError } = await supabase
-          .from('users')
-          .upsert(upsertPayload, { onConflict: 'id' });
-
-        if (upsertError) {
-          // Si la politique RLS empêche l'upsert, demander à l'utilisateur de se reconnecter
-          throw new Error(`Profil utilisateur non trouvé et impossible de le créer automatiquement. Veuillez vous reconnecter. Détail: ${upsertError.message}`);
-        }
-      }
 
       // Vérifier si une candidature existe déjà
       const { data: existingApplication } = await supabase
@@ -248,6 +208,37 @@ export function useApplications() {
           throw new Error("Vous avez déjà postulé à cette offre.");
         }
         throw new Error(error.message);
+      }
+
+      // Sauvegarder les données de profil candidat si fournies
+      if (applicationData.profile_data && user?.id) {
+        const profilePayload: { [key: string]: unknown } = { user_id: user.id };
+
+        if (applicationData.profile_data.gender) {
+          profilePayload.gender = applicationData.profile_data.gender;
+        }
+        if (applicationData.profile_data.current_position) {
+          profilePayload.current_position = applicationData.profile_data.current_position;
+        }
+        // Assurer que years_experience est une chaîne, même si vide, pour correspondre au type de la DB
+        if (applicationData.profile_data.years_of_experience !== undefined) {
+          profilePayload.years_experience = String(applicationData.profile_data.years_of_experience);
+        }
+        if (applicationData.profile_data.date_of_birth) {
+          profilePayload.birth_date = applicationData.profile_data.date_of_birth;
+        }
+
+        // Ne tenter l'upsert que si on a plus que user_id
+        if (Object.keys(profilePayload).length > 1) {
+          const { error: profileError } = await supabase
+            .from('candidate_profiles')
+            .upsert(profilePayload, { onConflict: 'user_id' });
+
+          if (profileError) {
+            console.warn('Erreur lors de la mise à jour du profil candidat:', profileError);
+            // Ne pas faire échouer la candidature si le profil ne peut pas être sauvegardé
+          }
+        }
       }
 
       return data;

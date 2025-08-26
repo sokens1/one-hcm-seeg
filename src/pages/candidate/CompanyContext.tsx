@@ -210,7 +210,7 @@ export default function CompanyContext() {
                     {/* Découvrez nos {jobCount} poste{jobCount > 1 ? 's' : ''} disponible{jobCount > 1 ? 's' : ''} et contribuez à la renaissance de la SEEG. */}
                   </p>
                   <Button variant="secondary" size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-bold" asChild>
-                    <a href="/jobs">
+                    <a href="/">
                       Voir les Offres Disponibles
                     </a>
                   </Button>

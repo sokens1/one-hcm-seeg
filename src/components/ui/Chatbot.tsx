@@ -105,7 +105,7 @@ export function Chatbot({ className }: ChatbotProps) {
   };
 
   const handleSendEmail = () => {
-    window.open("mailto:support@cnx4-0.com?subject=Demande de support - OneHCM Talent Flow", "_self");
+    window.open("mailto:support@seeg-talentsource.com?subject=Demande de support - OneHCM Talent Flow", "_self");
   };
 
   const handleBackToMenu = () => {
@@ -155,7 +155,7 @@ export function Chatbot({ className }: ChatbotProps) {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="w-80 sm:w-96 h-[500px] shadow-2xl border-0 bg-white">
+        <Card className={cn("w-80 sm:w-96 shadow-2xl border-0 bg-white", isMinimized ? "h-16" : "h-[500px]")}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
             <div className="flex items-center gap-2">
@@ -248,7 +248,7 @@ export function Chatbot({ className }: ChatbotProps) {
                       </div>
                       <div className="text-left">
                         <p className="font-medium">Envoyer un email</p>
-                        {/* <p className="text-xs opacity-70">support@cnx4-0.com</p> */}
+                        <p className="text-xs opacity-70">support@seeg-talentsource.com</p>
                       </div>
                     </Button>
                   </div>
