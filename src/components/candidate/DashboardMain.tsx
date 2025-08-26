@@ -2,18 +2,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { FileText, MapPin, Calendar, Eye } from "lucide-react";
+import { FileText, MapPin, Calendar, Eye, MoreVertical } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useApplications } from "@/hooks/useApplications";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { ContentSpinner } from "@/components/ui/spinner";
+import type { Application } from '@/types/application';
+import { exportApplicationPdf } from '@/utils/exportPdfUtils';
 
 export function DashboardMain() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: applications, isLoading: isLoadingApps, error: errorApps } = useApplications();
   const { data: jobOffers, isLoading: isLoadingJobs, error: errorJobs } = useJobOffers();
 
@@ -122,8 +126,45 @@ export function DashboardMain() {
           {/* Vue Carte des Candidatures */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {filteredApplications.map((application) => (
-              <Card key={application.id} className="border hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
+              <Card key={application.id} className="border hover:shadow-md transition-shadow relative">
+                <div className="absolute top-3 right-3 z-10">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                        <MoreVertical className="h-4 w-4" />
+                        <span className="sr-only">Actions</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          // Naviguer vers la page de suivi
+                          navigate(`/candidate/application/${application.id}`);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        <span>Voir le suivi</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          try {
+                            await exportApplicationPdf(application, application.job_offers?.title || 'Candidature');
+                          } catch (error) {
+                            console.error('Error exporting PDF:', error);
+                            // Vous pourriez vouloir afficher une notification d'erreur ici
+                          }
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <FileText className="mr-2 h-4 w-4" />
+                        <span>Télécharger PDF</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                <CardHeader className="pb-3 pr-12">
                   <CardTitle className="text-base sm:text-lg line-clamp-2">{application.job_offers?.title}</CardTitle>
                   <p className="text-xs sm:text-sm text-muted-foreground">{application.job_offers?.contract_type}</p>
                 </CardHeader>
@@ -141,13 +182,13 @@ export function DashboardMain() {
                       {application.status}
                     </Badge>
                   </div>
-                  <Button asChild className="w-full gap-2 text-xs sm:text-sm">
+                  {/* <Button asChild className="w-full gap-2 text-xs sm:text-sm">
                     <Link to={`/candidate/application/${application.id}`}>
                       <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span className="hidden sm:inline">Voir le suivi détaillé</span>
                       <span className="sm:hidden">Voir détails</span>
                     </Link>
-                  </Button>
+                  </Button> */}
                 </CardContent>
               </Card>
             ))}

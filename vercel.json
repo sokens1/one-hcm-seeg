@@ -1,8 +1,12 @@
 {
   "rewrites": [
-    { "source": "/((?!.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "redirects": [
-    { "source": "/favicon.ico", "destination": "/favicon.svg", "permanent": true }
+  "routes": [
+    { "src": "/_next/(.*)", "dest": "/_next/$1" },
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/favicon.ico", "dest": "/favicon.svg" },
+    { "src": "/Maintenance", "dest": "/index.html" },
+    { "src": "^/((?!_next|static|api|assets|favicon).*)", "dest": "/maintenance" }
   ]
 }
