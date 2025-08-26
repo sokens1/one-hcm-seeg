@@ -220,22 +220,21 @@ export default function CandidateSettings() {
                 <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
               </div>
             </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-muted-foreground" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="phone">Téléphone</Label>
+                <Input 
+                  id="phone" 
+                  type="tel" 
+                  value={phone} 
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Ex: +241 01 23 45 67"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
                 <Input id="email" value={user?.email || ''} readOnly />
               </div>
-            </div>
-            <div>
-              <Label htmlFor="phone">Téléphone</Label>
-              <Input 
-                id="phone" 
-                type="tel" 
-                value={phone} 
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Ex: +241 01 23 45 67"
-              />
             </div>
           </CardContent>
         </Card>
