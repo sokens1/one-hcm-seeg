@@ -35,7 +35,7 @@ const getBadgeVariant = (status: Application['status']) => {
 };
 
 const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, label: string, value?: string | null, isLink?: boolean }) => {
-  if (!value) return null;
+  if (value === null || value === undefined || value === '') return null;
   return (
     <div className="flex items-start gap-2 sm:gap-3">
       <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
@@ -72,11 +72,12 @@ const ProfileTab = ({ application }: { application: Application }) => {
           </div>
           <div className="space-y-3 sm:space-y-4">
             <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />
-            <InfoRow icon={Calendar} label="Date de naissance" value={user?.date_of_birth ? format(new Date(user.date_of_birth), 'PPP', { locale: fr }) : undefined} />
+            <InfoRow icon={Calendar} label="Date de naissance" value={profile?.birth_date ? format(new Date(profile.birth_date), 'PPP', { locale: fr }) : undefined} />
             <InfoRow icon={Info} label="Sexe" value={profile?.gender} />
           </div>
           <div className="space-y-3 sm:space-y-4">
             <InfoRow icon={Briefcase} label="Poste actuel" value={profile?.current_position} />
+            <InfoRow icon={Briefcase} label="Années d'expérience" value={profile?.years_experience !== undefined ? String(profile.years_experience) : undefined} />
             <InfoRow icon={MapPin} label="Adresse" value={profile?.address} />
           </div>
         </div>

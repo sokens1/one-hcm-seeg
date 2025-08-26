@@ -40,7 +40,7 @@ const normalize = (s: string) => s
 
 // Map by normalized title for resilient matching
 const mtpQuestionsByOfferNormalized: Record<string, MTPQuestions> = {
-    [normalize("Directeur Audit & Contrôle Interne")]: {
+    [normalize("Directeur Audit & Contrôle interne")]: {
     metier: [
         "Quelles sont les problématiques que vous identifiez aujourd'hui à la SEEG, pour ce poste ? Quelles solutions préconisez-vous ? Quels pourraient être les obstacles au déploiement de votre solution ?",
         "Quels sont les trois principaux challenges que vous comptez relever en tant que dirigeant de l'Audit et du Contrôle interne à la SEEG ?",
@@ -62,7 +62,7 @@ const mtpQuestionsByOfferNormalized: Record<string, MTPQuestions> = {
     ]
   },
   
-    [normalize("Directeur Qualité Hygiène Sécurité & Environnement (QHSE)")]: {
+    [normalize("Directeur Qualité, Hygiène, Sécurité & Environnement")]: {
     metier: [
         "Quelles sont les problématiques que vous identifiez aujourd'hui à la SEEG, pour ce poste ? Quelles solutions préconisez-vous ? Quels pourraient être les obstacles au déploiement de votre solution ?",
         "Quels sont les trois principaux challenges que vous comptez relever en tant que dirigeant QHSE à la SEEG ?",
@@ -106,7 +106,7 @@ const mtpQuestionsByOfferNormalized: Record<string, MTPQuestions> = {
     ]
   },
   
-    [normalize("Directeur des Systèmes d'Informations")]: {
+    [normalize("Directeur des Systèmes d'Information")]: {
     metier: [
         "Quelles sont les problématiques que vous identifiez aujourd'hui à la SEEG, pour ce poste ? Quelles solutions préconisez-vous ? Quels pourraient être les obstacles au déploiement de votre solution ?",
         "Quels sont les trois principaux challenges que vous comptez relever en tant que dirigeant des systèmes d'information à la SEEG ?",
