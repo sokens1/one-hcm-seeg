@@ -36,9 +36,12 @@ interface FormData {
   firstName: string;
   lastName: string;
   email: string;
+  matricule: string;
+  phone: string;
   gender: string;
   dateOfBirth: Date | null;
   currentPosition: string;
+  address: string;
   cv: UploadedFile | null;
   coverLetter: UploadedFile | null;
   yearsOfExperience: string;
@@ -87,9 +90,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     firstName: "",
     lastName: "",
     email: "",
+    matricule: "",
+    phone: "",
     gender: "",
     dateOfBirth: null,
     currentPosition: "",
+    address: "",
     cv: null,
     coverLetter: null,
     yearsOfExperience: "",
@@ -121,12 +127,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const [{ data: dbUser, error: userError }, { data: profile, error: profileError }] = await Promise.all([
           supabase
             .from('users')
-            .select('first_name, last_name, email, date_of_birth')
+            .select('first_name, last_name, email, matricule, phone')
             .eq('id', user.id)
             .maybeSingle(),
           supabase
             .from('candidate_profiles')
-            .select('current_position, gender')
+            .select('current_position, gender, years_experience, address, birth_date')
             .eq('user_id', user.id)
             .maybeSingle(),
         ]);
@@ -152,9 +158,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           firstName: prev.firstName || dbUser?.first_name || metaFirst || '',
           lastName: prev.lastName || dbUser?.last_name || metaLast || '',
           email: prev.email || dbUser?.email || user.email || '',
-          dateOfBirth: prev.dateOfBirth || (dbUser?.date_of_birth ? new Date(dbUser.date_of_birth) : null),
+          matricule: prev.matricule || dbUser?.matricule || '',
+          phone: prev.phone || dbUser?.phone || '',
+          dateOfBirth: prev.dateOfBirth || (profile?.birth_date ? new Date(profile.birth_date) : null),
           currentPosition: prev.currentPosition || profile?.current_position || '',
           gender: prev.gender || profile?.gender || '',
+          yearsOfExperience: prev.yearsOfExperience || (profile?.years_experience ? String(profile.years_experience) : ''),
+          address: prev.address || profile?.address || '',
         }));
       } catch (e: any) {
         console.error('Prefill error:', e);
@@ -449,6 +459,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             current_position: formData.currentPosition,
             years_of_experience: formData.yearsOfExperience,
             date_of_birth: formData.dateOfBirth ? format(formData.dateOfBirth, 'yyyy-MM-dd') : undefined,
+            address: formData.address,
+          },
+          user_data: {
+            matricule: formData.matricule,
+            phone: formData.phone,
           },
         });
         applicationIdForDocs = application.id as string;

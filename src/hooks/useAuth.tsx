@@ -335,6 +335,7 @@ export function useAuth() {
         isCandidate: false,
         isRecruiter: false,
         isAdmin: false,
+        isObserver: false,
       } as AuthContextType;
     }
     throw new Error('useAuth must be used within an AuthProvider');
