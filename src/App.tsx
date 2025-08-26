@@ -17,6 +17,9 @@ import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
 import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecruiterReadRoute";
 import { Loader2 } from 'lucide-react';
 
+//Maintenance page
+const Maintenance = lazy(() => import("./pages/maintenance"));
+
 // Lazily load page components
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -63,6 +66,8 @@ const queryClient = new QueryClient({
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
+      {/* Maintenance page */}
+      <Route path="maintenance" element={<Maintenance />} />
       {/* Home and Candidate Routes */}
       <Route index element={<Index />} />
       <Route path="auth" element={<Auth />} />
