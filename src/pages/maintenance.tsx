@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MAINTENANCE_MESSAGE } from '@/config/maintenance';
 import '../index.css';
 
 const Maintenance = () => {
@@ -30,36 +31,23 @@ const Maintenance = () => {
             return 0;
         };
 
-        // Mettre à jour immédiatement
+        // Mettre à jour le temps restant immédiatement
         setTimeLeft(calculateTimeLeft());
 
-        // Mettre à jour toutes les secondes
+        // Mettre à jour le temps restant toutes les secondes
         const timer = setInterval(() => {
-            const remaining = calculateTimeLeft();
-            setTimeLeft(remaining);
+            const newTimeLeft = calculateTimeLeft();
+            setTimeLeft(newTimeLeft);
             
-            // Si le temps est écoulé, on peut arrêter le timer
-            if (remaining <= 0) {
+            // Si le temps est écoulé, on arrête le timer
+            if (newTimeLeft <= 0) {
                 clearInterval(timer);
             }
         }, 1000);
 
+        // Nettoyer l'intervalle lors du démontage du composant
         return () => clearInterval(timer);
     }, []);
-
-    // Mettre à jour le titre de la page
-    useEffect(() => {
-        document.title = 'Maintenance en cours - SEEG TalentSource';
-        
-        // Rediriger vers la page d'accueil si la maintenance est terminée
-        if (timeLeft <= 0) {
-            const timer = setTimeout(() => {
-                window.location.href = '/';
-            }, 5000); // Rediriger après 5 secondes
-            
-            return () => clearTimeout(timer);
-        }
-    }, [timeLeft]);
 
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -70,27 +58,16 @@ const Maintenance = () => {
                 <div className="p-6 sm:p-8 md:p-10">
                     <div className="text-center space-y-4 sm:space-y-6">
                         <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-50 text-blue-600">
-                            <svg className="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 sm:w-10 sm:h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
-                            🚧 Maintenance en cours
-                        </h1>
-
-<p className="text-gray-600 text-sm sm:text-base">
-                            Notre site est actuellement en cours de maintenance programmée.
-                            {timeLeft > 0 ? (
-                                <>
-                                    La maintenance est prévue jusqu'à 00h40.
-                                    <br />
-                                    Temps restant :
-                                </>
-                            ) : (
-                                "La maintenance est en cours et se terminera bientôt."
-                            )}
-                        </p>
+                        <div className="space-y-2">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Maintenance en cours</h1>
+                            <p className="text-gray-600">
+                                {MAINTENANCE_MESSAGE}
+                            </p>
+                        </div>
 
                         {timeLeft > 0 && (
                             <div className="py-2 sm:py-4">
@@ -102,16 +79,9 @@ const Maintenance = () => {
                             </div>
                         )}
 
-                        <p className="text-xs sm:text-sm text-gray-500">
-                            Nous nous excusons pour la gêne occasionnée. Merci de votre patience.
-                        </p>
-
-                        <div className="pt-4 border-t border-gray-100">
-                            <p className="text-xs text-gray-400">
-                                Si vous avez besoin d'assistance, veuillez nous contacter à{' '}
-                                <a href="mailto:support@seeg-talentsource.com" className="text-blue-600 hover:underline">
-                                    support@seeg-talentsource.com
-                                </a>
+                        <div className="pt-4">
+                            <p className="text-sm text-gray-500">
+                                Merci de votre patience. Nous serons de retour très bientôt.
                             </p>
                         </div>
                     </div>

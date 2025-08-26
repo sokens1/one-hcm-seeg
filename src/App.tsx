@@ -16,6 +16,7 @@ import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterR
 import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
 import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecruiterReadRoute";
 import { Loader2 } from 'lucide-react';
+import { MAINTENANCE_MODE, MAINTENANCE_HOURS } from '@/config/maintenance';
 import './index.css';
 
 //Maintenance page
@@ -117,20 +118,49 @@ const LoadingFallback = () => (
   </div>
 );
 
+// Vérifier si nous sommes en période de maintenance
+const isMaintenanceTime = () => {
+  if (MAINTENANCE_MODE) return true;
+  
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  
+  return (
+    (currentHour === MAINTENANCE_HOURS.start.hour && 
+     currentMinute >= MAINTENANCE_HOURS.start.minute) ||
+    (currentHour > MAINTENANCE_HOURS.start.hour && 
+     currentHour < MAINTENANCE_HOURS.end.hour) ||
+    (currentHour === MAINTENANCE_HOURS.end.hour && 
+     currentMinute < MAINTENANCE_HOURS.end.minute)
+  );
+};
+
+// Créer un wrapper pour les routes protégées par maintenance
+const withMaintenanceCheck = (element: React.ReactNode) => {
+  if (isMaintenanceTime() && window.location.pathname !== '/maintenance') {
+    window.location.href = '/maintenance';
+    return <LoadingFallback />;
+  }
+  return element;
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <TooltipProvider>
           <Suspense fallback={<LoadingFallback />}>
-            <RouterProvider
-              router={router}
-            />
+            {withMaintenanceCheck(
+              <>
+                <RouterProvider router={router} />
+                <Toaster />
+                <Sonner />
+              </>
+            )}
           </Suspense>
-          <Toaster />
-          <Sonner />
-        </AuthProvider>
-      </TooltipProvider>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
