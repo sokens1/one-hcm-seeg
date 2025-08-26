@@ -69,6 +69,7 @@ const ProfileTab = ({ application }: { application: Application }) => {
             <InfoRow icon={User} label="Prénom" value={user?.first_name} />
             <InfoRow icon={User} label="Nom" value={user?.last_name} />
             <InfoRow icon={Mail} label="Email" value={user?.email} />
+            <InfoRow icon={User} label="Matricule" value={user?.matricule} />
           </div>
           <div className="space-y-3 sm:space-y-4">
             <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />

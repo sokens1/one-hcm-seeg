@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth, type SignUpMetadata } from "@/hooks/useAuth";
 import { CandidateLayout } from "@/components/layout/CandidateLayout";
@@ -44,18 +45,7 @@ export default function CandidateSettings() {
     }
   }, [isAuthenticated, isLoading, navigate]);
 
-  useEffect(() => {
-    if (!user) return;
-    const meta = (user.user_metadata as Partial<SignUpMetadata>) || {};
-    setFirstName(meta.first_name ?? "");
-    setLastName(meta.last_name ?? "");
-    setMatricule(meta.matricule ?? "");
-
-    // Charger les données du profil candidat
-    loadCandidateProfile();
-  }, [user]);
-
-  const loadCandidateProfile = async () => {
+  const loadCandidateProfile = useCallback(async () => {
     if (!user?.id) return;
 
     try {
@@ -64,7 +54,7 @@ export default function CandidateSettings() {
       // Récupérer les données utilisateur de base
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('phone')
+        .select('phone, matricule')
         .eq('id', user.id)
         .maybeSingle();
 
@@ -72,6 +62,10 @@ export default function CandidateSettings() {
         console.warn('Erreur lors du chargement des données utilisateur:', userError);
       } else if (userData) {
         setPhone(userData.phone || "");
+        // Priorité : DB > métadonnées > vide
+        const dbMatricule = userData.matricule || "";
+        const metaMatricule = (user.user_metadata as any)?.matricule || "";
+        setMatricule(dbMatricule || metaMatricule);
       }
 
       // Récupérer les données du profil candidat
@@ -95,7 +89,18 @@ export default function CandidateSettings() {
     } finally {
       setLoadingProfile(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user) return;
+    const meta = (user.user_metadata as Partial<SignUpMetadata>) || {};
+    setFirstName(meta.first_name ?? "");
+    setLastName(meta.last_name ?? "");
+    // Ne pas définir le matricule depuis les métadonnées, il sera chargé depuis la DB
+    
+    // Charger les données du profil candidat
+    loadCandidateProfile();
+  }, [user, loadCandidateProfile]);
 
   if (isLoading) {
     return <FullPageSpinner text="Chargement des paramètres..." />;
@@ -119,7 +124,7 @@ export default function CandidateSettings() {
       });
       if (authError) throw authError;
 
-      // Mettre à jour le téléphone dans la table users
+      // Mettre à jour le téléphone dans la table users (le matricule est géré via auth)
       if (phone.trim()) {
         const { error: userError } = await supabase
           .from('users')
@@ -158,6 +163,9 @@ export default function CandidateSettings() {
       }
 
       toast({ title: "Profil mis à jour", description: "Toutes vos informations ont été enregistrées." });
+      
+      // Rediriger vers le tableau de bord après sauvegarde réussie
+      navigate('/candidate/dashboard');
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Échec de la mise à jour";
       toast({ variant: "destructive", title: "Erreur", description: message });
