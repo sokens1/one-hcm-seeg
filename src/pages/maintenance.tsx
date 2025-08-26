@@ -5,12 +5,21 @@ const Maintenance = () => {
     const [timeLeft, setTimeLeft] = useState(40 * 60); // 40 minutes en secondes
 
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            document.title = 'Maintenance en cours - SEEG TalentSource';
+        }
+    }, []);
+
+    useEffect(() => {
+        if (timeLeft === 0) return;
+
         const timer = setInterval(() => {
-            setTimeLeft(prevTime => Math.max(0, prevTime - 1));
+            setTimeLeft(prev => Math.max(0, prev - 1));
         }, 1000);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [timeLeft]);
+
 
     // Mettre à jour le titre de la page
     useEffect(() => {
