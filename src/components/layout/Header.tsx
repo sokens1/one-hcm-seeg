@@ -8,7 +8,7 @@ import { isPreLaunch } from "@/utils/launchGate";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 
 export function Header() {
@@ -19,6 +19,7 @@ export function Header() {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const isAuthenticated = !!user;
   const preLaunch = isPreLaunch();
+  const [showMaintenanceBanner, setShowMaintenanceBanner] = useState(false);
 
   // Roles are handled in FR ('candidat', 'recruteur') by useAuth; keep helpers as source of truth
 
@@ -38,9 +39,34 @@ export function Header() {
     }
   };
 
+  useEffect(() => {
+    // Vérifier si nous sommes dans la plage de maintenance
+    const now = new Date();
+    const maintenanceStart = new Date();
+    maintenanceStart.setHours(19, 5, 6); // 19h56
+    const maintenanceEnd = new Date();
+    maintenanceEnd.setHours(24, 40, 0); // 24h40
+
+    if (now >= maintenanceStart && now <= maintenanceEnd) {
+      setShowMaintenanceBanner(true);
+    }
+  }, []);
+
   return (
     <>
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        {showMaintenanceBanner && (
+          <div className="bg-red-700 text-yellow-400 text-center mb-2">
+            <div className="bg-white/10 py-2 px-4">
+              <div className="container mx-auto">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                  <span className="font-bold whitespace-nowrap">MISE À JOUR :</span>
+                  <span className="text-white text-sm sm:text-base">Une indisponibilité du site est prévue de 00h00 à 00h40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="container mx-auto px-2 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-white flex items-center justify-center">
@@ -63,7 +89,7 @@ export function Header() {
                     </Button>
                   </Link>
                 )}
-                                <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
+                <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="ghost" size="icon" className="relative rounded-full">
                       <Bell className="h-5 w-5" />
@@ -89,9 +115,8 @@ export function Header() {
                           notifications.map((notif) => (
                             <div
                               key={notif.id}
-                              className={`p-2 rounded-lg mb-1 cursor-pointer transition-colors ${
-                                !notif.read ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-muted'
-                              }`}
+                              className={`p-2 rounded-lg mb-1 cursor-pointer transition-colors ${!notif.read ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-muted'
+                                }`}
                               onClick={() => {
                                 if (!notif.read) {
                                   markAsRead(notif.id);
