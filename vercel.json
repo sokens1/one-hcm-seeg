@@ -10,11 +10,18 @@
       "source": "/favicon.ico",
       "destination": "/favicon.svg",
       "permanent": true
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/maintenance",
+      "status": 200
     },
     {
-      "source": "/((?!maintenance).*)",
-      "destination": "/maintenance",
-      "permanent": false
+      "src": "/maintenance",
+      "dest": "/maintenance",
+      "status": 200
     }
   ]
 }
