@@ -33,6 +33,7 @@ export interface CandidateProfile {
   gender: string;
   date_of_birth: string;
   current_position: string;
+  years_experience: number | string;
   address: string;
   linkedin_profile: string;
   portfolio_url: string;
