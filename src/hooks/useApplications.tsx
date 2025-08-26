@@ -172,6 +172,12 @@ export function useApplications() {
         current_position?: string;
         date_of_birth?: string;
         years_of_experience?: string;
+        address?: string;
+      };
+      // Données utilisateur de base
+      user_data?: {
+        matricule?: string;
+        phone?: string;
       };
     }) => {
       if (!user) throw new Error("User not authenticated");
@@ -211,6 +217,29 @@ export function useApplications() {
         throw new Error(error.message);
       }
 
+      // Sauvegarder les données utilisateur de base si fournies
+      if (applicationData.user_data && user?.id) {
+        const userUpdates: { [key: string]: unknown } = {};
+        
+        if (applicationData.user_data.matricule) {
+          userUpdates.matricule = applicationData.user_data.matricule;
+        }
+        if (applicationData.user_data.phone) {
+          userUpdates.phone = applicationData.user_data.phone;
+        }
+
+        if (Object.keys(userUpdates).length > 0) {
+          const { error: userError } = await supabase
+            .from('users')
+            .update(userUpdates)
+            .eq('id', user.id);
+
+          if (userError) {
+            console.warn('Erreur lors de la mise à jour des données utilisateur:', userError);
+          }
+        }
+      }
+
       // Sauvegarder les données de profil candidat si fournies
       if (applicationData.profile_data && user?.id) {
         const profilePayload: { [key: string]: unknown } = { user_id: user.id };
@@ -227,6 +256,9 @@ export function useApplications() {
         }
         if (applicationData.profile_data.date_of_birth) {
           profilePayload.birth_date = applicationData.profile_data.date_of_birth;
+        }
+        if (applicationData.profile_data.address) {
+          profilePayload.address = applicationData.profile_data.address;
         }
 
         // Ne tenter l'upsert que si on a plus que user_id

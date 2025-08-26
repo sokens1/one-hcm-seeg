@@ -18,12 +18,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useProfileCompletion } from "@/hooks/useProfileCompletion";
 
 export function CandidateHeader() {
   const { user, signOut: logout } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const { status: profileStatus } = useProfileCompletion();
   const [notificationOpen, setNotificationOpen] = useState(false);
 
   const handleLogout = () => {
@@ -51,9 +53,9 @@ export function CandidateHeader() {
           <PopoverTrigger asChild>
             <Button variant="ghost" size="icon" className="relative rounded-full">
               <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
+              {(unreadCount > 0 || !profileStatus.isComplete) && (
                 <Badge className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0 text-xs">
-                  {unreadCount}
+                  {unreadCount + (!profileStatus.isComplete ? 1 : 0)}
                 </Badge>
               )}
             </Button>
@@ -69,6 +71,29 @@ export function CandidateHeader() {
                 )}
               </div>
               <div className="max-h-96 overflow-y-auto">
+                {/* Notification de profil incomplet */}
+                {!profileStatus.isComplete && (
+                  <div
+                    className="p-2 rounded-lg mb-1 cursor-pointer transition-colors bg-orange-50 hover:bg-orange-100 border border-orange-200"
+                    onClick={() => {
+                      navigate('/candidate/settings');
+                      setNotificationOpen(false);
+                    }}
+                  >
+                    <div className="flex items-start">
+                      <div className="h-2 w-2 rounded-full bg-orange-500 mr-3 mt-1.5 flex-shrink-0" />
+                      <div className="flex-grow">
+                        <p className="font-semibold text-sm">Profil incomplet</p>
+                        <p className="text-xs text-muted-foreground">{profileStatus.message}</p>
+                        <p className="text-xs text-orange-600 mt-1">
+                          Cliquez pour compléter ({profileStatus.completionPercentage}%)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Notifications normales */}
                 {notifications.length > 0 ? (
                   notifications.map((notif) => (
                     <div
@@ -98,7 +123,7 @@ export function CandidateHeader() {
                       </div>
                     </div>
                   ))
-                ) : (
+                ) : !profileStatus.isComplete ? null : (
                   <p className="text-center text-sm text-muted-foreground py-4">
                     Aucune notification pour le moment.
                   </p>
