@@ -248,7 +248,6 @@ export function Chatbot({ className }: ChatbotProps) {
                       </div>
                       <div className="text-left">
                         <p className="font-medium">Envoyer un email</p>
-                        {/* <p className="text-xs opacity-70">support@cnx4-0.com</p> */}
                       </div>
                     </Button>
                   </div>
