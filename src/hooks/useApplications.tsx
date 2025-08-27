@@ -33,6 +33,7 @@ export interface CandidateProfile {
   gender: string;
   date_of_birth: string;
   current_position: string;
+  years_experience: number | string;
   address: string;
   linkedin_profile: string;
   portfolio_url: string;
@@ -171,6 +172,12 @@ export function useApplications() {
         current_position?: string;
         date_of_birth?: string;
         years_of_experience?: string;
+        address?: string;
+      };
+      // Données utilisateur de base
+      user_data?: {
+        matricule?: string;
+        phone?: string;
       };
     }) => {
       if (!user) throw new Error("User not authenticated");
@@ -210,6 +217,29 @@ export function useApplications() {
         throw new Error(error.message);
       }
 
+      // Sauvegarder les données utilisateur de base si fournies
+      if (applicationData.user_data && user?.id) {
+        const userUpdates: { [key: string]: unknown } = {};
+        
+        if (applicationData.user_data.matricule) {
+          userUpdates.matricule = applicationData.user_data.matricule;
+        }
+        if (applicationData.user_data.phone) {
+          userUpdates.phone = applicationData.user_data.phone;
+        }
+
+        if (Object.keys(userUpdates).length > 0) {
+          const { error: userError } = await supabase
+            .from('users')
+            .update(userUpdates)
+            .eq('id', user.id);
+
+          if (userError) {
+            console.warn('Erreur lors de la mise à jour des données utilisateur:', userError);
+          }
+        }
+      }
+
       // Sauvegarder les données de profil candidat si fournies
       if (applicationData.profile_data && user?.id) {
         const profilePayload: { [key: string]: unknown } = { user_id: user.id };
@@ -220,12 +250,15 @@ export function useApplications() {
         if (applicationData.profile_data.current_position) {
           profilePayload.current_position = applicationData.profile_data.current_position;
         }
-        // Assurer que years_experience est une chaîne, même si vide, pour correspondre au type de la DB
+        // Assurer que years_experience est un nombre pour correspondre au type de la DB
         if (applicationData.profile_data.years_of_experience !== undefined) {
-          profilePayload.years_experience = String(applicationData.profile_data.years_of_experience);
+          profilePayload.years_experience = parseInt(applicationData.profile_data.years_of_experience) || 0;
         }
         if (applicationData.profile_data.date_of_birth) {
           profilePayload.birth_date = applicationData.profile_data.date_of_birth;
+        }
+        if (applicationData.profile_data.address) {
+          profilePayload.address = applicationData.profile_data.address;
         }
 
         // Ne tenter l'upsert que si on a plus que user_id
@@ -441,7 +474,10 @@ export function useRecruiterApplications(jobOfferId?: string) {
     const applications = (entries || []).map((app: any) => ({
       ...app.application_details,
       job_offers: app.job_offer_details,
-      users: app.candidate_details,
+      users: {
+        ...app.candidate_details,
+        candidate_profiles: app.candidate_details?.candidate_profiles
+      },
     }));
 
     return applications as Application[];

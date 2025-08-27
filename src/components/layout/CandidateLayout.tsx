@@ -26,6 +26,7 @@ import { ApplicationTracking } from "@/components/candidate/ApplicationTracking"
 import { CandidateProfile } from "@/components/candidate/CandidateProfile";
 import { CandidateSettings } from "@/components/candidate/CandidateSettings";
 import { Chatbot } from "@/components/ui/Chatbot";
+import { ProfileCompletionBanner } from "@/components/profile/ProfileCompletionBanner";
 
 type ViewType = "dashboard" | "jobs" | "applications" | "profile" | "settings" | "tracking";
 
@@ -203,6 +204,7 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
             <div className="flex flex-1 min-h-0">
               <CandidateSidebar />
               <main className="flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-hidden">
+                <ProfileCompletionBanner />
                 {children ? children : <CandidateMainContent />}
               </main>
             </div>

@@ -162,3 +162,6 @@ Si vous ne gérez pas la DB locale et souhaitez appliquer uniquement la RPC côt
 - Vérification matricule ne répond pas: testez la RPC via `curl` comme ci-dessus. Vérifiez la présence de la table `public.seeg_agents` et le type BIGINT de `matricule`.
 - 401/403 côté RPC: vérifiez `VITE_SUPABASE_ANON_KEY` et les droits `GRANT EXECUTE` sur la fonction.
 
+
+
+ <!-- Pour activer/desactiver la maintenance il suffit de modifier la constante MAINTENANCE_MODE dans le fichier src/config/maintenance.ts -->

@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X } from "lucide-react";
+import { EvaluationDashboard } from "@/components/evaluation/EvaluationDashboard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
@@ -35,7 +36,7 @@ const getBadgeVariant = (status: Application['status']) => {
 };
 
 const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, label: string, value?: string | null, isLink?: boolean }) => {
-  if (!value) return null;
+  if (value === null || value === undefined || value === '') return null;
   return (
     <div className="flex items-start gap-2 sm:gap-3">
       <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
@@ -69,15 +70,16 @@ const ProfileTab = ({ application }: { application: Application }) => {
             <InfoRow icon={User} label="Prénom" value={user?.first_name} />
             <InfoRow icon={User} label="Nom" value={user?.last_name} />
             <InfoRow icon={Mail} label="Email" value={user?.email} />
+            <InfoRow icon={User} label="Matricule" value={(user as any)?.matricule} />
           </div>
           <div className="space-y-3 sm:space-y-4">
             <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />
-            <InfoRow icon={Calendar} label="Date de naissance" value={profile?.date_of_birth ? format(new Date(profile.date_of_birth), 'PPP', { locale: fr }) : undefined} />
+            <InfoRow icon={Calendar} label="Date de naissance" value={profile?.birth_date ? format(new Date(profile.birth_date), 'PPP', { locale: fr }) : undefined} />
             <InfoRow icon={Info} label="Sexe" value={profile?.gender} />
           </div>
           <div className="space-y-3 sm:space-y-4">
             <InfoRow icon={Briefcase} label="Poste actuel" value={profile?.current_position} />
-            <InfoRow icon={Briefcase} label="Années d'expérience" value={profile?.years_of_experience?.toString()} />
+            <InfoRow icon={Briefcase} label="Années d'expérience" value={profile?.years_experience !== undefined ? String(profile.years_experience) : undefined} />
             <InfoRow icon={MapPin} label="Adresse" value={profile?.address} />
           </div>
         </div>
@@ -383,17 +385,14 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
   );
 };
 
-const EvaluationProtocol = () => {
+const EvaluationProtocol = ({ candidateName, jobTitle, applicationId, onStatusChange }: { candidateName: string, jobTitle: string, applicationId: string, onStatusChange: (status: 'incubation' | 'embauche' | 'refuse') => void }) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Protocole 1</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">Le module Evaluation est en cours d'intégration.</p>
-        {/* The original structure will be restored here once defined */}
-      </CardContent>
-    </Card>
+    <EvaluationDashboard 
+      candidateName={candidateName}
+      jobTitle={jobTitle}
+      applicationId={applicationId}
+      onStatusChange={onStatusChange}
+    />
   );
 };
 
@@ -515,7 +514,7 @@ export default function CandidateAnalysis() {
           </div>
         </header>
 
-        <Tabs defaultValue="info" className="w-full">
+        <Tabs defaultValue="evaluation" className="w-full">
           <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
             <TabsTrigger value="info" className="px-2 sm:px-4">Informations Candidat</TabsTrigger>
             <TabsTrigger value="evaluation" className="px-2 sm:px-4">Évaluation</TabsTrigger>
@@ -529,25 +528,12 @@ export default function CandidateAnalysis() {
             </div>
           </TabsContent>
           <TabsContent value="evaluation" className="mt-4 sm:mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-              <div className="lg:col-span-2">
-                <EvaluationProtocol />
-              </div>
-              <div className="space-y-6">
-                {isRecruiter && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Actions</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <Button className="w-full" onClick={() => handleStatusChange('incubation')}>Déplacer en Incubation</Button>
-                      <Button className="w-full" onClick={() => handleStatusChange('embauche')}>Engager</Button>
-                      <Button variant="destructive" className="w-full" onClick={() => handleStatusChange('refuse')}>Refuser</Button>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </div>
+            <EvaluationProtocol 
+              candidateName={candidateName}
+              jobTitle={jobTitle || 'Poste non spécifié'}
+              applicationId={application.id}
+              onStatusChange={handleStatusChange}
+            />
           </TabsContent>
         </Tabs>
       </div>

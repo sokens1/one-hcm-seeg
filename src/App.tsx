@@ -16,6 +16,11 @@ import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterR
 import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
 import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecruiterReadRoute";
 import { Loader2 } from 'lucide-react';
+import { MAINTENANCE_MODE, MAINTENANCE_HOURS } from '@/config/maintenance';
+import './index.css';
+
+//Maintenance page
+const Maintenance = lazy(() => import("./pages/maintenance"));
 
 // Lazily load page components
 const Index = lazy(() => import("./pages/Index"));
@@ -63,6 +68,8 @@ const queryClient = new QueryClient({
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
+      {/* Maintenance page */}
+      <Route path="maintenance" element={<Maintenance />} />
       {/* Home and Candidate Routes */}
       <Route index element={<Index />} />
       <Route path="auth" element={<Auth />} />
@@ -111,20 +118,74 @@ const LoadingFallback = () => (
   </div>
 );
 
+// Vérifier si nous sommes en période de maintenance
+const isMaintenanceTime = () => {
+  // Si MAINTENANCE_MODE est défini, on suit strictement cette valeur
+  if (MAINTENANCE_MODE !== undefined) {
+    console.log(`Maintenance ${MAINTENANCE_MODE ? 'activée' : 'désactivée'} manuellement`);
+    return MAINTENANCE_MODE;
+  }
+  
+  // Vérification de la plage horaire
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  
+  // Calcul en minutes depuis minuit pour faciliter la comparaison
+  const currentTimeInMinutes = currentHour * 60 + currentMinute;
+  const startTimeInMinutes = MAINTENANCE_HOURS.start.hour * 60 + MAINTENANCE_HOURS.start.minute;
+  const endTimeInMinutes = MAINTENANCE_HOURS.end.hour * 60 + MAINTENANCE_HOURS.end.minute;
+  
+  // Déterminer si on est dans la plage de maintenance
+  let isInMaintenanceWindow = false;
+  
+  if (startTimeInMinutes < endTimeInMinutes) {
+    // Plage normale dans la même journée (ex: 14h-16h)
+    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes && 
+                           currentTimeInMinutes < endTimeInMinutes;
+  } else {
+    // Plage qui passe minuit (ex: 22h-02h)
+    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes || 
+                           currentTimeInMinutes < endTimeInMinutes;
+  }
+  
+  return isInMaintenanceWindow;
+};
+
+// Créer un wrapper pour les routes protégées par maintenance
+const withMaintenanceCheck = (element: React.ReactNode) => {
+  const isMaintenance = isMaintenanceTime();
+  const isOnMaintenancePage = window.location.pathname === '/maintenance';
+  
+  if (isMaintenance && !isOnMaintenancePage) {
+    // Rediriger vers la page de maintenance si nécessaire
+    window.location.href = '/maintenance';
+    return <LoadingFallback />;
+  } else if (!isMaintenance && isOnMaintenancePage) {
+    // Rediriger vers la page d'accès si on est sur la page de maintenance mais qu'elle n'est plus nécessaire
+    window.location.href = '/';
+    return <LoadingFallback />;
+  }
+  
+  return element;
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <TooltipProvider>
           <Suspense fallback={<LoadingFallback />}>
-            <RouterProvider
-              router={router}
-            />
+            {withMaintenanceCheck(
+              <>
+                <RouterProvider router={router} />
+                <Toaster />
+                <Sonner />
+              </>
+            )}
           </Suspense>
-          <Toaster />
-          <Sonner />
-        </AuthProvider>
-      </TooltipProvider>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
