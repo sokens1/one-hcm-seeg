@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[] }) {
   const [timeLeft, setTimeLeft] = useState<string>('');
-  const [endDate] = useState<Date>(new Date('2025-08-31'));
+  const [endDate] = useState<Date>(new Date('2025-09-01'));
 
   // Toujours en mode "during" - compte à rebours jusqu'au 31 août
 
