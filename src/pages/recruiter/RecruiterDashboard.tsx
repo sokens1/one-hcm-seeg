@@ -7,15 +7,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useAuth } from "@/hooks/useAuth";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
+import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
 
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
+import { useState } from 'react';
 
 export default function RecruiterDashboard() {
   const navigate = useNavigate();
   const { stats, activeJobs, isLoading, error } = useRecruiterDashboard();
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { isRecruiter } = useAuth();
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   const handleEditJob = (jobId: string) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
@@ -266,7 +269,11 @@ export default function RecruiterDashboard() {
                     </div>
                   ))}
                   <div className="pt-2">
-                    <Button variant="link" className="p-0 h-auto text-xs sm:text-sm">
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto text-xs sm:text-sm"
+                      onClick={() => setIsHistoryModalOpen(true)}
+                    >
                       Voir tout l'historique
                     </Button>
                   </div>
@@ -277,6 +284,12 @@ export default function RecruiterDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Activity History Modal */}
+        <ActivityHistoryModal 
+          isOpen={isHistoryModalOpen}
+          onClose={() => setIsHistoryModalOpen(false)}
+        />
       </div>
     </RecruiterLayout>
   );

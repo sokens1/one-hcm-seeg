@@ -514,7 +514,7 @@ export default function CandidateAnalysis() {
           </div>
         </header>
 
-        <Tabs defaultValue="evaluation" className="w-full">
+        <Tabs defaultValue="info" className="w-full">
           <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
             <TabsTrigger value="info" className="px-2 sm:px-4">Informations Candidat</TabsTrigger>
             <TabsTrigger value="evaluation" className="px-2 sm:px-4">Évaluation</TabsTrigger>
