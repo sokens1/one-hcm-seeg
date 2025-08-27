@@ -137,7 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         channelRef.current = null;
       }
     };
-  }, []);
+  }, [user?.id]);
 
   // Remove this redundant useEffect as role is already fetched in the main effect above
 
@@ -335,6 +335,7 @@ export function useAuth() {
         isCandidate: false,
         isRecruiter: false,
         isAdmin: false,
+        isObserver: false,
       } as AuthContextType;
     }
     throw new Error('useAuth must be used within an AuthProvider');

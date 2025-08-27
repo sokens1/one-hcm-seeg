@@ -22,7 +22,6 @@ export default function CandidateSettings() {
 
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
-  const [matricule, setMatricule] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [saving, setSaving] = useState(false);
@@ -54,7 +53,7 @@ export default function CandidateSettings() {
       // Récupérer les données utilisateur de base
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('phone, matricule')
+        .select('phone')
         .eq('id', user.id)
         .maybeSingle();
 
@@ -62,10 +61,6 @@ export default function CandidateSettings() {
         console.warn('Erreur lors du chargement des données utilisateur:', userError);
       } else if (userData) {
         setPhone(userData.phone || "");
-        // Priorité : DB > métadonnées > vide
-        const dbMatricule = userData.matricule || "";
-        const metaMatricule = (user.user_metadata as any)?.matricule || "";
-        setMatricule(dbMatricule || metaMatricule);
       }
 
       // Récupérer les données du profil candidat
@@ -97,7 +92,6 @@ export default function CandidateSettings() {
     setFirstName(meta.first_name ?? "");
     setLastName(meta.last_name ?? "");
     // Ne pas définir le matricule depuis les métadonnées, il sera chargé depuis la DB
-    
     // Charger les données du profil candidat
     loadCandidateProfile();
   }, [user, loadCandidateProfile]);
@@ -119,7 +113,6 @@ export default function CandidateSettings() {
         data: {
           first_name: firstName,
           last_name: lastName,
-          matricule: matricule || null,
         },
       });
       if (authError) throw authError;
@@ -227,26 +220,21 @@ export default function CandidateSettings() {
                 <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
               </div>
             </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-muted-foreground" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="phone">Téléphone</Label>
+                <Input 
+                  id="phone" 
+                  type="tel" 
+                  value={phone} 
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Ex: +241 01 23 45 67"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
                 <Input id="email" value={user?.email || ''} readOnly />
               </div>
-            </div>
-            <div>
-              <Label htmlFor="matricule">Matricule</Label>
-              <Input id="matricule" value={matricule} onChange={(e) => setMatricule(e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="phone">Téléphone</Label>
-              <Input 
-                id="phone" 
-                type="tel" 
-                value={phone} 
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Ex: +241 01 23 45 67"
-              />
             </div>
           </CardContent>
         </Card>

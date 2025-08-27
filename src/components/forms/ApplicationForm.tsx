@@ -127,12 +127,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const [{ data: dbUser, error: userError }, { data: profile, error: profileError }] = await Promise.all([
           supabase
             .from('users')
-            .select('first_name, last_name, email, date_of_birth, matricule, phone')
+            .select('first_name, last_name, email, matricule, phone')
             .eq('id', user.id)
             .maybeSingle(),
           supabase
             .from('candidate_profiles')
-            .select('current_position, gender, years_experience, address')
+            .select('current_position, gender, years_experience, address, birth_date')
             .eq('user_id', user.id)
             .maybeSingle(),
         ]);
@@ -160,7 +160,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           email: prev.email || dbUser?.email || user.email || '',
           matricule: prev.matricule || dbUser?.matricule || '',
           phone: prev.phone || dbUser?.phone || '',
-          dateOfBirth: prev.dateOfBirth || (dbUser?.date_of_birth ? new Date(dbUser.date_of_birth) : null),
+          dateOfBirth: prev.dateOfBirth || (profile?.birth_date ? new Date(profile.birth_date) : null),
           currentPosition: prev.currentPosition || profile?.current_position || '',
           gender: prev.gender || profile?.gender || '',
           yearsOfExperience: prev.yearsOfExperience || (profile?.years_experience ? String(profile.years_experience) : ''),
