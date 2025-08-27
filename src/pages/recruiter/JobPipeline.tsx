@@ -20,7 +20,7 @@ interface Candidate {
   score: number;
   applicationDate: string;
   email: string;
-  address?: string;
+
   gender?: string;
   birthDate?: string;
 }
@@ -63,7 +63,7 @@ export default function JobPipeline() {
       score: 0, // TODO: Calculate from evaluations
       applicationDate: new Date(app.created_at).toISOString().split('T')[0],
       email: app.users?.email || '',
-      address: 'Non disponible', // L'adresse n'est pas dans candidate_profiles
+
       gender: (app.users as any)?.sexe,
       birthDate: app.users?.date_of_birth
     };
@@ -167,17 +167,17 @@ export default function JobPipeline() {
                                 <p className="text-xs sm:text-sm text-muted-foreground">
                                   Candidature : {new Date(candidate.applicationDate).toLocaleDateString('fr-FR')}
                                 </p>
-                                <p className="text-xs sm:text-sm text-muted-foreground truncate" title={candidate.address}>
-                                  {candidate.address}
-                                </p>
                               </div>
                               
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs sm:text-sm text-muted-foreground">Score</span>
-                                <Badge variant="outline" className="text-xs sm:text-sm">
-                                  {candidate.score}/100
-                                </Badge>
-                              </div>
+                              {/* Afficher le score uniquement pour les candidats évalués (incubés, embauchés, refusés) */}
+                              {candidate.status !== 'candidature' && (
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs sm:text-sm text-muted-foreground">Score</span>
+                                  <Badge variant="outline" className="text-xs sm:text-sm">
+                                    {candidate.score}/100
+                                  </Badge>
+                                </div>
+                              )}
                               
                               <Button 
                                 size="sm" 
