@@ -137,7 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         channelRef.current = null;
       }
     };
-  }, []);
+  }, [user?.id]);
 
   // Remove this redundant useEffect as role is already fetched in the main effect above
 
