@@ -232,7 +232,9 @@ export function Chatbot({ className }: ChatbotProps) {
                     <Button
                       onClick={handleCallSupport}
                       variant="outline"
+                      
                       className="w-full h-12 sm:h-14 border-2 py-3 sm:py-4 border-green-200 hover:bg-green-50 text-green-700 justify-start gap-3 sm:gap-4"
+
                       size="lg"
                     >
                       <div className="h-7 w-7 sm:h-8 sm:w-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -241,6 +243,7 @@ export function Chatbot({ className }: ChatbotProps) {
                       <div className="text-left">
                         <p className="font-medium text-sm sm:text-base">Appeler le support</p>
                         <p className="text-[11px] sm:text-xs opacity-70">+241 076402886 | <span className="text-[10px] sm:text-[11px]">de 8h à 18h</span></p>
+
                       </div>
                     </Button>
                     
@@ -248,7 +251,7 @@ export function Chatbot({ className }: ChatbotProps) {
                       onClick={handleSendEmail}
                       variant="outline"
                       className="w-full h-12 sm:h-14 py-3 sm:py-4 border-2 border-purple-200 hover:bg-purple-50 text-purple-700 justify-start gap-3 sm:gap-4"
-                      size="lg"
+
                     >
                       <div className="h-7 w-7 sm:h-8 sm:w-8 bg-purple-100 rounded-full flex items-center justify-center">
                         <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
@@ -256,6 +259,7 @@ export function Chatbot({ className }: ChatbotProps) {
                       <div className="text-left">
                         <p className="font-medium text-sm sm:text-base">Envoyer un email</p>
                         <p className="text-[11px] sm:text-xs opacity-70">support@seeg-talentsource.com | <span className="text-[10px] sm:text-[11px]">de 8h à 22h</span></p>
+
                       </div>
                     </Button>
                   </div>
