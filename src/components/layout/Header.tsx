@@ -47,7 +47,7 @@ export function Header() {
     const maintenanceEnd = new Date();
     maintenanceEnd.setHours(24, 40, 0); // 24h40
 
-    if (now >= maintenanceStart && now <= maintenanceEnd) {
+    if (now >= maintenanceStart && now <= maintenanceEnd) { 
       setShowMaintenanceBanner(true);
     }
   }, []);
