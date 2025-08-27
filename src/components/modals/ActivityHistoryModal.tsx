@@ -7,6 +7,7 @@ import { Loader2, X, Calendar, User, Briefcase } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from 'react-router-dom';
 
 interface Activity {
   id: string;
@@ -26,6 +27,7 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
   isOpen,
   onClose
 }) => {
+  const navigate = useNavigate();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,13 +43,28 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
     setError(null);
 
     try {
+      console.log('[ACTIVITY DEBUG] Calling get_recruiter_activities with:', {
+        p_limit: ITEMS_PER_PAGE,
+        p_offset: (pageNum - 1) * ITEMS_PER_PAGE
+      });
+      
       const { data, error: fetchError } = await supabase
         .rpc('get_recruiter_activities', {
           p_limit: ITEMS_PER_PAGE,
           p_offset: (pageNum - 1) * ITEMS_PER_PAGE
         });
 
-      if (fetchError) throw fetchError;
+      console.log('[ACTIVITY DEBUG] Response:', { data, error: fetchError });
+
+      if (fetchError) {
+        console.error('[ACTIVITY DEBUG] Error details:', fetchError);
+        // Si la fonction RPC n'existe pas (404), afficher un message informatif
+        if (fetchError.message?.includes('404') || fetchError.code === 'PGRST202') {
+          setError('Fonction d\'historique en cours de configuration. Veuillez réessayer plus tard.');
+          return;
+        }
+        throw fetchError;
+      }
 
       const newActivities = data || [];
       
@@ -103,16 +120,11 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl h-[80vh] flex flex-col">
+      <DialogContent className="max-w-2xl h-[80vh] flex flex-col fixed right-4 top-1/2 -translate-y-1/2 translate-x-full data-[state=open]:translate-x-0 data-[state=closed]:translate-x-full transition-transform duration-300 ease-in-out">
         <DialogHeader className="flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-semibold">
-              Historique complet des activités
-            </DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-xl font-semibold">
+            Historique complet des activités
+          </DialogTitle>
           <p className="text-sm text-muted-foreground">
             Toutes les activités de recrutement récentes
           </p>
@@ -143,12 +155,12 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
                     {activities.map((activity, index) => (
                       <div
                         key={activity.id}
-                        className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                        className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
+                        onClick={() => {
+                          onClose();
+                          navigate('/recruiter/dashboard');
+                        }}
                       >
-                        <div className="flex-shrink-0 mt-1">
-                          {getActivityIcon(activity.activity_type)}
-                        </div>
-                        
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-2">
                             <p className="text-sm font-medium text-foreground">
@@ -167,17 +179,17 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
                           
                           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-muted-foreground">
                             <span className="font-medium">
-                              📋 {activity.job_title}
+                              {activity.job_title}
                             </span>
                             {activity.candidate_name && (
                               <>
                                 <span className="hidden sm:inline">•</span>
-                                <span>👤 {activity.candidate_name}</span>
+                                <span>{activity.candidate_name}</span>
                               </>
                             )}
                             <span className="hidden sm:inline">•</span>
                             <span>
-                              📅 {format(new Date(activity.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                              {format(new Date(activity.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}
                             </span>
                           </div>
                         </div>
