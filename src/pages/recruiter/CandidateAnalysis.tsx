@@ -113,7 +113,7 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
 
   if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
 
-  const renderSection = (title, section, color, answers) => {
+  const renderSection = (title, section, color, answers, badgeColor) => {
     const validAnswers = (answers || []).filter(answer => answer && answer.trim() !== '');
     const sectionQuestions = questions[section] || [];
 
@@ -125,9 +125,16 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
             {validAnswers.map((answer, index) => (
               <div key={index} className={`border-l-2 ${color} pl-3`}>
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
-                  {sectionQuestions[index] || `Question ${index + 1}`}
+                  <span className="inline-flex items-center gap-2">
+                    <span className={`${badgeColor} px-2 py-1 rounded-full text-xs font-semibold min-w-[24px] text-center`}>
+                      {index + 1}
+                    </span>
+                    {sectionQuestions[index] || `Question ${index + 1}`}
+                  </span>
                 </p>
-                <p className="text-xs sm:text-sm text-foreground">{answer}</p>
+                <div className="text-xs sm:text-sm text-foreground whitespace-pre-wrap break-words">
+                  {answer}
+                </div>
               </div>
             ))}
           </div>
@@ -144,9 +151,9 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
         <CardTitle className="text-base sm:text-lg">Réponses au Questionnaire MTP</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 p-4 sm:p-6">
-        {renderSection('Questions Métier', 'metier', 'border-blue-500', mtpAnswers.metier)}
-        {renderSection('Questions Talent', 'talent', 'border-green-500', mtpAnswers.talent)}
-        {renderSection('Questions Paradigme', 'paradigme', 'border-purple-500', mtpAnswers.paradigme)}
+        {renderSection('Questions Métier', 'metier', 'border-blue-500', mtpAnswers.metier, 'bg-blue-100 text-blue-800')}
+        {renderSection('Questions Talent', 'talent', 'border-green-500', mtpAnswers.talent, 'bg-green-100 text-green-800')}
+        {renderSection('Questions Paradigme', 'paradigme', 'border-purple-500', mtpAnswers.paradigme, 'bg-purple-100 text-purple-800')}
       </CardContent>
     </Card>
   );
@@ -514,7 +521,7 @@ export default function CandidateAnalysis() {
           </div>
         </header>
 
-        <Tabs defaultValue="evaluation" className="w-full">
+        <Tabs defaultValue="info" className="w-full">
           <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
             <TabsTrigger value="info" className="px-2 sm:px-4">Informations Candidat</TabsTrigger>
             <TabsTrigger value="evaluation" className="px-2 sm:px-4">Évaluation</TabsTrigger>
