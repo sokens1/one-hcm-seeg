@@ -158,16 +158,6 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       isFilled: !!data.coverLetter?.name
     },
     { 
-      label: 'Lettre d\'intégrité', 
-      value: data.integrityLetter?.name || 'Non fournie',
-      isFilled: !!data.integrityLetter?.name
-    },
-    { 
-      label: 'Idée de Projet', 
-      value: data.projectIdea?.name || 'Non fournie',
-      isFilled: !!data.projectIdea?.name
-    },
-    { 
       label: 'Certificats', 
       value: data.certificates?.length > 0 
         ? `${data.certificates.length} fichier(s)` 
