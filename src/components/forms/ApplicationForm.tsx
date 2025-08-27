@@ -21,8 +21,9 @@ import { fr } from "date-fns/locale";
 import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
-import { EMAIL_CONFIG } from "@/config/email";
-import { getCandidateEmail, isValidEmail, getEmailErrorMessage } from "@/utils/emailValidation";
+// Import supprimé car l'envoi d'email est désactivé
+// import { EMAIL_CONFIG } from "@/config/email";
+// import { getCandidateEmail, isValidEmail, getEmailErrorMessage } from "@/utils/emailValidation";
 
 interface ApplicationFormProps {
   jobTitle: string;
@@ -312,7 +313,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   // Validation functions for each step
   const validateStep1 = () => {
     // Validation de l'email avec nos utilitaires
-    const isEmailValid = isValidEmail(formData.email);
+            // const isEmailValid = isValidEmail(formData.email); // DÉSACTIVÉ
+        const isEmailValid = true; // Validation d'email désactivée
     
     return (
       formData.firstName.trim() !== '' &&
@@ -368,7 +370,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!formData.email.trim()) {
             missing.push("Email");
           } else {
-            if (!isValidEmail(formData.email)) {
+            // if (!isValidEmail(formData.email)) { // DÉSACTIVÉ
+      if (false) { // Validation d'email désactivée
               missing.push("Email (format invalide)");
             }
           }
@@ -542,70 +545,70 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         if (docsError) throw docsError;
       }
 
-      // Send confirmation email (non-blocking)
-      try {
-        // Récupération robuste de l'email du candidat
-        let toEmail = '';
-        
-        // Priorité 1: Email du formulaire
-        if (formData.email && formData.email.trim()) {
-          toEmail = formData.email.trim();
-        }
-        // Priorité 2: Email de l'utilisateur authentifié
-        else if (user?.email && user.email.trim()) {
-          toEmail = user.email.trim();
-        }
-        // Priorité 3: Email depuis la base de données
-        else if (user?.id) {
-          try {
-            const { data: dbUser } = await supabase
-              .from('users')
-              .select('email')
-              .eq('id', user.id)
-              .maybeSingle();
-            
-            if (dbUser?.email && dbUser.email.trim()) {
-              toEmail = dbUser.email.trim();
-            }
-          } catch (dbError) {
-            console.warn('Failed to fetch user email from database:', dbError);
-          }
-        }
+      // Send confirmation email (non-blocking) - DÉSACTIVÉ
+      // try {
+      //   // Récupération robuste de l'email du candidat
+      //   let toEmail = '';
+      //   
+      //   // Priorité 1: Email du formulaire
+      //   if (formData.email && formData.email.trim()) {
+      //     toEmail = formData.email.trim();
+      //   }
+      //   // Priorité 2: Email de l'utilisateur authentifié
+      //   else if (user?.email && user.email.trim()) {
+      //     toEmail = user.email.trim();
+      //   }
+      //   // Priorité 3: Email depuis la base de données
+      //   else if (user?.id) {
+      //     try {
+      //       const { data: dbUser } = await supabase
+      //         .from('users')
+      //         .select('email')
+      //         .eq('id', user.id)
+      //         .maybeSingle();
+      //     
+      //       if (dbUser?.email && dbUser.email.trim()) {
+      //         toEmail = dbUser.email.trim();
+      //       }
+      //     } catch (dbError) {
+      //       console.warn('Failed to fetch user email from database:', dbError);
+      //     }
+      //   }
 
-        if (toEmail) {
-          // L'email est déjà validé par getCandidateEmail
+      //   if (toEmail) {
+      //     // L'email est déjà validé par getCandidateEmail
 
-          await supabase.functions.invoke('send_application_confirmation', {
-            body: {
-              to: toEmail,
-              firstName: formData.firstName,
-              jobTitle,
-              applicationId: applicationIdForDocs,
-            },
-          });
-          
-          // Afficher une confirmation que l'email a été envoyé
-          toast.success(`Email de confirmation envoyé à ${toEmail} depuis ${EMAIL_CONFIG.SUPPORT_EMAIL}`, {
-            duration: 5000,
-            closeButton: true,
-          });
-          
-          console.log('Confirmation email sent successfully to:', toEmail);
-        } else {
-          console.warn('Confirmation email skipped: no valid recipient email found');
-          toast.warning("Candidature envoyée avec succès, mais aucun email valide n'a été trouvé pour l'envoi de confirmation.", {
-            duration: 8000,
-            closeButton: true,
-          });
-        }
-      } catch (mailErr) {
-        console.warn('Failed to send confirmation email (non-blocking):', (mailErr as any)?.message || mailErr);
-        // Afficher un avertissement si l'email n'a pas pu être envoyé
-        toast.warning("Candidature envoyée avec succès, mais l'email de confirmation n'a pas pu être envoyé.", {
-          duration: 8000,
-          closeButton: true,
-        });
-      }
+      //     await supabase.functions.invoke('send_application_confirmation', {
+      //       body: {
+      //       to: toEmail,
+      //       firstName: formData.firstName,
+      //       jobTitle,
+      //       applicationId: applicationIdForDocs,
+      //       },
+      //     });
+      //     
+      //     // Afficher une confirmation que l'email a été envoyé
+      //     toast.success(`Email de confirmation envoyé à ${toEmail} depuis ${EMAIL_CONFIG.SUPPORT_EMAIL}`, {
+      //       duration: 5000,
+      //       closeButton: true,
+      //     });
+      //     
+      //     console.log('Confirmation email sent successfully to:', toEmail);
+      //   } else {
+      //     console.warn('Confirmation email skipped: no valid recipient email found');
+      //     toast.warning("Candidature envoyée avec succès, mais aucun email valide n'a été trouvé pour l'envoi de confirmation.", {
+      //       duration: 8000,
+      //       closeButton: true,
+      //     });
+      //   }
+      // } catch (mailErr) {
+      //   console.warn('Failed to send confirmation email (non-blocking):', (mailErr as any)?.message || mailErr);
+      //   // Afficher un avertissement si l'email n'a pas pu être envoyé
+      //   toast.warning("Candidature envoyée avec succès, mais l'email de confirmation n'a pas pu être envoyé.", {
+      //       duration: 8000,
+      //       closeButton: true,
+      //     });
+      //   }
 
       if (user?.id && isCreateMode) {
         try {
@@ -863,28 +866,31 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       onChange={(e) => {
                         const email = e.target.value;
                         setFormData({ ...formData, email });
-                        // Validation email en temps réel avec nos utilitaires
-                        if (email) {
-                          const errorMessage = getEmailErrorMessage(email);
-                          e.target.setCustomValidity(errorMessage || '');
-                        } else {
-                          e.target.setCustomValidity('');
-                        }
+                        // Validation email en temps réel avec nos utilitaires - DÉSACTIVÉ
+                        // if (email) {
+                        //   const errorMessage = getEmailErrorMessage(email);
+                        //   e.target.setCustomValidity(errorMessage || '');
+                        // } else {
+                        //   e.target.setCustomValidity('');
+                        // }
+                        // Validation désactivée
+                        e.target.setCustomValidity('');
                       }}
                       onBlur={(e) => {
-                        // Validation supplémentaire lors de la perte de focus
-                        const email = e.target.value.trim();
-                        if (email) {
-                          const errorMessage = getEmailErrorMessage(email);
-                          e.target.setCustomValidity(errorMessage || '');
-                        }
+                        // Validation supplémentaire lors de la perte de focus - DÉSACTIVÉ
+                        // const email = e.target.value.trim();
+                        // if (email) {
+                        //   const errorMessage = getEmailErrorMessage(email);
+                        //   e.target.setCustomValidity(errorMessage || '');
+                        // }
+                        // Validation désactivée
                       }}
                       placeholder="votre.email@exemple.com"
                       required
                       aria-describedby="email-help"
                     />
                     <p id="email-help" className="text-xs text-muted-foreground mt-1">
-                      Cet email sera utilisé pour vous envoyer la confirmation de candidature
+                      Cet email sera utilisé pour votre profil (envoi de confirmation désactivé)
                     </p>
                   </div>
                   <div>
