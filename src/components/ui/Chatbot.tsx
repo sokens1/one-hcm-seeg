@@ -163,8 +163,8 @@ export function Chatbot({ className }: ChatbotProps) {
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm">
-                  {showMenu ? "Support SEEG" : "Assistant SEEG"}
+                <h3 className="font-semibold text-xs">
+                  {showMenu ? "Support OneHCM - Talent Source" : "Assistant OneHCM - Talent Source"}
                 </h3>
                 <p className="text-xs opacity-90">
                   {showMenu ? "Comment pouvons-nous vous aider ?" : "En ligne"}
@@ -225,7 +225,7 @@ export function Chatbot({ className }: ChatbotProps) {
                     <Button
                       onClick={handleCallSupport}
                       variant="outline"
-                      className="w-full h-14 border-2 border-green-200 hover:bg-green-50 text-green-700 justify-start gap-4"
+                      className="w-full h-14 border-2 py-4 border-green-200 hover:bg-green-50 text-green-700 justify-start gap-4"
                       size="lg"
                     >
                       <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -233,14 +233,14 @@ export function Chatbot({ className }: ChatbotProps) {
                       </div>
                       <div className="text-left">
                         <p className="font-medium">Appeler le support</p>
-                        <p className="text-xs opacity-70">+241 076402886</p>
+                        <p className="text-xs opacity-70">+241 076402886 | <span className="text-[11px]">de 8h à 18h</span></p>
                       </div>
                     </Button>
                     
                     <Button
                       onClick={handleSendEmail}
                       variant="outline"
-                      className="w-full h-14 border-2 border-purple-200 hover:bg-purple-50 text-purple-700 justify-start gap-4"
+                      className="w-full h-14 py-4 border-2 border-purple-200 hover:bg-purple-50 text-purple-700 justify-start gap-4"
                       size="lg"
                     >
                       <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -248,7 +248,7 @@ export function Chatbot({ className }: ChatbotProps) {
                       </div>
                       <div className="text-left">
                         <p className="font-medium">Envoyer un email</p>
-                        <p className="text-xs opacity-70">support@seeg-talentsource.com</p>
+                        <p className="text-xs opacity-70">support@seeg-talentsource.com | <span className="text-[11px]">de 8h à 22h</span></p>
                       </div>
                     </Button>
                   </div>
