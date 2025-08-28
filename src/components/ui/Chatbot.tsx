@@ -36,6 +36,9 @@ export function Chatbot({ className }: ChatbotProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Questions d'assistance technique (erreurs courantes)
+  const errorQuestions = predefinedQuestions.filter(q => q.id.startsWith("err"));
+
   // Initialize with welcome messages
   useEffect(() => {
     if (isOpen && !showMenu && messages.length === 0) {
@@ -140,7 +143,11 @@ export function Chatbot({ className }: ChatbotProps) {
   };
 
   return (
-    <div className={cn("fixed bottom-4 right-4 z-50", className)}>
+    <div className={cn(
+      "fixed z-50 bottom-2 right-2 sm:bottom-4 sm:right-4",
+      isOpen ? "left-2 sm:left-auto" : "",
+      className
+    )}>
       {/* Chat Button */}
       {!isOpen && (
         <Button
@@ -155,7 +162,7 @@ export function Chatbot({ className }: ChatbotProps) {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className={cn("w-80 sm:w-96 shadow-2xl border-0 bg-white", isMinimized ? "h-16" : "h-[500px]")}>
+        <Card className={cn("shadow-2xl border-0 bg-white flex flex-col w-full sm:w-96 mx-auto", isMinimized ? "h-14 sm:h-16" : "h-[70vh] sm:h-[500px]")}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
             <div className="flex items-center gap-2">
@@ -193,7 +200,7 @@ export function Chatbot({ className }: ChatbotProps) {
 
           {/* Content */}
           {!isMinimized && (
-            <CardContent className="flex flex-col h-96 p-0">
+            <CardContent className="flex flex-col flex-1 min-h-[260px] p-0">
               {showMenu ? (
                 /* Menu Principal */
                 <div className="flex flex-col h-full justify-center items-center p-6 space-y-4">
@@ -210,45 +217,49 @@ export function Chatbot({ className }: ChatbotProps) {
                   <div className="w-full space-y-3">
                     <Button
                       onClick={handleStartChat}
-                      className="w-full h-14 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white justify-start gap-4"
+                      className="w-full h-12 sm:h-14 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white justify-start gap-3 sm:gap-4"
                       size="lg"
                     >
-                      <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center">
-                        <MessageSquare className="h-5 w-5" />
+                      <div className="h-7 w-7 sm:h-8 sm:w-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />
                       </div>
                       <div className="text-left">
-                        <p className="font-medium">Discuter avec l'assistant</p>
-                        <p className="text-xs opacity-90">Chat en direct avec notre IA</p>
+                        <p className="font-medium text-sm sm:text-base">Discuter avec l'assistant</p>
+                        <p className="text-[11px] sm:text-xs opacity-90">Chat en direct avec notre IA</p>
                       </div>
                     </Button>
                     
                     <Button
                       onClick={handleCallSupport}
                       variant="outline"
-                      className="w-full h-14 border-2 py-4 border-green-200 hover:bg-green-50 text-green-700 justify-start gap-4"
+                      
+                      className="w-full h-12 sm:h-14 border-2 py-3 sm:py-4 border-green-200 hover:bg-green-50 text-green-700 justify-start gap-3 sm:gap-4"
+
                       size="lg"
                     >
-                      <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <Phone className="h-5 w-5 text-green-600" />
+                      <div className="h-7 w-7 sm:h-8 sm:w-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                       </div>
                       <div className="text-left">
-                        <p className="font-medium">Appeler le support</p>
-                        <p className="text-xs opacity-70">+241 076402886 | <span className="text-[11px]">de 8h à 18h</span></p>
+                        <p className="font-medium text-sm sm:text-base">Appeler le support</p>
+                        <p className="text-[11px] sm:text-xs opacity-70">+241 076402886 | <span className="text-[10px] sm:text-[11px]">de 8h à 18h</span></p>
+
                       </div>
                     </Button>
                     
                     <Button
                       onClick={handleSendEmail}
                       variant="outline"
-                      className="w-full h-14 py-4 border-2 border-purple-200 hover:bg-purple-50 text-purple-700 justify-start gap-4"
-                      size="lg"
+                      className="w-full h-12 sm:h-14 py-3 sm:py-4 border-2 border-purple-200 hover:bg-purple-50 text-purple-700 justify-start gap-3 sm:gap-4"
+
                     >
-                      <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <Mail className="h-5 w-5 text-purple-600" />
+                      <div className="h-7 w-7 sm:h-8 sm:w-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                       </div>
                       <div className="text-left">
-                        <p className="font-medium">Envoyer un email</p>
-                        <p className="text-xs opacity-70">support@seeg-talentsource.com | <span className="text-[11px]">de 8h à 22h</span></p>
+                        <p className="font-medium text-sm sm:text-base">Envoyer un email</p>
+                        <p className="text-[11px] sm:text-xs opacity-70">support@seeg-talentsource.com | <span className="text-[10px] sm:text-[11px]">de 8h à 22h</span></p>
+
                       </div>
                     </Button>
                   </div>
@@ -273,7 +284,7 @@ export function Chatbot({ className }: ChatbotProps) {
                         )}
                         <div
                           className={cn(
-                            "max-w-[80%] px-3 py-2 rounded-lg text-sm",
+                            "max-w-[85%] sm:max-w-[80%] px-3 py-2 rounded-lg text-xs sm:text-sm",
                             message.isBot
                               ? "bg-gray-100 text-gray-900"
                               : "bg-blue-600 text-white ml-auto"
@@ -318,20 +329,40 @@ export function Chatbot({ className }: ChatbotProps) {
 
                   {/* Quick Questions */}
                   {messages.length <= defaultMessages.length && (
-                    <div className="p-3 border-t bg-gray-50">
-                      <p className="text-xs text-gray-600 mb-2">Questions fréquentes :</p>
-                      <div className="flex flex-wrap gap-1">
-                        {predefinedQuestions.slice(0, 3).map((q) => (
-                          <Button
-                            key={q.id}
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleQuickQuestion(q.question)}
-                            className="text-xs h-7 px-2 border-blue-200 text-blue-700 hover:bg-blue-50"
-                          >
-                            {q.question}
-                          </Button>
-                        ))}
+                    <div className="p-3 border-t bg-gray-50 space-y-3">
+                      {/* Bloc Assistance Technique */}
+                      <div>
+                        <p className="text-xs font-medium text-gray-700 mb-1">Assistance technique :</p>
+                        <div className="flex flex-wrap gap-1">
+                          {errorQuestions.slice(0, 4).map((q) => (
+                            <Button
+                              key={q.id}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleQuickQuestion(q.question)}
+                              className="text-[11px] sm:text-xs h-7 px-2 border-amber-200 text-amber-700 hover:bg-amber-50"
+                            >
+                              {q.question}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                      {/* Bloc Questions fréquentes */}
+                      <div>
+                        <p className="text-xs text-gray-600 mb-1">Questions fréquentes :</p>
+                        <div className="flex flex-wrap gap-1">
+                          {predefinedQuestions.filter(q => !q.id.startsWith("err")).slice(0, 3).map((q) => (
+                            <Button
+                              key={q.id}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleQuickQuestion(q.question)}
+                              className="text-[11px] sm:text-xs h-7 px-2 border-blue-200 text-blue-700 hover:bg-blue-50"
+                            >
+                              {q.question}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -351,13 +382,13 @@ export function Chatbot({ className }: ChatbotProps) {
                       <Button
                         onClick={handleSendMessage}
                         disabled={!inputValue.trim() || isTyping}
-                        className="h-9 w-9 bg-blue-600 hover:bg-blue-700"
+                        className="h-9 w-9 sm:h-10 sm:w-10 bg-blue-600 hover:bg-blue-700"
                         size="icon"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="flex justify-between items-center mt-3 gap-2">
+                    <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mt-3 gap-2">
                       <Button
                         variant="outline"
                         size="sm"
