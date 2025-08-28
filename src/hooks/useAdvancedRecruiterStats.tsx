@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface AdvancedStats {
@@ -30,14 +30,24 @@ export function useAdvancedRecruiterStats(activeJobsCount: number) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadStats = async () => {
+  // Normalise les statuts hétérogènes provenant de la BDD/RPC
+  const normalizeStatus = (s?: string): 'applied' | 'interview' | 'offer' | 'rejected' => {
+    const v = (s || '').toLowerCase();
+    if (['applied', 'pending', 'new', 'nouveau'].includes(v)) return 'applied';
+    if (['interview', 'incubation', 'entretien', 'scheduled'].includes(v)) return 'interview';
+    if (['offer', 'offre', 'offered', 'hired', 'embauche'].includes(v)) return 'offer';
+    if (['rejected', 'refused', 'refuse', 'rejeté', 'rejetee'].includes(v)) return 'rejected';
+    return 'applied';
+  };
+
+  const loadStats = useCallback(async () => {
     if (activeJobsCount === 0) return;
     
     setIsLoading(true);
     setError(null);
     
     try {
-      // Récupérer toutes les candidatures
+      // Récupérer toutes les candidatures (structure: { application_details, job_offer_details, candidate_details })
       const { data: applicationsData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
       
       if (rpcError) {
@@ -45,13 +55,16 @@ export function useAdvancedRecruiterStats(activeJobsCount: number) {
       }
       
       if (applicationsData) {
-        const applications = applicationsData.map((app: { 
-          application_details: { 
-            job_title?: string; 
-            status?: string; 
-            created_at: string 
-          } 
-        }) => app.application_details);
+        // Unifier les données nécessaires en combinant application + offre
+        const applications = applicationsData.map((row: {
+          application_details: { status?: string; created_at: string };
+          job_offer_details: { title?: string };
+        }) => ({
+          created_at: row.application_details.created_at,
+          // Normaliser le statut vers les clés de nos graphes
+          status: normalizeStatus(row.application_details.status),
+          position: row.job_offer_details?.title || 'Poste inconnu',
+        }));
         
         // Calculer le taux de couverture par poste
         const positionStats = new Map<string, { count: number; target: number }>();
@@ -59,9 +72,11 @@ export function useAdvancedRecruiterStats(activeJobsCount: number) {
         const monthlyStats = new Map<string, { applied: number; interview: number; offer: number; rejected: number }>();
         
         applications.forEach((app) => {
-          const position = app.job_title || 'Poste inconnu';
-          const status = app.status || 'applied';
-          const month = new Date(app.created_at).toLocaleDateString('fr-FR', { month: 'short' });
+          const position = app.position;
+          const status = app.status;
+          // Bucket par mois (Mon AAAA) pour stabilité et tri potentiel
+          const date = new Date(app.created_at);
+          const month = date.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
           
           // Compter par position
           if (!positionStats.has(position)) {
@@ -81,7 +96,7 @@ export function useAdvancedRecruiterStats(activeJobsCount: number) {
             case 'applied':
               monthData.applied++;
               break;
-            case 'incubation':
+            case 'interview':
               monthData.interview++;
               break;
             case 'offer':
@@ -90,6 +105,8 @@ export function useAdvancedRecruiterStats(activeJobsCount: number) {
             case 'rejected':
               monthData.rejected++;
               break;
+            default:
+              monthData.applied++;
           }
         });
         
@@ -107,14 +124,14 @@ export function useAdvancedRecruiterStats(activeJobsCount: number) {
         
         const statusEvolution = Array.from(monthlyStats.entries()).map(([month, data]) => ({
           month,
-          ...data
+          ...data,
         }));
         
         const applicationsByStatus = [
           { status: 'Candidatures', count: statusCounts.get('applied') || 0, percentage: 0, color: '#3B82F6' },
-          { status: 'Entretiens', count: statusCounts.get('incubation') || 0, percentage: 0, color: '#10B981' },
+          { status: 'Entretiens', count: statusCounts.get('interview') || 0, percentage: 0, color: '#10B981' },
           { status: 'Offres', count: statusCounts.get('offer') || 0, percentage: 0, color: '#F59E0B' },
-          { status: 'Rejetées', count: statusCounts.get('rejected') || 0, percentage: 0, color: '#EF4444' }
+          { status: 'Rejetées', count: statusCounts.get('rejected') || 0, percentage: 0, color: '#EF4444' },
         ];
         
         // Calculer les pourcentages
@@ -137,11 +154,11 @@ export function useAdvancedRecruiterStats(activeJobsCount: number) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activeJobsCount]);
 
   useEffect(() => {
     loadStats();
-  }, [activeJobsCount]);
+  }, [loadStats]);
 
   const refetch = () => {
     loadStats();
