@@ -121,12 +121,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Explicitly get the initial session to avoid blank screen on reload
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setSession(session);
-      setUser(session?.user ?? null);
-      await setupForUid(session?.user?.id);
-      setIsLoading(false);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.warn('Session retrieval error:', error);
+          // Si le refresh token est invalide, nettoyer le state
+          if (error.message?.includes('refresh_token_not_found') || error.message?.includes('Invalid Refresh Token')) {
+            if (mounted) {
+              setUser(null);
+              setSession(null);
+              setDbRole(null);
+              setIsLoading(false);
+              setIsRoleLoading(false);
+            }
+            return;
+          }
+        }
+        
+        if (!mounted) return;
+        setSession(session);
+        setUser(session?.user ?? null);
+        await setupForUid(session?.user?.id);
+        setIsLoading(false);
+      } catch (sessionError) {
+        console.warn('Session setup error:', sessionError);
+        if (mounted) {
+          setUser(null);
+          setSession(null);
+          setDbRole(null);
+          setIsLoading(false);
+          setIsRoleLoading(false);
+        }
+      }
     })();
 
     return () => {
@@ -356,4 +383,20 @@ export function useAuth() {
         user: null,
         session: null,
         isLoading: false,
-        isRoleLoading: fa
+        isRoleLoading: false,
+        isUpdating: false,
+        signUp: async () => ({ error: null }),
+        signIn: async () => ({ data: null, error: null }),
+        signOut: async () => ({ error: null }),
+        updateUser: async () => false,
+        resetPassword: async () => ({ error: null }),
+        isCandidate: false,
+        isRecruiter: false,
+        isAdmin: false,
+        isObserver: false,
+      } as AuthContextType;
+    }
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

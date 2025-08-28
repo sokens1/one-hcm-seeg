@@ -8,12 +8,9 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
     const user = application.users;
     const profile = user?.candidate_profiles;
     
-    // Debug: Log all relevant data
-    console.log('User data:', user);
-    console.log('Profile data:', profile);
-    console.log('Date of birth from user:', user?.date_of_birth);
-    console.log('Date of birth from profile:', profile?.date_of_birth);
-    console.log('Profile date_of_birth field:', profile?.date_of_birth);
+    // Debug: Log all relevant data (removed to reduce console noise)
+    // console.log('User data:', user);
+    // console.log('Profile data:', profile);
     
     // Fetch application documents
     const { data: documents, error: documentsError } = await supabase
