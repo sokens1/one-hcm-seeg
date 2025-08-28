@@ -8,10 +8,12 @@ import { Separator } from "@/components/ui/separator";
 import { Bell, Lock, Globe, Palette, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 export function CandidateSettings() {
   const { signOut: logout } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [settings, setSettings] = useState({
     emailNotifications: true,
     smsNotifications: false,
@@ -26,8 +28,29 @@ export function CandidateSettings() {
   };
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/candidate/login");
+    try {
+      const { error } = await logout();
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Erreur lors de la déconnexion",
+          variant: "destructive"
+        });
+        return;
+      }
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt !",
+      });
+      // Force une navigation complète pour éviter les problèmes de cache
+      window.location.href = '/';
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la déconnexion",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
