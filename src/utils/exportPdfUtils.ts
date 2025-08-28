@@ -99,6 +99,7 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       email: user?.email || '',
       dateOfBirth: user?.date_of_birth ? new Date(user.date_of_birth) : (profile?.date_of_birth ? new Date(profile.date_of_birth) : (profile?.birth_date ? new Date(profile.birth_date) : null)),
       currentPosition: profile?.current_position || '',
+      gender: profile?.gender || (user as any)?.sexe || (user as any)?.gender || '',
       
       // Map documents from database
       cv: documentsByType.cv?.[0] ? { 
@@ -117,7 +118,8 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
         name: documentsByType.project_idea[0].file_name,
         url: documentsByType.project_idea[0].file_url 
       } : null,
-      certificates: (documentsByType.certificate || documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
+      diplomas: (documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
+      certificates: (documentsByType.certificate || []).map(doc => ({ name: doc.file_name })),
       recommendations: (documentsByType.recommendation || []).map(doc => ({ name: doc.file_name })),
       jobTitle,
       applicationDate: new Date(application.created_at).toLocaleDateString('fr-FR', {

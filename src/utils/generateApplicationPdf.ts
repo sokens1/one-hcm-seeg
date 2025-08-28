@@ -2,6 +2,7 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { getMetierQuestionsForTitle } from '@/data/metierQuestions';
 
 interface ApplicationData {
   firstName?: string;
@@ -15,6 +16,7 @@ interface ApplicationData {
   coverLetter?: { name: string } | null;
   integrityLetter?: { name: string } | null;
   projectIdea?: { name: string } | null;
+  diplomas?: { name: string }[];
   certificates?: { name: string }[];
   recommendations?: { name: string }[];
   // MTP Questions - Métier
@@ -55,7 +57,7 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
   doc.setTextColor(30, 64, 175); // Blue-800
-  doc.text('Récapitulatif de Candidature', pageWidth / 2, yPos, { align: 'center' });
+  doc.text('Récapitulatif de Candidature', pageWidth / 2, yPos, { align: 'right' });
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(12);
@@ -158,19 +160,20 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       isFilled: !!data.coverLetter?.name
     },
     { 
+      label: 'Diplômes', 
+      value: data.diplomas?.length > 0 
+        ? `${data.diplomas.length} fichier(s)` 
+        : 'Aucun fichier',
+      isFilled: data.diplomas?.length > 0
+    },
+    { 
       label: 'Certificats', 
       value: data.certificates?.length > 0 
         ? `${data.certificates.length} fichier(s)` 
         : 'Aucun fichier',
       isFilled: data.certificates?.length > 0
     },
-    { 
-      label: 'Lettres de Recommandation', 
-      value: data.recommendations?.length > 0 
-        ? `${data.recommendations.length} fichier(s)` 
-        : 'Aucun fichier',
-      isFilled: data.recommendations?.length > 0
-    },
+
   ];
 
   // Afficher les documents
@@ -219,6 +222,9 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('3. Adhérence MTP', margin, yPos);
   yPos += 10;
 
+  // Récupérer les questions spécifiques au poste
+  const mtpQuestions = getMetierQuestionsForTitle(data.jobTitle || '');
+  
   // Métier
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
@@ -226,35 +232,15 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('Métier', margin, yPos);
   yPos += 7;
 
+  // Créer le tableau des questions métier avec les réponses
   const metierQuestions = [
-    { 
-      label: '1. Quelles sont les problématiques que vous identifiez aujourd\'hui à la SEEG, pour ce poste ? Quelles solutions préconisez-vous ? Quels pourraient être les obstacles au déploiement de votre solution ?',
-      value: data.metier1 
-    },
-    { 
-      label: '2. Quels sont les trois principaux challenges que vous comptez relever en tant que dirigeant de l\'exploitation électricité à la SEEG ?',
-      value: data.metier2 
-    },
-    { 
-      label: '3. Expliquez ce que vous savez des normes d\'exploitation requises pour gérer une concession électrique.',
-      value: data.metier3 
-    },
-    { 
-      label: '4. Racontez une expérience où vous avez dirigé un projet d\'investissement orienté réseaux électriques.',
-      value: data.metier4 
-    },
-    { 
-      label: '5. Décrivez deux réalisations majeures que vous avez accomplies dans votre carrière, en lien avec l\'exploitation des réseaux électriques.',
-      value: data.metier5 
-    },
-    { 
-      label: '6. Donnez un exemple concret illustrant la meilleure façon d\'assurer l\'exploitation optimale et la continuité du service électrique à la SEEG.',
-      value: data.metier6 
-    },
-    { 
-      label: '7. Comment garantirez-vous que l\'exploitation électrique respecte les normes légales et réglementaires afin de réduire les risques de panne et d\'assurer un service continu aux usagers ?',
-      value: data.metier7 
-    }
+    { label: mtpQuestions.metier[0] || '1. Question métier 1', value: data.metier1 },
+    { label: mtpQuestions.metier[1] || '2. Question métier 2', value: data.metier2 },
+    { label: mtpQuestions.metier[2] || '3. Question métier 3', value: data.metier3 },
+    { label: mtpQuestions.metier[3] || '4. Question métier 4', value: data.metier4 },
+    { label: mtpQuestions.metier[4] || '5. Question métier 5', value: data.metier5 },
+    { label: mtpQuestions.metier[5] || '6. Question métier 6', value: data.metier6 },
+    { label: mtpQuestions.metier[6] || '7. Question métier 7', value: data.metier7 }
   ];
 
   // Fonction pour ajouter un texte avec gestion de la pagination
@@ -344,24 +330,16 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   // Talent
   yPos += 10; // Plus d'espace avant la section
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.setTextColor(22, 163, 74); // Green-600
+  doc.setFontSize(12);
+  doc.setTextColor(37, 99, 235);
   doc.text('Talent', margin, yPos);
-  yPos += 10;
+  yPos += 7;
 
+  // Créer le tableau des questions talent avec les réponses
   const talentQuestions = [
-    { 
-      label: '1. Comment assureriez-vous la continuité du service malgré des infrastructures fragiles ?',
-      value: data.talent1 
-    },
-    { 
-      label: '2. Quelle méthode appliqueriez-vous pour réduire les délestages électriques ?',
-      value: data.talent2 
-    },
-    { 
-      label: '3. Comment organiseriez-vous vos équipes pour optimiser la performance et la sécurité du réseau ?',
-      value: data.talent3 
-    }
+    { label: mtpQuestions.talent[0] || '1. Question talent 1', value: data.talent1 },
+    { label: mtpQuestions.talent[1] || '2. Question talent 2', value: data.talent2 },
+    { label: mtpQuestions.talent[2] || '3. Question talent 3', value: data.talent3 }
   ];
 
   talentQuestions.forEach((q) => {
@@ -428,24 +406,16 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   // Paradigme
   yPos += 10; // Plus d'espace avant la section
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.setTextColor(168, 85, 247); // Purple-500
+  doc.setFontSize(12);
+  doc.setTextColor(37, 99, 235);
   doc.text('Paradigme', margin, yPos);
-  yPos += 10;
+  yPos += 7;
 
+  // Créer le tableau des questions paradigme avec les réponses
   const paradigmeQuestions = [
-    { 
-      label: '1. Quel est le devoir premier d\'un responsable exploitation : réduire les coûts ou garantir la continuité du service ?',
-      value: data.paradigme1 
-    },
-    { 
-      label: '2. Comment hiérarchisez-vous sécurité, rapidité d\'intervention et satisfaction client ?',
-      value: data.paradigme2 
-    },
-    { 
-      label: '3. Quelle est votre vision d\'une exploitation électrique responsable ?',
-      value: data.paradigme3 
-    }
+    { label: mtpQuestions.paradigme[0] || '1. Question paradigme 1', value: data.paradigme1 },
+    { label: mtpQuestions.paradigme[1] || '2. Question paradigme 2', value: data.paradigme2 },
+    { label: mtpQuestions.paradigme[2] || '3. Question paradigme 3', value: data.paradigme3 }
   ];
 
   paradigmeQuestions.forEach((q) => {
