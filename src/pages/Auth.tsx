@@ -315,11 +315,36 @@ export default function Auth() {
       if (typeof get('phone') === 'string') upsertPayload.phone = get('phone');
       if (typeof get('matricule') === 'string') upsertPayload.matricule = get('matricule');
       // Do NOT set role here from client
-      const { error: upErr } = await supabase
+      // Vérifier d'abord si l'utilisateur existe déjà
+      const { data: existingUser } = await supabase
         .from('users')
-        .upsert(upsertPayload as any, { onConflict: 'id' });
-      if (upErr) {
-        console.warn('users upsert after signup failed (non-blocking):', upErr.message);
+        .select('id')
+        .eq('id', authUser.id)
+        .single();
+
+      if (existingUser) {
+        // Utilisateur existe déjà, faire un update sans le matricule pour éviter les conflits
+        const updatePayload = { ...upsertPayload };
+        delete updatePayload.matricule; // Ne pas mettre à jour le matricule s'il existe déjà
+        delete updatePayload.id; // Ne pas inclure l'ID dans l'update
+        
+        const { error: upErr } = await supabase
+          .from('users')
+          .update(updatePayload as any)
+          .eq('id', authUser.id);
+        
+        if (upErr) {
+          console.warn('users update after signup failed (non-blocking):', upErr.message);
+        }
+      } else {
+        // Nouvel utilisateur, faire un insert
+        const { error: upErr } = await supabase
+          .from('users')
+          .insert(upsertPayload as any);
+        
+        if (upErr) {
+          console.warn('users insert after signup failed (non-blocking):', upErr.message);
+        }
       }
     } catch (err) {
       console.warn('users upsert sync error (non-blocking):', err);
