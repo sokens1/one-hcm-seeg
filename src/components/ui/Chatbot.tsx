@@ -104,11 +104,11 @@ export function Chatbot({ className }: ChatbotProps) {
   };
 
   const handleCallSupport = () => {
-    window.open("tel:+241076402886", "_self");
+    window.open("tel:076402886", "_self");
   };
 
   const handleSendEmail = () => {
-    window.open("mailto:support@seeg-talentsource.com?subject=Demande de support - OneHCM Talent Flow", "_self");
+    window.open("mailto:support@seeg-talentsource.com?subject=Demande de support - OneHCM Talent Source", "_self");
   };
 
   const handleBackToMenu = () => {
@@ -242,7 +242,7 @@ export function Chatbot({ className }: ChatbotProps) {
                       </div>
                       <div className="text-left">
                         <p className="font-medium text-sm sm:text-base">Appeler le support</p>
-                        <p className="text-[11px] sm:text-xs opacity-70">+241 076402886 | <span className="text-[10px] sm:text-[11px]">de 8h à 18h</span></p>
+                        <p className="text-[11px] sm:text-xs opacity-70">076402886 | <span className="text-[10px] sm:text-[11px]">de 8h à 18h</span></p>
 
                       </div>
                     </Button>
