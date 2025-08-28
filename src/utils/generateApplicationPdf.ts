@@ -75,6 +75,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('1. Informations Personnelles', margin, yPos);
   yPos += 10;
 
+  console.log('=== PDF Generator Debug ===');
+  console.log('data.dateOfBirth in generator:', data.dateOfBirth);
+  console.log('data.dateOfBirth type in generator:', typeof data.dateOfBirth);
+  console.log('data.dateOfBirth truthy check:', !!data.dateOfBirth);
+  console.log('==============================');
+
   const personalInfo = [
     { 
       label: 'Nom Complet', 
@@ -94,7 +100,7 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     { 
       label: 'Sexe', 
       value: data.gender || 'Non renseigné',
-      isFilled: !!data.gender
+      isFilled: !!data.gender && data.gender.trim() !== ''
     },
     { 
       label: 'Poste Actuel', 
@@ -103,9 +109,23 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     },
   ];
 
+  console.log('=== PersonalInfo Debug ===');
+  const dateOfBirthInfo = personalInfo.find(info => info.label === 'Date de Naissance');
+  console.log('DateOfBirth info object:', dateOfBirthInfo);
+  console.log('==========================');
+
   doc.setFont('helvetica', 'normal');
   doc.setFont('helvetica', 'normal');
   personalInfo.forEach(info => {
+    // Debug pour l'élément Date de Naissance
+    if (info.label === 'Date de Naissance') {
+      console.log('=== Processing Date de Naissance in PDF ===');
+      console.log('info:', info);
+      console.log('info.value:', info.value);
+      console.log('info.value || "Non renseigné":', info.value || 'Non renseigné');
+      console.log('==============================');
+    }
+    
     // Vérifier l'espace disponible
     if (yPos > doc.internal.pageSize.height - 20) {
       doc.addPage();
@@ -122,7 +142,14 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     // Afficher la valeur
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(75, 85, 99);
-    doc.text(info.value || 'Non renseigné', margin + 60, yPos);
+    const textToWrite = info.value || 'Non renseigné';
+    if (info.label === 'Date de Naissance') {
+      console.log('=== Writing Date de Naissance to PDF ===');
+      console.log('Text being written to PDF:', textToWrite);
+      console.log('Position:', margin + 60, yPos);
+      console.log('======================');
+    }
+    doc.text(textToWrite, margin + 60, yPos);
     
     // Afficher le statut avec la couleur appropriée
     const status = info.isFilled ? 'Renseigné' : 'Non renseigné';
