@@ -1372,6 +1372,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           <p>{formData.dateOfBirth ? format(formData.dateOfBirth, "PPP", { locale: fr }) : "Non renseigné"}</p>
                         </div>
                         <div>
+                          <span className="text-muted-foreground">Sexe:</span>
+                          <p>{formData.gender || "Non renseigné"}</p>
+                        </div>
+                        <div>
                           <span className="text-muted-foreground">Poste actuel:</span>
                           <p>{formData.currentPosition || "Non renseigné"}</p>
                         </div>
@@ -1386,6 +1390,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="font-medium">Parcours & Documents</h5>
                         <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">CV:</span>
+                        <p>{formData.cv ? formData.cv.name : "Non fourni"}</p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Lettre de motivation:</span>
