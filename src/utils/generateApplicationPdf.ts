@@ -57,7 +57,7 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
   doc.setTextColor(30, 64, 175); // Blue-800
-  doc.text('Récapitulatif de Candidature lorem ipsimmm', pageWidth / 2, yPos, { align: 'right' });
+  doc.text('Récapitulatif de Candidature ', pageWidth / 2, yPos, { align: 'right' });
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(12);
@@ -224,7 +224,7 @@ export const generateApplicationPdf = (data: ApplicationData) => {
 
   // Récupérer les questions spécifiques au poste
   const mtpQuestions = getMetierQuestionsForTitle(data.jobTitle || '');
-  
+
   // Métier
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
