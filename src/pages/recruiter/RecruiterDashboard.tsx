@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,10 +9,12 @@ import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useAuth } from "@/hooks/useAuth";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
 import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
-
+import { DashboardToggle } from "@/components/ui/DashboardToggle";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
-import { useState } from 'react';
+
+// Import du dashboard avancé
+import AdvancedDashboard from "./AdvancedDashboard";
 
 export default function RecruiterDashboard() {
   const navigate = useNavigate();
@@ -19,11 +22,31 @@ export default function RecruiterDashboard() {
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { isRecruiter } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('advanced');
 
   const handleEditJob = (jobId: string) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
   };
 
+  // Si la vue avancée est sélectionnée, afficher le dashboard avancé
+  if (dashboardView === 'advanced') {
+    return (
+      <RecruiterLayout>
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+          {/* Basculement entre les vues */}
+          <DashboardToggle 
+            currentView={dashboardView} 
+            onToggle={setDashboardView} 
+          />
+          
+          {/* Dashboard Avancé */}
+          <AdvancedDashboard />
+        </div>
+      </RecruiterLayout>
+    );
+  }
+
+  // Vue classique (dashboard original)
   if (error) {
     return (
       <RecruiterLayout>
@@ -42,6 +65,12 @@ export default function RecruiterDashboard() {
   return (
     <RecruiterLayout>
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        {/* Basculement entre les vues */}
+        <DashboardToggle 
+          currentView={dashboardView} 
+          onToggle={setDashboardView} 
+        />
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
           <div className="min-w-0">
@@ -63,7 +92,7 @@ export default function RecruiterDashboard() {
         {/* Loading State */}
         {isLoading ? (
           <div className="flex flex-col sm:flex-row justify-center items-center py-8 sm:py-12 gap-2">
-            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
+            <Loader2 className="w-6 h-6 sm:w-8 sm:w-8 animate-spin text-primary" />
             <span className="text-sm sm:text-base">Chargement du dashboard...</span>
           </div>
         ) : (
@@ -164,7 +193,7 @@ export default function RecruiterDashboard() {
                             <div className="flex flex-col sm:flex-row gap-2 w-full">
                               <Link to={`/recruiter/jobs/${job.id}/pipeline`} className="flex-1">
                                 <Button variant="hero" size="sm" className="gap-2 w-full text-xs sm:text-sm h-8 sm:h-9">
-                                  <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  <Eye className="w-3 h-3 sm:w-4 sm:w-4" />
                                   <span className="hidden sm:inline">Voir le pipeline</span>
                                   <span className="sm:hidden">Pipeline</span>
                                 </Button>
@@ -176,7 +205,7 @@ export default function RecruiterDashboard() {
                                   className="gap-2 px-2 sm:px-3 text-xs sm:text-sm h-8 sm:h-9 flex-shrink-0"
                                   onClick={() => handleEditJob(job.id)}
                                 >
-                                  <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  <Edit className="w-3 h-3 sm:w-4 sm:w-4" />
                                   <span className="hidden sm:inline">Modifier</span>
                                   <span className="sm:hidden">Éditer</span>
                                 </Button>
@@ -209,81 +238,81 @@ export default function RecruiterDashboard() {
                 </Card>
               )}
             </div>
+
+            {/* Quick Actions */}
+            <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              <Card className="shadow-soft hover:shadow-medium transition-all">
+                <CardHeader>
+                  <CardTitle className="text-base sm:text-lg">Actions rapides</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {isRecruiter && (
+                    <Link to="/recruiter/jobs/new" className="block">
+                      <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
+                        <Plus className="w-3 h-3 sm:w-4 sm:w-4" />
+                        Créer une nouvelle offre
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/recruiter/candidates" className="block">
+                    <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
+                      <Users className="w-3 h-3 sm:w-4 sm:w-4" />
+                      Voir tous les candidats
+                    </Button>
+                  </Link>
+                  <Link to="/jobs" className="block">
+                    <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
+                      <Eye className="w-3 h-3 sm:w-4 sm:w-4" />
+                      Espace candidature
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-soft hover:shadow-medium transition-all">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-base sm:text-lg">Activité récente</CardTitle>
+                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                    <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingActivities ? (
+                    <div className="flex justify-center items-center py-4">
+                      <Loader2 className="w-5 h-5 sm:w-6 sm:w-6 animate-spin text-primary" />
+                    </div>
+                  ) : errorActivities ? (
+                    <p className="text-red-500 text-xs sm:text-sm">Erreur de chargement des activités</p>
+                  ) : activities && activities.length > 0 ? (
+                    <div className="space-y-3 text-xs sm:text-sm">
+                      {activities.map((activity) => (
+                        <div key={activity.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                          <span className="truncate pr-2 min-w-0" title={`${activity.description} pour ${activity.job_title}`}>
+                            {activity.description} pour <strong className="font-medium">{activity.job_title}</strong>
+                          </span>
+                          <Badge variant="outline" className="text-xs flex-shrink-0 self-start sm:self-center">
+                            {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true, locale: fr })}
+                          </Badge>
+                        </div>
+                      ))}
+                      <div className="pt-2">
+                        <Button 
+                          variant="link" 
+                          className="p-0 h-auto text-xs sm:text-sm"
+                          onClick={() => setIsHistoryModalOpen(true)}
+                        >
+                          Voir tout l'historique
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground text-xs sm:text-sm text-center py-4">Aucune activité récente.</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </>
         )}
-
-        {/* Quick Actions */}
-        <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          <Card className="shadow-soft hover:shadow-medium transition-all">
-            <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Actions rapides</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {isRecruiter && (
-                <Link to="/recruiter/jobs/new" className="block">
-                  <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                    <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                    Créer une nouvelle offre
-                  </Button>
-                </Link>
-              )}
-              <Link to="/recruiter/candidates" className="block">
-                <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                  <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-                  Voir tous les candidats
-                </Button>
-              </Link>
-              <Link to="/jobs" className="block">
-                <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                  <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                  Espace candidature
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-soft hover:shadow-medium transition-all">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-base sm:text-lg">Activité récente</CardTitle>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {isLoadingActivities ? (
-                <div className="flex justify-center items-center py-4">
-                  <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-primary" />
-                </div>
-              ) : errorActivities ? (
-                <p className="text-red-500 text-xs sm:text-sm">Erreur de chargement des activités</p>
-              ) : activities && activities.length > 0 ? (
-                <div className="space-y-3 text-xs sm:text-sm">
-                  {activities.map((activity) => (
-                    <div key={activity.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
-                      <span className="truncate pr-2 min-w-0" title={`${activity.description} pour ${activity.job_title}`}>
-                        {activity.description} pour <strong className="font-medium">{activity.job_title}</strong>
-                      </span>
-                      <Badge variant="outline" className="text-xs flex-shrink-0 self-start sm:self-center">
-                        {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true, locale: fr })}
-                      </Badge>
-                    </div>
-                  ))}
-                  <div className="pt-2">
-                    <Button 
-                      variant="link" 
-                      className="p-0 h-auto text-xs sm:text-sm"
-                      onClick={() => setIsHistoryModalOpen(true)}
-                    >
-                      Voir tout l'historique
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-xs sm:text-sm text-center py-4">Aucune activité récente.</p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Activity History Modal */}
         <ActivityHistoryModal 
