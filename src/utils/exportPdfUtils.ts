@@ -8,6 +8,13 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
     const user = application.users;
     const profile = user?.candidate_profiles;
     
+    // Debug: Log all relevant data
+    console.log('User data:', user);
+    console.log('Profile data:', profile);
+    console.log('Date of birth from user:', user?.date_of_birth);
+    console.log('Date of birth from profile:', profile?.date_of_birth);
+    console.log('Profile birth_date field:', profile?.birth_date);
+    
     // Fetch application documents
     const { data: documents, error: documentsError } = await supabase
       .from('application_documents')
@@ -90,8 +97,9 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       firstName: user?.first_name || '',
       lastName: user?.last_name || '',
       email: user?.email || '',
-      dateOfBirth: profile?.date_of_birth ? new Date(profile.date_of_birth) : null,
+      dateOfBirth: user?.date_of_birth ? new Date(user.date_of_birth) : (profile?.date_of_birth ? new Date(profile.date_of_birth) : (profile?.birth_date ? new Date(profile.birth_date) : null)),
       currentPosition: profile?.current_position || '',
+      gender: profile?.gender || (user as any)?.sexe || (user as any)?.gender || '',
       
       // Map documents from database
       cv: documentsByType.cv?.[0] ? { 
@@ -110,7 +118,8 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
         name: documentsByType.project_idea[0].file_name,
         url: documentsByType.project_idea[0].file_url 
       } : null,
-      certificates: (documentsByType.certificate || documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
+      diplomas: (documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
+      certificates: (documentsByType.certificate || []).map(doc => ({ name: doc.file_name })),
       recommendations: (documentsByType.recommendation || []).map(doc => ({ name: doc.file_name })),
       jobTitle,
       applicationDate: new Date(application.created_at).toLocaleDateString('fr-FR', {

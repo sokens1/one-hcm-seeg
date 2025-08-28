@@ -22,18 +22,49 @@ interface EvaluationData {
   protocol1: {
     score: number;
     status: 'pending' | 'in_progress' | 'completed';
-    documentsValidated: boolean;
-    positionAdequacy: number;
-    adequacyComment: string;
-    interviewDate?: Date;
-    interviewer: string;
-    cultureAlignment: number;
-    cultureComment: string;
-    pastAchievements: number;
-    achievementsComment: string;
-    communication: number;
-    communicationComment: string;
-    generalSummary: string;
+    // Partie 1: Validation des Prérequis (10%)
+    documentaryEvaluation: {
+      score: number; // 5 étoiles
+      comments: string;
+      conformityRate: number; // Taux de conformité
+      isConform: boolean;
+      isValidated: boolean;
+    };
+    // Evaluation MTP - Taux d'adhérence MTP (20%)
+    mtpAdherence: {
+      metier: {
+        score: number; // 5 étoiles
+        comments: string;
+      };
+      talent: {
+        score: number; // 5 étoiles
+        comments: string;
+      };
+      paradigme: {
+        score: number; // 5 étoiles
+        comments: string;
+      };
+    };
+    // Partie 2: Entretien (70%)
+    interview: {
+      interviewDate?: Date;
+      // Evaluation adhérence MTP physique
+      physicalMtpAdherence: {
+        metier: {
+          score: number; // 5 étoiles
+          comments: string;
+        };
+        talent: {
+          score: number; // 5 étoiles
+          comments: string;
+        };
+        paradigme: {
+          score: number; // 5 étoiles
+          comments: string;
+        };
+      };
+      generalSummary: string;
+    };
   };
   protocol2: {
     score: number;
@@ -108,17 +139,47 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     protocol1: {
       score: 0,
       status: 'pending',
-      documentsValidated: false,
-      positionAdequacy: 0,
-      adequacyComment: "",
-      interviewer: "",
-      cultureAlignment: 0,
-      cultureComment: "",
-      pastAchievements: 0,
-      achievementsComment: "",
-      communication: 0,
-      communicationComment: "",
-      generalSummary: ""
+      // Partie 1: Validation des Prérequis (10%)
+      documentaryEvaluation: {
+        score: 0,
+        comments: "",
+        conformityRate: 0,
+        isConform: false,
+        isValidated: false,
+      },
+      // Evaluation MTP - Taux d'adhérence MTP (20%)
+      mtpAdherence: {
+        metier: {
+          score: 0,
+          comments: "",
+        },
+        talent: {
+          score: 0,
+          comments: "",
+        },
+        paradigme: {
+          score: 0,
+          comments: "",
+        },
+      },
+      // Partie 2: Entretien (70%)
+      interview: {
+        physicalMtpAdherence: {
+          metier: {
+            score: 0,
+            comments: "",
+          },
+          talent: {
+            score: 0,
+            comments: "",
+          },
+          paradigme: {
+            score: 0,
+            comments: "",
+          },
+        },
+        generalSummary: ""
+      },
     },
     protocol2: {
       score: 0,
@@ -141,32 +202,158 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   });
 
   const [interviewDate, setInterviewDate] = useState<Date>();
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
+  
+  // Données des entretiens occupés (exemple - à remplacer par des vraies données)
+  const busySlots = {
+    '2024-01-15': ['09:00', '10:30', '14:00'], // 15 janvier 2024
+    '2024-01-16': ['09:30', '11:00', '15:00'], // 16 janvier 2024
+    '2024-01-22': ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'], // 22 janvier - jour complet
+    '2024-01-28': ['14:00', '15:30'], // 28 janvier 2024
+  };
+  
+  // Créneaux horaires disponibles
+  const timeSlots = [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
+  ];
+  
+  // Fonction pour générer le calendrier du mois
+  const generateCalendar = (date: Date = new Date()) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    
+    const days = [];
+    const current = new Date(startDate);
+    
+    for (let i = 0; i < 42; i++) {
+      days.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+    
+    return { days, month, year };
+  };
+  
+  // Fonction pour obtenir la clé de date au format YYYY-MM-DD
+  const getDateKey = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+  
+  // Fonction pour vérifier si une date est complètement occupée
+  const isDateFullyBooked = (date: Date) => {
+    const dateKey = getDateKey(date);
+    const busySlotsForDate = busySlots[dateKey] || [];
+    return busySlotsForDate.length >= timeSlots.length;
+  };
+  
+  // Fonction pour vérifier si une date a des créneaux partiellement occupés
+  const isDatePartiallyBooked = (date: Date) => {
+    const dateKey = getDateKey(date);
+    const busySlotsForDate = busySlots[dateKey] || [];
+    return busySlotsForDate.length > 0 && busySlotsForDate.length < timeSlots.length;
+  };
+  
+  // Fonction pour vérifier si une date est sélectionnée
+  const isDateSelected = (date: Date) => {
+    return interviewDate && interviewDate.toDateString() === date.toDateString();
+  };
+  
+  // Fonction pour obtenir les créneaux disponibles pour une date
+  const getAvailableSlots = (date: Date) => {
+    const dateKey = getDateKey(date);
+    const busySlotsForDate = busySlots[dateKey] || [];
+    return timeSlots.filter(slot => !busySlotsForDate.includes(slot));
+  };
+  
+  // Fonction pour vérifier si un créneau est occupé
+  const isTimeSlotBusy = (date: Date, timeSlot: string) => {
+    const dateKey = getDateKey(date);
+    const busySlotsForDate = busySlots[dateKey] || [];
+    return busySlotsForDate.includes(timeSlot);
+  };
 
-  const updateProtocol1 = (field: string, value: any) => {
+  // Fonction pour calculer les scores partiels de chaque section
+  const calculateSectionScores = (protocol1: any) => {
+    // Validation des Prérequis (10%)
+    const documentaryScore = (protocol1.documentaryEvaluation.score / 5) * 10;
+    
+    // Evaluation MTP - Taux d'adhérence MTP (20%)
+    const mtpScores = [
+      protocol1.mtpAdherence.metier.score,
+      protocol1.mtpAdherence.talent.score,
+      protocol1.mtpAdherence.paradigme.score
+    ];
+    const mtpAverage = mtpScores.length > 0 ? mtpScores.reduce((a, b) => a + b, 0) / mtpScores.length : 0;
+    const mtpScore = (mtpAverage / 5) * 20;
+    
+    // Entretien (70%)
+    const interviewScores = [
+      protocol1.interview.physicalMtpAdherence.metier.score,
+      protocol1.interview.physicalMtpAdherence.talent.score,
+      protocol1.interview.physicalMtpAdherence.paradigme.score
+    ];
+    const interviewAverage = interviewScores.length > 0 ? interviewScores.reduce((a, b) => a + b, 0) / interviewScores.length : 0;
+    const interviewScore = (interviewAverage / 5) * 70;
+
+    return {
+      documentaryScore,
+      mtpScore, 
+      interviewScore,
+      totalScore: documentaryScore + mtpScore + interviewScore
+    };
+  };
+
+  const updateProtocol1 = (section: string, field: string, value: any) => {
     setEvaluationData(prev => {
-      const newProtocol1 = {
-        ...prev.protocol1,
-        [field]: value
-      };
+      const newProtocol1 = { ...prev.protocol1 };
       
-      // Auto-validation des documents si adéquation >= 3 étoiles
-      if (field === 'positionAdequacy' && value >= 3) {
-        newProtocol1.documentsValidated = true;
+      // Mise à jour des données selon la section
+      if (section === 'documentaryEvaluation') {
+        newProtocol1.documentaryEvaluation = {
+          ...newProtocol1.documentaryEvaluation,
+          [field]: value
+        };
+        // Calculer le taux de conformité automatiquement
+        if (field === 'score') {
+          newProtocol1.documentaryEvaluation.conformityRate = (value / 5) * 100;
+        }
+      } else if (section === 'mtpAdherence') {
+        const [mtpField, property] = field.split('.');
+        newProtocol1.mtpAdherence = {
+          ...newProtocol1.mtpAdherence,
+          [mtpField]: {
+            ...newProtocol1.mtpAdherence[mtpField as keyof typeof newProtocol1.mtpAdherence],
+            [property]: value
+          }
+        };
+      } else if (section === 'interview') {
+        if (field.startsWith('physicalMtpAdherence.')) {
+          const [_, mtpField, property] = field.split('.');
+          newProtocol1.interview.physicalMtpAdherence = {
+            ...newProtocol1.interview.physicalMtpAdherence,
+            [mtpField]: {
+              ...newProtocol1.interview.physicalMtpAdherence[mtpField as keyof typeof newProtocol1.interview.physicalMtpAdherence],
+              [property]: value
+            }
+          };
+        } else {
+          newProtocol1.interview = {
+            ...newProtocol1.interview,
+            [field]: value
+          };
+        }
       }
       
-      // Calculer le score dynamiquement (inclut métier, talent, paradigme)
-      const scores = [
-        newProtocol1.positionAdequacy * 20, // Métier - 0-100
-        newProtocol1.cultureAlignment * 20,  // Paradigme - 0-100
-        newProtocol1.pastAchievements * 20,  // Talent - 0-100
-        newProtocol1.communication * 20      // Communication - 0-100
-      ].filter(score => score > 0);
-      
-      const avgScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
-      newProtocol1.score = Math.round(avgScore);
+      // Calculer le score selon la nouvelle pondération
+      const sectionScores = calculateSectionScores(newProtocol1);
+      newProtocol1.score = Math.round(sectionScores.totalScore);
       
       // Mettre à jour le statut
-      if (newProtocol1.documentsValidated && scores.length > 0) {
+      if (newProtocol1.documentaryEvaluation.isConform && sectionScores.mtpScore > 0) {
         newProtocol1.status = 'in_progress';
       }
       if (newProtocol1.score >= 60) {
@@ -262,14 +449,15 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-xl flex items-center gap-2">
-                📊 Synthèse de l'Évaluation
+                <CheckCircle className="w-5 h-5" />
+                Synthèse de l'Évaluation
               </CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
                 Candidat: {candidateName} • Poste: {jobTitle}
               </p>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-primary">{evaluationData.globalScore}%</div>
+              <div className="text-2xl font-bold text-primary">{evaluationData.globalScore === 0 ? '0' : evaluationData.globalScore.toFixed(1)}%</div>
               <div className="text-xs text-muted-foreground">Score Global</div>
             </div>
           </div>
@@ -278,9 +466,29 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Score Global Provisoire</span>
-              <span className="text-sm text-muted-foreground">{evaluationData.globalScore}%</span>
+              <span className="text-sm text-muted-foreground">{evaluationData.globalScore === 0 ? '0' : evaluationData.globalScore.toFixed(1)}%</span>
             </div>
-            <Progress value={evaluationData.globalScore} className="h-3" />
+            <div className="relative h-3 w-full overflow-hidden rounded-full bg-gray-200">
+              <div 
+                className="h-full bg-blue-600 transition-all duration-300 ease-in-out"
+                style={{ width: `${Math.max(0, Math.min(100, evaluationData.globalScore || 0))}%` }}
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Validation Prérequis</div>
+              <div className="font-semibold text-sm text-blue-600">10%</div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Évaluation MTP</div>
+              <div className="font-semibold text-sm text-green-600">20%</div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Entretien</div>
+              <div className="font-semibold text-sm text-purple-600">70%</div>
+            </div>
           </div>
           
           <div className="flex items-center gap-2">
@@ -293,13 +501,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         </CardContent>
       </Card>
 
-      {/* Protocole 1 - Présélection & Entretien Initial */}
+      {/* Protocole 1 - Validation et Entretien */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.protocol1.status)}
-              ✅ Protocole 1 : Présélection & Entretien Initial
+              Protocole 1 : Validation et Entretien
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.protocol1.status)}
@@ -311,158 +519,479 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Sous-section 1.1 : Validation des Prérequis */}
-          <div className="border rounded-lg p-4 bg-gray-50">
-            <h4 className="font-semibold mb-4 flex items-center gap-2">
+          
+          {/* Validation des Prérequis */}
+          <div className="border rounded-lg p-4 bg-gray-50 relative">
+            <div className="absolute top-4 right-4">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {calculateSectionScores(evaluationData.protocol1).documentaryScore.toFixed(1)}/10
+              </Badge>
+            </div>
+            <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
               <FileText className="w-4 h-4" />
-              1.1 Validation des Prérequis
+              Validation des Prérequis
             </h4>
             
             <div className="space-y-4">
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm">Vérification des documents (CV, diplômes)</Label>
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={evaluationData.protocol1.documentsValidated}
-                      onCheckedChange={(checked) => updateProtocol1('documentsValidated', checked)}
-                    />
-                    <Badge variant={evaluationData.protocol1.documentsValidated ? "default" : "destructive"}>
-                      {evaluationData.protocol1.documentsValidated ? "Validé" : "Non conforme"}
-                    </Badge>
-                  </div>
-                </div>
+                <Label className="text-sm font-medium">Évaluation Documentaire (CV, Diplômes, Certificats)</Label>
                 
-                {evaluationData.protocol1.documentsValidated && (
-                  <div className="flex justify-end">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="flex items-center gap-2"
-                      onClick={() => {
-                        const today = new Date();
-                        setInterviewDate(today);
-                        updateProtocol1('interviewer', 'Entretien programmé');
-                      }}
-                    >
-                      <CalendarLucide className="w-4 h-4" />
-                      Programmer l'entretien
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
                 <StarRating
-                  value={evaluationData.protocol1.positionAdequacy}
-                  onChange={(value) => updateProtocol1('positionAdequacy', value)}
-                  label="Adéquation avec les prérequis du poste (Métier)"
+                  value={evaluationData.protocol1.documentaryEvaluation.score}
+                  onChange={(value) => updateProtocol1('documentaryEvaluation', 'score', value)}
+                  label="Qualité et conformité des documents"
                 />
+                
                 <Textarea
-                  placeholder="Commentaire rapide..."
-                  value={evaluationData.protocol1.adequacyComment}
-                  onChange={(e) => updateProtocol1('adequacyComment', e.target.value)}
+                  placeholder="Commentaires sur les documents..."
+                  value={evaluationData.protocol1.documentaryEvaluation.comments}
+                  onChange={(e) => updateProtocol1('documentaryEvaluation', 'comments', e.target.value)}
                   className="min-h-[60px]"
                 />
               </div>
             </div>
           </div>
 
-          {/* Sous-section 1.2 : Évaluation de l'Entretien */}
-          <div className="border rounded-lg p-4 bg-blue-50">
-            <h4 className="font-semibold mb-4 flex items-center gap-2">
+          {/* Évaluation MTP - Taux d'adhérence MTP */}
+          <div className="border rounded-lg p-4 bg-blue-50 relative">
+            <div className="absolute top-4 right-4">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {calculateSectionScores(evaluationData.protocol1).mtpScore.toFixed(1)}/20
+              </Badge>
+            </div>
+            <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
+              <Users className="w-4 h-4" />
+              Évaluation MTP - Taux d'adhérence MTP
+            </h4>
+            
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="space-y-3">
+                  <StarRating
+                    value={evaluationData.protocol1.mtpAdherence.metier.score}
+                    onChange={(value) => updateProtocol1('mtpAdherence', 'metier.score', value)}
+                    label="Métier"
+                  />
+                  <Textarea
+                    placeholder="Commentaires métier..."
+                    value={evaluationData.protocol1.mtpAdherence.metier.comments}
+                    onChange={(e) => updateProtocol1('mtpAdherence', 'metier.comments', e.target.value)}
+                    className="min-h-[60px]"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <StarRating
+                    value={evaluationData.protocol1.mtpAdherence.talent.score}
+                    onChange={(value) => updateProtocol1('mtpAdherence', 'talent.score', value)}
+                    label="Talent"
+                  />
+                  <Textarea
+                    placeholder="Commentaires talent..."
+                    value={evaluationData.protocol1.mtpAdherence.talent.comments}
+                    onChange={(e) => updateProtocol1('mtpAdherence', 'talent.comments', e.target.value)}
+                    className="min-h-[60px]"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <StarRating
+                    value={evaluationData.protocol1.mtpAdherence.paradigme.score}
+                    onChange={(value) => updateProtocol1('mtpAdherence', 'paradigme.score', value)}
+                    label="Paradigme"
+                  />
+                  <Textarea
+                    placeholder="Commentaires paradigme..."
+                    value={evaluationData.protocol1.mtpAdherence.paradigme.comments}
+                    onChange={(e) => updateProtocol1('mtpAdherence', 'paradigme.comments', e.target.value)}
+                    className="min-h-[60px]"
+                  />
+                </div>
+              </div>
+              
+              {/* Bouton Programmer l'entretien */}
+              <div className="flex justify-end pt-4 border-t border-blue-200">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      size="lg"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg shadow-lg flex items-center gap-3"
+                    >
+                      <CalendarLucide className="w-5 h-5" />
+                      Programmer l'entretien
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0" align="center">
+                    <div className="p-4 space-y-4">
+                      <div className="text-center">
+                        <h4 className="font-semibold text-lg mb-2">Programmer l'entretien</h4>
+                        <p className="text-sm text-muted-foreground">Choisissez une date disponible</p>
+                      </div>
+                      
+                      {/* Calendrier personnalisé */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h5 className="font-medium">
+                            {format(new Date(), "MMMM yyyy", { locale: fr })}
+                          </h5>
+                          <div className="flex gap-2 text-xs">
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-green-500 rounded"></div>
+                              <span>Sélectionné</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-orange-500 rounded"></div>
+                              <span>Partiel</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-red-500 rounded"></div>
+                              <span>Complet</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* En-têtes des jours */}
+                        <div className="grid grid-cols-7 gap-1 text-xs text-center font-medium text-gray-500">
+                          <div>Dim</div>
+                          <div>Lun</div>
+                          <div>Mar</div>
+                          <div>Mer</div>
+                          <div>Jeu</div>
+                          <div>Ven</div>
+                          <div>Sam</div>
+                        </div>
+                        
+                        {/* Grille du calendrier */}
+                        <div className="grid grid-cols-7 gap-1">
+                          {generateCalendar().days.map((date, index) => {
+                            const isCurrentMonth = date.getMonth() === new Date().getMonth();
+                            const isToday = date.toDateString() === new Date().toDateString();
+                            const isFullyBooked = isDateFullyBooked(date);
+                            const isPartiallyBooked = isDatePartiallyBooked(date);
+                            const isSelected = isDateSelected(date);
+                            const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+                            
+                            return (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  if (!isFullyBooked && !isPast && isCurrentMonth) {
+                                    setInterviewDate(date);
+                                    updateProtocol1('interview', 'interviewDate', date);
+                                  }
+                                }}
+                                disabled={isFullyBooked || isPast || !isCurrentMonth}
+                                className={cn(
+                                  "w-8 h-8 text-xs rounded-md transition-all duration-200",
+                                  "hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500",
+                                  {
+                                    // Date sélectionnée
+                                    "bg-green-500 text-white hover:bg-green-600": isSelected,
+                                    // Date complètement occupée
+                                    "bg-red-500 text-white cursor-not-allowed": isFullyBooked,
+                                    // Date partiellement occupée
+                                    "bg-orange-500 text-white hover:bg-orange-600": isPartiallyBooked && !isSelected,
+                                    // Date passée ou autre mois
+                                    "text-gray-300 cursor-not-allowed": isPast || !isCurrentMonth,
+                                    // Aujourd'hui
+                                    "border-2 border-blue-500": isToday && !isSelected && !isFullyBooked && !isPartiallyBooked,
+                                    // Date normale disponible
+                                    "hover:bg-blue-50 text-gray-700": !isSelected && !isFullyBooked && !isPartiallyBooked && !isPast && isCurrentMonth,
+                                  }
+                                )}
+                              >
+                                {date.getDate()}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      {/* Sélection d'heure */}
+                      {interviewDate && (
+                        <div className="space-y-3 border-t pt-4">
+                          <Label className="text-sm font-medium">Choisissez un créneau</Label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {timeSlots.map((time) => {
+                              const isBusy = isTimeSlotBusy(interviewDate, time);
+                              const isSelected = selectedTimeSlot === time;
+                              
+                              return (
+                                <button
+                                  key={time}
+                                  onClick={() => {
+                                    if (!isBusy) {
+                                      setSelectedTimeSlot(time);
+                                      const [hours, minutes] = time.split(':');
+                                      const newDate = new Date(interviewDate);
+                                      newDate.setHours(parseInt(hours), parseInt(minutes));
+                                      setInterviewDate(newDate);
+                                      updateProtocol1('interview', 'interviewDate', newDate);
+                                    }
+                                  }}
+                                  disabled={isBusy}
+                                  className={cn(
+                                    "px-3 py-2 text-xs rounded-md border transition-all duration-200",
+                                    {
+                                      // Créneau sélectionné
+                                      "bg-blue-500 text-white border-blue-500": isSelected,
+                                      // Créneau occupé
+                                      "bg-red-500 text-white border-red-500 cursor-not-allowed": isBusy,
+                                      // Créneau disponible
+                                      "bg-white hover:bg-blue-50 border-gray-300": !isBusy && !isSelected,
+                                    }
+                                  )}
+                                >
+                                  {time}
+                                  {isBusy && <span className="ml-1">✕</span>}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          
+                          {selectedTimeSlot && (
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                              <p className="text-sm font-medium text-green-800">
+                                Entretien programmé le {format(interviewDate, "EEEE dd MMMM yyyy", { locale: fr })} à {selectedTimeSlot}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </div>
+
+          {/* Entretien */}
+          <div className="border rounded-lg p-4 bg-green-50 relative">
+            <div className="absolute top-4 right-4">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {calculateSectionScores(evaluationData.protocol1).interviewScore.toFixed(1)}/70
+              </Badge>
+            </div>
+            <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
               <User className="w-4 h-4" />
-              1.2 Évaluation de l'Entretien
+              Entretien
             </h4>
             
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Entretien réalisé le</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !interviewDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {interviewDate ? format(interviewDate, "PPP", { locale: fr }) : "Sélectionner une date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={interviewDate}
-                        onSelect={setInterviewDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Interviewer</Label>
-                  <Input
-                    placeholder="Nom de l'interviewer"
-                    value={evaluationData.protocol1.interviewer}
-                    onChange={(e) => updateProtocol1('interviewer', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <StarRating
-                    value={evaluationData.protocol1.cultureAlignment}
-                    onChange={(value) => updateProtocol1('cultureAlignment', value)}
-                    label="Alignement avec la culture d'entreprise (Paradigme)"
-                  />
-                  <Textarea
-                    placeholder="Commentaire..."
-                    value={evaluationData.protocol1.cultureComment}
-                    onChange={(e) => updateProtocol1('cultureComment', e.target.value)}
-                    className="min-h-[60px]"
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <StarRating
-                    value={evaluationData.protocol1.pastAchievements}
-                    onChange={(value) => updateProtocol1('pastAchievements', value)}
-                    label="Qualité des réalisations passées (Talent)"
-                  />
-                  <Textarea
-                    placeholder="Commentaire..."
-                    value={evaluationData.protocol1.achievementsComment}
-                    onChange={(e) => updateProtocol1('achievementsComment', e.target.value)}
-                    className="min-h-[60px]"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>Date d'entretien</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !interviewDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {interviewDate && selectedTimeSlot ? 
+                        format(interviewDate, "EEEE dd MMMM yyyy", { locale: fr }) + ` à ${selectedTimeSlot}` :
+                        "Aucun entretien programmé"
+                      }
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0" align="start">
+                    <div className="p-4 space-y-4">
+                      <div className="text-center">
+                        <h4 className="font-semibold text-lg mb-2">Modifier l'entretien</h4>
+                        <p className="text-sm text-muted-foreground">Choisissez une nouvelle date et heure</p>
+                      </div>
+                      
+                      {/* Calendrier personnalisé identique */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h5 className="font-medium">
+                            {format(new Date(), "MMMM yyyy", { locale: fr })}
+                          </h5>
+                          <div className="flex gap-2 text-xs">
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-green-500 rounded"></div>
+                              <span>Sélectionné</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-orange-500 rounded"></div>
+                              <span>Partiel</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-red-500 rounded"></div>
+                              <span>Complet</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* En-têtes des jours */}
+                        <div className="grid grid-cols-7 gap-1 text-xs text-center font-medium text-gray-500">
+                          <div>Dim</div>
+                          <div>Lun</div>
+                          <div>Mar</div>
+                          <div>Mer</div>
+                          <div>Jeu</div>
+                          <div>Ven</div>
+                          <div>Sam</div>
+                        </div>
+                        
+                        {/* Grille du calendrier */}
+                        <div className="grid grid-cols-7 gap-1">
+                          {generateCalendar().days.map((date, index) => {
+                            const isCurrentMonth = date.getMonth() === new Date().getMonth();
+                            const isToday = date.toDateString() === new Date().toDateString();
+                            const isFullyBooked = isDateFullyBooked(date);
+                            const isPartiallyBooked = isDatePartiallyBooked(date);
+                            const isSelected = isDateSelected(date);
+                            const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+                            
+                            return (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  if (!isFullyBooked && !isPast && isCurrentMonth) {
+                                    setInterviewDate(date);
+                                    setSelectedTimeSlot(''); // Reset time slot
+                                    updateProtocol1('interview', 'interviewDate', date);
+                                  }
+                                }}
+                                disabled={isFullyBooked || isPast || !isCurrentMonth}
+                                className={cn(
+                                  "w-8 h-8 text-xs rounded-md transition-all duration-200",
+                                  "hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500",
+                                  {
+                                    // Date sélectionnée
+                                    "bg-green-500 text-white hover:bg-green-600": isSelected,
+                                    // Date complètement occupée
+                                    "bg-red-500 text-white cursor-not-allowed": isFullyBooked,
+                                    // Date partiellement occupée
+                                    "bg-orange-500 text-white hover:bg-orange-600": isPartiallyBooked && !isSelected,
+                                    // Date passée ou autre mois
+                                    "text-gray-300 cursor-not-allowed": isPast || !isCurrentMonth,
+                                    // Aujourd'hui
+                                    "border-2 border-blue-500": isToday && !isSelected && !isFullyBooked && !isPartiallyBooked,
+                                    // Date normale disponible
+                                    "hover:bg-blue-50 text-gray-700": !isSelected && !isFullyBooked && !isPartiallyBooked && !isPast && isCurrentMonth,
+                                  }
+                                )}
+                              >
+                                {date.getDate()}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      {/* Sélection d'heure */}
+                      {interviewDate && (
+                        <div className="space-y-3 border-t pt-4">
+                          <Label className="text-sm font-medium">Choisissez un créneau</Label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {timeSlots.map((time) => {
+                              const isBusy = isTimeSlotBusy(interviewDate, time);
+                              const isSelected = selectedTimeSlot === time;
+                              
+                              return (
+                                <button
+                                  key={time}
+                                  onClick={() => {
+                                    if (!isBusy) {
+                                      setSelectedTimeSlot(time);
+                                      const [hours, minutes] = time.split(':');
+                                      const newDate = new Date(interviewDate);
+                                      newDate.setHours(parseInt(hours), parseInt(minutes));
+                                      setInterviewDate(newDate);
+                                      updateProtocol1('interview', 'interviewDate', newDate);
+                                    }
+                                  }}
+                                  disabled={isBusy}
+                                  className={cn(
+                                    "px-3 py-2 text-xs rounded-md border transition-all duration-200",
+                                    {
+                                      // Créneau sélectionné
+                                      "bg-blue-500 text-white border-blue-500": isSelected,
+                                      // Créneau occupé
+                                      "bg-red-500 text-white border-red-500 cursor-not-allowed": isBusy,
+                                      // Créneau disponible
+                                      "bg-white hover:bg-blue-50 border-gray-300": !isBusy && !isSelected,
+                                    }
+                                  )}
+                                >
+                                  {time}
+                                  {isBusy && <span className="ml-1">✕</span>}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          
+                          {selectedTimeSlot && (
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                              <p className="text-sm font-medium text-green-800">
+                                Entretien programmé le {format(interviewDate, "EEEE dd MMMM yyyy", { locale: fr })} à {selectedTimeSlot}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="space-y-4">
-                <StarRating
-                  value={evaluationData.protocol1.communication}
-                  onChange={(value) => updateProtocol1('communication', value)}
-                  label="Communication et Leadership"
-                />
-                <Textarea
-                  placeholder="Commentaire..."
-                  value={evaluationData.protocol1.communicationComment}
-                  onChange={(e) => updateProtocol1('communicationComment', e.target.value)}
-                  className="min-h-[60px]"
-                />
+                <Label className="text-sm font-medium">Évaluation Adhérence MTP (Évaluation Physique)</Label>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                    <StarRating
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.score}
+                      onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.metier.score', value)}
+                      label="Métier"
+                    />
+                    <Textarea
+                      placeholder="Commentaires métier..."
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.comments}
+                      onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.metier.comments', e.target.value)}
+                      className="min-h-[60px]"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <StarRating
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.score}
+                      onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.talent.score', value)}
+                      label="Talent"
+                    />
+                    <Textarea
+                      placeholder="Commentaires talent..."
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.comments}
+                      onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.talent.comments', e.target.value)}
+                      className="min-h-[60px]"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <StarRating
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.score}
+                      onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.paradigme.score', value)}
+                      label="Paradigme"
+                    />
+                    <Textarea
+                      placeholder="Commentaires paradigme..."
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.comments}
+                      onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.paradigme.comments', e.target.value)}
+                      className="min-h-[60px]"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Compte-rendu général de l'entretien</Label>
                 <Textarea
                   placeholder="Résumé détaillé de l'entretien..."
-                  value={evaluationData.protocol1.generalSummary}
-                  onChange={(e) => updateProtocol1('generalSummary', e.target.value)}
+                  value={evaluationData.protocol1.interview.generalSummary}
+                  onChange={(e) => updateProtocol1('interview', 'generalSummary', e.target.value)}
                   className="min-h-[120px]"
                 />
               </div>
@@ -498,7 +1027,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.protocol2.status)}
-              🚀 Protocole 2 : Évaluation Approfondie & Tests
+              Protocole 2 : Évaluation Approfondie & Tests
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.protocol2.status)}
@@ -509,8 +1038,9 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             </div>
           </div>
           {evaluationData.protocol1.score < 60 && (
-            <p className="text-sm text-amber-600 bg-amber-50 p-2 rounded">
-              ⚠️ Ce protocole sera accessible une fois le Protocole 1 validé (score ≥ 60)
+            <p className="text-sm text-amber-600 bg-amber-50 p-2 rounded flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              Ce protocole sera accessible une fois le Protocole 1 validé (score ≥ 60)
             </p>
           )}
         </CardHeader>
