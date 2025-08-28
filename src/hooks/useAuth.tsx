@@ -190,16 +190,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         channelRef.current = null;
       }
       
-      // Then perform the actual sign out
-      const { error } = await supabase.auth.signOut();
-      
-      // Clear any cached data
+      // Clear any cached data first
       if (typeof window !== 'undefined') {
-        // Clear localStorage if needed
+        // Clear localStorage
         localStorage.removeItem('supabase.auth.token');
+        // Clear all supabase related storage
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('sb-') || key.includes('supabase')) {
+            localStorage.removeItem(key);
+          }
+        });
       }
       
-      return { error };
+      // Then perform the actual sign out - ignore errors as we've already cleared local state
+      try {
+        await supabase.auth.signOut({ scope: 'local' }); // Use local scope to avoid 403 errors
+      } catch (signOutError) {
+        console.warn('Sign out error (non-blocking):', signOutError);
+        // Don't return error as local state is already cleared
+      }
+      
+      return { error: null };
     } catch (error) {
       console.error('Error during sign out:', error);
       return { error: error as AuthError };
@@ -345,20 +356,4 @@ export function useAuth() {
         user: null,
         session: null,
         isLoading: false,
-        isRoleLoading: false,
-        isUpdating: false,
-        signUp: async () => ({ error: null }),
-        signIn: async () => ({ data: null, error: null }),
-        signOut: async () => ({ error: null }),
-        updateUser: async () => false,
-        resetPassword: async () => ({ error: null }),
-        isCandidate: false,
-        isRecruiter: false,
-        isAdmin: false,
-        isObserver: false,
-      } as AuthContextType;
-    }
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
+        isRoleLoading: fa

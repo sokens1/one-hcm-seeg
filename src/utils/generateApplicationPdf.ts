@@ -224,7 +224,7 @@ export const generateApplicationPdf = (data: ApplicationData) => {
 
   // Récupérer les questions spécifiques au poste
   const mtpQuestions = getMetierQuestionsForTitle(data.jobTitle || '');
-  
+
   // Métier
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);

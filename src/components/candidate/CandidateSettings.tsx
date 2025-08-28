@@ -238,3 +238,218 @@ export function CandidateSettings() {
     </div>
   );
 }
+              <Switch
+
+                id="marketing-emails"
+
+                checked={settings.marketingEmails}
+
+                onCheckedChange={(checked) => handleSettingChange("marketingEmails", checked)}
+
+                className="self-start sm:self-center"
+
+              />
+
+            </div>
+
+          </CardContent>
+
+        </Card>
+
+
+
+        {/* Préférences d'affichage */}
+
+        <Card>
+
+          <CardHeader>
+
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+
+              <Palette className="w-4 h-4 sm:w-5 sm:h-5" />
+
+              Apparence
+
+            </CardTitle>
+
+          </CardHeader>
+
+          <CardContent className="space-y-4 sm:space-y-6">
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+
+              <div className="space-y-0.5 flex-1">
+
+                <Label htmlFor="language" className="text-sm sm:text-base">Langue</Label>
+
+                <p className="text-xs sm:text-sm text-muted-foreground">
+
+                  Choisissez votre langue préférée
+
+                </p>
+
+              </div>
+
+              <Select value={settings.language} onValueChange={(value) => handleSettingChange("language", value)}>
+
+                <SelectTrigger className="w-full sm:w-40">
+
+                  <SelectValue />
+
+                </SelectTrigger>
+
+                <SelectContent>
+
+                  <SelectItem value="fr">Français</SelectItem>
+
+                  <SelectItem value="en">English</SelectItem>
+
+                </SelectContent>
+
+              </Select>
+
+            </div>
+
+            
+
+            <Separator />
+
+            
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+
+              <div className="space-y-0.5 flex-1">
+
+                <Label htmlFor="theme" className="text-sm sm:text-base">Thème</Label>
+
+                <p className="text-xs sm:text-sm text-muted-foreground">
+
+                  Sélectionnez votre thème d'affichage
+
+                </p>
+
+              </div>
+
+              <Select value={settings.theme} onValueChange={(value) => handleSettingChange("theme", value)}>
+
+                <SelectTrigger className="w-full sm:w-40">
+
+                  <SelectValue />
+
+                </SelectTrigger>
+
+                <SelectContent>
+
+                  <SelectItem value="light">Clair</SelectItem>
+
+                  <SelectItem value="dark">Sombre</SelectItem>
+
+                  <SelectItem value="auto">Automatique</SelectItem>
+
+                </SelectContent>
+
+              </Select>
+
+            </div>
+
+          </CardContent>
+
+        </Card>
+
+
+
+        {/* Sécurité */}
+
+        <Card>
+
+          <CardHeader>
+
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
+
+              Sécurité
+
+            </CardTitle>
+
+          </CardHeader>
+
+          <CardContent className="space-y-3 sm:space-y-4">
+
+            <Button variant="outline" className="w-full justify-start text-sm sm:text-base">
+
+              Changer le mot de passe
+
+            </Button>
+
+            <Button variant="outline" className="w-full justify-start text-sm sm:text-base">
+
+              Historique des connexions
+
+            </Button>
+
+            <Button variant="outline" className="w-full justify-start text-sm sm:text-base">
+
+              Gérer les sessions actives
+
+            </Button>
+
+          </CardContent>
+
+        </Card>
+
+
+
+        {/* Actions du compte */}
+
+        <Card>
+
+          <CardHeader>
+
+            <CardTitle className="text-base sm:text-lg">Actions du compte</CardTitle>
+
+          </CardHeader>
+
+          <CardContent className="space-y-3 sm:space-y-4">
+
+            <Button variant="outline" className="w-full justify-start text-sm sm:text-base">
+
+              Télécharger mes données
+
+            </Button>
+
+            <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 text-sm sm:text-base">
+
+              Supprimer mon compte
+
+            </Button>
+
+            <Separator />
+
+            <Button 
+
+              variant="destructive" 
+
+              onClick={handleLogout}
+
+              className="w-full gap-2 text-sm sm:text-base"
+
+            >
+
+              <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+
+              Se déconnecter
+
+            </Button>
+
+          </CardContent>
+
+        </Card>
+
+      </div>
+
+    </div>
+
+  );
+
+}

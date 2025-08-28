@@ -15,6 +15,8 @@ import { useApplications } from "@/hooks/useApplications";
 import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { useApplicationDraft } from "@/hooks/useApplicationDraft";
+import { DraftSaveIndicator, DraftRestoreNotification } from "@/components/ui/DraftSaveIndicator";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -80,6 +82,21 @@ interface FormData {
 
 export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
   const navigate = useNavigate();
+  
+  // Hook pour gérer les brouillons (seulement en mode création)
+  const {
+    draftData,
+    isDraftLoaded,
+    isSaving,
+    lastSaved,
+    saveDraft,
+    clearDraft,
+    enableAutoSave,
+    disableAutoSave
+  } = useApplicationDraft(jobId || '');
+  
+  // État pour gérer la notification de restauration
+  const [showDraftRestore, setShowDraftRestore] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(() => {
     if (typeof initialStep === 'number' && initialStep >= 1) return initialStep;
     try {
@@ -138,34 +155,34 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       }
     } catch { /* ignore */ }
     return {
-      firstName: "",
-      lastName: "",
-      email: "",
-      matricule: "",
-      phone: "",
-      gender: "",
-      dateOfBirth: null,
-      currentPosition: "",
-      address: "",
-      cv: null,
-      coverLetter: null,
-      yearsOfExperience: "",
-      certificates: [],
-      additionalCertificates: [],
-      references: "",
-      // Partie Métier
-      metier1: "",
-      metier2: "",
-      metier3: "",
-      metier4: "",
-      metier5: "",
-      metier6: "",
-      metier7: "",
-      // Partie Talent
-      talent1: "", talent2: "", talent3: "", talent4: "", talent5: "", talent6: "", talent7: "",
-      // Partie Paradigme
-      paradigme1: "", paradigme2: "", paradigme3: "", paradigme4: "", paradigme5: "", paradigme6: "", paradigme7: "",
-      consent: false
+    firstName: "",
+    lastName: "",
+    email: "",
+    matricule: "",
+    phone: "",
+    gender: "",
+    dateOfBirth: null,
+    currentPosition: "",
+    address: "",
+    cv: null,
+    coverLetter: null,
+    yearsOfExperience: "",
+    certificates: [],
+    additionalCertificates: [],
+    references: "",
+    // Partie Métier
+    metier1: "",
+    metier2: "",
+    metier3: "",
+    metier4: "",
+    metier5: "",
+    metier6: "",
+    metier7: "",
+    // Partie Talent
+    talent1: "", talent2: "", talent3: "", talent4: "", talent5: "", talent6: "", talent7: "",
+    // Partie Paradigme
+    paradigme1: "", paradigme2: "", paradigme3: "", paradigme4: "", paradigme5: "", paradigme6: "", paradigme7: "",
+    consent: false
     };
   });
 
@@ -207,17 +224,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         setFormData((prev) => {
           const next = {
-            ...prev,
-            firstName: prev.firstName || dbUser?.first_name || metaFirst || '',
-            lastName: prev.lastName || dbUser?.last_name || metaLast || '',
-            email: prev.email || dbUser?.email || user.email || '',
-            matricule: prev.matricule || dbUser?.matricule || '',
-            phone: prev.phone || dbUser?.phone || '',
-            dateOfBirth: prev.dateOfBirth || (profile?.birth_date ? new Date(profile.birth_date) : null),
-            currentPosition: prev.currentPosition || profile?.current_position || '',
-            gender: prev.gender || profile?.gender || '',
-            yearsOfExperience: prev.yearsOfExperience || (profile?.years_experience ? String(profile.years_experience) : ''),
-            address: prev.address || profile?.address || '',
+          ...prev,
+          firstName: prev.firstName || dbUser?.first_name || metaFirst || '',
+          lastName: prev.lastName || dbUser?.last_name || metaLast || '',
+          email: prev.email || dbUser?.email || user.email || '',
+          matricule: prev.matricule || dbUser?.matricule || '',
+          phone: prev.phone || dbUser?.phone || '',
+          dateOfBirth: prev.dateOfBirth || (profile?.birth_date ? new Date(profile.birth_date) : null),
+          currentPosition: prev.currentPosition || profile?.current_position || '',
+          gender: prev.gender || profile?.gender || '',
+          yearsOfExperience: prev.yearsOfExperience || (profile?.years_experience ? String(profile.years_experience) : ''),
+          address: prev.address || profile?.address || '',
           };
           try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
           return next;
@@ -233,6 +250,67 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       isMounted = false;
     };
   }, [user, user?.id, user?.email, storageKey]);
+
+  // Gérer la restauration des brouillons
+  useEffect(() => {
+    if (mode === 'create' && isDraftLoaded && draftData && Object.keys(draftData.form_data).length > 0) {
+      // Vérifier s'il y a des données significatives dans le brouillon
+      const hasSignificantData = Object.entries(draftData.form_data).some(([key, value]) => {
+        if (key === 'firstName' || key === 'lastName' || key === 'email') return false; // Données pré-remplies
+        return value && value !== '';
+      });
+      
+      if (hasSignificantData) {
+        setShowDraftRestore(true);
+      }
+    }
+  }, [mode, isDraftLoaded, draftData]);
+
+  // Fonctions de gestion des brouillons
+  const restoreDraft = () => {
+    if (draftData) {
+      // Restaurer les données du formulaire
+      setFormData(prevData => ({
+        ...prevData,
+        ...draftData.form_data
+      }));
+      
+      // Restaurer l'état de l'UI
+      if (draftData.ui_state.currentStep) {
+        setCurrentStep(draftData.ui_state.currentStep);
+      }
+      if (draftData.ui_state.activeTab) {
+        setActiveTab(draftData.ui_state.activeTab as 'metier' | 'talent' | 'paradigme');
+      }
+      
+      setShowDraftRestore(false);
+      toast.success('Brouillon restauré avec succès !');
+    }
+  };
+
+  const ignoreDraft = () => {
+    setShowDraftRestore(false);
+    clearDraft(); // Supprimer le brouillon de la base de données
+  };
+
+  // Auto-save des brouillons
+  useEffect(() => {
+    if (mode === 'create' && isDraftLoaded && !showDraftRestore) {
+      const uiState = {
+        currentStep,
+        activeTab,
+        completedSections: [], // Vous pouvez ajouter la logique pour tracker les sections complétées
+        lastActiveField: '' // Vous pouvez tracker le dernier champ actif
+      };
+      
+      // Activer l'auto-save avec les données actuelles
+      enableAutoSave(formData, uiState);
+    }
+    
+    return () => {
+      disableAutoSave();
+    };
+  }, [mode, isDraftLoaded, showDraftRestore, formData, currentStep, activeTab, enableAutoSave, disableAutoSave]);
 
   // Prefill from existing application when editing
   useEffect(() => {
@@ -259,30 +337,30 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         setFormData(prev => {
           const next = {
-            ...prev,
-            // Références et MTP
-            references: refContacts ?? prev.references,
-            metier1: mtp?.metier?.[0] ?? prev.metier1,
-            metier2: mtp?.metier?.[1] ?? prev.metier2,
-            metier3: mtp?.metier?.[2] ?? prev.metier3,
-            metier4: mtp?.metier?.[3] ?? prev.metier4,
-            metier5: mtp?.metier?.[4] ?? prev.metier5,
-            metier6: mtp?.metier?.[5] ?? prev.metier6,
-            metier7: mtp?.metier?.[6] ?? prev.metier7,
-            talent1: mtp?.talent?.[0] ?? prev.talent1,
-            talent2: mtp?.talent?.[1] ?? prev.talent2,
-            talent3: mtp?.talent?.[2] ?? prev.talent3,
-            talent4: mtp?.talent?.[3] ?? prev.talent4,
-            talent5: mtp?.talent?.[4] ?? prev.talent5,
-            talent6: mtp?.talent?.[5] ?? prev.talent6,
-            talent7: mtp?.talent?.[6] ?? prev.talent7,
-            paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
-            paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
-            paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
-            paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
-            paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
-            paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
-            paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
+          ...prev,
+          // Références et MTP
+          references: refContacts ?? prev.references,
+          metier1: mtp?.metier?.[0] ?? prev.metier1,
+          metier2: mtp?.metier?.[1] ?? prev.metier2,
+          metier3: mtp?.metier?.[2] ?? prev.metier3,
+          metier4: mtp?.metier?.[3] ?? prev.metier4,
+          metier5: mtp?.metier?.[4] ?? prev.metier5,
+          metier6: mtp?.metier?.[5] ?? prev.metier6,
+          metier7: mtp?.metier?.[6] ?? prev.metier7,
+          talent1: mtp?.talent?.[0] ?? prev.talent1,
+          talent2: mtp?.talent?.[1] ?? prev.talent2,
+          talent3: mtp?.talent?.[2] ?? prev.talent3,
+          talent4: mtp?.talent?.[3] ?? prev.talent4,
+          talent5: mtp?.talent?.[4] ?? prev.talent5,
+          talent6: mtp?.talent?.[5] ?? prev.talent6,
+          talent7: mtp?.talent?.[6] ?? prev.talent7,
+          paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
+          paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
+          paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
+          paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
+          paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
+          paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
+          paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
           };
           try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
           return next;
@@ -306,14 +384,14 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
           setFormData(prev => {
             const next = {
-              ...prev,
-              // Informations personnelles depuis la candidature existante
-              firstName: userData?.first_name || prev.firstName,
-              lastName: userData?.last_name || prev.lastName,
-              email: userData?.email || prev.email,
-              dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
-              gender: profileData?.gender || prev.gender,
-              currentPosition: profileData?.current_position || prev.currentPosition,
+            ...prev,
+            // Informations personnelles depuis la candidature existante
+            firstName: userData?.first_name || prev.firstName,
+            lastName: userData?.last_name || prev.lastName,
+            email: userData?.email || prev.email,
+            dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
+            gender: profileData?.gender || prev.gender,
+            currentPosition: profileData?.current_position || prev.currentPosition,
             };
             try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
             return next;
@@ -349,16 +427,16 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         const cv = data.find(d => d.document_type === 'cv');
         const cover = data.find(d => d.document_type === 'cover_letter');
-        const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
+                const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
         const additionalCertificates = data.filter(d => d.document_type === 'certificate').map(makeUploaded);
 
         setFormData(prev => {
           const next = {
-            ...prev,
-            cv: cv ? makeUploaded(cv) : prev.cv,
-            coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
-            certificates: certificates.length ? certificates : prev.certificates,
-            additionalCertificates: additionalCertificates.length ? additionalCertificates : prev.additionalCertificates,
+          ...prev,
+          cv: cv ? makeUploaded(cv) : prev.cv,
+          coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
+          certificates: certificates.length ? certificates : prev.certificates,
+          additionalCertificates: additionalCertificates.length ? additionalCertificates : prev.additionalCertificates,
           };
           try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
           return next;
@@ -841,19 +919,16 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         closeButton: true,
       });
       
-      // Supprimer le brouillon serveur après un envoi réussi
-      try {
-        if (user?.id && (applicationIdForDocs || jobId)) {
-          await supabase
-            .from('application_drafts')
-            .delete()
-            .eq('user_id', user.id)
-            .eq('job_offer_id', jobId as string);
+      // Supprimer le brouillon après un envoi réussi
+      if (mode === 'create') {
+        try {
+          await clearDraft();
+          console.log('✅ Brouillon supprimé après soumission réussie');
+        } catch (e) {
+          console.warn('Failed to delete draft after submit (non-blocking):', (e as any)?.message || e);
         }
-      } catch (e) {
-        console.warn('Failed to delete draft after submit (non-blocking):', (e as any)?.message || e);
       }
-
+      
       // Appeler onSubmit si fourni après un délai
       setTimeout(() => {
         onSubmit?.();
@@ -967,6 +1042,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               Découvrez un processus de candidature révolutionnaire qui valorise vos compétences, 
               votre potentiel et votre ambition.
             </p>
+            
+            {/* Indicateur de sauvegarde pour les brouillons */}
+            {mode === 'create' && (
+              <div className="flex justify-center mt-4">
+                <DraftSaveIndicator 
+                  isSaving={isSaving}
+                  lastSaved={lastSaved}
+                  className="bg-white/20 text-white border-white/30"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1008,6 +1094,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             {/* Top guide text removed to avoid duplication; sidebar guide remains */}
           </div>
         </div>
+
+        {/* Notification de restauration de brouillon */}
+        {showDraftRestore && lastSaved && (
+          <div className="max-w-4xl mx-auto mb-6">
+            <DraftRestoreNotification
+              onRestore={restoreDraft}
+              onIgnore={ignoreDraft}
+              lastSaved={lastSaved}
+            />
+          </div>
+        )}
 
         {/* Form Content with modern layout */}
         <div className="max-w-4xl mx-auto">

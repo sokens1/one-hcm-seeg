@@ -550,7 +550,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             
             <div className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="space-y-3">
+              <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.documentaryEvaluation.cv.score}
                     onChange={(value) => updateProtocol1('documentaryEvaluation', 'cv.score', value)}
@@ -600,8 +600,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
                 {calculateSectionScores(evaluationData.protocol1).mtpScore.toFixed(1)}%
-              </Badge>
-            </div>
+                    </Badge>
+                  </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
               <Users className="w-4 h-4" />
               Évaluation MTP - Taux d'adhérence MTP
