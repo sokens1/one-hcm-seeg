@@ -15,6 +15,7 @@ interface ApplicationData {
   coverLetter?: { name: string } | null;
   integrityLetter?: { name: string } | null;
   projectIdea?: { name: string } | null;
+  diplomas?: { name: string }[];
   certificates?: { name: string }[];
   recommendations?: { name: string }[];
   // MTP Questions - Métier
@@ -158,19 +159,20 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       isFilled: !!data.coverLetter?.name
     },
     { 
+      label: 'Diplômes', 
+      value: data.diplomas?.length > 0 
+        ? `${data.diplomas.length} fichier(s)` 
+        : 'Aucun fichier',
+      isFilled: data.diplomas?.length > 0
+    },
+    { 
       label: 'Certificats', 
       value: data.certificates?.length > 0 
         ? `${data.certificates.length} fichier(s)` 
         : 'Aucun fichier',
       isFilled: data.certificates?.length > 0
     },
-    { 
-      label: 'Lettres de Recommandation', 
-      value: data.recommendations?.length > 0 
-        ? `${data.recommendations.length} fichier(s)` 
-        : 'Aucun fichier',
-      isFilled: data.recommendations?.length > 0
-    },
+
   ];
 
   // Afficher les documents

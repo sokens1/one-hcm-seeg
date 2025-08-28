@@ -60,6 +60,54 @@ export const predefinedQuestions: PredefinedQuestion[] = [
     question: "Problème technique",
     keywords: ["bug", "erreur", "technique", "connexion", "chargement"],
     response: "Dépannage rapide :\n1. Actualisez la page (F5)\n2. Essayez un autre navigateur\n\nSi le problème persiste :\n📧 support@seeg-talentsource.com\n📞 +241 076402886"
+  },
+  {
+    id: "err1",
+    question: "Erreur affichant un code script",
+    keywords: ["script", "code", "erreur", "stack", "trace", "bundling", "maintenance"],
+    response: "Ce type d'erreur apparaît généralement lors d'une mise à jour ou d'un incident de chargement.\n• Vérifiez si une maintenance est en cours\n• Actualisez la page (Ctrl/Cmd+R) ou videz le cache (Ctrl+F5)\n• Réessayez après 1 à 2 minutes\nSi le problème persiste, contactez le support avec une capture d'écran."
+  },
+  {
+    id: "err2",
+    question: "Les boutons ne réagissent pas (login, register)",
+    keywords: ["bouton", "clique", "click", "login", "register", "connexion", "inscription", "bloqué"],
+    response: "Essayez ces étapes :\n• Actualisez la page\n• Assurez-vous que tous les champs obligatoires sont valides\n• Attendez la fin d'une action en cours (icône de chargement)\n• Essayez un autre navigateur (Chrome/Edge/Firefox)\n• Vérifiez qu'aucune maintenance n'est en cours"
+  },
+  {
+    id: "err3",
+    question: "Maintenance",
+    keywords: ["maintenance", "indisponible", "maj", "mise à jour", "downtime"],
+    response: "MISE À JOUR : une indisponibilité du site peut être prévue entre 00h00 et 00h40 lors des fenêtres de maintenance planifiées.\nDurant ce créneau, certaines pages peuvent être inaccessibles ou lentes. Réessayez après la fenêtre indiquée."
+  },
+  {
+    id: "err4",
+    question: "Puis-je candidater à plusieurs postes ?",
+    keywords: ["plusieurs", "multi", "postes", "offres", "candidater"],
+    response: "Oui, vous pouvez postuler à plusieurs offres.\n1) Ouvrez le catalogue des offres\n2) Cliquez sur 'Postuler' pour chaque offre\n3) Suivez l'état de chaque dossier dans 'Mes candidatures'"
+  },
+  {
+    id: "err5",
+    question: "La page des offres charge longtemps",
+    keywords: ["offres", "chargement", "lent", "long", "catalogue"],
+    response: "Si la page charge longtemps :\n• Patientez 1 à 2 minutes (surtout après une mise à jour)\n• Actualisez la page\n• Essayez une autre connexion (réseau d'entreprise / 4G)\n• Si cela persiste, contactez le support"
+  },
+  {
+    id: "err6",
+    question: "Comment retrouver mes informations",
+    keywords: ["retrouver", "informations", "mes infos", "profil", "données"],
+    response: "Rendez-vous dans votre Espace Candidat → Mon Profil / Paramètres.\nVous pouvez consulter et mettre à jour : informations personnelles, coordonnées, adresse, et documents déposés.\nAstuce : suivez la progression de complétion de profil et téléchargez vos dossiers depuis 'Mes candidatures' si disponible."
+  },
+  {
+    id: "err7",
+    question: "J'ai oublié mon mot de passe",
+    keywords: ["mot de passe", "oublié", "reset", "réinitialiser", "email"],
+    response: "Sur l'écran de connexion, cliquez sur 'Mot de passe oublié', saisissez votre email.\nVous recevrez un lien de réinitialisation (page /reset-password).\nVérifiez vos spams. En cas d'erreur 'email introuvable', vérifiez l'adresse. Attendez ~60s entre deux demandes."
+  },
+  {
+    id: "err8",
+    question: "Je ne vois pas mes notifications",
+    keywords: ["notifications", "alerte", "cloche", "non lu", "messages"],
+    response: "Dans l'espace candidat, ouvrez la cloche de notifications en haut.\n• Actualisez la page et vérifiez que vous êtes connecté au bon compte\n• Si aucune notification n'apparaît, il se peut qu'il n'y ait pas de nouveauté sur vos dossiers\n• Vérifiez votre messagerie pour les emails\nSi le souci persiste, contactez le support"
   }
 ];
 
