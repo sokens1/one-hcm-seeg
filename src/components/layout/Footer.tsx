@@ -43,7 +43,7 @@ export function Footer() {
       return;
     }
     // Authenticated candidate -> keep them in their space
-    navigate("/candidate/dashboard");
+    navigate("/candidate/dashboard?view=dashboard");
   };
   return (
     <footer className="bg-primary-dark text-white mt-16">

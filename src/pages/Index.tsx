@@ -7,6 +7,9 @@ import { JobCard } from "@/components/ui/job-card";
 import { ApplicationDeadlineCounter } from "@/components/ApplicationDeadlineCounter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Chatbot } from "@/components/ui/Chatbot";
 import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { isPreLaunch } from "@/utils/launchGate";
@@ -16,27 +19,54 @@ import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, isCandidate, isRecruiter, isAdmin } = useAuth();
+  const { user, isCandidate, isRecruiter, isAdmin, isObserver } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [contractFilter, setContractFilter] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
   const { data, isLoading, error } = useJobOffers();
   const jobOffers: JobOffer[] = data ?? [];
   const preLaunch = isPreLaunch();
 
+  // Helper to normalize location which can be string | string[] from the API
+  const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
+
+  // Create unique location and contract options for filters
+  const uniqueLocations = [
+    ...new Set(
+      jobOffers
+        .flatMap(job => (Array.isArray(job.location) ? job.location : [job.location]))
+        .filter((v): v is string => typeof v === "string" && v.trim().length > 0)
+    ),
+  ];
+
+  const uniqueContracts = [...new Set(jobOffers.map(job => job.contract_type) || [])];
+
   useEffect(() => {
     if (!user) return;
+    
+    // Only redirect if user is actually on the home page (not from a page reload)
+    const currentPath = window.location.pathname;
+    if (currentPath !== "/" && currentPath !== "/index") return;
+    
     // Use normalized role flags from useAuth to avoid FR/EN mismatch
     if (isAdmin) {
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     } else if (isRecruiter) {
+      navigate("/recruiter/dashboard", { replace: true });
+      navigate("/recruiter/dashboard");
+    } else if (isObserver) {
+      // Observateurs: accès en lecture seule au dashboard recruteur
       navigate("/recruiter/dashboard");
     } else if (isCandidate) {
-      navigate("/candidate/dashboard");
+      navigate("/candidate/dashboard?view=dashboard", { replace: true });
     }
-  }, [user, isAdmin, isRecruiter, isCandidate, navigate]);
+  }, [user, isAdmin, isRecruiter, isObserver, isCandidate, navigate]);
 
-  // Ne pas afficher la page d'accueil si l'utilisateur est connecté
-  if (user) {
+  // Ne pas afficher la page d'accueil si l'utilisateur est connecté ET qu'il est vraiment sur la home
+  const currentPath = window.location.pathname;
+  if (user && (currentPath === "/" || currentPath === "/index")) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-3 text-muted-foreground">
@@ -47,10 +77,22 @@ const Index = () => {
     );
   }
 
-  const filteredJobs = jobOffers.filter(job => 
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobOffers.filter(job => {
+    const hayTitle = (job.title || "").toLowerCase();
+    const hayLoc = normalizeLocation(job.location).toLowerCase();
+    const needle = (searchTerm || "").toLowerCase();
+    const matchesSearch = hayTitle.includes(needle) || hayLoc.includes(needle);
+    
+    const matchesLocation =
+      locationFilter === "all" ||
+      (Array.isArray(job.location)
+        ? job.location.includes(locationFilter)
+        : job.location === locationFilter);
+        
+    const matchesContract = contractFilter === "all" || job.contract_type === contractFilter;
+    
+    return matchesSearch && matchesLocation && matchesContract;
+  });
 
   return (
     <Layout showFooter={true}>
@@ -86,7 +128,7 @@ const Index = () => {
                 <Button 
                   variant="outline"
                   size="lg"
-                  className="border-2 border-white bg-transparent hover:bg-white/10 text-white w-full sm:w-auto"
+                  className="border-2 border-white bg-transparent text-white w-full sm:w-auto"
                   onClick={() => navigate('/company-context')}
                 >
                   Contexte de recrutement
@@ -149,9 +191,66 @@ const Index = () => {
                 spellCheck={false}
               />
             </div>
-            <Button variant="outline" size="icon" className="h-10 w-10 sm:h-12 sm:w-12">
-              <Filter className="w-4 h-4" />
-            </Button>
+            <Popover open={showFilters} onOpenChange={setShowFilters}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="h-10 sm:h-12 gap-1 sm:gap-2 w-10 sm:w-auto justify-center text-xs sm:text-sm">
+                  <Filter className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Filtres</span>
+                  {(locationFilter !== "all" || contractFilter !== "all") && (
+                    <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 sm:w-5 sm:h-5 text-xs flex items-center justify-center">
+                      {(locationFilter !== "all" ? 1 : 0) + (contractFilter !== "all" ? 1 : 0)}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Filtres de recherche</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setLocationFilter("all");
+                        setContractFilter("all");
+                      }}
+                    >
+                      Effacer tout
+                    </Button>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Localisation</label>
+                    <Select value={locationFilter} onValueChange={setLocationFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Toutes les villes" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Toutes les villes</SelectItem>
+                        {uniqueLocations.map(location => (
+                          <SelectItem key={location} value={location}>{location}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Type de contrat</label>
+                    <Select value={contractFilter} onValueChange={setContractFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Tous les contrats" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les contrats</SelectItem>
+                        {uniqueContracts.map(contract => (
+                          <SelectItem key={contract} value={contract}>{contract}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
@@ -182,13 +281,13 @@ const Index = () => {
                 <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                   <JobCard
                     title={job.title}
-                    location={job.location}
+                    location={normalizeLocation(job.location)}
                     contractType={job.contract_type}
                     description={job.description}
                     isPreview={true}
-                    onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
+                    onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -215,19 +314,19 @@ const Index = () => {
                     <div className="font-medium text-base sm:text-lg">{job.title}</div>
                     {!preLaunch && (
                       <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                        <span className="bg-gray-100 px-2 py-1 rounded">{job.location}</span>
+                        <span className="bg-gray-100 px-2 py-1 rounded">{normalizeLocation(job.location)}</span>
                         <span className="bg-gray-100 px-2 py-1 rounded">{job.contract_type}</span>
                       </div>
                     )}
                     <Button 
-                      variant="hero" 
+                      variant="default" 
                       size="sm"
                       onClick={() =>
                         preLaunch
-                          ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
-                          : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                          ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
+                          : navigate(`/jobs/${job.id}`)
                       }
-                      className={"w-full text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
+                      className={"w-full text-xs sm:text-sm h-8 md:h-9"}
                     >
                       Voir l'offre
                     </Button>
@@ -241,18 +340,18 @@ const Index = () => {
                     } items-center gap-4 p-4`}
                   >
                     <div className="font-medium">{job.title}</div>
-                    {!preLaunch && <div className="text-muted-foreground">{job.location}</div>}
+                    {!preLaunch && <div className="text-muted-foreground">{normalizeLocation(job.location)}</div>}
                     {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
                     <div className="flex justify-center">
                       <Button 
-                        variant="hero" 
+                        variant="default" 
                         size="sm"
                         onClick={() =>
                           preLaunch
-                            ? toast.info("Les appels à candidatures seront disponibles à partir du  lundi 25 août 2025.")
-                            : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                            ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
+                            : navigate(`/jobs/${job.id}`)
                         }
-                        className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
+                        className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9"}
                       >
                         Voir l'offre
                       </Button>
@@ -320,6 +419,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+      
+      {/* Chatbot */}
+      <Chatbot />
     </Layout>
   );
 };

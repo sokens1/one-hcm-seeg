@@ -25,6 +25,8 @@ import { CandidateApplications } from "@/components/candidate/CandidateApplicati
 import { ApplicationTracking } from "@/components/candidate/ApplicationTracking";
 import { CandidateProfile } from "@/components/candidate/CandidateProfile";
 import { CandidateSettings } from "@/components/candidate/CandidateSettings";
+import { Chatbot } from "@/components/ui/Chatbot";
+import { ProfileCompletionBanner } from "@/components/profile/ProfileCompletionBanner";
 
 type ViewType = "dashboard" | "jobs" | "applications" | "profile" | "settings" | "tracking";
 
@@ -65,6 +67,13 @@ function CandidateSidebar() {
     if (location.pathname.startsWith("/candidate/profile")) {
       return view === "settings"; // legacy profile treated as settings
     }
+    if (location.pathname.startsWith("/candidate/applications/") && location.pathname.includes("/edit")) {
+      return view === "applications"; // editing an application should highlight "Mes candidatures"
+    }
+    // Tracking mode should highlight "Mes candidatures" since it's a sub-feature of applications
+    if (currentView === "tracking" && view === "applications") {
+      return true;
+    }
     return currentView === view;
   };
 
@@ -77,9 +86,9 @@ function CandidateSidebar() {
       navigate("/candidate/settings");
       return;
     }
-    // For other views, use the internal view system
+    // For other views, use the internal view system with URL parameter
     setCurrentView(view);
-    navigate("/candidate/dashboard");
+    navigate(`/candidate/dashboard?view=${view}`);
   };
 
   return (
@@ -90,7 +99,7 @@ function CandidateSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className={`text-sm sm:text-base font-medium px-2 sm:px-3 ${state === "collapsed" ? "sr-only" : ""}`}>
-            Espace candidat
+            Espace candidats
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -161,19 +170,27 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
   const { toast } = useToast();
 
   // Initialize view from query param if provided (e.g., /candidate/dashboard?view=jobs)
-  // Keeps existing behavior when no param is present.
+  // If no param is present, default to dashboard and update URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const viewParam = params.get("view") as ViewType | null;
+    
     if (viewParam && ["dashboard","jobs","applications","profile","settings","tracking"].includes(viewParam)) {
       setCurrentView(viewParam);
+    } else if (location.pathname === "/candidate/dashboard" && !viewParam) {
+      // Si on est sur /candidate/dashboard sans paramètre view, on ajoute ?view=dashboard
+      // MAIS on préserve tous les autres paramètres existants (jobId, apply, etc.)
+      const newParams = new URLSearchParams(location.search);
+      newParams.set("view", "dashboard");
+      window.history.replaceState({}, "", `${location.pathname}?${newParams.toString()}`);
+      setCurrentView("dashboard");
     }
-  }, [location.search]);
+  }, [location.search, location.pathname]);
 
 
   return (
     <CandidateLayoutContext.Provider value={{ currentView, setCurrentView }}>
-      <SidebarProvider defaultOpen={true} variant="sidebar">
+      <SidebarProvider defaultOpen={true}>
         <div className="min-h-screen flex w-full">
           {/* Header avec SidebarTrigger */}
           <div className="flex flex-col w-full min-w-0">
@@ -187,11 +204,15 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
             <div className="flex flex-1 min-h-0">
               <CandidateSidebar />
               <main className="flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-hidden">
+                <ProfileCompletionBanner />
                 {children ? children : <CandidateMainContent />}
               </main>
             </div>
           </div>
         </div>
+        
+        {/* Chatbot */}
+        <Chatbot />
       </SidebarProvider>
     </CandidateLayoutContext.Provider>
   );

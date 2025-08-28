@@ -12,8 +12,7 @@ import { useJobOffers } from "@/hooks/useJobOffers";
 
 export default function RecruiterJobs() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const recruiterId = user?.id;
+  const { user, isRecruiter } = useAuth();
   const { data: jobs = [], isLoading, error } = useJobOffers();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -39,12 +38,14 @@ export default function RecruiterJobs() {
             Gérez toutes vos offres d'emploi et suivez les candidatures
           </p>
         </div>
-        <Link to="/recruiter/jobs/new" className="w-full sm:w-auto">
-          <Button variant="hero" size="lg" className="gap-2 w-full sm:w-auto text-sm">
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-            Créer une offre
-          </Button>
-        </Link>
+        {isRecruiter && (
+          <Link to="/recruiter/jobs/new" className="w-full sm:w-auto">
+            <Button variant="hero" size="lg" className="gap-2 w-full sm:w-auto text-sm">
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+              Créer une offre
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Liste des offres */}
@@ -107,9 +108,6 @@ export default function RecruiterJobs() {
                             {job.new_candidates} {job.new_candidates === 1 ? 'nouveau' : 'nouveaux'}
                           </Badge>
                         )}
-                        <Badge variant={job.status === 'active' ? 'secondary' : job.status === 'draft' ? 'warning' : 'default'}>
-                          {job.status === 'active' ? 'Actif' : 'Brouillon'}
-                        </Badge>
                       </div>
                     </div>
 
@@ -121,15 +119,17 @@ export default function RecruiterJobs() {
                             Voir le Pipeline
                           </Button>
                         </Link>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="gap-2 px-3"
-                          onClick={() => handleEditJob(job.id)}
-                        >
-                          <Edit className="w-4 h-4" />
-                          Modifier
-                        </Button>
+                        {isRecruiter && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="gap-2 px-3"
+                            onClick={() => handleEditJob(job.id)}
+                          >
+                            <Edit className="w-4 h-4" />
+                            Modifier
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -144,7 +144,6 @@ export default function RecruiterJobs() {
                 <TableRow>
                   <TableHead>Titre du poste</TableHead>
                   <TableHead>Candidatures</TableHead>
-                  <TableHead>Statut</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -156,17 +155,14 @@ export default function RecruiterJobs() {
                       <div className="text-sm text-muted-foreground">{job.location} • {job.contract_type}</div>
                     </TableCell>
                     <TableCell>{job.candidate_count}</TableCell>
-                    <TableCell>
-                      <Badge variant={job.status === 'active' ? 'secondary' : job.status === 'draft' ? 'warning' : 'default'}>
-                        {job.status === 'active' ? 'Actif' : job.status === 'draft' ? 'Brouillon' : job.status}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
                         <Link to={`/recruiter/jobs/${job.id}/pipeline`}>
                           <Button variant="outline" size="sm">Voir</Button>
                         </Link>
-                        <Button variant="outline" size="sm" onClick={() => handleEditJob(job.id)}>Modifier</Button>
+                        {isRecruiter && (
+                          <Button variant="outline" size="sm" onClick={() => handleEditJob(job.id)}>Modifier</Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

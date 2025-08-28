@@ -217,6 +217,7 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
   }
 
   .line-clamp-2 {
@@ -224,5 +225,303 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  /* ReactQuill Editor Styling */
+  .quill-editor-container .ql-editor {
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .quill-editor-container .ql-toolbar {
+    border-top: 1px solid hsl(var(--border));
+    border-left: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    border-bottom: none;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .quill-editor-container .ql-container {
+    border-left: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--border));
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+  }
+
+  .quill-editor-container .ql-editor:focus {
+    outline: none;
+  }
+
+  .quill-editor-container .ql-editor.ql-blank::before {
+    color: hsl(var(--muted-foreground));
+    font-style: normal;
+  }
+}
+
+/* Dashboard Custom Styles */
+@layer components {
+  /* Dashboard Cards */
+  .dashboard-card {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  .dashboard-card:hover {
+    @apply transform -translate-y-1 shadow-lg;
+  }
+
+  /* Chart Containers */
+  .chart-container {
+    @apply relative overflow-hidden rounded-lg;
+  }
+
+  /* Responsive Chart Heights */
+  .chart-mobile {
+    @apply h-64;
+  }
+
+  .chart-tablet {
+    @apply h-80;
+  }
+
+  .chart-desktop {
+    @apply h-96;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-ocean bg-clip-text text-transparent;
+  }
+
+  /* Animated Stats */
+  .stat-number {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  .stat-number:hover {
+    @apply scale-105;
+  }
+
+  /* Mobile First Grid */
+  .dashboard-grid {
+    @apply grid gap-3 sm:gap-4 lg:gap-6;
+  }
+
+  .dashboard-grid-stats {
+    @apply grid-cols-2 lg:grid-cols-4;
+  }
+
+  .dashboard-grid-charts {
+    @apply grid-cols-1;
+  }
+
+  .dashboard-grid-actions {
+    @apply grid-cols-1 lg:grid-cols-2;
+  }
+
+  /* Chart Tooltips */
+  .recharts-tooltip-wrapper {
+    @apply shadow-lg rounded-lg border-0;
+  }
+
+  .recharts-tooltip-content {
+    @apply bg-background border border-border rounded-lg p-3 shadow-lg;
+  }
+
+  /* Responsive Chart Labels */
+  .chart-label-mobile {
+    @apply text-xs;
+  }
+
+  .chart-label-tablet {
+    @apply text-sm;
+  }
+
+  .chart-label-desktop {
+    @apply text-base;
+  }
+
+  /* Loading States */
+  .dashboard-loading {
+    @apply flex items-center justify-center py-20;
+  }
+
+  .dashboard-loading-spinner {
+    @apply w-12 h-12 animate-spin text-primary mx-auto mb-4;
+  }
+
+  /* Error States */
+  .dashboard-error {
+    @apply text-center py-8;
+  }
+
+  .dashboard-error-text {
+    @apply text-red-500 mb-4;
+  }
+
+  /* Empty States */
+  .dashboard-empty {
+    @apply text-center py-8;
+  }
+
+  .dashboard-empty-text {
+    @apply text-muted-foreground;
+  }
+
+  /* Activity Items */
+  .activity-item {
+    @apply flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer;
+  }
+
+  .activity-item:hover {
+    @apply transform translate-x-1;
+  }
+
+  /* Quick Action Buttons */
+  .quick-action-btn {
+    @apply w-full justify-start gap-2 transition-all duration-200;
+  }
+
+  .quick-action-btn:hover {
+    @apply transform translate-x-2 shadow-md;
+  }
+
+  /* Status Badges */
+  .status-badge {
+    @apply text-xs flex-shrink-0 transition-all duration-200;
+  }
+
+  .status-badge:hover {
+    @apply scale-105;
+  }
+
+  /* Chart Legend */
+  .chart-legend {
+    @apply flex flex-wrap justify-center gap-4 mt-4;
+  }
+
+  .legend-item {
+    @apply flex items-center gap-2 text-sm cursor-pointer transition-colors;
+  }
+
+  .legend-item:hover {
+    @apply opacity-80;
+  }
+
+  .legend-color {
+    @apply w-3 h-3 rounded-full;
+  }
+
+  /* Mobile Optimizations */
+  @media (max-width: 640px) {
+    .dashboard-container {
+      @apply px-3 py-4;
+    }
+    
+    .dashboard-header {
+      @apply text-center;
+    }
+    
+    .dashboard-header h1 {
+      @apply text-xl;
+    }
+    
+    .dashboard-header p {
+      @apply text-sm;
+    }
+    
+    .chart-container {
+      @apply h-48;
+    }
+    
+    .stats-grid {
+      @apply gap-2;
+    }
+    
+    .stats-card {
+      @apply p-3;
+    }
+    
+    .stats-card-title {
+      @apply text-xs;
+    }
+    
+    .stats-card-value {
+      @apply text-lg;
+    }
+    
+    .stats-card-subtitle {
+      @apply text-xs;
+    }
+  }
+
+  /* Tablet Optimizations */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .dashboard-container {
+      @apply px-6 py-6;
+    }
+    
+    .chart-container {
+      @apply h-64;
+    }
+    
+    .stats-grid {
+      @apply gap-3;
+    }
+    
+    .stats-card {
+      @apply p-4;
+    }
+  }
+
+  /* Desktop Optimizations */
+  @media (min-width: 1025px) {
+    .dashboard-container {
+      @apply px-8 py-8;
+    }
+    
+    .chart-container {
+      @apply h-80;
+    }
+    
+    .stats-grid {
+      @apply gap-4;
+    }
+    
+    .stats-card {
+      @apply p-6;
+    }
+  }
+
+  /* Dark Mode Enhancements */
+  .dark .dashboard-card {
+    @apply border-border/50;
+  }
+
+  .dark .chart-container {
+    @apply bg-card/50;
+  }
+
+  .dark .activity-item {
+    @apply bg-muted/20 hover:bg-muted/30;
+  }
+
+  /* Print Styles */
+  @media print {
+    .dashboard-container {
+      @apply p-0;
+    }
+    
+    .dashboard-card {
+      @apply border border-gray-300 shadow-none;
+    }
+    
+    .chart-container {
+      @apply h-48;
+    }
   }
 }

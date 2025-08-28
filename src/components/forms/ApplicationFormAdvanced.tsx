@@ -10,6 +10,7 @@ import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, Messa
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 interface ApplicationFormAdvancedProps {
   jobTitle: string;
@@ -106,11 +107,11 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
               <strong>{jobTitle}</strong> et nous reviendrons vers vous très prochainement.
             </p>
             <div className="space-y-3">
-              <Button variant="default" onClick={onBack} className="w-full">
+              <Button variant="default" onClick={onBack} className="w-full bg-white text-blue-600 text-sm sm:text-base py-2 sm:py-3">
                 Retour aux offres
               </Button>
               <Button variant="outline" className="w-full" asChild>
-                <a href="/candidate/dashboard">Voir mon tableau de bord</a>
+                <a href="/candidate/dashboard?view=dashboard">Voir mon tableau de bord</a>
               </Button>
             </div>
           </div>
@@ -134,7 +135,7 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-4 text-white hover:bg-white/10 text-xs sm:text-sm"
+            className="mb-4 text-blue-600 bg-white text-xs sm:text-sm"
           >
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
             Retour à l'offre
@@ -472,8 +473,8 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                       onCheckedChange={(checked) => setFormData({ ...formData, consent: checked as boolean })}
                     />
                     <Label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed">
-                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature 
-                      conformément à la politique de confidentialité de la SEEG et aux règlements RGPD.
+                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature
+                      conformément à la <Link to="/privacy-policy" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link> de la SEEG et aux règlements RGPD.
                     </Label>
                   </div>
                 </div>

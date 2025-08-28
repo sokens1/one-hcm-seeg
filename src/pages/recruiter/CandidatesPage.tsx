@@ -63,11 +63,13 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
   console.log('[CANDIDATE MODAL DEBUG] Using applicationId:', candidate.id);
   
   const { data: documents, isLoading, error } = useApplicationDocuments(candidate.id);
-  const { getFileUrl } = useFileUpload();
-  
   console.log('[CANDIDATE MODAL DEBUG] Documents from hook:', documents);
 
-  const toUrl = (p: string) => (p.startsWith('http://') || p.startsWith('https://')) ? p : getFileUrl(p);
+  const toUrl = (path: string) => {
+    if (path.startsWith('http')) return path;
+    const { data } = supabase.storage.from('application-documents').getPublicUrl(path);
+    return data.publicUrl;
+  };
 
   return (
     <div className="space-y-6">
@@ -93,26 +95,6 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
           <Label className="text-sm text-muted-foreground">Date de naissance</Label>
           <p className="font-medium">{candidate.birthDate ? format(new Date(candidate.birthDate), 'PPP', { locale: fr }) : 'Non renseignée'}</p>
         </div>
-        <div>
-          <Label className="text-sm text-muted-foreground">Profil LinkedIn</Label>
-          {candidate.linkedin_url ? (
-            <a href={candidate.linkedin_url} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline break-all">
-              {candidate.linkedin_url}
-            </a>
-          ) : (
-            <p className="font-medium">Non renseigné</p>
-          )}
-        </div>
-        <div>
-          <Label className="text-sm text-muted-foreground">Portfolio</Label>
-          {candidate.portfolio_url ? (
-            <a href={candidate.portfolio_url} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline break-all">
-              {candidate.portfolio_url}
-            </a>
-          ) : (
-            <p className="font-medium">Non renseigné</p>
-          )}
-        </div>
       </div>
 
       {/* Poste et statut */}
@@ -121,8 +103,8 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
           <Label className="text-sm text-muted-foreground">Poste postulé</Label>
           <p className="font-medium">{candidate.jobTitle || 'Non spécifié'}</p>
         </div>
-        <div>
-          <Label className="text-sm text-muted-foreground">Statut</Label>
+        <div className="flex items-center gap-2">
+          <Label className="text-sm text-muted-foreground">Statut:</Label>
           <Badge variant="secondary" className={statusConfig[candidate.status].color}>
             {statusConfig[candidate.status].label}
           </Badge>
@@ -155,7 +137,7 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
                     <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
                   </div>
                   <a
-                    href={toUrl(doc.file_path)}
+                    href={toUrl(doc.file_url)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 text-primary hover:underline"
@@ -177,9 +159,12 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
 
 function CandidateDetails({ candidate }: { candidate: UICandidate }) {
   const { data: documents = [], isLoading, error } = useApplicationDocuments(candidate.id);
-  const { getFileUrl } = useFileUpload();
 
-  const toUrl = (p: string) => (p.startsWith('http://') || p.startsWith('https://')) ? p : getFileUrl(p);
+  const toUrl = (path: string) => {
+    if (path.startsWith('http')) return path;
+    const { data } = supabase.storage.from('application-documents').getPublicUrl(path);
+    return data.publicUrl;
+  };
 
   return (
     <div className="space-y-6">
@@ -205,26 +190,6 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
           <Label className="text-sm text-muted-foreground">Date de naissance</Label>
           <p className="font-medium">{candidate.birthDate ? format(new Date(candidate.birthDate), 'PPP', { locale: fr }) : 'Non renseignée'}</p>
         </div>
-        <div>
-          <Label className="text-sm text-muted-foreground">Profil LinkedIn</Label>
-          {candidate.linkedin_url ? (
-            <a href={candidate.linkedin_url} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline break-all">
-              {candidate.linkedin_url}
-            </a>
-          ) : (
-            <p className="font-medium">Non renseigné</p>
-          )}
-        </div>
-        <div>
-          <Label className="text-sm text-muted-foreground">Portfolio</Label>
-          {candidate.portfolio_url ? (
-            <a href={candidate.portfolio_url} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline break-all">
-              {candidate.portfolio_url}
-            </a>
-          ) : (
-            <p className="font-medium">Non renseigné</p>
-          )}
-        </div>
       </div>
 
       {/* Poste et statut */}
@@ -233,8 +198,8 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
           <Label className="text-sm text-muted-foreground">Poste postulé</Label>
           <p className="font-medium">{candidate.jobTitle || 'Non spécifié'}</p>
         </div>
-        <div>
-          <Label className="text-sm text-muted-foreground">Statut</Label>
+        <div className="flex items-center gap-2">
+          <Label className="text-sm text-muted-foreground">Statut:</Label>
           <Badge variant="secondary" className={statusConfig[candidate.status].color}>
             {statusConfig[candidate.status].label}
           </Badge>
@@ -267,7 +232,7 @@ function CandidateDetails({ candidate }: { candidate: UICandidate }) {
                     <p className="text-xs text-muted-foreground">{formatFileSize(doc.file_size)}</p>
                   </div>
                   <a
-                    href={toUrl(doc.file_path)}
+                    href={toUrl(doc.file_url)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 text-primary hover:underline"
@@ -370,10 +335,10 @@ export default function CandidatesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-              Tous les Candidats
+              Toutes les Candidatures
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Gérez et suivez tous les candidats qui ont postulé aux offres SEEG
+              Gérez et suivez tous les candidats qui ont postulé aux offres SEEG.
             </p>
           </div>
           <Link to="/recruiter">

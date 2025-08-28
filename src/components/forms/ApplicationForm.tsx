@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,9 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { useQueryClient } from "@tanstack/react-query";
 import { useApplications } from "@/hooks/useApplications";
 import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
@@ -18,7 +18,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { getMetierQuestionsForTitle } from "@/data/metierQuestions";
+import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
+import { Spinner } from "@/components/ui/spinner";
+import { useMemo } from 'react';
+// Import supprimé car l'envoi d'email est désactivé
+// import { EMAIL_CONFIG } from "@/config/email";
+// import { getCandidateEmail, isValidEmail, getEmailErrorMessage } from "@/utils/emailValidation";
 
 interface ApplicationFormProps {
   jobTitle: string;
@@ -34,14 +39,17 @@ interface FormData {
   firstName: string;
   lastName: string;
   email: string;
+  matricule: string;
+  phone: string;
   gender: string;
   dateOfBirth: Date | null;
   currentPosition: string;
-  yearsExperience: number | null;
+  address: string;
   cv: UploadedFile | null;
   coverLetter: UploadedFile | null;
   yearsOfExperience: string;
   certificates: UploadedFile[];
+  additionalCertificates: UploadedFile[];
   references: string;
   // Partie Métier
   metier1: string;
@@ -71,13 +79,13 @@ interface FormData {
 }
 
 export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<number>(
     typeof initialStep === 'number' && initialStep >= 1 ? initialStep : (mode === 'edit' ? 4 : 1)
   );
   const [activeTab, setActiveTab] = useState<'metier' | 'talent' | 'paradigme'>('metier');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const queryClient = useQueryClient();
   const { submitApplication } = useApplications();
   const { uploadFile, isUploading, getFileUrl, deleteFile } = useFileUpload();
   const { user } = useAuth();
@@ -85,14 +93,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     firstName: "",
     lastName: "",
     email: "",
+    matricule: "",
+    phone: "",
     gender: "",
     dateOfBirth: null,
     currentPosition: "",
-    yearsExperience: null,
+    address: "",
     cv: null,
     coverLetter: null,
     yearsOfExperience: "",
     certificates: [],
+    additionalCertificates: [],
     references: "",
     // Partie Métier
     metier1: "",
@@ -103,21 +114,9 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     metier6: "",
     metier7: "",
     // Partie Talent
-    talent1: "",
-    talent2: "",
-    talent3: "",
-    talent4: "",
-    talent5: "",
-    talent6: "",
-    talent7: "",
+    talent1: "", talent2: "", talent3: "", talent4: "", talent5: "", talent6: "", talent7: "",
     // Partie Paradigme
-    paradigme1: "",
-    paradigme2: "",
-    paradigme3: "",
-    paradigme4: "",
-    paradigme5: "",
-    paradigme6: "",
-    paradigme7: "",
+    paradigme1: "", paradigme2: "", paradigme3: "", paradigme4: "", paradigme5: "", paradigme6: "", paradigme7: "",
     consent: false
   });
 
@@ -131,12 +130,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const [{ data: dbUser, error: userError }, { data: profile, error: profileError }] = await Promise.all([
           supabase
             .from('users')
-            .select('first_name, last_name, email, date_of_birth')
+            .select('first_name, last_name, email, matricule, phone')
             .eq('id', user.id)
             .maybeSingle(),
           supabase
             .from('candidate_profiles')
-            .select('current_position, gender')
+            .select('current_position, gender, years_experience, address, birth_date')
             .eq('user_id', user.id)
             .maybeSingle(),
         ]);
@@ -162,9 +161,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           firstName: prev.firstName || dbUser?.first_name || metaFirst || '',
           lastName: prev.lastName || dbUser?.last_name || metaLast || '',
           email: prev.email || dbUser?.email || user.email || '',
-          dateOfBirth: prev.dateOfBirth || (dbUser?.date_of_birth ? new Date(dbUser.date_of_birth) : null),
+          matricule: prev.matricule || dbUser?.matricule || '',
+          phone: prev.phone || dbUser?.phone || '',
+          dateOfBirth: prev.dateOfBirth || (profile?.birth_date ? new Date(profile.birth_date) : null),
           currentPosition: prev.currentPosition || profile?.current_position || '',
           gender: prev.gender || profile?.gender || '',
+          yearsOfExperience: prev.yearsOfExperience || (profile?.years_experience ? String(profile.years_experience) : ''),
+          address: prev.address || profile?.address || '',
         }));
       } catch (e: any) {
         console.error('Prefill error:', e);
@@ -187,16 +190,48 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const { data, error } = await supabase
           .from('applications')
           .select(`
-            reference_contacts, 
+            reference_contacts,
             mtp_answers,
             candidate_id
           `)
           .eq('id', applicationId)
           .single();
+
         if (error) throw error;
         if (aborted || !data) return;
         
-        // Récupérer les informations utilisateur et profil séparément
+        // Pré-remplissage MTP et références indépendamment des données profil/utilisateur
+        const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
+        const refContacts = (data as any).reference_contacts ?? (data as any).ref_contacts;
+
+        setFormData(prev => ({
+          ...prev,
+          // Références et MTP
+          references: refContacts ?? prev.references,
+          metier1: mtp?.metier?.[0] ?? prev.metier1,
+          metier2: mtp?.metier?.[1] ?? prev.metier2,
+          metier3: mtp?.metier?.[2] ?? prev.metier3,
+          metier4: mtp?.metier?.[3] ?? prev.metier4,
+          metier5: mtp?.metier?.[4] ?? prev.metier5,
+          metier6: mtp?.metier?.[5] ?? prev.metier6,
+          metier7: mtp?.metier?.[6] ?? prev.metier7,
+          talent1: mtp?.talent?.[0] ?? prev.talent1,
+          talent2: mtp?.talent?.[1] ?? prev.talent2,
+          talent3: mtp?.talent?.[2] ?? prev.talent3,
+          talent4: mtp?.talent?.[3] ?? prev.talent4,
+          talent5: mtp?.talent?.[4] ?? prev.talent5,
+          talent6: mtp?.talent?.[5] ?? prev.talent6,
+          talent7: mtp?.talent?.[6] ?? prev.talent7,
+          paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
+          paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
+          paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
+          paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
+          paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
+          paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
+          paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
+        }));
+
+        // Récupérer les informations utilisateur et profil séparément (enrichissement, non bloquant)
         const candidateId = (data as any).candidate_id;
         if (candidateId) {
           const [{ data: userData }, { data: profileData }] = await Promise.all([
@@ -211,9 +246,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               .eq('user_id', candidateId)
               .maybeSingle()
           ]);
-          
-          const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
-          
+
           setFormData(prev => ({
             ...prev,
             // Informations personnelles depuis la candidature existante
@@ -223,29 +256,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
             gender: profileData?.gender || prev.gender,
             currentPosition: profileData?.current_position || prev.currentPosition,
-            // Références et MTP
-            references: (data as any).reference_contacts ?? prev.references,
-            metier1: mtp?.metier?.[0] ?? prev.metier1,
-            metier2: mtp?.metier?.[1] ?? prev.metier2,
-            metier3: mtp?.metier?.[2] ?? prev.metier3,
-            metier4: mtp?.metier?.[3] ?? prev.metier4,
-            metier5: mtp?.metier?.[4] ?? prev.metier5,
-            metier6: mtp?.metier?.[5] ?? prev.metier6,
-            metier7: mtp?.metier?.[6] ?? prev.metier7,
-            talent1: mtp?.talent?.[0] ?? prev.talent1,
-            talent2: mtp?.talent?.[1] ?? prev.talent2,
-            talent3: mtp?.talent?.[2] ?? prev.talent3,
-            talent4: mtp?.talent?.[3] ?? prev.talent4,
-            talent5: mtp?.talent?.[4] ?? prev.talent5,
-            talent6: mtp?.talent?.[5] ?? prev.talent6,
-            talent7: mtp?.talent?.[6] ?? prev.talent7,
-            paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
-            paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
-            paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
-            paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
-            paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
-            paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
-            paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
           }));
         }
       } catch (e) {
@@ -264,13 +274,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       try {
         const { data, error } = await supabase
           .from('application_documents')
-          .select('document_type, file_name, file_path, file_size')
+          .select('document_type, file_name, file_url, file_size')
           .eq('application_id', applicationId);
         if (error) throw error;
         if (cancelled || !data) return;
 
         const makeUploaded = (d: any): UploadedFile => ({
-          path: d.file_path,
+          path: d.file_url,
           name: d.file_name,
           size: d.file_size ?? 0,
           type: ''
@@ -278,13 +288,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         const cv = data.find(d => d.document_type === 'cv');
         const cover = data.find(d => d.document_type === 'cover_letter');
-        const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
+                const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
+        const additionalCertificates = data.filter(d => d.document_type === 'certificate').map(makeUploaded);
 
         setFormData(prev => ({
           ...prev,
           cv: cv ? makeUploaded(cv) : prev.cv,
           coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
           certificates: certificates.length ? certificates : prev.certificates,
+          additionalCertificates: additionalCertificates.length ? additionalCertificates : prev.additionalCertificates,
         }));
       } catch (e) {
         console.warn('Chargement des documents échoué:', (e as any)?.message || e);
@@ -296,7 +308,104 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
-  const metierQuestions = getMetierQuestionsForTitle(jobTitle);
+  const mtpQuestions = useMemo(() => getMetierQuestionsForTitle(jobTitle), [jobTitle]);
+
+  // Validation functions for each step
+  const validateStep1 = () => {
+    // Validation de l'email avec nos utilitaires
+            // const isEmailValid = isValidEmail(formData.email); // DÉSACTIVÉ
+        const isEmailValid = true; // Validation d'email désactivée
+    
+    return (
+      formData.firstName.trim() !== '' &&
+      formData.lastName.trim() !== '' &&
+      isEmailValid &&
+      formData.gender.trim() !== '' &&
+      formData.dateOfBirth !== null &&
+      formData.currentPosition.trim() !== '' &&
+      formData.yearsOfExperience.trim() !== ''
+    );
+  };
+
+  const validateStep2 = () => {
+    return (
+      formData.cv !== null &&
+      formData.coverLetter !== null &&
+      formData.certificates.length > 0  // At least one diploma is required
+    );
+  };
+
+  const validateStep3 = () => {
+    // Validate Métier tab (3 questions)
+    const metierValid = mtpQuestions.metier.every((_, i) => formData[`metier${i + 1}`].trim() !== '');
+    
+    const talentValid = mtpQuestions.talent.every((_, i) => formData[`talent${i + 1}`].trim() !== '');
+    const paradigmeValid = mtpQuestions.paradigme.every((_, i) => formData[`paradigme${i + 1}`].trim() !== '');
+
+    return metierValid && talentValid && paradigmeValid;
+  };
+
+  const isNextButtonDisabled = () => {
+    switch (currentStep) {
+      case 1:
+        return !validateStep1();
+      case 2:
+        return !validateStep2();
+      case 3:
+        return !validateStep3();
+      default:
+        return false;
+    }
+  };
+
+  const getValidationMessage = () => {
+    switch (currentStep) {
+      case 1:
+        if (!validateStep1()) {
+          const missing = [];
+          if (!formData.firstName.trim()) missing.push("Prénom");
+          if (!formData.lastName.trim()) missing.push("Nom");
+          
+          // Validation spécifique pour l'email
+          if (!formData.email.trim()) {
+            missing.push("Email");
+          } else {
+            // if (!isValidEmail(formData.email)) { // DÉSACTIVÉ
+      if (false) { // Validation d'email désactivée
+              missing.push("Email (format invalide)");
+            }
+          }
+          
+          if (!formData.gender.trim()) missing.push("Sexe");
+          if (!formData.dateOfBirth) missing.push("Date de naissance");
+          if (!formData.currentPosition.trim()) missing.push("Poste actuel");
+          if (!formData.yearsOfExperience.trim()) missing.push("Années d'expérience");
+          return missing.length > 0 ? `Veuillez renseigner: ${missing.join(', ')}` : '';
+        }
+        return '';
+      case 2:
+        if (!validateStep2()) {
+          const missing = [];
+          if (!formData.cv) missing.push("CV");
+          if (!formData.coverLetter) missing.push("Lettre de motivation");
+          if (formData.certificates.length === 0) missing.push("Au moins un diplôme");
+          return missing.length > 0 ? `Documents requis: ${missing.join(', ')}` : '';
+        }
+        return '';
+      case 3:
+        if (!validateStep3()) {
+          const missingTabs = [];
+          if (!mtpQuestions.metier.every((_, i) => formData[`metier${i + 1}`].trim() !== '')) missingTabs.push(`Métier (${mtpQuestions.metier.length})`);
+          if (!mtpQuestions.talent.every((_, i) => formData[`talent${i + 1}`].trim() !== '')) missingTabs.push(`Talent (${mtpQuestions.talent.length})`);
+          if (!mtpQuestions.paradigme.every((_, i) => formData[`paradigme${i + 1}`].trim() !== '')) missingTabs.push(`Paradigme (${mtpQuestions.paradigme.length})`);
+          
+          return missingTabs.length > 0 ? `Compléter les onglets: ${missingTabs.join(', ')}` : '';
+        }
+        return '';
+      default:
+        return '';
+    }
+  };
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -311,140 +420,228 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const handleSubmit = async () => {
-    if (mode !== 'edit' && !jobId) {
-      toast.error("ID de l'offre d'emploi manquant");
-      return;
-    }
-
+    if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      let applicationIdForDocs: string | null = null;
+      const isCreateMode = mode === 'create';
+      let applicationIdForDocs: string | undefined;
+
       if (mode === 'edit' && applicationId) {
         const { error: updError } = await supabase
           .from('applications')
           .update({
             reference_contacts: formData.references,
             mtp_answers: {
-              metier: [formData.metier1, formData.metier2, formData.metier3],
-              talent: [formData.talent1, formData.talent2, formData.talent3, formData.talent4, formData.talent5, formData.talent6, formData.talent7],
-              paradigme: [formData.paradigme1, formData.paradigme2, formData.paradigme3, formData.paradigme4, formData.paradigme5, formData.paradigme6, formData.paradigme7],
+              metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
+              talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
+              paradigme: mtpQuestions.paradigme.map((_, i) => formData[`paradigme${i + 1}`]),
             },
             updated_at: new Date().toISOString(),
           })
           .eq('id', applicationId);
         if (updError) throw updError;
+
+        // Mettre à jour aussi le profil candidat en mode édition
+        if (user?.id) {
+          const profilePayload: Record<string, unknown> = {
+            user_id: user.id,
+          };
+          
+          if (formData.gender) profilePayload.gender = formData.gender;
+          if (formData.currentPosition) profilePayload.current_position = formData.currentPosition;
+          if (formData.yearsOfExperience) profilePayload.years_of_experience = parseInt(formData.yearsOfExperience) || 0;
+
+          const { error: profileError } = await supabase
+            .from('candidate_profiles')
+            .upsert(profilePayload, { onConflict: 'user_id' });
+
+          if (profileError) {
+            console.warn('Erreur lors de la mise à jour du profil candidat:', profileError);
+          }
+        }
+
         applicationIdForDocs = applicationId;
       } else {
+        if (!jobId) throw new Error('Job ID manquant.');
         const application = await submitApplication({
           job_offer_id: jobId as string,
           ref_contacts: formData.references,
           mtp_answers: {
-            metier: [formData.metier1, formData.metier2, formData.metier3],
-            talent: [formData.talent1, formData.talent2, formData.talent3, formData.talent4, formData.talent5, formData.talent6, formData.talent7],
-            paradigme: [formData.paradigme1, formData.paradigme2, formData.paradigme3, formData.paradigme4, formData.paradigme5, formData.paradigme6, formData.paradigme7],
+            metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
+            talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
+            paradigme: mtpQuestions.paradigme.map((_, i) => formData[`paradigme${i + 1}`]),
+          },
+          profile_data: {
+            gender: formData.gender,
+            current_position: formData.currentPosition,
+            years_of_experience: formData.yearsOfExperience,
+            date_of_birth: formData.dateOfBirth ? format(formData.dateOfBirth, 'yyyy-MM-dd') : undefined,
+            address: formData.address,
+          },
+          user_data: {
+            matricule: formData.matricule,
+            phone: formData.phone,
           },
         });
-        applicationIdForDocs = application.id;
+        applicationIdForDocs = application.id as string;
       }
 
       // Gérer les documents lors de l'édition ou création
-      try {
-        if (mode === 'edit' && applicationIdForDocs) {
-          // En mode édition, supprimer d'abord tous les anciens documents
-          await supabase
-            .from('application_documents')
-            .delete()
-            .eq('application_id', applicationIdForDocs);
-        }
-
-        const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_path: string; file_size: number | null; }> = [];
-        
-        const toFileUrl = (p: string) => (isPublicUrl(p)) ? p : getFileUrl(p);
-
-        // Upload uniquement CV et lettre de motivation (les autres sections sont masquées)
-        const filesToUpload: { file: UploadedFile | null, type: string }[] = [
-          { file: formData.cv, type: 'cv' },
-          { file: formData.coverLetter, type: 'cover_letter' },
-        ];
-
-        for (const { file, type } of filesToUpload) {
-          if (file) {
-            docsPayload.push({
-              application_id: applicationIdForDocs as string,
-              document_type: type,
-              file_name: file.name,
-              file_path: toFileUrl(file.path),
-              file_size: file.size ?? null,
-            });
-          }
-        }
-
-        for (const cert of formData.certificates) {
-          docsPayload.push({
-            application_id: applicationIdForDocs as string,
-            document_type: 'diploma',
-            file_name: cert.name,
-            file_path: toFileUrl(cert.path),
-            file_size: cert.size ?? null,
-          });
-        }
-
-        // Les recommandations sont désormais masquées et non traitées
-
-        if (docsPayload.length > 0) {
-          const { error: docsError } = await supabase
-            .from('application_documents')
-            .insert(docsPayload);
-          if (docsError) {
-            console.warn('Insertion documents échouée:', docsError.message);
-          }
-        }
-      } catch (docsEx: any) {
-        console.warn('Erreur lors de la gestion des documents:', docsEx?.message || docsEx);
+      if (mode === 'edit' && applicationIdForDocs) {
+        // En mode édition, supprimer d'abord tous les anciens documents
+        await supabase
+          .from('application_documents')
+          .delete()
+          .eq('application_id', applicationIdForDocs);
       }
 
-      // Sync profile with form data, do not block on this
-      if (user?.id) {
-        Promise.allSettled([
-          supabase.from('users').update({ 
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            date_of_birth: formData.dateOfBirth ? formData.dateOfBirth.toISOString() : null,
-          }).eq('id', user.id),
-          supabase.from('candidate_profiles').upsert({
-            user_id: user.id,
-            current_position: formData.currentPosition,
-            gender: formData.gender,
-            years_experience: formData.yearsExperience,
-            cv_url: formData.cv ? (isPublicUrl(formData.cv.path) ? formData.cv.path : getFileUrl(formData.cv.path)) : undefined,
-          }, { onConflict: 'user_id' }),
-        ]).then(results => {
-          results.forEach(result => {
-            if (result.status === 'rejected') {
-              console.warn('Profile sync failed for a field:', result.reason);
-            }
+      const docsPayload: Array<{ application_id: string; document_type: string; file_name: string; file_url: string; file_size: number | null; }> = [];
+      
+      const toFileUrl = (p: string) => (isPublicUrl(p)) ? p : getFileUrl(p);
+
+      const filesToUpload: { file: UploadedFile | null, type: string }[] = [
+        { file: formData.cv, type: 'cv' },
+        { file: formData.coverLetter, type: 'cover_letter' },
+      ];
+
+      for (const { file, type } of filesToUpload) {
+        if (file) {
+          docsPayload.push({
+            application_id: applicationIdForDocs as string,
+            document_type: type,
+            file_name: file.name,
+            file_url: toFileUrl(file.path),
+            file_size: file.size ?? null,
           });
+        }
+      }
+
+      for (const cert of formData.certificates) {
+        docsPayload.push({
+          application_id: applicationIdForDocs as string,
+          document_type: 'diploma',
+          file_name: cert.name,
+          file_url: toFileUrl(cert.path),
+          file_size: cert.size ?? null,
         });
       }
 
-      // Manually update the recruiter's application list cache
-      queryClient.setQueryData(['recruiterApplications', user?.id, undefined], (oldData: any) => {
-        // This is a placeholder update. A more robust solution would be to fetch the new application
-        // and add it here, but invalidation should be triggered by the hook itself.
-        // For now, we trigger a refetch, which is more reliable than simple invalidation.
-        return oldData;
-      });
-      queryClient.refetchQueries({ queryKey: ['recruiterApplications'] });
+      for (const cert of formData.additionalCertificates) {
+        docsPayload.push({
+          application_id: applicationIdForDocs as string,
+          document_type: 'certificate',
+          file_name: cert.name,
+          file_url: toFileUrl(cert.path),
+          file_size: cert.size ?? null,
+        });
+      }
+
+      // Les recommandations sont désormais masquées et non traitées
+
+      if (docsPayload.length > 0) {
+        const { error: docsError } = await supabase
+          .from('application_documents')
+          .insert(docsPayload);
+        if (docsError) throw docsError;
+      }
+
+      // Send confirmation email (non-blocking) - DÉSACTIVÉ
+      // try {
+      //   // Récupération robuste de l'email du candidat
+      //   let toEmail = '';
+      //   
+      //   // Priorité 1: Email du formulaire
+      //   if (formData.email && formData.email.trim()) {
+      //     toEmail = formData.email.trim();
+      //   }
+      //   // Priorité 2: Email de l'utilisateur authentifié
+      //   else if (user?.email && user.email.trim()) {
+      //     toEmail = user.email.trim();
+      //   }
+      //   // Priorité 3: Email depuis la base de données
+      //   else if (user?.id) {
+      //     try {
+      //       const { data: dbUser } = await supabase
+      //         .from('users')
+      //         .select('email')
+      //         .eq('id', user.id)
+      //         .maybeSingle();
+      //     
+      //       if (dbUser?.email && dbUser.email.trim()) {
+      //         toEmail = dbUser.email.trim();
+      //       }
+      //     } catch (dbError) {
+      //       console.warn('Failed to fetch user email from database:', dbError);
+      //     }
+      //   }
+
+      //   if (toEmail) {
+      //     // L'email est déjà validé par getCandidateEmail
+
+      //     await supabase.functions.invoke('send_application_confirmation', {
+      //       body: {
+      //       to: toEmail,
+      //       firstName: formData.firstName,
+      //       jobTitle,
+      //       applicationId: applicationIdForDocs,
+      //       },
+      //     });
+      //     
+      //     // Afficher une confirmation que l'email a été envoyé
+      //     toast.success(`Email de confirmation envoyé à ${toEmail} depuis ${EMAIL_CONFIG.SUPPORT_EMAIL}`, {
+      //       duration: 5000,
+      //       closeButton: true,
+      //     });
+      //     
+      //     console.log('Confirmation email sent successfully to:', toEmail);
+      //   } else {
+      //     console.warn('Confirmation email skipped: no valid recipient email found');
+      //     toast.warning("Candidature envoyée avec succès, mais aucun email valide n'a été trouvé pour l'envoi de confirmation.", {
+      //       duration: 8000,
+      //       closeButton: true,
+      //     });
+      //   }
+      // } catch (mailErr) {
+      //   console.warn('Failed to send confirmation email (non-blocking):', (mailErr as any)?.message || mailErr);
+      //   // Afficher un avertissement si l'email n'a pas pu être envoyé
+      //   toast.warning("Candidature envoyée avec succès, mais l'email de confirmation n'a pas pu être envoyé.", {
+      //       duration: 8000,
+      //       closeButton: true,
+      //     });
+      //   }
+
+      if (user?.id && isCreateMode) {
+        try {
+          await supabase.rpc('create_application_notification', {
+            p_user_id: user.id,
+            p_job_title: jobTitle
+          });
+        } catch (notificationError) {
+          console.warn('Failed to create notification:', notificationError);
+          // Do not block submission flow for notification failure
+        }
+      }
 
       setIsSubmitted(true);
-      toast.success("Candidature envoyée avec succès!");
+      toast.success(mode === 'edit' ? "Candidature modifiée avec succès!" : "Candidature envoyée avec succès!", {
+        duration: Infinity,
+        closeButton: true,
+      });
+      // Information additionnelle: non-modifiabilité après envoi
+      toast.info("Votre candidature a été envoyée et ne sera plus modifiable.", {
+        duration: 8000,
+        closeButton: true,
+      });
       
       // Appeler onSubmit si fourni après un délai
       setTimeout(() => {
         onSubmit?.();
       }, 2000);
     } catch (error: any) {
-      toast.error("Erreur lors de l'envoi: " + error.message);
+      toast.error("Erreur lors de l'envoi: " + error.message, {
+        duration: Infinity,
+        closeButton: true,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -461,7 +658,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'coverLetter' | 'certificates') => {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'cv' | 'coverLetter' | 'certificates' | 'additional_certificates') => {
     const files = e.target.files;
     if (!files) return;
 
@@ -478,10 +675,18 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const uploadPromises = Array.from(files).map(file => uploadFile(file, 'certificates'));
         const uploadedFiles = await Promise.all(uploadPromises);
         setFormData({ ...formData, certificates: [...formData.certificates, ...uploadedFiles] });
+        toast.success("Diplômes uploadés avec succès!");
+      } else if (type === 'additional_certificates') {
+        const uploadPromises = Array.from(files).map(file => uploadFile(file, 'additional-certificates'));
+        const uploadedFiles = await Promise.all(uploadPromises);
+        setFormData({ ...formData, additionalCertificates: [...formData.additionalCertificates, ...uploadedFiles] });
         toast.success("Certificats uploadés avec succès!");
       }
     } catch (error: any) {
-      toast.error("Erreur lors de l'upload: " + error.message);
+      toast.error("Erreur lors de l'upload: " + error.message, {
+        duration: Infinity,
+        closeButton: true,
+      });
     }
   };
 
@@ -499,11 +704,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               <strong>{jobTitle}</strong> et nous reviendrons vers vous très prochainement.
             </p>
             <div className="space-y-2 sm:space-y-3 px-2 sm:px-4">
-              <Button variant="hero" onClick={onBack} className="w-full text-sm sm:text-base py-2 sm:py-3">
-                Retour aux offres
+              <Button variant="hero" onClick={onBack} className="w-full bg-white text-blue-600 text-sm sm:text-base py-2 sm:py-3">
+                Retour à l'offre
               </Button>
-              <Button variant="outline" className="w-full text-sm sm:text-base py-2 sm:py-3">
-                Postuler à une autre offre
+              <Button 
+                variant="outline" 
+                className="w-full text-sm sm:text-base py-2 sm:py-3"
+                onClick={() => navigate('/candidate/applications')}
+              >
+                Voir mes candidatures
               </Button>
             </div>
           </div>
@@ -520,7 +729,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-3 sm:mb-4 text-white hover:bg-white/10 text-sm sm:text-base"
+            className="mb-3 sm:mb-4 text-blue-600 bg-white text-sm sm:text-base"
           >
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Retour à l'offre</span>
@@ -625,7 +834,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             <CardContent className="space-y-6">
               {/* Step 1: Personal Info */}
               {currentStep === 1 && (
-                <div className="space-y-4 animate-fade-in">
+                <div className="space-y-4 animate-fade-in py-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">Prénom *</Label>
@@ -654,10 +863,35 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => {
+                        const email = e.target.value;
+                        setFormData({ ...formData, email });
+                        // Validation email en temps réel avec nos utilitaires - DÉSACTIVÉ
+                        // if (email) {
+                        //   const errorMessage = getEmailErrorMessage(email);
+                        //   e.target.setCustomValidity(errorMessage || '');
+                        // } else {
+                        //   e.target.setCustomValidity('');
+                        // }
+                        // Validation désactivée
+                        e.target.setCustomValidity('');
+                      }}
+                      onBlur={(e) => {
+                        // Validation supplémentaire lors de la perte de focus - DÉSACTIVÉ
+                        // const email = e.target.value.trim();
+                        // if (email) {
+                        //   const errorMessage = getEmailErrorMessage(email);
+                        //   e.target.setCustomValidity(errorMessage || '');
+                        // }
+                        // Validation désactivée
+                      }}
                       placeholder="votre.email@exemple.com"
                       required
+                      aria-describedby="email-help"
                     />
+                    <p id="email-help" className="text-xs text-muted-foreground mt-1">
+                      Cet email sera utilisé pour votre profil (envoi de confirmation désactivé)
+                    </p>
                   </div>
                   <div>
                     <Label htmlFor="dateOfBirth">Date de naissance *</Label>
@@ -665,11 +899,20 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       id="dateOfBirth"
                       type="date"
                       value={formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString().slice(0, 10) : ""}
-                      max={new Date().toISOString().slice(0, 10)}
+                      max="2007-12-31"
                       min="1900-01-01"
                       onChange={(e) => {
                         const val = e.target.value;
-                        setFormData({ ...formData, dateOfBirth: val ? new Date(val) : null });
+                        const birthDate = val ? new Date(val) : null;
+                        
+                        // Contrôle d'âge minimum 18 ans (année <= 2007)
+                        if (birthDate && birthDate.getFullYear() > 2007) {
+                          e.target.setCustomValidity('Vous devez avoir au moins 18 ans');
+                        } else {
+                          e.target.setCustomValidity('');
+                        }
+                        
+                        setFormData({ ...formData, dateOfBirth: birthDate });
                       }}
                       required
                     />
@@ -683,7 +926,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <SelectContent>
                         <SelectItem value="homme">Homme</SelectItem>
                         <SelectItem value="femme">Femme</SelectItem>
-                        <SelectItem value="autre">Autre</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -698,13 +940,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     />
                   </div>
                   <div>
-                    <Label htmlFor="yearsOfExperience">Années d'expérience dans un secteur similaire *</Label>
+                    <Label htmlFor="yearsOfExperience">Années d'expérience à la SEEG ou dans un secteur similaire *</Label>
                     <Input
                       id="yearsOfExperience"
-                      type="text"
+                      type="number"
+                      min="0"
+                      max="60"
                       value={formData.yearsOfExperience}
-                      onChange={(e) => setFormData({ ...formData, yearsOfExperience: e.target.value })}
-                      placeholder="Ex: 5 ans"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const numVal = val === '' ? '' : Math.max(0, Math.min(60, parseInt(val) || 0)).toString();
+                        setFormData({ ...formData, yearsOfExperience: numVal });
+                      }}
+                      placeholder="Ex: 5"
                       required
                     />
                   </div>
@@ -715,19 +963,52 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               {currentStep === 2 && (
                 <div className="space-y-6 animate-fade-in">
                   <div>
-                    <Label htmlFor="yearsExperience">Années d'expérience (nombre)</Label>
-                    <Input
-                      id="yearsExperience"
-                      type="number"
-                      min={0}
-                      max={60}
-                      value={formData.yearsExperience ?? ''}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setFormData({ ...formData, yearsExperience: v === '' ? null : Math.max(0, Math.min(60, Number(v))) });
-                      }}
-                      placeholder="Ex: 5"
-                    />
+                    <Label htmlFor="coverLetter">Lettre de motivation *</Label>
+                    <div className="mt-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
+                        {isUploading ? (
+                          <Spinner size="lg" text="Upload en cours..." />
+                        ) : (
+                          <>
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {formData.coverLetter ? formData.coverLetter.name : "Glissez votre lettre de motivation ici ou cliquez pour parcourir"}
+                            </p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => handleFileUpload(e, 'coverLetter')}
+                          className="hidden"
+                          id="cover-letter-upload"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="w-full sm:w-auto"
+                          onClick={() => document.getElementById('cover-letter-upload')?.click()}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? "Upload..." : "Choisir un fichier"}
+                        </Button>
+                        {formData.coverLetter && (
+                          <div className="mt-3 flex items-center justify-between bg-muted p-2 rounded text-sm">
+                            <span>{formData.coverLetter.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                await safeDeleteStorageFile(formData.coverLetter?.path);
+                                setFormData({ ...formData, coverLetter: null });
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <div>
@@ -735,10 +1016,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <div className="mt-2">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
-                          <div className="space-y-2">
-                            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-primary animate-spin" />
-                            <p className="text-sm text-muted-foreground">Upload en cours...</p>
-                          </div>
+                          <Spinner size="lg" text="Upload en cours..." />
                         ) : (
                           <>
                             <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
@@ -782,9 +1060,115 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     </div>
                   </div>
 
-                  {/* Section cachée: Lettre d'intégrité professionnelle */}
-                  {/* Section cachée: Idée de projet */}
-                  {/* Section cachée: Lettres de recommandation */}
+                  <div>
+                    <Label htmlFor="diplomas">Diplômes *</Label>
+                    <div className="mt-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
+                        {isUploading ? (
+                          <Spinner size="lg" text="Upload en cours..." />
+                        ) : (
+                          <>
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground mb-2">
+                              Glissez vos diplômes ici ou cliquez pour parcourir (plusieurs fichiers acceptés)
+                            </p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                          multiple
+                          onChange={(e) => handleFileUpload(e, 'certificates')}
+                          className="hidden"
+                          id="diplomas-upload"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="w-full sm:w-auto"
+                          onClick={() => document.getElementById('diplomas-upload')?.click()}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? "Upload..." : "Choisir des fichiers"}
+                        </Button>
+                        {formData.certificates.length > 0 && (
+                          <div className="mt-3 space-y-2">
+                            {formData.certificates.map((cert, index) => (
+                              <div key={index} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
+                                <span>{cert.name}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={async () => {
+                                    await safeDeleteStorageFile(cert.path);
+                                    const newCerts = formData.certificates.filter((_, i) => i !== index);
+                                    setFormData({ ...formData, certificates: newCerts });
+                                  }}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="additionalCertificates">Certificats supplémentaires (facultatif)</Label>
+                    <div className="mt-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
+                        {isUploading ? (
+                          <Spinner size="lg" text="Upload en cours..." />
+                        ) : (
+                          <>
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground mb-2">
+                              Certificats professionnels, formations, etc. (plusieurs fichiers acceptés)
+                            </p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                          multiple
+                          onChange={(e) => handleFileUpload(e, 'additional_certificates')}
+                          className="hidden"
+                          id="additional-certificates-upload"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="w-full sm:w-auto"
+                          onClick={() => document.getElementById('additional-certificates-upload')?.click()}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? "Upload..." : "Choisir des fichiers"}
+                        </Button>
+                        {formData.additionalCertificates.length > 0 && (
+                          <div className="mt-3 space-y-2">
+                            {formData.additionalCertificates.map((cert, index) => (
+                              <div key={index} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
+                                <span>{cert.name}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={async () => {
+                                    await safeDeleteStorageFile(cert.path);
+                                    const newCerts = formData.additionalCertificates.filter((_, i) => i !== index);
+                                    setFormData({ ...formData, additionalCertificates: newCerts });
+                                  }}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
 
                   <div>
                     <Label htmlFor="references">Références de recommandation (facultatif)</Label>
@@ -814,7 +1198,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           className={`${activeTab === 'metier' 
                             ? 'border-blue-500 text-blue-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                            whitespace-nowrap py-2 sm:py-4 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 min-w-[80px] sm:min-w-[120px]`}
                         >
                           <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'metier' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}>
                             M
@@ -827,7 +1211,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           className={`${activeTab === 'talent' 
                             ? 'border-green-500 text-green-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                            whitespace-nowrap py-2 sm:py-4 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 min-w-[80px] sm:min-w-[120px]`}
                         >
                           <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'talent' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800'}`}>
                             T
@@ -840,7 +1224,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           className={`${activeTab === 'paradigme' 
                             ? 'border-purple-500 text-purple-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} 
-                            whitespace-nowrap py-2 sm:py-4 px-1 sm:px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0`}
+                            whitespace-nowrap py-2 sm:py-4 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 min-w-[80px] sm:min-w-[120px]`}
                         >
                           <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'paradigme' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'}`}>
                             P
@@ -858,25 +1242,21 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div className="bg-blue-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-blue-200 animate-fade-in">
                         <h4 className="text-base sm:text-lg font-semibold text-blue-800 mb-3 sm:mb-4 flex items-center gap-2">
                           <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">M</div>
-                          Partie Métier
+                          Métier
                         </h4>
                         <div className="space-y-3 sm:space-y-4">
-                          {metierQuestions.map((q, idx) => {
-                            const field = `metier${idx + 1}` as keyof typeof formData;
-                            const value = (formData as any)[field] as string;
-                            return (
-                              <div key={idx}>
-                                <Label htmlFor={`metier${idx + 1}`} className="text-sm sm:text-base">{q}</Label>
-                                <Textarea
-                                  id={`metier${idx + 1}`}
-                                  value={value}
-                                  onChange={(e) => setFormData({ ...formData, [`metier${idx + 1}`]: e.target.value } as any)}
-                                  placeholder="Votre réponse..."
-                                  className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                                />
-                              </div>
-                            );
-                          })}
+                          {mtpQuestions.metier.map((q, i) => (
+                            <div key={i}>
+                              <Label htmlFor={`metier${i + 1}`} className="text-sm sm:text-base">{q}</Label>
+                              <Textarea
+                                id={`metier${i + 1}`}
+                                value={formData[`metier${i + 1}`]}
+                                onChange={(e) => setFormData({ ...formData, [`metier${i + 1}`]: e.target.value })}
+                                placeholder="Votre réponse..."
+                                className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -886,263 +1266,46 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div className="bg-green-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-green-200 animate-fade-in">
                         <h4 className="text-base sm:text-lg font-semibold text-green-800 mb-3 sm:mb-4 flex items-center gap-2">
                           <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">T</div>
-                          Partie Talent
+                          Talent
                         </h4>
                         
                         <div className="space-y-3 sm:space-y-4">
-                          <div>
-                            <Label htmlFor="talent1" className="text-sm sm:text-base">1. Décrivez une situation où votre créativité et innovation ont permis de proposer des solutions stratégiques pour optimiser des processus, comme réduire l'utilisation de gasoil dans un système énergétique, en inspirant vos équipes dirigeantes.</Label>
-                            <Textarea
-                              id="talent1"
-                              value={formData.talent1}
-                              onChange={(e) => setFormData({ ...formData, talent1: e.target.value })}
-                              placeholder="Décrivez une situation concrète..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent2" className="text-sm sm:text-base">2. Comment démontrez-vous votre initiative et votre autonomie dans des tâches imprévues à haut niveau, par exemple lors d'une campagne de recouvrement d'impayés ou de réparation critique d'équipements, en mobilisant des ressources exécutives ?</Label>
-                            <Textarea
-                              id="talent2"
-                              value={formData.talent2}
-                              onChange={(e) => setFormData({ ...formData, talent2: e.target.value })}
-                              placeholder="Expliquez votre approche et vos résultats..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent3" className="text-sm sm:text-base">3. Fournissez un exemple où votre raisonnement analytique a aidé à synthétiser des informations complexes, analyser des allégations de détournements ou des données sur la performance des réseaux, pour orienter des décisions board-level.</Label>
-                            <Textarea
-                              id="talent3"
-                              value={formData.talent3}
-                              onChange={(e) => setFormData({ ...formData, talent3: e.target.value })}
-                              placeholder="Détaillez votre processus d'analyse et les décisions prises..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent4" className="text-sm sm:text-base">4. Expliquez comment vous gérez le stress et les crises à un niveau dirigeant, par exemple en maintenant votre leadership lors de tensions récurrentes comme des délestages électriques affectant populations et industries.</Label>
-                            <Textarea
-                              id="talent4"
-                              value={formData.talent4}
-                              onChange={(e) => setFormData({ ...formData, talent4: e.target.value })}
-                              placeholder="Décrivez vos stratégies de gestion de crise..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent5" className="text-sm sm:text-base">5. Décrivez votre capacité à prendre des décisions en situations difficiles, comme allouer des ressources limitées pour une maintenance rigoureuse des infrastructures existantes, en alignant avec la vision globale de l'entreprise.</Label>
-                            <Textarea
-                              id="talent5"
-                              value={formData.talent5}
-                              onChange={(e) => setFormData({ ...formData, talent5: e.target.value })}
-                              placeholder="Partagez un exemple de prise de décision stratégique..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent6" className="text-sm sm:text-base">6. Comment votre aptitude à l'apprentissage continu vous a permis de vous perfectionner en technologies émergentes, par exemple les compteurs connectés pour la gestion des réseaux au Gabon, et de cascader cela à vos équipes de direction ? Au besoin, vous pouvez considérer un autre exemple.</Label>
-                            <Textarea
-                              id="talent6"
-                              value={formData.talent6}
-                              onChange={(e) => setFormData({ ...formData, talent6: e.target.value })}
-                              placeholder="Décrivez votre processus d'apprentissage et de transmission..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent7" className="text-sm sm:text-base">7. Partagez une expérience où votre travail en équipe a favorisé la coordination à un niveau exécutif, par exemple dans un dialogue constructif avec des parties prenantes comme l'État ou des associations de consommateurs.</Label>
-                            <Textarea
-                              id="talent7"
-                              value={formData.talent7}
-                              onChange={(e) => setFormData({ ...formData, talent7: e.target.value })}
-                              placeholder="Décrivez cette expérience de coordination..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent4" className="text-sm sm:text-base">4. Sur quelles activités prenez-vous naturellement le lead ?</Label>
-                            <Textarea
-                              id="talent4"
-                              value={formData.talent4}
-                              onChange={(e) => setFormData({ ...formData, talent4: e.target.value })}
-                              placeholder="Décrivez les situations où vous prenez l'initiative..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent5" className="text-sm sm:text-base">5. Quelle compétence vous distingue le plus de vos pairs ?</Label>
-                            <Textarea
-                              id="talent5"
-                              value={formData.talent5}
-                              onChange={(e) => setFormData({ ...formData, talent5: e.target.value })}
-                              placeholder="Expliquez en quoi cette compétence est différenciante..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent6" className="text-sm sm:text-base">6. Quelle activité vous donne le plus d'énergie au travail ?</Label>
-                            <Textarea
-                              id="talent6"
-                              value={formData.talent6}
-                              onChange={(e) => setFormData({ ...formData, talent6: e.target.value })}
-                              placeholder="Partagez ce qui vous énergise..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="talent7" className="text-sm sm:text-base">7. Quelle reconnaissance attendez-vous pour vous sentir valorisé ?</Label>
-                            <Textarea
-                              id="talent7"
-                              value={formData.talent7}
-                              onChange={(e) => setFormData({ ...formData, talent7: e.target.value })}
-                              placeholder="Décrivez le type de reconnaissance..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
+                          {mtpQuestions.talent.map((q, i) => (
+                            <div key={i}>
+                              <Label htmlFor={`talent${i + 1}`} className="text-sm sm:text-base">{q}</Label>
+                              <Textarea
+                                id={`talent${i + 1}`}
+                                value={formData[`talent${i + 1}`]}
+                                onChange={(e) => setFormData({ ...formData, [`talent${i + 1}`]: e.target.value })}
+                                placeholder="Votre réponse..."
+                                className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
-
                     {/* Onglet Paradigme */}
                     {activeTab === 'paradigme' && (
                       <div className="bg-purple-50 rounded-lg p-3 sm:p-4 lg:p-6 border border-purple-200 animate-fade-in">
                         <h4 className="text-base sm:text-lg font-semibold text-purple-800 mb-3 sm:mb-4 flex items-center gap-2">
                           <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">P</div>
-                          Partie Paradigme/Valeurs
+                          Paradigme
                         </h4>
                         
                         <div className="space-y-3 sm:space-y-4">
-                          <div>
-                            <Label htmlFor="paradigme1" className="text-sm sm:text-base">1. Comment alignez-vous votre vision professionnelle en tant que dirigeant avec une approche holistique de renaissance d'une entreprise comme la SEEG, combinant rigueur managériale et investissements stratégiques pour le développement national du Gabon ?</Label>
-                            <Textarea
-                              id="paradigme1"
-                              value={formData.paradigme1}
-                              onChange={(e) => setFormData({ ...formData, paradigme1: e.target.value })}
-                              placeholder="Décrivez votre vision stratégique..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme2" className="text-sm sm:text-base">2. Décrivez comment vous avez manifesté votre intégrité professionnelle ainsi que vos valeurs de transparence et de gouvernance renforcée dans un précédent rôle, par exemple en gérant un dilemme éthique ou en prenant une décision difficile alignée avec vos valeurs éthiques.</Label>
-                            <Textarea
-                              id="paradigme2"
-                              value={formData.paradigme2}
-                              onChange={(e) => setFormData({ ...formData, paradigme2: e.target.value })}
-                              placeholder="Partagez une expérience concrète d'intégrité..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme3" className="text-sm sm:text-base">3. Expliquez votre adhésion à un paradigme de transition énergétique durable, en promouvant des énergies renouvelables et des standards de service comparables aux pays développés d'ici 2035, sous votre direction stratégique.</Label>
-                            <Textarea
-                              id="paradigme3"
-                              value={formData.paradigme3}
-                              onChange={(e) => setFormData({ ...formData, paradigme3: e.target.value })}
-                              placeholder="Détaillez votre vision de la transition énergétique..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme4" className="text-sm sm:text-base">4. Comment votre paradigme professionnel soutient l'implication des parties prenantes, comme la participation active des consommateurs et la motivation des employés dans une restructuration organisationnelle à grande échelle ?</Label>
-                            <Textarea
-                              id="paradigme4"
-                              value={formData.paradigme4}
-                              onChange={(e) => setFormData({ ...formData, paradigme4: e.target.value })}
-                              placeholder="Expliquez votre approche de l'engagement des parties prenantes..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme5" className="text-sm sm:text-base">5. Fournissez un exemple où vous avez promu un modèle économique viable, en résolvant des impayés et en appliquant une tarification sociale réaliste pour un accès universel à l'eau et l'électricité, en tant que dirigeant financier.</Label>
-                            <Textarea
-                              id="paradigme5"
-                              value={formData.paradigme5}
-                              onChange={(e) => setFormData({ ...formData, paradigme5: e.target.value })}
-                              placeholder="Décrivez votre expérience en modèle économique viable..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme6" className="text-sm sm:text-base">6. Décrivez comment vous anticipez et gérez le changement dans un paradigme d'autosuffisance énergétique et hydrique, en visant une capacité de 2 à 4 Gigawatts à horizon 2030 au Gabon, via des roadmaps exécutives.</Label>
-                            <Textarea
-                              id="paradigme6"
-                              value={formData.paradigme6}
-                              onChange={(e) => setFormData({ ...formData, paradigme6: e.target.value })}
-                              placeholder="Expliquez votre stratégie d'autosuffisance énergétique..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme7" className="text-sm sm:text-base">7. Expliquez votre alignement avec un paradigme d'innovation et d'excellence régionale, en positionnant une société comme la SEEG comme référence en Afrique centrale pour la performance et la durabilité, sous votre vision leadership.</Label>
-                            <Textarea
-                              id="paradigme7"
-                              value={formData.paradigme7}
-                              onChange={(e) => setFormData({ ...formData, paradigme7: e.target.value })}
-                              placeholder="Décrivez votre vision d'excellence régionale..."
-                              className="min-h-[80px] sm:min-h-[100px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme4" className="text-sm sm:text-base">4. Quelles attitudes au travail vous sont inacceptables ?</Label>
-                            <Textarea
-                              id="paradigme4"
-                              value={formData.paradigme4}
-                              onChange={(e) => setFormData({ ...formData, paradigme4: e.target.value })}
-                              placeholder="Décrivez vos lignes rouges..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme5" className="text-sm sm:text-base">5. Quelles conditions favorisent votre meilleur travail ?</Label>
-                            <Textarea
-                              id="paradigme5"
-                              value={formData.paradigme5}
-                              onChange={(e) => setFormData({ ...formData, paradigme5: e.target.value })}
-                              placeholder="Décrivez votre environnement idéal..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme6" className="text-sm sm:text-base">6. Comment gérez-vous les conflits de valeurs ?</Label>
-                            <Textarea
-                              id="paradigme6"
-                              value={formData.paradigme6}
-                              onChange={(e) => setFormData({ ...formData, paradigme6: e.target.value })}
-                              placeholder="Expliquez votre approche..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="paradigme7" className="text-sm sm:text-base">7. Quel impact souhaitez-vous avoir dans l'organisation ?</Label>
-                            <Textarea
-                              id="paradigme7"
-                              value={formData.paradigme7}
-                              onChange={(e) => setFormData({ ...formData, paradigme7: e.target.value })}
-                              placeholder="Décrivez l'impact attendu..."
-                              className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
-                            />
-                          </div>
+                          {mtpQuestions.paradigme.map((q, i) => (
+                            <div key={i}>
+                              <Label htmlFor={`paradigme${i + 1}`} className="text-sm sm:text-base">{q}</Label>
+                              <Textarea
+                                id={`paradigme${i + 1}`}
+                                value={formData[`paradigme${i + 1}`]}
+                                onChange={(e) => setFormData({ ...formData, [`paradigme${i + 1}`]: e.target.value })}
+                                placeholder="Votre réponse..."
+                                className="min-h-[60px] sm:min-h-[80px] mt-1 sm:mt-2 text-sm sm:text-base"
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -1152,22 +1315,35 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   
               {/* Navigation pour étapes 1 à 3 */}
               {currentStep < 4 && (
-                <div className="flex items-center justify-between mt-6">
-                  <Button
-                    variant="ghost"
-                    onClick={handlePrevious}
-                    disabled={currentStep === 1}
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Précédent
-                  </Button>
-                  <Button
-                    onClick={handleNext}
-                    className="w-full sm:w-auto"
-                  >
-                    Suivant
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                <div className="mt-6">
+                  {/* Message de validation si des champs manquent */}
+                  {isNextButtonDisabled() && (
+                    <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <p className="text-sm text-orange-800 flex items-center gap-2">
+                        <span className="text-orange-600">⚠️</span>
+                        {getValidationMessage()}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-between">
+                    <Button
+                      variant="ghost"
+                      onClick={handlePrevious}
+                      disabled={currentStep === 1}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Précédent
+                    </Button>
+                    <Button
+                      onClick={handleNext}
+                      className="w-full sm:w-auto"
+                      disabled={isNextButtonDisabled()}
+                    >
+                      Suivant
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
                 </div>
               )}
 
@@ -1201,7 +1377,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         </div>
                         <div>
                           <span className="text-muted-foreground">Années d'expérience:</span>
-                          <p>{formData.yearsExperience ?? "Non renseigné"}</p>
+                          <p>{formData.yearsOfExperience || "Non renseigné"}</p>
                         </div>
                       </div>
                     </div>
@@ -1217,8 +1393,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       </div>
                       {/* Sections cachées non affichées en récapitulatif: intégrité et idée de projet */}
                       <div>
-                        <span className="text-muted-foreground">Certificats:</span>
+                        <span className="text-muted-foreground">Diplômes:</span>
                         <p>{formData.certificates.length} fichier(s)</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Certificats</span>
+                        <p>{formData.additionalCertificates.length} fichier(s)</p>
                       </div>
                       {/* Sections cachées non affichées: lettres de recommandation */}
                     </div>
@@ -1231,19 +1411,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div>
                         <span className="text-muted-foreground font-medium">Métier:</span>
                         <p className="text-xs">
-                          {[formData.metier1, formData.metier2, formData.metier3].filter(Boolean).length}/3 questions répondues
+                          {mtpQuestions.metier.map((_, i) => formData[`metier${i+1}`]).filter(Boolean).length}/{mtpQuestions.metier.length} questions répondues
                         </p>
                       </div>
                       <div>
                         <span className="text-muted-foreground font-medium">Talent:</span>
                         <p className="text-xs">
-                          {[formData.talent1, formData.talent2, formData.talent3, formData.talent4, formData.talent5, formData.talent6, formData.talent7].filter(Boolean).length}/7 questions répondues
+                          {mtpQuestions.talent.map((_, i) => formData[`talent${i+1}`]).filter(Boolean).length}/{mtpQuestions.talent.length} questions répondues
                         </p>
                       </div>
                       <div>
                         <span className="text-muted-foreground font-medium">Paradigme:</span>
                         <p className="text-xs">
-                          {[formData.paradigme1, formData.paradigme2, formData.paradigme3, formData.paradigme4, formData.paradigme5, formData.paradigme6, formData.paradigme7].filter(Boolean).length}/7 questions répondues
+                          {mtpQuestions.paradigme.map((_, i) => formData[`paradigme${i+1}`]).filter(Boolean).length}/{mtpQuestions.paradigme.length} questions répondues
                         </p>
                       </div>
                     </div>
@@ -1256,8 +1436,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       onCheckedChange={(checked) => setFormData({ ...formData, consent: checked as boolean })}
                     />
                     <Label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed">
-                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature 
-                      conformément à la politique de confidentialité de OneHCM.
+                      J'accepte que mes données personnelles soient traitées dans le cadre de cette candidature
+                      conformément à la <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-blue-700 hover:text-blue-800">politique de confidentialité</Link>.
                     </Label>
                   </div>
                   <div className="flex items-center justify-between mt-6">

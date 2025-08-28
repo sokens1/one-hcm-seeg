@@ -33,6 +33,7 @@ export interface CandidateProfile {
   gender: string;
   date_of_birth: string;
   current_position: string;
+  years_experience: number | string;
   address: string;
   linkedin_profile: string;
   portfolio_url: string;
@@ -103,12 +104,35 @@ export function useApplicationStatus(jobOfferId: string) {
 }
 
 export function useApplications() {
-  const { user } = useAuth();
+  const { user, isRecruiter, isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
   const fetchApplications = async () => {
     if (!user) return [];
 
+    // Si l'utilisateur est un candidat, utiliser la fonction RPC spécifique
+    if (!isRecruiter && !isAdmin) {
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_candidate_applications');
+
+      if (rpcError) {
+        console.error('Erreur RPC candidat applications:', rpcError);
+        throw new Error(rpcError.message);
+      }
+
+      // Transformer les données RPC au format attendu
+      const applications = (rpcData || []).map((app: any) => ({
+        ...app.application_details,
+        job_offers: app.job_offer_details,
+        users: {
+          ...app.candidate_details,
+          candidate_profiles: app.candidate_details?.candidate_profiles
+        }
+      }));
+
+      return applications as Application[];
+    }
+
+    // Pour les recruteurs/admins, utiliser l'ancienne méthode directe
     const { data, error } = await supabase
       .from('applications')
       .select(`
@@ -142,56 +166,22 @@ export function useApplications() {
         talent: string[];
         paradigme: string[];
       };
+      // Ajout des données de profil candidat
+      profile_data?: {
+        gender?: string;
+        current_position?: string;
+        date_of_birth?: string;
+        years_of_experience?: string;
+        address?: string;
+      };
+      // Données utilisateur de base
+      user_data?: {
+        matricule?: string;
+        phone?: string;
+      };
     }) => {
       if (!user) throw new Error("User not authenticated");
 
-      // Vérifier que l'utilisateur existe dans la table users
-      const { data: userRow, error: userSelectError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (userSelectError) {
-        throw new Error(`Impossible de vérifier votre profil utilisateur: ${userSelectError.message}`);
-      }
-
-      if (!userRow) {
-        // Tentative d'auto-réparation: créer le profil utilisateur minimal depuis les métadonnées auth
-        const meta = (
-          (user as unknown as { user_metadata?: Record<string, unknown> })?.user_metadata
-        ) ?? {};
-
-        const getStr = (key: string): string | undefined => {
-          const val = (meta as Record<string, unknown>)[key];
-          return typeof val === 'string' ? val : undefined;
-        };
-
-        let firstName: string | undefined = getStr('first_name') || getStr('prenom') || getStr('given_name');
-        let lastName: string | undefined = getStr('last_name') || getStr('nom') || getStr('family_name');
-        const fullName: string | undefined = getStr('name');
-        if ((!firstName || !lastName) && typeof fullName === 'string') {
-          const parts = fullName.trim().split(/\s+/);
-          if (!firstName && parts.length > 0) firstName = parts[0];
-          if (!lastName && parts.length > 1) lastName = parts.slice(1).join(' ');
-        }
-
-        const upsertPayload: Record<string, unknown> = {
-          id: user.id,
-          email: user.email,
-        };
-        if (firstName) upsertPayload.first_name = firstName;
-        if (lastName) upsertPayload.last_name = lastName;
-
-        const { error: upsertError } = await supabase
-          .from('users')
-          .upsert(upsertPayload, { onConflict: 'id' });
-
-        if (upsertError) {
-          // Si la politique RLS empêche l'upsert, demander à l'utilisateur de se reconnecter
-          throw new Error(`Profil utilisateur non trouvé et impossible de le créer automatiquement. Veuillez vous reconnecter. Détail: ${upsertError.message}`);
-        }
-      }
 
       // Vérifier si une candidature existe déjà
       const { data: existingApplication } = await supabase
@@ -227,6 +217,63 @@ export function useApplications() {
         throw new Error(error.message);
       }
 
+      // Sauvegarder les données utilisateur de base si fournies
+      if (applicationData.user_data && user?.id) {
+        const userUpdates: { [key: string]: unknown } = {};
+        
+        if (applicationData.user_data.matricule) {
+          userUpdates.matricule = applicationData.user_data.matricule;
+        }
+        if (applicationData.user_data.phone) {
+          userUpdates.phone = applicationData.user_data.phone;
+        }
+
+        if (Object.keys(userUpdates).length > 0) {
+          const { error: userError } = await supabase
+            .from('users')
+            .update(userUpdates)
+            .eq('id', user.id);
+
+          if (userError) {
+            console.warn('Erreur lors de la mise à jour des données utilisateur:', userError);
+          }
+        }
+      }
+
+      // Sauvegarder les données de profil candidat si fournies
+      if (applicationData.profile_data && user?.id) {
+        const profilePayload: { [key: string]: unknown } = { user_id: user.id };
+
+        if (applicationData.profile_data.gender) {
+          profilePayload.gender = applicationData.profile_data.gender;
+        }
+        if (applicationData.profile_data.current_position) {
+          profilePayload.current_position = applicationData.profile_data.current_position;
+        }
+        // Assurer que years_experience est un nombre pour correspondre au type de la DB
+        if (applicationData.profile_data.years_of_experience !== undefined) {
+          profilePayload.years_experience = parseInt(applicationData.profile_data.years_of_experience) || 0;
+        }
+        if (applicationData.profile_data.date_of_birth) {
+          profilePayload.birth_date = applicationData.profile_data.date_of_birth;
+        }
+        if (applicationData.profile_data.address) {
+          profilePayload.address = applicationData.profile_data.address;
+        }
+
+        // Ne tenter l'upsert que si on a plus que user_id
+        if (Object.keys(profilePayload).length > 1) {
+          const { error: profileError } = await supabase
+            .from('candidate_profiles')
+            .upsert(profilePayload, { onConflict: 'user_id' });
+
+          if (profileError) {
+            console.warn('Erreur lors de la mise à jour du profil candidat:', profileError);
+            // Ne pas faire échouer la candidature si le profil ne peut pas être sauvegardé
+          }
+        }
+      }
+
       return data;
     },
     onSuccess: () => {
@@ -242,11 +289,41 @@ export function useApplications() {
 }
 
 export function useApplication(id: string | undefined) {
-  return useQuery({
-    queryKey: ['application', id],
-    queryFn: async () => {
-      if (!id) return null;
+  const { user, isRecruiter, isAdmin } = useAuth();
+  const isObserver = (useAuth() as any)?.isObserver as boolean | undefined;
 
+  return useQuery({
+    queryKey: ['application', id, user?.id],
+    queryFn: async () => {
+      if (!id || !user) return null;
+
+      // Si l'utilisateur est un candidat, utiliser la fonction spécifique aux candidats
+      // NOTE: les observateurs doivent être traités comme recruteurs (lecture seule)
+      if (!isRecruiter && !isAdmin && !isObserver) {
+        const { data: rpcData, error: rpcError } = await supabase.rpc('get_candidate_application', {
+          p_application_id: id
+        });
+
+        if (rpcError) {
+          console.error('Erreur RPC candidat:', rpcError);
+          throw new Error(rpcError.message);
+        }
+
+        if (!rpcData || rpcData.length === 0) return null;
+
+        const rpcResult = rpcData[0];
+        const application = {
+          ...rpcResult.application_details,
+          job_offers: rpcResult.job_offer_details,
+          users: {
+            ...rpcResult.candidate_details,
+            candidate_profiles: rpcResult.candidate_details?.candidate_profiles
+          }
+        };
+        return application as Application;
+      }
+
+      // Pour les recruteurs/admins/observateurs, utiliser la logique recruteur via RPC enrichie
       // Étape 1: récupérer l'offre liée pour connaître le job_offer_id
       let jobOfferId: string | null = null;
       try {
@@ -312,7 +389,7 @@ export function useApplication(id: string | undefined) {
 
       return null;
     },
-    enabled: !!id,
+    enabled: !!id && !!user,
     retry: 1,
   });
 }
@@ -397,7 +474,10 @@ export function useRecruiterApplications(jobOfferId?: string) {
     const applications = (entries || []).map((app: any) => ({
       ...app.application_details,
       job_offers: app.job_offer_details,
-      users: app.candidate_details,
+      users: {
+        ...app.candidate_details,
+        candidate_profiles: app.candidate_details?.candidate_profiles
+      },
     }));
 
     return applications as Application[];

@@ -5,9 +5,9 @@ import { useAuth } from "@/hooks/useAuth";
 export interface Document {
   id: number;
   application_id: string;
-  document_type: 'cv' | 'cover_letter' | 'diploma' | 'recommendation' | 'integrity_letter' | 'project_idea';
+  document_type: 'cv' | 'cover_letter' | 'diploma' | 'certificate' | 'recommendation' | 'integrity_letter' | 'project_idea';
   file_name: string;
-  file_path: string;
+  file_url: string; // Corrigé: utilise file_url au lieu de file_path
   file_size: number | null;
   uploaded_at: string;
 }
@@ -18,35 +18,22 @@ export function useApplicationDocuments(applicationId: string | undefined) {
     queryFn: async () => {
       if (!applicationId) return [];
 
-      console.log('[DOCUMENTS DEBUG] Fetching for applicationId:', applicationId);
-      
-      // Vérifier le token JWT actuel et les claims
-      const { data: { user } } = await supabase.auth.getUser();
-      const session = await supabase.auth.getSession();
-      console.log('[DOCUMENTS DEBUG] Current user:', user?.id);
-      const jwtClaims = session.data.session?.access_token ? JSON.parse(atob(session.data.session.access_token.split('.')[1])) : 'No token';
-      console.log('[DOCUMENTS DEBUG] JWT claims user_role:', jwtClaims?.user_role || 'MISSING');
-      console.log('[DOCUMENTS DEBUG] Full JWT claims:', jwtClaims);
-
-      const { data, error } = await supabase
+      // 1) Récupérer les enregistrements de documents
+      const { data: documents, error } = await supabase
         .from('application_documents')
-        .select('*')
+        .select('id, application_id, document_type, file_name, file_url, file_size, uploaded_at')
         .eq('application_id', applicationId);
 
-      console.log('[DOCUMENTS DEBUG] Query result data:', data);
-      console.log('[DOCUMENTS DEBUG] Query result error:', error);
-      console.log('[DOCUMENTS DEBUG] Documents count:', data?.length || 0);
-      
       if (error) {
-        console.log('[DOCUMENTS DEBUG] Error details:', error.code, error.message, error.details);
-      }
-
-      if (error) {
-        console.error('Error fetching documents:', error);
+        console.error('Error fetching document records:', error);
         throw error;
       }
 
-      return data || [];
+      if (!documents || documents.length === 0) return [];
+
+      // Utiliser directement les URLs publiques stockées en DB
+      // Plus besoin d'appel RPC car les URLs sont déjà correctes
+      return documents;
     },
     enabled: !!applicationId,
   });
@@ -84,7 +71,8 @@ export function getDocumentTypeLabel(type: string): string {
   switch (type) {
     case 'cv': return 'CV';
     case 'cover_letter': return 'Lettre de motivation';
-    case 'diploma': return 'Certificat';
+    case 'diploma': return 'Diplôme';
+    case 'certificate': return 'Certificat supplémentaire';
     case 'recommendation': return 'Lettre de recommandation';
     case 'integrity_letter': return 'Lettre d\'intégrité professionnelle';
     case 'project_idea': return 'Idée de projet';

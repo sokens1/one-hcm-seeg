@@ -14,17 +14,25 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
+import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecruiterReadRoute";
 import { Loader2 } from 'lucide-react';
+import { MAINTENANCE_MODE, MAINTENANCE_HOURS } from '@/config/maintenance';
+import './index.css';
+
+//Maintenance page
+const Maintenance = lazy(() => import("./pages/maintenance"));
 
 // Lazily load page components
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword").then(module => ({ default: module.ResetPassword })));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 // Candidate pages
 const CandidateJobs = lazy(() => import("./pages/candidate/CandidateJobs"));
 const JobDetail = lazy(() => import("./pages/candidate/JobDetail"));
+const ApplyToJob = lazy(() => import("./pages/candidate/ApplyToJob"));
 const CandidateSignup = lazy(() => import("./pages/candidate/CandidateSignup"));
 const CandidateLogin = lazy(() => import("./pages/candidate/CandidateLogin"));
 const CandidateDashboard = lazy(() => import("./pages/candidate/CandidateDashboard"));
@@ -60,11 +68,14 @@ const queryClient = new QueryClient({
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
+      {/* Maintenance page */}
+      <Route path="maintenance" element={<Maintenance />} />
       {/* Home and Candidate Routes */}
       <Route index element={<Index />} />
       <Route path="auth" element={<Auth />} />
-      <Route path="jobs" element={<Navigate to="/" replace />} />
+      <Route path="jobs" element={<CandidateJobs />} />
       <Route path="jobs/:id" element={<JobDetail />} />
+      <Route path="jobs/:id/apply" element={<ProtectedRoute requiredRole="candidat"><ApplyToJob /></ProtectedRoute>} />
       <Route path="candidate/signup" element={<CandidateSignup />} />
       <Route path="candidate/login" element={<CandidateLogin />} />
       <Route path="candidate/dashboard" element={<ProtectedRoute requiredRole="candidat"><CandidateDashboard /></ProtectedRoute>} />
@@ -75,18 +86,19 @@ const router = createBrowserRouter(
       <Route path="candidate/profile" element={<CandidateProfile />} />
       <Route path="candidate/settings" element={<CandidateSettings />} />
       <Route path="company-context" element={<CompanyContext />} />
+      <Route path="privacy-policy" element={<PrivacyPolicy />} />
       <Route path="reset-password" element={<ResetPassword />} />
       
       {/* Recruiter Routes */}
-      <Route path="recruiter" element={<ProtectedRecruiterRoute><RecruiterDashboard /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/dashboard" element={<ProtectedRecruiterRoute><RecruiterDashboard /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/profile" element={<ProtectedRecruiterRoute><RecruiterProfile /></ProtectedRecruiterRoute>} />
+      <Route path="recruiter" element={<ProtectedRecruiterReadRoute><RecruiterDashboard /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/dashboard" element={<ProtectedRecruiterReadRoute><RecruiterDashboard /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/profile" element={<ProtectedRecruiterReadRoute><RecruiterProfile /></ProtectedRecruiterReadRoute>} />
       <Route path="recruiter/jobs/new" element={<ProtectedRecruiterRoute><CreateJob /></ProtectedRecruiterRoute>} />
       <Route path="recruiter/jobs/:id/edit" element={<ProtectedRecruiterRoute><EditJob /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/jobs/:id/pipeline" element={<ProtectedRecruiterRoute><JobPipeline /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/candidates" element={<ProtectedRecruiterRoute><CandidatesPage /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/jobs" element={<ProtectedRecruiterRoute><RecruiterJobs /></ProtectedRecruiterRoute>} />
-      <Route path="recruiter/candidates/:id/analysis" element={<ProtectedRecruiterRoute><CandidateAnalysis /></ProtectedRecruiterRoute>} />
+      <Route path="recruiter/jobs/:id/pipeline" element={<ProtectedRecruiterReadRoute><JobPipeline /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/candidates" element={<ProtectedRecruiterReadRoute><CandidatesPage /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/jobs" element={<ProtectedRecruiterReadRoute><RecruiterJobs /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/candidates/:id/analysis" element={<ProtectedRecruiterReadRoute><CandidateAnalysis /></ProtectedRecruiterReadRoute>} />
       
       {/* Admin Routes */}
       <Route path="admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
@@ -106,23 +118,75 @@ const LoadingFallback = () => (
   </div>
 );
 
+// Vérifier si nous sommes en période de maintenance
+const isMaintenanceTime = () => {
+  // Si MAINTENANCE_MODE est défini, on suit strictement cette valeur
+  if (MAINTENANCE_MODE !== undefined) {
+    console.log(`Maintenance ${MAINTENANCE_MODE ? 'activée' : 'désactivée'} manuellement`);
+    return MAINTENANCE_MODE;
+  }
+  
+  // Vérification de la plage horaire
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  
+  // Calcul en minutes depuis minuit pour faciliter la comparaison
+  const currentTimeInMinutes = currentHour * 60 + currentMinute;
+  const startTimeInMinutes = MAINTENANCE_HOURS.start.hour * 60 + MAINTENANCE_HOURS.start.minute;
+  const endTimeInMinutes = MAINTENANCE_HOURS.end.hour * 60 + MAINTENANCE_HOURS.end.minute;
+  
+  // Déterminer si on est dans la plage de maintenance
+  let isInMaintenanceWindow = false;
+  
+  if (startTimeInMinutes < endTimeInMinutes) {
+    // Plage normale dans la même journée (ex: 14h-16h)
+    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes && 
+                           currentTimeInMinutes < endTimeInMinutes;
+  } else {
+    // Plage qui passe minuit (ex: 22h-02h)
+    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes || 
+                           currentTimeInMinutes < endTimeInMinutes;
+  }
+  
+  return isInMaintenanceWindow;
+};
+
+// Créer un wrapper pour les routes protégées par maintenance
+const withMaintenanceCheck = (element: React.ReactNode) => {
+  const isMaintenance = isMaintenanceTime();
+  const isOnMaintenancePage = window.location.pathname === '/maintenance';
+  
+  if (isMaintenance && !isOnMaintenancePage) {
+    // Rediriger vers la page de maintenance si nécessaire
+    window.location.href = '/maintenance';
+    return <LoadingFallback />;
+  } else if (!isMaintenance && isOnMaintenancePage) {
+    // Rediriger vers la page d'accès si on est sur la page de maintenance mais qu'elle n'est plus nécessaire
+    window.location.href = '/';
+    return <LoadingFallback />;
+  }
+  
+  return element;
+};
+
 function App() {
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
         <TooltipProvider>
-          <AuthProvider>
-            <Suspense fallback={<LoadingFallback />}>
-              <RouterProvider
-                router={router}
-              />
-            </Suspense>
-            <Toaster />
-            <Sonner />
-          </AuthProvider>
+          <Suspense fallback={<LoadingFallback />}>
+            {withMaintenanceCheck(
+              <>
+                <RouterProvider router={router} />
+                <Toaster />
+                <Sonner />
+              </>
+            )}
+          </Suspense>
         </TooltipProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { User, Mail, Calendar, Briefcase, Phone, MapPin } from "lucide-react";
+import { FullPageSpinner } from "@/components/ui/spinner";
 
 export default function CandidateProfile() {
   const { user, isLoading } = useAuth();
@@ -21,11 +22,7 @@ export default function CandidateProfile() {
   }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <FullPageSpinner text="Chargement du profil..." />;
   }
 
   if (!isAuthenticated) {

@@ -4,7 +4,7 @@ import { User, Session, AuthResponse, AuthError, type RealtimeChannel } from "@s
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SignUpMetadata {
-  role: "candidat" | "recruteur" | "admin";
+  role: "candidat" | "recruteur" | "admin" | "observateur";
   first_name?: string;
   last_name?: string;
   phone?: string;
@@ -29,6 +29,7 @@ interface AuthContextType {
   isCandidate: boolean;
   isRecruiter: boolean;
   isAdmin: boolean;
+  isObserver: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -56,16 +57,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         channelRef.current = null;
       }
       try {
-        const { data } = await supabase
+        setIsRoleLoading(true);
+        const { data, error } = await supabase
           .from('users')
           .select('role')
           .eq('id', uid)
           .single();
         if (!mounted) return;
-        setDbRole((data as { role?: string } | null)?.role ?? null);
-      } catch {
+        
+        if (error) {
+          console.warn('Failed to fetch user role:', error.message);
+          setDbRole(null);
+        } else {
+          setDbRole((data as { role?: string } | null)?.role ?? null);
+        }
+      } catch (err) {
         if (!mounted) return;
+        console.warn('Error fetching user role:', err);
         setDbRole(null);
+      } finally {
+        if (mounted) {
+          setIsRoleLoading(false);
+        }
       }
       // Realtime subscription on own row
       const channel = supabase.channel(`users-role-${uid}`)
@@ -82,14 +95,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       channelRef.current = channel;
     };
 
-    // Set up auth state listener
+    // Keep track of current user ID to avoid unnecessary updates
+    let currentUserIdRef = user?.id;
+    
+    // Set up auth state listener - with stability check to avoid unnecessary re-renders
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         if (!mounted) return;
+        
+        const newUserId = session?.user?.id;
+        
+        // Skip redundant updates during focus changes that don't change user
+        if (event === 'TOKEN_REFRESHED' && newUserId === currentUserIdRef) {
+          return;
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
-        const uid = session?.user?.id;
-        setupForUid(uid);
+        currentUserIdRef = newUserId;
+        
+        // Always setup role for new sessions, but avoid redundant calls
+        setupForUid(newUserId);
       }
     );
 
@@ -111,44 +137,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         channelRef.current = null;
       }
     };
-  }, []);
-
-  // Whenever the authenticated user changes, fetch the authoritative role from DB
-  useEffect(() => {
-    const fetchRole = async () => {
-      try {
-        if (!user?.id) {
-          setDbRole(null);
-          return;
-        }
-        setIsRoleLoading(true);
-        const { data, error } = await supabase.rpc('get_my_role');
-        if (!error && data) {
-          setDbRole(String(data as unknown as string));
-        } else {
-          setDbRole(null);
-        }
-      } catch {
-        setDbRole(null);
-
-      } finally {
-        setIsRoleLoading(false);
-      }
-    };
-    fetchRole();
   }, [user?.id]);
 
+  // Remove this redundant useEffect as role is already fetched in the main effect above
+
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
-    // Base URL selon l'environnement (dev/prod)
+    // Désactivation de l'email de confirmation côté client: ne pas fournir emailRedirectTo
+    // Pour une désactivation complète, configurer Supabase (Auth -> Email -> désactiver "Confirm email").
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
-    const redirectUrl = `${siteBaseUrl}/`;
-    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl,
         data: metadata,
       }
     });
@@ -288,6 +288,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isCandidate = roleValue === 'candidat' || roleValue === 'candidate';
   const isRecruiter = roleValue === 'recruteur' || roleValue === 'recruiter';
   const isAdmin = roleValue === 'admin';
+  const isObserver = roleValue === 'observateur' || roleValue === 'observer';
 
   const value = {
     user,
@@ -302,7 +303,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resetPassword,
     isCandidate,
     isRecruiter,
-    isAdmin
+    isAdmin,
+    isObserver
   };
 
   return (
@@ -316,6 +318,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
+    // En mode développement/test, fournir des valeurs par défaut pour éviter les crashes
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+      console.warn('useAuth called outside AuthProvider, returning default values');
+      return {
+        user: null,
+        session: null,
+        isLoading: false,
+        isRoleLoading: false,
+        isUpdating: false,
+        signUp: async () => ({ error: null }),
+        signIn: async () => ({ data: null, error: null }),
+        signOut: async () => ({ error: null }),
+        updateUser: async () => false,
+        resetPassword: async () => ({ error: null }),
+        isCandidate: false,
+        isRecruiter: false,
+        isAdmin: false,
+        isObserver: false,
+      } as AuthContextType;
+    }
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
