@@ -28,13 +28,30 @@ export function CandidateHeader() {
   const { status: profileStatus } = useProfileCompletion();
   const [notificationOpen, setNotificationOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    toast({
-      title: "Déconnexion réussie",
-      description: "À bientôt !",
-    });
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      const { error } = await logout();
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Erreur lors de la déconnexion",
+          variant: "destructive"
+        });
+        return;
+      }
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt !",
+      });
+      // Force une navigation complète pour éviter les problèmes de cache
+      window.location.href = '/';
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la déconnexion",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

@@ -16,8 +16,18 @@ export function RecruiterLayout({ children, className = "" }: RecruiterLayoutPro
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await signOut();
-    navigate("/");
+    try {
+      const { error } = await signOut();
+      if (error) {
+        console.error("Erreur lors de la déconnexion:", error);
+      }
+      // Force une navigation complète pour éviter les problèmes de cache
+      window.location.href = '/';
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+      // Même en cas d'erreur, rediriger vers la page d'accueil
+      window.location.href = '/';
+    }
   };
 
   return (

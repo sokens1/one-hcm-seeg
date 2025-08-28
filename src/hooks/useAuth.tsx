@@ -172,18 +172,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    // Proactively clear local state to avoid stale role/guards during redirect
     try {
-      if (channelRef.current) {
-        try { supabase.removeChannel(channelRef.current); } catch { /* empty */ }
-        channelRef.current = null;
-      }
+      // Clear local state first to ensure immediate UI update
       setUser(null);
       setSession(null);
       setDbRole(null);
-    } catch { /* empty */ }
-    return { error };
+      setIsLoading(false);
+      setIsRoleLoading(false);
+      
+      // Clean up realtime channel
+      if (channelRef.current) {
+        try { 
+          supabase.removeChannel(channelRef.current); 
+        } catch { 
+          /* empty */ 
+        }
+        channelRef.current = null;
+      }
+      
+      // Then perform the actual sign out
+      const { error } = await supabase.auth.signOut();
+      
+      // Clear any cached data
+      if (typeof window !== 'undefined') {
+        // Clear localStorage if needed
+        localStorage.removeItem('supabase.auth.token');
+      }
+      
+      return { error };
+    } catch (error) {
+      console.error('Error during sign out:', error);
+      return { error: error as AuthError };
+    }
   };
 
   const updateUser = async (metadata: Partial<SignUpMetadata>) => {
