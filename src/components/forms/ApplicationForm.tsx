@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -80,44 +80,93 @@ interface FormData {
 
 export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<number>(
-    typeof initialStep === 'number' && initialStep >= 1 ? initialStep : (mode === 'edit' ? 4 : 1)
-  );
-  const [activeTab, setActiveTab] = useState<'metier' | 'talent' | 'paradigme'>('metier');
+  const [currentStep, setCurrentStep] = useState<number>(() => {
+    if (typeof initialStep === 'number' && initialStep >= 1) return initialStep;
+    try {
+      const jid = jobId || 'no-job';
+      const raw = localStorage.getItem(`application_form_shared_${jid}_ui`);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        const step = Number(saved?.currentStep);
+        if (step >= 1) return step;
+      }
+    } catch { /* ignore */ }
+    return (mode === 'edit' ? 4 : 1);
+  });
+  const [activeTab, setActiveTab] = useState<'metier' | 'talent' | 'paradigme'>(() => {
+    try {
+      const jid = jobId || 'no-job';
+      const raw = localStorage.getItem(`application_form_shared_${jid}_ui`);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved?.activeTab === 'metier' || saved?.activeTab === 'talent' || saved?.activeTab === 'paradigme') {
+          return saved.activeTab;
+        }
+      }
+    } catch { /* ignore */ }
+    return 'metier';
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitApplication } = useApplications();
   const { uploadFile, isUploading, getFileUrl, deleteFile } = useFileUpload();
   const { user } = useAuth();
-  const [formData, setFormData] = useState<FormData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    matricule: "",
-    phone: "",
-    gender: "",
-    dateOfBirth: null,
-    currentPosition: "",
-    address: "",
-    cv: null,
-    coverLetter: null,
-    yearsOfExperience: "",
-    certificates: [],
-    additionalCertificates: [],
-    references: "",
-    // Partie Métier
-    metier1: "",
-    metier2: "",
-    metier3: "",
-    metier4: "",
-    metier5: "",
-    metier6: "",
-    metier7: "",
-    // Partie Talent
-    talent1: "", talent2: "", talent3: "", talent4: "", talent5: "", talent6: "", talent7: "",
-    // Partie Paradigme
-    paradigme1: "", paradigme2: "", paradigme3: "", paradigme4: "", paradigme5: "", paradigme6: "", paradigme7: "",
-    consent: false
+  // Clé de persistance unique par utilisateur et offre
+  const storageKey = useMemo(() => {
+    const uid = user?.id || 'guest';
+    const jid = jobId || 'no-job';
+    return `application_form_${uid}_${jid}`;
+  }, [user?.id, jobId]);
+  // Shared fallback key (job-scoped), used when auth is not yet restored on refresh
+  const sharedKey = useMemo(() => {
+    const jid = jobId || 'no-job';
+    return `application_form_shared_${jid}`;
+  }, [jobId]);
+
+  const [formData, setFormData] = useState<FormData>(() => {
+    // Essayer de recharger l'état depuis le stockage local
+    try {
+      let raw = localStorage.getItem(storageKey);
+      if (!raw) raw = localStorage.getItem(sharedKey);
+      if (raw) {
+        const parsed = JSON.parse(raw) as FormData;
+        // Restaurer Date
+        return {
+          ...parsed,
+          dateOfBirth: parsed.dateOfBirth ? new Date(parsed.dateOfBirth as unknown as string) : null,
+        };
+      }
+    } catch { /* ignore */ }
+    return {
+      firstName: "",
+      lastName: "",
+      email: "",
+      matricule: "",
+      phone: "",
+      gender: "",
+      dateOfBirth: null,
+      currentPosition: "",
+      address: "",
+      cv: null,
+      coverLetter: null,
+      yearsOfExperience: "",
+      certificates: [],
+      additionalCertificates: [],
+      references: "",
+      // Partie Métier
+      metier1: "",
+      metier2: "",
+      metier3: "",
+      metier4: "",
+      metier5: "",
+      metier6: "",
+      metier7: "",
+      // Partie Talent
+      talent1: "", talent2: "", talent3: "", talent4: "", talent5: "", talent6: "", talent7: "",
+      // Partie Paradigme
+      paradigme1: "", paradigme2: "", paradigme3: "", paradigme4: "", paradigme5: "", paradigme6: "", paradigme7: "",
+      consent: false
+    };
   });
 
   // Prefill personal info from public.users and candidate_profiles
@@ -156,19 +205,23 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!metaLast && parts.length > 1) metaLast = parts.slice(1).join(' ');
         }
 
-        setFormData((prev) => ({
-          ...prev,
-          firstName: prev.firstName || dbUser?.first_name || metaFirst || '',
-          lastName: prev.lastName || dbUser?.last_name || metaLast || '',
-          email: prev.email || dbUser?.email || user.email || '',
-          matricule: prev.matricule || dbUser?.matricule || '',
-          phone: prev.phone || dbUser?.phone || '',
-          dateOfBirth: prev.dateOfBirth || (profile?.birth_date ? new Date(profile.birth_date) : null),
-          currentPosition: prev.currentPosition || profile?.current_position || '',
-          gender: prev.gender || profile?.gender || '',
-          yearsOfExperience: prev.yearsOfExperience || (profile?.years_experience ? String(profile.years_experience) : ''),
-          address: prev.address || profile?.address || '',
-        }));
+        setFormData((prev) => {
+          const next = {
+            ...prev,
+            firstName: prev.firstName || dbUser?.first_name || metaFirst || '',
+            lastName: prev.lastName || dbUser?.last_name || metaLast || '',
+            email: prev.email || dbUser?.email || user.email || '',
+            matricule: prev.matricule || dbUser?.matricule || '',
+            phone: prev.phone || dbUser?.phone || '',
+            dateOfBirth: prev.dateOfBirth || (profile?.birth_date ? new Date(profile.birth_date) : null),
+            currentPosition: prev.currentPosition || profile?.current_position || '',
+            gender: prev.gender || profile?.gender || '',
+            yearsOfExperience: prev.yearsOfExperience || (profile?.years_experience ? String(profile.years_experience) : ''),
+            address: prev.address || profile?.address || '',
+          };
+          try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+          return next;
+        });
       } catch (e: any) {
         console.error('Prefill error:', e);
         // Ne bloque pas l'utilisateur, informe simplement en silencieux
@@ -179,7 +232,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     return () => {
       isMounted = false;
     };
-  }, [user, user?.id, user?.email]);
+  }, [user, user?.id, user?.email, storageKey]);
 
   // Prefill from existing application when editing
   useEffect(() => {
@@ -204,32 +257,36 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
         const refContacts = (data as any).reference_contacts ?? (data as any).ref_contacts;
 
-        setFormData(prev => ({
-          ...prev,
-          // Références et MTP
-          references: refContacts ?? prev.references,
-          metier1: mtp?.metier?.[0] ?? prev.metier1,
-          metier2: mtp?.metier?.[1] ?? prev.metier2,
-          metier3: mtp?.metier?.[2] ?? prev.metier3,
-          metier4: mtp?.metier?.[3] ?? prev.metier4,
-          metier5: mtp?.metier?.[4] ?? prev.metier5,
-          metier6: mtp?.metier?.[5] ?? prev.metier6,
-          metier7: mtp?.metier?.[6] ?? prev.metier7,
-          talent1: mtp?.talent?.[0] ?? prev.talent1,
-          talent2: mtp?.talent?.[1] ?? prev.talent2,
-          talent3: mtp?.talent?.[2] ?? prev.talent3,
-          talent4: mtp?.talent?.[3] ?? prev.talent4,
-          talent5: mtp?.talent?.[4] ?? prev.talent5,
-          talent6: mtp?.talent?.[5] ?? prev.talent6,
-          talent7: mtp?.talent?.[6] ?? prev.talent7,
-          paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
-          paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
-          paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
-          paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
-          paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
-          paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
-          paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
-        }));
+        setFormData(prev => {
+          const next = {
+            ...prev,
+            // Références et MTP
+            references: refContacts ?? prev.references,
+            metier1: mtp?.metier?.[0] ?? prev.metier1,
+            metier2: mtp?.metier?.[1] ?? prev.metier2,
+            metier3: mtp?.metier?.[2] ?? prev.metier3,
+            metier4: mtp?.metier?.[3] ?? prev.metier4,
+            metier5: mtp?.metier?.[4] ?? prev.metier5,
+            metier6: mtp?.metier?.[5] ?? prev.metier6,
+            metier7: mtp?.metier?.[6] ?? prev.metier7,
+            talent1: mtp?.talent?.[0] ?? prev.talent1,
+            talent2: mtp?.talent?.[1] ?? prev.talent2,
+            talent3: mtp?.talent?.[2] ?? prev.talent3,
+            talent4: mtp?.talent?.[3] ?? prev.talent4,
+            talent5: mtp?.talent?.[4] ?? prev.talent5,
+            talent6: mtp?.talent?.[5] ?? prev.talent6,
+            talent7: mtp?.talent?.[6] ?? prev.talent7,
+            paradigme1: mtp?.paradigme?.[0] ?? prev.paradigme1,
+            paradigme2: mtp?.paradigme?.[1] ?? prev.paradigme2,
+            paradigme3: mtp?.paradigme?.[2] ?? prev.paradigme3,
+            paradigme4: mtp?.paradigme?.[3] ?? prev.paradigme4,
+            paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
+            paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
+            paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
+          };
+          try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+          return next;
+        });
 
         // Récupérer les informations utilisateur et profil séparément (enrichissement, non bloquant)
         const candidateId = (data as any).candidate_id;
@@ -247,16 +304,20 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               .maybeSingle()
           ]);
 
-          setFormData(prev => ({
-            ...prev,
-            // Informations personnelles depuis la candidature existante
-            firstName: userData?.first_name || prev.firstName,
-            lastName: userData?.last_name || prev.lastName,
-            email: userData?.email || prev.email,
-            dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
-            gender: profileData?.gender || prev.gender,
-            currentPosition: profileData?.current_position || prev.currentPosition,
-          }));
+          setFormData(prev => {
+            const next = {
+              ...prev,
+              // Informations personnelles depuis la candidature existante
+              firstName: userData?.first_name || prev.firstName,
+              lastName: userData?.last_name || prev.lastName,
+              email: userData?.email || prev.email,
+              dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
+              gender: profileData?.gender || prev.gender,
+              currentPosition: profileData?.current_position || prev.currentPosition,
+            };
+            try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+            return next;
+          });
         }
       } catch (e) {
         console.warn('Chargement de la candidature (édition) échoué:', (e as any)?.message || e);
@@ -264,7 +325,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     };
     loadExisting();
     return () => { aborted = true; };
-  }, [mode, applicationId]);
+  }, [mode, applicationId, storageKey]);
 
   // Prefill documents from existing application when editing
   useEffect(() => {
@@ -288,33 +349,178 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
         const cv = data.find(d => d.document_type === 'cv');
         const cover = data.find(d => d.document_type === 'cover_letter');
-                const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
+        const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
         const additionalCertificates = data.filter(d => d.document_type === 'certificate').map(makeUploaded);
 
-        setFormData(prev => ({
-          ...prev,
-          cv: cv ? makeUploaded(cv) : prev.cv,
-          coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
-          certificates: certificates.length ? certificates : prev.certificates,
-          additionalCertificates: additionalCertificates.length ? additionalCertificates : prev.additionalCertificates,
-        }));
+        setFormData(prev => {
+          const next = {
+            ...prev,
+            cv: cv ? makeUploaded(cv) : prev.cv,
+            coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
+            certificates: certificates.length ? certificates : prev.certificates,
+            additionalCertificates: additionalCertificates.length ? additionalCertificates : prev.additionalCertificates,
+          };
+          try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+          return next;
+        });
       } catch (e) {
         console.warn('Chargement des documents échoué:', (e as any)?.message || e);
       }
     };
     loadDocuments();
     return () => { cancelled = true; };
-  }, [mode, applicationId]);
+  }, [mode, applicationId, storageKey]);
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
   const mtpQuestions = useMemo(() => getMetierQuestionsForTitle(jobTitle), [jobTitle]);
 
+  // Migrate guest data to user-specific key after login (one-time per job)
+  useEffect(() => {
+    const uid = user?.id;
+    const jid = jobId || 'no-job';
+    if (!uid) return;
+    const userKey = `application_form_${uid}_${jid}`;
+    const guestKey = `application_form_guest_${jid}`;
+    const userUiKey = userKey + '_ui';
+    const guestUiKey = guestKey + '_ui';
+    try {
+      const hasUserData = !!localStorage.getItem(userKey);
+      const guestData = localStorage.getItem(guestKey);
+      if (!hasUserData && guestData) {
+        localStorage.setItem(userKey, guestData);
+        const guestUi = localStorage.getItem(guestUiKey);
+        if (guestUi && !localStorage.getItem(userUiKey)) {
+          localStorage.setItem(userUiKey, guestUi);
+        }
+        // Optionally keep guest data; do not remove to allow anonymous continuation in other sessions
+      }
+    } catch { /* ignore */ }
+  }, [user?.id, jobId]);
+
+  // Persist form data locally and to server (if authenticated) whenever it changes
+  const saveTimeoutRef = useRef<number | null>(null);
+  useEffect(() => {
+    try {
+      // Always persist locally
+      const payload = JSON.stringify(formData);
+      localStorage.setItem(storageKey, payload);
+      // also write shared key to survive auth-late refresh
+      localStorage.setItem(sharedKey, payload);
+    } catch { /* ignore */ }
+
+    // Debounced server sync for cross-device persistence
+    if (user?.id && jobId) {
+      if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = window.setTimeout(async () => {
+        try {
+          await supabase.from('application_drafts').upsert({
+            user_id: user.id,
+            job_offer_id: jobId,
+            form_data: formData,
+            ui_state: { currentStep, activeTab },
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,job_offer_id' });
+        } catch (e) {
+          console.warn('Draft sync failed (non-blocking):', (e as any)?.message || e);
+        }
+      }, 600);
+    }
+
+    return () => { if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current); };
+  }, [formData, storageKey, sharedKey, user?.id, jobId, currentStep, activeTab]);
+
+  // Load saved UI state (step and active tab) when available
+  useEffect(() => {
+    const load = async () => {
+      // 1) Try server draft first if authenticated
+      let restored = false;
+      if (user?.id && jobId) {
+        try {
+          const { data, error } = await supabase
+            .from('application_drafts')
+            .select('form_data, ui_state')
+            .eq('user_id', user.id)
+            .eq('job_offer_id', jobId)
+            .maybeSingle();
+          if (!error && data) {
+            const srvForm = (data as any).form_data as Partial<FormData> | undefined;
+            const srvUi = (data as any).ui_state as { currentStep?: number; activeTab?: 'metier' | 'talent' | 'paradigme' } | undefined;
+            if (srvForm) {
+              setFormData(prev => {
+                const merged = {
+                  ...prev,
+                  ...srvForm,
+                  dateOfBirth: srvForm.dateOfBirth ? new Date(srvForm.dateOfBirth as any) : prev.dateOfBirth,
+                } as FormData;
+                try {
+                  localStorage.setItem(storageKey, JSON.stringify(merged));
+                  localStorage.setItem(sharedKey, JSON.stringify(merged));
+                } catch (e) {
+                  if (import.meta.env.DEV) {
+                    console.warn('Local draft persist failed (non-blocking):', (e as any)?.message || e);
+                  }
+                }
+                return merged;
+              });
+              restored = true;
+            }
+            if (srvUi) {
+              if (typeof srvUi.currentStep === 'number' && srvUi.currentStep >= 1 && srvUi.currentStep <= totalSteps && typeof initialStep !== 'number') {
+                setCurrentStep(srvUi.currentStep);
+              }
+              if (srvUi.activeTab === 'metier' || srvUi.activeTab === 'talent' || srvUi.activeTab === 'paradigme') {
+                setActiveTab(srvUi.activeTab);
+              }
+              try {
+                localStorage.setItem(storageKey + '_ui', JSON.stringify(srvUi));
+                localStorage.setItem(sharedKey + '_ui', JSON.stringify(srvUi));
+              } catch (e) {
+                if (import.meta.env.DEV) {
+                  console.warn('Local UI persist failed (non-blocking):', (e as any)?.message || e);
+                }
+              }
+            }
+          }
+        } catch {
+          // ignore server load errors
+        }
+      }
+
+      // 2) Fallback to local UI state
+      try {
+        let raw = localStorage.getItem(storageKey + '_ui');
+        if (!raw) raw = localStorage.getItem(sharedKey + '_ui');
+        if (!restored && raw) {
+          const saved = JSON.parse(raw) as { currentStep?: number; activeTab?: 'metier' | 'talent' | 'paradigme' };
+          if (typeof initialStep !== 'number') {
+            const step = Number(saved.currentStep);
+            if (step >= 1 && step <= totalSteps) setCurrentStep(step);
+          }
+          if (saved.activeTab === 'metier' || saved.activeTab === 'talent' || saved.activeTab === 'paradigme') {
+            setActiveTab(saved.activeTab);
+          }
+        }
+      } catch { /* ignore */ }
+    };
+    load();
+  }, [storageKey, sharedKey, initialStep, totalSteps, user?.id, jobId]);
+
+  // Persist UI state to localStorage
+  useEffect(() => {
+    try {
+      const payload = JSON.stringify({ currentStep, activeTab });
+      localStorage.setItem(storageKey + '_ui', payload);
+      // also persist to shared to survive auth-late refresh
+      localStorage.setItem(sharedKey + '_ui', payload);
+    } catch { /* ignore */ }
+  }, [currentStep, activeTab, storageKey, sharedKey]);
+
   // Validation functions for each step
   const validateStep1 = () => {
     // Validation de l'email avec nos utilitaires
             // const isEmailValid = isValidEmail(formData.email); // DÉSACTIVÉ
-        const isEmailValid = true; // Validation d'email désactivée
+        const isEmailValid = true; // Validation d'email désactivée (forcer vrai sans condition constante)
     
     return (
       formData.firstName.trim() !== '' &&
@@ -370,8 +576,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!formData.email.trim()) {
             missing.push("Email");
           } else {
-            // if (!isValidEmail(formData.email)) { // DÉSACTIVÉ
-      if (false) { // Validation d'email désactivée
+            // Validation d'email désactivée (ne pas pousser d'erreur)
+            // const emailFormatValid = isValidEmail(formData.email);
+            const emailFormatValid = true;
+            if (!emailFormatValid) {
               missing.push("Email (format invalide)");
             }
           }
@@ -633,6 +841,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         closeButton: true,
       });
       
+      // Supprimer le brouillon serveur après un envoi réussi
+      try {
+        if (user?.id && (applicationIdForDocs || jobId)) {
+          await supabase
+            .from('application_drafts')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('job_offer_id', jobId as string);
+        }
+      } catch (e) {
+        console.warn('Failed to delete draft after submit (non-blocking):', (e as any)?.message || e);
+      }
+
       // Appeler onSubmit si fourni après un délai
       setTimeout(() => {
         onSubmit?.();
