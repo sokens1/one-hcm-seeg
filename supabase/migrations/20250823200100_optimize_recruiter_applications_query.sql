@@ -9,6 +9,14 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
+  -- Vérifier que l'utilisateur est authentifié et a un rôle approprié
+  IF NOT EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = auth.uid() AND role IN ('recruteur', 'admin', 'observateur', 'observer')
+  ) THEN
+    RAISE EXCEPTION 'Access denied: Only recruiters, admins, and observers can access this function';
+  END IF;
+
   RETURN QUERY
   SELECT 
     to_jsonb(a.*) as application_details,
@@ -21,3 +29,6 @@ BEGIN
   ORDER BY a.created_at DESC;
 END;
 $$;
+
+-- Accorder l'exécution aux rôles appropriés
+GRANT EXECUTE ON FUNCTION get_all_recruiter_applications() TO authenticated;

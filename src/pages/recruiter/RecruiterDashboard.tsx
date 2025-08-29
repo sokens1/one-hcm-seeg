@@ -182,266 +182,266 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-                         {/* Charts Section - Two per Row Grid */}
-             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-               {/* Coverage Rate Chart */}
-               <Card>
-                 <CardHeader className="pb-3">
-                   <div className="flex items-center gap-2">
-                     <Target className="h-5 w-5 text-primary" />
-                     <CardTitle className="text-base sm:text-lg">Score de couverture par poste</CardTitle>
-                   </div>
-                   <p className="text-sm text-muted-foreground">
-                     Basé sur le nombre de candidatures reçues
-                   </p>
-                 </CardHeader>
-                 <CardContent>
-                   <div className="h-64 sm:h-80">
-                     <ResponsiveContainer width="100%" height="100%">
-                       <BarChart data={jobCoverage.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                         <XAxis 
-                           dataKey="title" 
-                           tick={{ fontSize: 10 }}
-                           interval={0}
-                           height={60}
-                           angle={-45}
-                           textAnchor="end"
-                         />
-                         <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
-                         <Tooltip 
-                           formatter={(value: number, name: string) => [
-                             name === 'coverage_rate' ? `${value}%` : value,
-                             name === 'coverage_rate' ? 'Score de couverture' : 'Candidatures'
-                           ]}
-                           labelFormatter={(value) => {
-                             const job = jobCoverage.find(j => j.title === value);
-                             return `${value} (${job?.current_applications} candidatures)`;
-                           }}
-                         />
-                         <Bar 
-                           dataKey="coverage_rate" 
-                           radius={[4, 4, 0, 0]}
-                           name="coverage_rate"
-                         >
-                           {jobCoverage.slice(0, 8).map((entry, index) => (
-                             <Cell 
-                               key={`cell-${index}`}
-                               fill={
-                                 entry.coverage_status === 'excellent' ? '#10b981' :
-                                 entry.coverage_status === 'good' ? '#3b82f6' :
-                                 entry.coverage_status === 'moderate' ? '#f59e0b' :
-                                 '#ef4444'
-                               }
-                             />
-                           ))}
-                         </Bar>
-                       </BarChart>
-                     </ResponsiveContainer>
-                   </div>
-                   {/* Legend */}
-                   <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs">
-                     <div className="flex items-center gap-2">
-                       <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                       <span>Excellent (≥10 candidatures)</span>
-                     </div>
-                     <div className="flex items-center gap-2">
-                       <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                       <span>Bon (7-9 candidatures)</span>
-                     </div>
-                     <div className="flex items-center gap-2">
-                       <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                       <span>Modéré (4-6 candidatures)</span>
-                     </div>
-                     <div className="flex items-center gap-2">
-                       <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                       <span>Faible (1-3 candidatures)</span>
-                     </div>
-                   </div>
-                 </CardContent>
-               </Card>
+            {/* Charts Section - Two per Row Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              {/* Coverage Rate Chart */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base sm:text-lg">Score de couverture par poste</CardTitle>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Basé sur le nombre de candidatures reçues
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 sm:h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={jobCoverage.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <XAxis 
+                          dataKey="title" 
+                          tick={{ fontSize: 10 }}
+                          interval={0}
+                          height={60}
+                          angle={-45}
+                          textAnchor="end"
+                        />
+                        <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            name === 'coverage_rate' ? `${value}%` : value,
+                            name === 'coverage_rate' ? 'Score de couverture' : 'Candidatures'
+                          ]}
+                          labelFormatter={(value) => {
+                            const job = jobCoverage.find(j => j.title === value);
+                            return `${value} (${job?.current_applications} candidatures)`;
+                          }}
+                        />
+                        <Bar 
+                          dataKey="coverage_rate" 
+                          radius={[4, 4, 0, 0]}
+                          name="coverage_rate"
+                        >
+                          {jobCoverage.slice(0, 8).map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`}
+                              fill={
+                                entry.coverage_status === 'excellent' ? '#10b981' :
+                                entry.coverage_status === 'good' ? '#3b82f6' :
+                                entry.coverage_status === 'moderate' ? '#f59e0b' :
+                                '#ef4444'
+                              }
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  {/* Legend */}
+                  <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <span>Excellent (≥10 candidatures)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                      <span>Bon (7-9 candidatures)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <span>Modéré (4-6 candidatures)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <span>Faible (1-3 candidatures)</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-               {/* Applications per Job Chart */}
-               <Card>
-                 <CardHeader className="pb-3">
-                   <div className="flex items-center gap-2">
-                     <BarChart3 className="h-5 w-5 text-primary" />
-                     <CardTitle className="text-base sm:text-lg">Candidatures par offre</CardTitle>
-                   </div>
-                 </CardHeader>
-                 <CardContent>
-                   <div className="h-64 sm:h-80">
-                     <ResponsiveContainer width="100%" height="100%">
-                       <BarChart data={applicationsPerJob.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                         <XAxis 
-                           dataKey="title" 
-                           tick={{ fontSize: 10 }}
-                           interval={0}
-                           height={60}
-                           angle={-45}
-                           textAnchor="end"
-                         />
-                         <YAxis tick={{ fontSize: 12 }} />
-                         <Tooltip />
-                         <Bar 
-                           dataKey="applications_count" 
-                           fill="#10b981" 
-                           radius={[4, 4, 0, 0]}
-                           name="Total candidatures"
-                         />
-                         <Bar 
-                           dataKey="new_applications_24h" 
-                           fill="#f59e0b" 
-                           radius={[4, 4, 0, 0]}
-                           name="Nouvelles (24h)"
-                         />
-                       </BarChart>
-                     </ResponsiveContainer>
-                   </div>
-                 </CardContent>
-               </Card>
+              {/* Applications per Job Chart */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base sm:text-lg">Candidatures par offre</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 sm:h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={applicationsPerJob.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <XAxis 
+                          dataKey="title" 
+                          tick={{ fontSize: 10 }}
+                          interval={0}
+                          height={60}
+                          angle={-45}
+                          textAnchor="end"
+                        />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip />
+                        <Bar 
+                          dataKey="applications_count" 
+                          fill="#10b981" 
+                          radius={[4, 4, 0, 0]}
+                          name="Total candidatures"
+                        />
+                        <Bar 
+                          dataKey="new_applications_24h" 
+                          fill="#f59e0b" 
+                          radius={[4, 4, 0, 0]}
+                          name="Nouvelles (24h)"
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
 
-               {/* Status Evolution Chart */}
-               <Card>
-                 <CardHeader className="pb-3">
-                   <div className="flex items-center gap-2">
-                     <TrendingUp className="h-5 w-5 text-primary" />
-                     <CardTitle className="text-base sm:text-lg">Évolution des statuts (7 jours)</CardTitle>
-                   </div>
-                 </CardHeader>
-                 <CardContent>
-                   <div className="h-64 sm:h-80">
-                     <ResponsiveContainer width="100%" height="100%">
-                       <AreaChart data={statusEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                         <XAxis 
-                           dataKey="date" 
-                           tick={{ fontSize: 12 }}
-                           tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
-                         />
-                         <YAxis tick={{ fontSize: 12 }} />
-                         <Tooltip 
-                           labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { 
-                             weekday: 'long', 
-                             year: 'numeric', 
-                             month: 'long', 
-                             day: 'numeric' 
-                           })}
-                         />
-                         <Area 
-                           type="monotone" 
-                           dataKey="candidature" 
-                           stackId="1" 
-                           stroke="#3b82f6" 
-                           fill="#3b82f6" 
-                           fillOpacity={0.6}
-                           name="Candidature"
-                         />
-                         <Area 
-                           type="monotone" 
-                           dataKey="incubation" 
-                           stackId="1" 
-                           stroke="#f59e0b" 
-                           fill="#f59e0b" 
-                           fillOpacity={0.6}
-                           name="Incubation"
-                         />
-                         <Area 
-                           type="monotone" 
-                           dataKey="embauche" 
-                           stackId="1" 
-                           stroke="#10b981" 
-                           fill="#10b981" 
-                           fillOpacity={0.6}
-                           name="Embauche"
-                         />
-                         <Area 
-                           type="monotone" 
-                           dataKey="refuse" 
-                           stackId="1" 
-                           stroke="#ef4444" 
-                           fill="#ef4444" 
-                           fillOpacity={0.6}
-                           name="Refusé"
-                         />
-                       </AreaChart>
-                     </ResponsiveContainer>
-                   </div>
-                 </CardContent>
-               </Card>
+              {/* Status Evolution Chart */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base sm:text-lg">Évolution des statuts (7 jours)</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 sm:h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={statusEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <XAxis 
+                          dataKey="date" 
+                          tick={{ fontSize: 12 }}
+                          tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
+                        />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip 
+                          labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="candidature" 
+                          stackId="1" 
+                          stroke="#3b82f6" 
+                          fill="#3b82f6" 
+                          fillOpacity={0.6}
+                          name="Candidature"
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="incubation" 
+                          stackId="1" 
+                          stroke="#f59e0b" 
+                          fill="#f59e0b" 
+                          fillOpacity={0.6}
+                          name="Incubation"
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="embauche" 
+                          stackId="1" 
+                          stroke="#10b981" 
+                          fill="#10b981" 
+                          fillOpacity={0.6}
+                          name="Embauche"
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="refuse" 
+                          stackId="1" 
+                          stroke="#ef4444" 
+                          fill="#ef4444" 
+                          fillOpacity={0.6}
+                          name="Refusé"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
 
-               {/* Gender Distribution */}
-               <Card>
-                 <CardHeader className="pb-3">
-                   <div className="flex items-center gap-2">
-                     <PieChart className="h-5 w-5 text-primary" />
-                     <CardTitle className="text-base sm:text-lg">Répartition par genre</CardTitle>
-                   </div>
-                   <p className="text-sm text-muted-foreground">
-                     Distribution des candidats par genre
-                   </p>
-                 </CardHeader>
-                 <CardContent>
-                   <div className="h-64 sm:h-80">
-                     <ResponsiveContainer width="100%" height="100%">
-                       <RechartsPieChart>
-                         <Pie
-                           data={[
-                             { 
-                               name: 'Femmes', 
-                               value: stats.femalePercent ?? 0, 
-                               fill: '#ec4899',
-                               candidates: Math.round((stats.femalePercent ?? 0) * (stats.totalCandidates ?? 0) / 100)
-                             },
-                             { 
-                               name: 'Hommes', 
-                               value: stats.malePercent ?? 0, 
-                               fill: '#3b82f6',
-                               candidates: Math.round((stats.malePercent ?? 0) * (stats.totalCandidates ?? 0) / 100)
-                             },
-                           ]}
-                           cx="50%"
-                           cy="50%"
-                           outerRadius={80}
-                           innerRadius={40}
-                           paddingAngle={5}
-                           dataKey="value"
-                         >
-                           {[
-                             { name: 'Femmes', value: stats.femalePercent ?? 0, fill: '#ec4899' },
-                             { name: 'Hommes', value: stats.malePercent ?? 0, fill: '#3b82f6' },
-                           ].map((entry, index) => (
-                             <Cell key={`cell-${index}`} fill={entry.fill} />
-                           ))}
-                         </Pie>
-                         <Tooltip 
-                           formatter={(value: number, name: string, props) => [
-                             `${value.toFixed(1)}% (${props.payload.candidates} candidats)`,
-                             name
-                           ]}
-                           contentStyle={{
-                             backgroundColor: 'hsl(var(--background))',
-                             border: '1px solid hsl(var(--border))',
-                             borderRadius: '8px',
-                             padding: '8px'
-                           }}
-                         />
-                         <Legend 
-                           verticalAlign="bottom" 
-                           height={36}
-                           formatter={(value, entry) => {
-                             const candidates = Math.round((entry.payload.value) * (stats.totalCandidates ?? 0) / 100);
-                             return (
-                               <span style={{ color: entry.color, fontSize: '14px' }}>
-                                 {value} ({(entry.payload.value).toFixed(1)}% - {candidates} candidats)
-                               </span>
-                             );
-                           }}
-                         />
-                       </RechartsPieChart>
-                     </ResponsiveContainer>
-                   </div>
-                 </CardContent>
-               </Card>
-             </div>
+              {/* Gender Distribution */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <PieChart className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base sm:text-lg">Répartition par genre</CardTitle>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Distribution des candidats par genre
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 sm:h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Pie
+                          data={[
+                            { 
+                              name: 'Femmes', 
+                              value: stats.femalePercent ?? 0, 
+                              fill: '#ec4899',
+                              candidates: Math.round((stats.femalePercent ?? 0) * (stats.totalCandidates ?? 0) / 100)
+                            },
+                            { 
+                              name: 'Hommes', 
+                              value: stats.malePercent ?? 0, 
+                              fill: '#3b82f6',
+                              candidates: Math.round((stats.malePercent ?? 0) * (stats.totalCandidates ?? 0) / 100)
+                            },
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          innerRadius={40}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {[
+                            { name: 'Femmes', value: stats.femalePercent ?? 0, fill: '#ec4899' },
+                            { name: 'Hommes', value: stats.malePercent ?? 0, fill: '#3b82f6' },
+                          ].map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          formatter={(value: number, name: string, props) => [
+                            `${value.toFixed(1)}% (${props.payload.candidates} candidats)`,
+                            name
+                          ]}
+                          contentStyle={{
+                            backgroundColor: 'hsl(var(--background))',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '8px',
+                            padding: '8px'
+                          }}
+                        />
+                        <Legend 
+                          verticalAlign="bottom" 
+                          height={36}
+                          formatter={(value, entry) => {
+                            const candidates = Math.round((entry.payload.value) * (stats.totalCandidates ?? 0) / 100);
+                            return (
+                              <span style={{ color: entry.color, fontSize: '14px' }}>
+                                {value} ({(entry.payload.value).toFixed(1)}% - {candidates} candidats)
+                              </span>
+                            );
+                          }}
+                        />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Quick Actions & Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">

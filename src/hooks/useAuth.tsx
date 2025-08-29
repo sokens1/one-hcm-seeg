@@ -26,6 +26,7 @@ interface AuthContextType {
   signOut: () => Promise<{ error: AuthError | null }>;
   updateUser: (metadata: Partial<SignUpMetadata>) => Promise<boolean>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  refreshUserRole: () => Promise<void>;
   isCandidate: boolean;
   isRecruiter: boolean;
   isAdmin: boolean;
@@ -58,23 +59,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       try {
         setIsRoleLoading(true);
-        const { data, error } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', uid)
-          .single();
-        if (!mounted) return;
         
-        if (error) {
-          console.warn('Failed to fetch user role:', error.message);
-          setDbRole(null);
-        } else {
-          setDbRole((data as { role?: string } | null)?.role ?? null);
+        // Add retry logic and error handling for RLS issues
+        let retryCount = 0;
+        const maxRetries = 2;
+        let lastError = null;
+        
+        while (retryCount <= maxRetries) {
+          try {
+            const { data, error } = await supabase
+              .from('users')
+              .select('role')
+              .eq('id', uid)
+              .single();
+            
+            if (!mounted) return;
+            
+            if (error) {
+              lastError = error;
+              console.warn(`Failed to fetch user role (attempt ${retryCount + 1}):`, error.message);
+              
+              // If it's an RLS recursion error, don't retry
+              if (error.message.includes('infinite recursion') || error.message.includes('500')) {
+                console.error('RLS recursion error detected, using fallback role');
+                // Use auth metadata as fallback
+                const fallbackRole = (user?.user_metadata?.role as string) || 'candidat';
+                setDbRole(fallbackRole);
+                break;
+              }
+              
+              retryCount++;
+              if (retryCount <= maxRetries) {
+                await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // Exponential backoff
+                continue;
+              }
+            } else {
+              setDbRole((data as { role?: string } | null)?.role ?? null);
+              break; // Success, exit retry loop
+            }
+          } catch (err) {
+            lastError = err;
+            retryCount++;
+            if (retryCount <= maxRetries) {
+              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+              continue;
+            }
+          }
         }
+        
+        // If all retries failed, use fallback
+        if (retryCount > maxRetries && lastError) {
+          console.error('All attempts to fetch user role failed:', lastError);
+          const fallbackRole = (user?.user_metadata?.role as string) || 'candidat';
+          setDbRole(fallbackRole);
+        }
+        
       } catch (err) {
         if (!mounted) return;
         console.warn('Error fetching user role:', err);
-        setDbRole(null);
+        // Use fallback role
+        const fallbackRole = (user?.user_metadata?.role as string) || 'candidat';
+        setDbRole(fallbackRole);
       } finally {
         if (mounted) {
           setIsRoleLoading(false);
@@ -278,6 +323,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
+  const refreshUserRole = async () => {
+    if (user?.id) {
+      setIsRoleLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        if (error) {
+          console.warn('Failed to refresh user role:', error.message);
+          setDbRole(null);
+        } else {
+          setDbRole((data as { role?: string } | null)?.role ?? null);
+        }
+      } catch (err) {
+        console.warn('Error refreshing user role:', err);
+        setDbRole(null);
+      } finally {
+        setIsRoleLoading(false);
+      }
+    }
+  };
+
   // Helper functions to check user role (normalize FR/EN + admin)
   const getUserRole = () => {
     // Prefer DB role for dynamic behavior; fallback to auth metadata; default 'candidat'
@@ -301,6 +370,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signOut,
     updateUser,
     resetPassword,
+    refreshUserRole,
     isCandidate,
     isRecruiter,
     isAdmin,
@@ -332,6 +402,7 @@ export function useAuth() {
         signOut: async () => ({ error: null }),
         updateUser: async () => false,
         resetPassword: async () => ({ error: null }),
+        refreshUserRole: async () => {},
         isCandidate: false,
         isRecruiter: false,
         isAdmin: false,

@@ -60,7 +60,7 @@ CREATE TABLE public.applications (
   status TEXT DEFAULT 'candidature' CHECK (status IN ('candidature', 'incubation', 'embauche', 'refuse')),
   motivation TEXT,
   availability_start DATE,
-  references TEXT,
+  professional_references TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   UNIQUE(candidate_id, job_offer_id)
@@ -346,7 +346,7 @@ INSERT INTO public.candidate_profiles (id, user_id, current_position, current_de
 ('770e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440004', 'Contrôleur de gestion', 'Finance', 6, 'Master Finance', 'Immédiate', 1800000, 2500000, ARRAY['Contrôle de gestion', 'Analyse financière', 'Reporting']);
 
 -- Ajouter des candidatures de test
-INSERT INTO public.applications (id, candidate_id, job_offer_id, cover_letter, status, motivation, availability_start, references) VALUES
+INSERT INTO public.applications (id, candidate_id, job_offer_id, cover_letter, status, motivation, availability_start, professional_references) VALUES
 ('880e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440002', '660e8400-e29b-41d4-a716-446655440000', 'Je suis très motivé pour rejoindre l''équipe RH de la SEEG...', 'candidature', 'Passionné par les ressources humaines et désireux de contribuer au développement de la SEEG.', '2024-03-01', 'Ancien manager: +241 01 11 11 11'),
 ('880e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440003', '660e8400-e29b-41d4-a716-446655440001', 'Mon expérience en transformation digitale sera un atout...', 'incubation', 'Expert en systèmes d''information avec une vision stratégique.', '2024-05-01', 'CTO précédent: +241 02 22 22 22'),
 ('880e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440004', '660e8400-e29b-41d4-a716-446655440002', 'Ma solide expérience en contrôle de gestion...', 'candidature', 'Spécialisé en analyse financière et reporting stratégique.', '2024-04-01', 'Directeur financier: +241 03 33 33 33'),
