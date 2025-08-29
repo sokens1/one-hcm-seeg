@@ -5,30 +5,74 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/SafeSelect";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Star, CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp } from 'lucide-react';
 import { cn } from "@/lib/utils";
+
+interface StarRatingProps {
+  value: number;
+  onChange: (value: number) => void;
+  label: string;
+}
+
+const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">{label}</Label>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => onChange(star)}
+            className="transition-colors hover:scale-110"
+          >
+            <Star
+              className={cn(
+                "w-5 h-5",
+                star <= value
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "text-gray-300 hover:text-yellow-300"
+              )}
+            />
+          </button>
+        ))}
+      </div>
+      <span className="text-xs text-muted-foreground">{value}/5</span>
+    </div>
+  );
+};
 
 interface Protocol2Data {
   score: number;
   status: 'pending' | 'in_progress' | 'completed';
-  rolePlay: {
-    completed: boolean;
-    score: number;
-    reportAttached: boolean;
+  miseEnSituation: {
+    jeuDeRole: {
+      score: number;
+      comments: string;
+    };
+    jeuCodir: {
+      score: number;
+      comments: string;
+    };
   };
-  codirGame: {
-    completed: boolean;
-    score: number;
-    reportAttached: boolean;
+  validationOperationnelle: {
+    ficheKPIS: {
+      score: number;
+      comments: string;
+    };
   };
-  physicalVisit: boolean;
-  jobDescriptionValidated: boolean;
-  skillsGap: 'low' | 'medium' | 'high';
-  skillsGapJustification: string;
+  analyseCompetences: {
+    gapCompetences: {
+      score: number;
+      comments: string;
+    };
+    planFormation: {
+      score: number;
+      comments: string;
+    };
+  };
 }
 
 interface Protocol2DashboardProps {
@@ -41,35 +85,22 @@ interface Protocol2DashboardProps {
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'completed':
-      return <CheckCircle className="w-5 h-5 text-green-500" />;
+      return <CheckCircle className="w-4 h-4 text-green-500" />;
     case 'in_progress':
-      return <Clock className="w-5 h-5 text-blue-500" />;
+      return <Clock className="w-4 h-4 text-blue-500" />;
     default:
-      return <AlertCircle className="w-5 h-5 text-gray-400" />;
+      return <AlertCircle className="w-4 h-4 text-gray-400" />;
   }
 };
 
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'completed':
-      return <Badge variant="success">Terminé</Badge>;
+      return <Badge variant="default" className="bg-green-100 text-green-800">Terminé</Badge>;
     case 'in_progress':
-      return <Badge variant="secondary">En cours</Badge>;
+      return <Badge variant="default" className="bg-blue-100 text-blue-800">En cours</Badge>;
     default:
-      return <Badge variant="outline">En attente</Badge>;
-  }
-};
-
-const getSkillsGapColor = (gap: string) => {
-  switch (gap) {
-    case 'low':
-      return 'text-green-600 bg-green-50 border-green-200';
-    case 'medium':
-      return 'text-orange-600 bg-orange-50 border-orange-200';
-    case 'high':
-      return 'text-red-600 bg-red-50 border-red-200';
-    default:
-      return 'text-gray-600 bg-gray-50 border-gray-200';
+      return <Badge variant="secondary">En attente</Badge>;
   }
 };
 
@@ -77,284 +108,284 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
   const [protocol2Data, setProtocol2Data] = useState<Protocol2Data>({
     score: 0,
     status: 'pending',
-    rolePlay: {
-      completed: false,
-      score: 0,
-      reportAttached: false
+    miseEnSituation: {
+      jeuDeRole: {
+        score: 0,
+        comments: ''
+      },
+      jeuCodir: {
+        score: 0,
+        comments: ''
+      }
     },
-    codirGame: {
-      completed: false,
-      score: 0,
-      reportAttached: false
+    validationOperationnelle: {
+      ficheKPIS: {
+        score: 0,
+        comments: ''
+      }
     },
-    physicalVisit: false,
-    jobDescriptionValidated: false,
-    skillsGap: 'medium',
-    skillsGapJustification: ""
+    analyseCompetences: {
+      gapCompetences: {
+        score: 0,
+        comments: ''
+      },
+      planFormation: {
+        score: 0,
+        comments: ''
+      }
+    }
   });
 
-  const updateProtocol2 = (field: string, value: any) => {
+  const calculateSectionScores = () => {
+    const miseEnSituationScore = (protocol2Data.miseEnSituation.jeuDeRole.score + protocol2Data.miseEnSituation.jeuCodir.score) / 2;
+    const validationScore = protocol2Data.validationOperationnelle.ficheKPIS.score;
+    const analyseScore = (protocol2Data.analyseCompetences.gapCompetences.score + protocol2Data.analyseCompetences.planFormation.score) / 2;
+
+    return {
+      miseEnSituationScore,
+      validationScore,
+      analyseScore,
+      globalScore: ((miseEnSituationScore + validationScore + analyseScore) / 3) * 20 // Convertir en pourcentage
+    };
+  };
+
+  const updateProtocol2 = (section: string, fieldPath: string, value: any) => {
     setProtocol2Data(prev => {
-      const newProtocol2 = {
-        ...prev,
-        [field]: value
-      };
+      const newData = { ...prev };
       
-      // Calculer le score du protocole 2 dynamiquement
-      let totalScore = 0;
-      let scoreCount = 0;
-      
-      if (newProtocol2.rolePlay.completed && newProtocol2.rolePlay.score > 0) {
-        totalScore += newProtocol2.rolePlay.score;
-        scoreCount++;
+      // Mise à jour des données selon la section
+      if (section === 'miseEnSituation') {
+        const [activity, property] = fieldPath.split('.');
+        newData.miseEnSituation = {
+          ...newData.miseEnSituation,
+          [activity]: {
+            ...newData.miseEnSituation[activity as keyof typeof newData.miseEnSituation],
+            [property]: value
+          }
+        };
+      } else if (section === 'validationOperationnelle') {
+        const [activity, property] = fieldPath.split('.');
+        newData.validationOperationnelle = {
+          ...newData.validationOperationnelle,
+          [activity]: {
+            ...newData.validationOperationnelle[activity as keyof typeof newData.validationOperationnelle],
+            [property]: value
+          }
+        };
+      } else if (section === 'analyseCompetences') {
+        const [activity, property] = fieldPath.split('.');
+        newData.analyseCompetences = {
+          ...newData.analyseCompetences,
+          [activity]: {
+            ...newData.analyseCompetences[activity as keyof typeof newData.analyseCompetences],
+            [property]: value
+          }
+        };
       }
-      
-      if (newProtocol2.codirGame.completed && newProtocol2.codirGame.score > 0) {
-        totalScore += newProtocol2.codirGame.score;
-        scoreCount++;
-      }
-      
-      // Bonus pour validations opérationnelles
-      if (newProtocol2.physicalVisit) totalScore += 5;
-      if (newProtocol2.jobDescriptionValidated) totalScore += 5;
-      
-      newProtocol2.score = scoreCount > 0 ? Math.round(totalScore / scoreCount) : 0;
-      
+
+      // Calculer le score global et mettre à jour le statut
+      const scores = calculateSectionScores();
+      newData.score = scores.globalScore;
+
       // Mettre à jour le statut
-      if (newProtocol2.rolePlay.completed || newProtocol2.codirGame.completed) {
-        newProtocol2.status = 'in_progress';
+      if (newData.score > 0) {
+        newData.status = 'in_progress';
       }
-      if (newProtocol2.rolePlay.completed && newProtocol2.codirGame.completed) {
-        newProtocol2.status = 'completed';
+      if (newData.score >= 60) {
+        newData.status = 'completed';
       }
-      
-      return newProtocol2;
+
+      return newData;
     });
   };
 
-  const handleDecision = (decision: 'embauche' | 'refuse') => {
-    onStatusChange(decision);
-  };
+  const scores = calculateSectionScores();
 
   return (
     <div className="space-y-6">
-      {/* En-tête du Protocole 2 */}
+      {/* Header - Synthèse de l'Évaluation */}
+      <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <CheckCircle className="w-5 h-5" />
+                Synthèse de l'Évaluation
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Candidat: {candidateName} • Poste: {jobTitle}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-primary">{scores.globalScore.toFixed(1)}%</div>
+              <div className="text-xs text-muted-foreground">Score Global</div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Barre de progression globale */}
+          <div className="space-y-2">
+            <div className="text-sm">
+              <span className="font-medium text-gray-600">Progression de l'évaluation</span>
+            </div>
+            <Progress 
+              value={scores.globalScore} 
+              className="h-3 bg-gray-200"
+              style={{
+                '--progress-foreground': 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)'
+              } as React.CSSProperties}
+            />
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Mise en Situation</div>
+              <div className="font-semibold text-sm text-blue-600">{scores.miseEnSituationScore.toFixed(1)}%</div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Validation Opérationnelle</div>
+              <div className="font-semibold text-sm text-green-600">{scores.validationScore.toFixed(1)}%</div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Analyse des Compétences</div>
+              <div className="font-semibold text-sm text-purple-600">{scores.analyseScore.toFixed(1)}%</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Mise en Situation */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                {getStatusIcon(protocol2Data.status)}
-                Protocole 2 - Évaluation Approfondie
-              </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Tests pratiques et validation opérationnelle pour {candidateName}
-              </p>
-            </div>
+            <CardTitle className="flex items-center gap-2">
+              {getStatusIcon(protocol2Data.status)}
+              Mise en Situation
+            </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(protocol2Data.status)}
-              <div className="text-right">
-                <div className="font-bold text-lg">{protocol2Data.score}/100</div>
-                <div className="text-xs text-muted-foreground">Score Global P2</div>
-              </div>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Progression Protocole 2</span>
-              <span>{protocol2Data.score}%</span>
-            </div>
-            <Progress value={protocol2Data.score} className="h-2" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Section 2.1: Tests Pratiques */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="w-5 h-5" />
-            2.1 Tests Pratiques & Mise en Situation
-          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Jeu de Rôle */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h5 className="font-medium">Jeu de Rôle</h5>
-              <div className="flex items-center gap-2">
-                <Checkbox 
-                  checked={protocol2Data.rolePlay.completed}
-                  onCheckedChange={(checked) => updateProtocol2('rolePlay', {
-                    ...protocol2Data.rolePlay,
-                    completed: checked
-                  })}
-                />
-                <Badge variant={protocol2Data.rolePlay.completed ? "default" : "secondary"}>
-                  {protocol2Data.rolePlay.completed ? "Réalisé" : "Non réalisé"}
-                </Badge>
-              </div>
-              {protocol2Data.rolePlay.completed && (
-                <div className="space-y-2">
-                  <Label>Score obtenu</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={protocol2Data.rolePlay.score}
-                      onChange={(e) => updateProtocol2('rolePlay', {
-                        ...protocol2Data.rolePlay,
-                        score: parseInt(e.target.value) || 0
-                      })}
-                      className="w-20"
-                    />
-                    <span className="text-sm text-muted-foreground">/ 100</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={protocol2Data.rolePlay.reportAttached}
-                      onCheckedChange={(checked) => updateProtocol2('rolePlay', {
-                        ...protocol2Data.rolePlay,
-                        reportAttached: checked
-                      })}
-                    />
-                    <Label className="text-sm">Rapport annexé</Label>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Jeu de CODIR */}
-            <div className="space-y-3">
-              <h5 className="font-medium">Jeu de CODIR (Comité de Direction)</h5>
-              <div className="flex items-center gap-2">
-                <Checkbox 
-                  checked={protocol2Data.codirGame.completed}
-                  onCheckedChange={(checked) => updateProtocol2('codirGame', {
-                    ...protocol2Data.codirGame,
-                    completed: checked
-                  })}
-                />
-                <Badge variant={protocol2Data.codirGame.completed ? "default" : "secondary"}>
-                  {protocol2Data.codirGame.completed ? "Réalisé" : "Non réalisé"}
-                </Badge>
-              </div>
-              {protocol2Data.codirGame.completed && (
-                <div className="space-y-2">
-                  <Label>Score obtenu</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={protocol2Data.codirGame.score}
-                      onChange={(e) => updateProtocol2('codirGame', {
-                        ...protocol2Data.codirGame,
-                        score: parseInt(e.target.value) || 0
-                      })}
-                      className="w-20"
-                    />
-                    <span className="text-sm text-muted-foreground">/ 100</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={protocol2Data.codirGame.reportAttached}
-                      onCheckedChange={(checked) => updateProtocol2('codirGame', {
-                        ...protocol2Data.codirGame,
-                        reportAttached: checked
-                      })}
-                    />
-                    <Label className="text-sm">Rapport annexé</Label>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Section 2.2: Validation Opérationnelle */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            2.2 Validation Opérationnelle
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Checkbox 
-                checked={protocol2Data.physicalVisit}
-                onCheckedChange={(checked) => updateProtocol2('physicalVisit', checked)}
+              <StarRating
+                value={protocol2Data.miseEnSituation.jeuDeRole.score}
+                onChange={(value) => updateProtocol2('miseEnSituation', 'jeuDeRole.score', value)}
+                label="Jeu de Rôle"
               />
-              <Label>Visite physique effectuée</Label>
+              <Textarea
+                placeholder="Commentaires sur le jeu de rôle..."
+                value={protocol2Data.miseEnSituation.jeuDeRole.comments}
+                onChange={(e) => updateProtocol2('miseEnSituation', 'jeuDeRole.comments', e.target.value)}
+                className="min-h-[60px]"
+              />
             </div>
             
-            <div className="flex items-center gap-2">
-              <Checkbox 
-                checked={protocol2Data.jobDescriptionValidated}
-                onCheckedChange={(checked) => updateProtocol2('jobDescriptionValidated', checked)}
+            <div className="space-y-3">
+              <StarRating
+                value={protocol2Data.miseEnSituation.jeuCodir.score}
+                onChange={(value) => updateProtocol2('miseEnSituation', 'jeuCodir.score', value)}
+                label="Jeu de mise en situation CODIR"
               />
-              <Label>Fiche de fonction éditée et validée avec le candidat</Label>
+              <Textarea
+                placeholder="Commentaires sur le jeu CODIR..."
+                value={protocol2Data.miseEnSituation.jeuCodir.comments}
+                onChange={(e) => updateProtocol2('miseEnSituation', 'jeuCodir.comments', e.target.value)}
+                className="min-h-[60px]"
+              />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Section 2.3: Analyse des Compétences */}
+      {/* Validation Opérationnelle */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            2.3 Analyse des Compétences
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              {getStatusIcon(protocol2Data.status)}
+              Validation Opérationnelle
+            </CardTitle>
+            <div className="flex items-center gap-3">
+              {getStatusBadge(protocol2Data.status)}
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="space-y-2">
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <StarRating
+              value={protocol2Data.validationOperationnelle.ficheKPIS.score}
+              onChange={(value) => updateProtocol2('validationOperationnelle', 'ficheKPIS.score', value)}
+              label="Edition de Fiche KPI'S"
+            />
+            <Textarea
+              placeholder="Commentaires sur la fiche KPI'S..."
+              value={protocol2Data.validationOperationnelle.ficheKPIS.comments}
+              onChange={(e) => updateProtocol2('validationOperationnelle', 'ficheKPIS.comments', e.target.value)}
+              className="min-h-[60px]"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Analyse des Compétences */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              {getStatusIcon(protocol2Data.status)}
+              Analyse des Compétences
+            </CardTitle>
+            <div className="flex items-center gap-3">
+              {getStatusBadge(protocol2Data.status)}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-3">
               <Label>Analyse du "Gap" de compétences</Label>
               <Select 
-                value={protocol2Data.skillsGap}
-                onValueChange={(value: 'low' | 'medium' | 'high') => updateProtocol2('skillsGap', value)}
+                value={protocol2Data.analyseCompetences.gapCompetences.score.toString()}
+                onValueChange={(value) => updateProtocol2('analyseCompetences', 'gapCompetences.score', parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Faible - Formation mineure requise</SelectItem>
-                  <SelectItem value="medium">Moyen - Formation significative nécessaire</SelectItem>
-                  <SelectItem value="high">Élevé - Formation approfondie requise</SelectItem>
+                  <SelectItem value="1">Élevé - Formation approfondie requise</SelectItem>
+                  <SelectItem value="3">Moyen - Formation significative nécessaire</SelectItem>
+                  <SelectItem value="5">Faible - Formation mineure requise</SelectItem>
                 </SelectContent>
               </Select>
-              <div className={cn(
-                "inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border",
-                getSkillsGapColor(protocol2Data.skillsGap)
-              )}>
-                Niveau de formation requis : {
-                  protocol2Data.skillsGap === 'low' ? 'Faible' :
-                  protocol2Data.skillsGap === 'medium' ? 'Moyen' : 'Élevé'
-                }
-              </div>
+              <Textarea
+                placeholder="Commentaires sur le gap de compétences..."
+                value={protocol2Data.analyseCompetences.gapCompetences.comments}
+                onChange={(e) => updateProtocol2('analyseCompetences', 'gapCompetences.comments', e.target.value)}
+                className="min-h-[60px]"
+              />
             </div>
             
-            <div className="space-y-2">
-              <Label>Justification et Plan de Formation</Label>
+            <div className="space-y-3">
+              <StarRating
+                value={protocol2Data.analyseCompetences.planFormation.score}
+                onChange={(value) => updateProtocol2('analyseCompetences', 'planFormation.score', value)}
+                label="Justification et Plan de Formation"
+              />
               <Textarea
-                placeholder="Détaillez les compétences à développer et le plan de formation recommandé..."
-                value={protocol2Data.skillsGapJustification}
-                onChange={(e) => updateProtocol2('skillsGapJustification', e.target.value)}
-                className="min-h-[100px]"
+                placeholder="Commentaires sur le plan de formation..."
+                value={protocol2Data.analyseCompetences.planFormation.comments}
+                onChange={(e) => updateProtocol2('analyseCompetences', 'planFormation.comments', e.target.value)}
+                className="min-h-[60px]"
               />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Boutons de Décision Finale */}
+      {/* Décision Finale */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -370,7 +401,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
               className="flex items-center gap-2"
             >
               <AlertCircle className="w-4 h-4" />
-              Refuser la Candidature
+              Refuser
             </Button>
             <Button 
               onClick={() => handleDecision('embauche')}
@@ -378,14 +409,9 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
               className="flex items-center gap-2"
             >
               <CheckCircle className="w-4 h-4" />
-              Valider l'Embauche
+              Engager
             </Button>
           </div>
-          {protocol2Data.status !== 'completed' && (
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              Complétez tous les tests du Protocole 2 pour valider l'embauche
-            </p>
-          )}
         </CardContent>
       </Card>
     </div>
