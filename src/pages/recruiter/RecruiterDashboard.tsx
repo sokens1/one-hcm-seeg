@@ -290,13 +290,22 @@ export default function RecruiterDashboard() {
                     <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Basé sur le nombre de candidatures reçues
+                    Basé sur le nombre de candidatures reçues - 2 offres par catégorie
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="h-64 sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={jobCoverage.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <BarChart data={(() => {
+                        // Filtrer et organiser les données pour avoir 2 offres par catégorie
+                        const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
+                        const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
+                        const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
+                        const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
+                        
+                        // Combiner toutes les catégories
+                        return [...excellent, ...good, ...moderate, ...low];
+                      })()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <XAxis 
                           dataKey="title" 
                           tick={{ fontSize: 10 }}
@@ -321,17 +330,26 @@ export default function RecruiterDashboard() {
                           radius={[4, 4, 0, 0]}
                           name="coverage_rate"
                         >
-                          {jobCoverage.slice(0, 8).map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`}
-                              fill={
-                                entry.coverage_status === 'excellent' ? '#10b981' :
-                                entry.coverage_status === 'good' ? '#3b82f6' :
-                                entry.coverage_status === 'moderate' ? '#f59e0b' :
-                                '#ef4444'
-                              }
-                            />
-                          ))}
+                          {(() => {
+                            const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
+                            const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
+                            const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
+                            const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
+                            
+                            const allJobs = [...excellent, ...good, ...moderate, ...low];
+                            
+                            return allJobs.map((entry, index) => (
+                              <Cell 
+                                key={`cell-${index}`}
+                                fill={
+                                  entry.coverage_status === 'excellent' ? '#10b981' :
+                                  entry.coverage_status === 'good' ? '#3b82f6' :
+                                  entry.coverage_status === 'moderate' ? '#f59e0b' :
+                                  '#ef4444'
+                                }
+                              />
+                            ));
+                          })()}
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
