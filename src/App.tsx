@@ -19,6 +19,7 @@ import { Loader2 } from 'lucide-react';
 import { MAINTENANCE_MODE, MAINTENANCE_HOURS } from '@/config/maintenance';
 import './index.css';
 import { ErrorBoundary } from 'react-error-boundary';
+import type { FallbackProps } from 'react-error-boundary';
 
 //Maintenance page
 const Maintenance = lazy(() => import("./pages/maintenance"));
@@ -177,8 +178,13 @@ const withMaintenanceCheck = (element: React.ReactNode) => {
 };
 
 function App() {
+  // Composant de secours personnalisé pour ErrorBoundary
+  const ErrorFallback = (props: FallbackProps) => {
+    return <ErrorPage {...props} />;
+  };
+
   return (
-    <ErrorBoundary FallbackComponent={ErrorPage}>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <TooltipProvider>

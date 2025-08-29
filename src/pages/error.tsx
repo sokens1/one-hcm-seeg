@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 
-type ErrorBoundaryProps = {
+import type { FallbackProps } from 'react-error-boundary';
+
+type ErrorBoundaryProps = FallbackProps & {
   error?: Error;
   resetErrorBoundary?: () => void;
 };
 
-export default function ErrorPage({ error, resetErrorBoundary }: ErrorBoundaryProps) {
+export function ErrorPage({ error, resetErrorBoundary }: ErrorBoundaryProps) {
   const navigate = useNavigate();
 
   return (
@@ -44,7 +46,14 @@ export default function ErrorPage({ error, resetErrorBoundary }: ErrorBoundaryPr
   );
 }
 
-// Error boundary component for class components
-export function ErrorFallback({ error, resetErrorBoundary }: ErrorBoundaryProps) {
-  return <ErrorPage error={error} resetErrorBoundary={resetErrorBoundary} />;
+// Error boundary component
+export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  return (
+    <ErrorPage 
+      error={error} 
+      resetErrorBoundary={resetErrorBoundary}
+    />
+  );
 }
+
+export default ErrorPage;
