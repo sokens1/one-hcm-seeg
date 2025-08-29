@@ -134,7 +134,7 @@ export default function RecruiterDashboard() {
           </div>
         ) : (
           <>
-            {/* Stats Cards - Mobile First Grid */}
+            {/* Stats Cards - Harmonisation de l'affichage */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Offres */}
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
@@ -217,8 +217,8 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Deuxième rangée de KPIs */}
-            <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
+            {/* Deuxième rangée de KPIs - 3 cartes pour l'équilibre */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
               {/* Candidats multi-postes */}
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800">
                 <CardHeader className="pb-2">
@@ -226,7 +226,7 @@ export default function RecruiterDashboard() {
                     <CardTitle className="text-xs sm:text-sm font-medium text-orange-700 dark:text-orange-300">
                       Candidats multi-postes
                     </CardTitle>
-                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 dark:text-orange-400" />
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 dark:text-orange-400" />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -258,10 +258,7 @@ export default function RecruiterDashboard() {
                   </p>
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Troisième rangée de KPIs */}
-            <div className="grid grid-cols-1 lg:grid-cols-1 gap-3 sm:gap-4 mt-3 sm:mt-4">
               {/* Entretiens */}
               <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950 dark:to-indigo-900 border-indigo-200 dark:border-indigo-800">
                 <CardHeader className="pb-2">
@@ -328,10 +325,10 @@ export default function RecruiterDashboard() {
                             <Cell 
                               key={`cell-${index}`}
                               fill={
-                                entry.coverage_status === 'excellent' ? '#8B5CF6' :
-                                entry.coverage_status === 'good' ? '#8B5CF6' :
-                                entry.coverage_status === 'moderate' ? '#8B5CF6' :
-                                '#8B5CF6'
+                                entry.coverage_status === 'excellent' ? '#10b981' :
+                                entry.coverage_status === 'good' ? '#3b82f6' :
+                                entry.coverage_status === 'moderate' ? '#f59e0b' :
+                                '#ef4444'
                               }
                             />
                           ))}
@@ -342,8 +339,20 @@ export default function RecruiterDashboard() {
                   {/* Legend */}
                   <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                      <span>Attractivité des candidatures</span>
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <span>Excellent (≥10 candidatures)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                      <span>Bon (7-9 candidatures)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <span>Modéré (4-6 candidatures)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <span>Faible (1-3 candidatures)</span>
                     </div>
                   </div>
                 </CardContent>

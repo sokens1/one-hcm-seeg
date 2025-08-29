@@ -63,10 +63,10 @@ export default function AdvancedDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div className="min-w-0">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-            Tableau de Bord Recruteur & Observateur
+            Traitement préléminaire avec l'IA embarquée
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Tableau de bord moderne pour la gestion des candidatures et l'analyse des données
+            Analyse IA des candidatures
           </p>
         </div>
         
@@ -80,69 +80,14 @@ export default function AdvancedDashboard() {
         </div>
       ) : (
         <>
-          {/* KPIs dans l'ordre demandé */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            <MetricCard
-              title="Offres"
-              value={stats.totalJobs}
-              icon={FileText}
-              color="blue"
-            />
-            
-            <MetricCard
-              title="Total des candidatures"
-              value={advancedStats?.totalApplications || 0}
-              icon={Users}
-              color="green"
-            />
-            
-            <MetricCard
-              title="Nombre de candidatures par poste"
-              value={advancedStats?.totalApplications > 0 && stats.totalJobs > 0 ? Math.round(advancedStats.totalApplications / stats.totalJobs) : 0}
-              icon={BarChart3}
-              color="purple"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            <MetricCard
-              title="Candidats multi-postes"
-              value={stats.multiPostCandidates || 0}
-              icon={UserCheck}
-              color="orange"
-            />
-            
-            <MetricCard
-              title="Taux de couverture"
-              value={`${advancedStats?.coverageRate || 0}%`}
-              icon={Target}
-              color="green"
-            />
-            
-            <MetricCard
-              title="Entretiens"
-              value={stats.interviewsScheduled}
-              icon={Calendar}
-              color="purple"
-            />
-          </div>
+          
 
           {/* Visualisations des données */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Attractivité des candidatures (remplace Score de couverture par poste) */}
             
-                <AdvancedHistogram
-                  title="Attractivité des candidatures"
-                  data={advancedStats?.applicationsByPosition.slice(0, 6).map(item => ({
-                    label: item.position,
-                    value: item.count,
-                    color: '#8B5CF6' // Nouvelle couleur pour le 1er graphe
-                  })) || []}
-                  height={250}
-                />
-
                 {/* Graphique d'évolution des statuts par jour avec nouvelle couleur */}
-                <AdvancedLineChart
+                {/* <AdvancedLineChart
                   title="Évolution des statuts par jour"
                   data={statusEvolution.map(day => ({
                     period: new Date(day.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
@@ -160,7 +105,7 @@ export default function AdvancedDashboard() {
                     { key: 'refuse', label: 'Refusé', color: '#EF4444' }
                   ]}
                   height={250}
-                />
+                /> */}
             
           </div>
 
