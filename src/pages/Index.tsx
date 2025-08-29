@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,10 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Chatbot } from "@/components/ui/Chatbot";
-import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
+import { Search, Filter, Grid, List, Building, Loader2, Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { isPreLaunch } from "@/utils/launchGate";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
 
@@ -25,6 +27,18 @@ const Index = () => {
   const [locationFilter, setLocationFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  
+  // États pour le test d'email
+  const [testEmail, setTestEmail] = useState("");
+  const [testFirstName, setTestFirstName] = useState("Test");
+  const [testJobTitle, setTestJobTitle] = useState("Développeur Full Stack");
+  const [isSendingTest, setIsSendingTest] = useState(false);
+  const [testResult, setTestResult] = useState<{
+    success: boolean;
+    message: string;
+    details?: any;
+  } | null>(null);
+  
   const { data, isLoading, error } = useJobOffers();
   const jobOffers: JobOffer[] = data ?? [];
   const preLaunch = isPreLaunch();
@@ -100,6 +114,53 @@ const Index = () => {
     
     return matchesSearch && matchesLocation && matchesContract;
   });
+
+  // Fonction de test d'email
+  const handleTestEmail = async () => {
+    if (!testEmail.trim()) {
+      toast.error("Veuillez saisir un email de destination");
+      return;
+    }
+
+    setIsSendingTest(true);
+    setTestResult(null);
+
+    try {
+      const result = await supabase.functions.invoke('send_application_confirmation', {
+        body: {
+          to: testEmail.trim(),
+          firstName: testFirstName.trim(),
+          jobTitle: testJobTitle.trim(),
+          applicationId: 'TEST-' + Date.now(),
+        },
+      });
+
+      if (result.error) {
+        setTestResult({
+          success: false,
+          message: "Erreur lors de l'envoi",
+          details: result.error
+        });
+        toast.error("Test d'email échoué");
+      } else {
+        setTestResult({
+          success: true,
+          message: "Email de test envoyé avec succès !",
+          details: result.data
+        });
+        toast.success("Email de test envoyé ! Vérifiez votre boîte de réception");
+      }
+    } catch (error) {
+      setTestResult({
+        success: false,
+        message: "Erreur inattendue",
+        details: error
+      });
+      toast.error("Erreur lors du test d'email");
+    } finally {
+      setIsSendingTest(false);
+    }
+  };
 
   return (
     <Layout showFooter={true}>
@@ -425,6 +486,7 @@ const Index = () => {
             </Button>
           </div>
         </div>
+
       </div>
       
       {/* Chatbot */}

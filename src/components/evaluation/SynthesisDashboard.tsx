@@ -2,46 +2,69 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Clock, AlertCircle, FileText, BarChart3, TrendingUp, Star } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Editor } from "@/components/ui/editor";
+import { CheckCircle, Clock, AlertCircle, FileText, BarChart3, TrendingUp, Star, Download, RefreshCw } from 'lucide-react';
+import { cn } from "@/lib/utils";
+import { useSynthesisData } from "@/hooks/useSynthesisData";
 
-interface SynthesisData {
-  protocol1Score: number;
-  protocol1Status: string;
-  protocol2Score: number;
-  protocol2Status: string;
-  globalScore: number;
-  finalStatus: string;
-  recommendation: string;
+interface StarDisplayProps {
+  value: number;
+  label: string;
 }
+
+const StarDisplay: React.FC<StarDisplayProps> = ({ value, label }) => {
+  return (
+    <div className="space-y-2">
+      <h5 className="font-medium text-sm">{label}</h5>
+      <div className="flex items-center gap-2">
+        <div className="flex">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star
+              key={star}
+              className={cn(
+                "w-4 h-4",
+                star <= value
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "text-gray-300"
+              )}
+            />
+          ))}
+        </div>
+        <span className="text-xs text-muted-foreground">{value}/5</span>
+      </div>
+    </div>
+  );
+};
 
 interface SynthesisDashboardProps {
   candidateName: string;
   jobTitle: string;
   applicationId: string;
-  synthesisData: SynthesisData;
+  isReadOnly?: boolean;
 }
 
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'completed':
-      return <CheckCircle className="w-5 h-5 text-green-500" />;
+      return <CheckCircle className="w-4 h-4 text-green-500" />;
     case 'in_progress':
-      return <Clock className="w-5 h-5 text-blue-500" />;
+      return <Clock className="w-4 h-4 text-blue-500" />;
     default:
-      return <AlertCircle className="w-5 h-5 text-gray-400" />;
+      return <AlertCircle className="w-4 h-4 text-gray-400" />;
   }
 };
 
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'embauche':
-      return <Badge variant="success">Recommandé pour l'embauche</Badge>;
+      return <Badge variant="default" className="bg-green-100 text-green-800">Recommandé pour l'embauche</Badge>;
     case 'incubation':
-      return <Badge variant="secondary">En cours d'évaluation</Badge>;
+      return <Badge variant="default" className="bg-blue-100 text-blue-800">En cours d'évaluation</Badge>;
     case 'refuse':
       return <Badge variant="destructive">Non recommandé</Badge>;
     default:
-      return <Badge variant="outline">En attente</Badge>;
+      return <Badge variant="secondary">En attente</Badge>;
   }
 };
 
@@ -51,42 +74,89 @@ const getScoreColor = (score: number) => {
   return 'text-red-600';
 };
 
-export function SynthesisDashboard({ candidateName, jobTitle, applicationId, synthesisData }: SynthesisDashboardProps) {
+export function SynthesisDashboard({ 
+  candidateName, 
+  jobTitle, 
+  applicationId, 
+  isReadOnly = false
+}: SynthesisDashboardProps) {
+  const { synthesisData, isLoading, updateRecommendations, refreshData } = useSynthesisData(applicationId);
+
+  const handleDownloadReport = () => {
+    // TODO: Implémenter la génération et le téléchargement du rapport
+    console.log('Téléchargement du rapport...');
+  };
+
+  const handleUpdateRecommendations = (field: 'pointsForts' | 'pointsAmelioration', value: string) => {
+    if (field === 'pointsForts') {
+      updateRecommendations(value, synthesisData.pointsAmelioration);
+    } else {
+      updateRecommendations(synthesisData.pointsForts, value);
+    }
+  };
+
+  // Toujours appeler les hooks avant les conditions
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-lg">Chargement des données de synthèse...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* En-tête de la Synthèse */}
-      <Card>
-        <CardHeader>
+      <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
+        <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-6 h-6" />
+              <CardTitle className="text-xl flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
                 Synthèse Globale de l'Évaluation
               </CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
-                Rapport de synthèse pour {candidateName} - {jobTitle}
+                Rapport de synthèse pour {candidateName} • {jobTitle}
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              {getStatusBadge(synthesisData.finalStatus)}
+            <div className="flex items-center gap-4">
               <div className="text-right">
-                <div className={`font-bold text-2xl ${getScoreColor(synthesisData.globalScore)}`}>
-                  {synthesisData.globalScore}/100
-                </div>
+                <div className="text-2xl font-bold text-primary">{synthesisData.globalScore.toFixed(1)}%</div>
                 <div className="text-xs text-muted-foreground">Score Global</div>
+                <div className="mt-2">
+                  {getStatusBadge(synthesisData.finalStatus)}
+                </div>
               </div>
+              {!isReadOnly && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={refreshData}
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Actualiser
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Barre de progression globale */}
           <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Score Global d'Évaluation</span>
-              <span className={getScoreColor(synthesisData.globalScore)}>
-                {synthesisData.globalScore}%
-              </span>
+            <div className="text-sm">
+              <span className="font-medium text-gray-600">Progression de l'évaluation</span>
             </div>
-            <Progress value={synthesisData.globalScore} className="h-3" />
+            <Progress 
+              value={synthesisData.globalScore} 
+              className="h-3 bg-gray-200"
+              style={{
+                '--progress-foreground': 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)'
+              } as React.CSSProperties}
+            />
           </div>
         </CardContent>
       </Card>
@@ -97,7 +167,7 @@ export function SynthesisDashboard({ candidateName, jobTitle, applicationId, syn
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              {getStatusIcon(synthesisData.protocol1Status)}
+              {getStatusIcon(synthesisData.protocol1.status)}
               Protocole 1 - Évaluation Initiale
             </CardTitle>
           </CardHeader>
@@ -105,14 +175,11 @@ export function SynthesisDashboard({ candidateName, jobTitle, applicationId, syn
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Score obtenu</span>
-                <span className={`font-bold text-lg ${getScoreColor(synthesisData.protocol1Score)}`}>
-                  {synthesisData.protocol1Score}/100
+                <span className={`font-bold text-lg ${getScoreColor(synthesisData.protocol1.score)}`}>
+                  {synthesisData.protocol1.score.toFixed(1)}%
                 </span>
               </div>
-              <Progress value={synthesisData.protocol1Score} className="h-2" />
-              <div className="text-xs text-muted-foreground">
-                Évaluation documentaire, MTP et entretien initial
-              </div>
+              <Progress value={synthesisData.protocol1.score} className="h-2" />
             </div>
           </CardContent>
         </Card>
@@ -121,7 +188,7 @@ export function SynthesisDashboard({ candidateName, jobTitle, applicationId, syn
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              {getStatusIcon(synthesisData.protocol2Status)}
+              {getStatusIcon(synthesisData.protocol2.status)}
               Protocole 2 - Évaluation Approfondie
             </CardTitle>
           </CardHeader>
@@ -129,14 +196,11 @@ export function SynthesisDashboard({ candidateName, jobTitle, applicationId, syn
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Score obtenu</span>
-                <span className={`font-bold text-lg ${getScoreColor(synthesisData.protocol2Score)}`}>
-                  {synthesisData.protocol2Score}/100
+                <span className={`font-bold text-lg ${getScoreColor(synthesisData.protocol2.score)}`}>
+                  {synthesisData.protocol2.score.toFixed(1)}%
                 </span>
               </div>
-              <Progress value={synthesisData.protocol2Score} className="h-2" />
-              <div className="text-xs text-muted-foreground">
-                Tests pratiques, jeux de rôle et validation opérationnelle
-              </div>
+              <Progress value={synthesisData.protocol2.score} className="h-2" />
             </div>
           </CardContent>
         </Card>
@@ -151,57 +215,34 @@ export function SynthesisDashboard({ candidateName, jobTitle, applicationId, syn
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <h5 className="font-medium text-sm">Évaluation Documentaire</h5>
-              <div className="flex items-center gap-2">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`w-4 h-4 ${
-                        star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-xs text-muted-foreground">4/5</span>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Protocol 1 - Évaluation Initiale */}
+            <StarDisplay 
+              value={synthesisData.protocol1.validationPrerequis}
+              label="Validation des Prérequis"
+            />
+            <StarDisplay 
+              value={synthesisData.protocol1.evaluationMTP}
+              label="Évaluation MTP"
+            />
+            <StarDisplay 
+              value={synthesisData.protocol1.entretien}
+              label="Entretien"
+            />
             
-            <div className="space-y-2">
-              <h5 className="font-medium text-sm">Adhérence MTP</h5>
-              <div className="flex items-center gap-2">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`w-4 h-4 ${
-                        star <= 3 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-xs text-muted-foreground">3/5</span>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h5 className="font-medium text-sm">Performance Entretien</h5>
-              <div className="flex items-center gap-2">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`w-4 h-4 ${
-                        star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-xs text-muted-foreground">4/5</span>
-              </div>
-            </div>
+            {/* Protocol 2 - Évaluation Approfondie */}
+            <StarDisplay 
+              value={synthesisData.protocol2.miseEnSituation}
+              label="Mise en Situation"
+            />
+            <StarDisplay 
+              value={synthesisData.protocol2.validationOperationnelle}
+              label="Validation Opérationnelle"
+            />
+            <StarDisplay 
+              value={synthesisData.protocol2.analyseCompetences}
+              label="Analyse des Compétences"
+            />
           </div>
         </CardContent>
       </Card>
@@ -215,82 +256,36 @@ export function SynthesisDashboard({ candidateName, jobTitle, applicationId, syn
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="p-4 bg-muted rounded-lg">
-              <h5 className="font-medium mb-2">Recommandation finale :</h5>
-              <p className="text-sm text-muted-foreground">
-                {synthesisData.recommendation || 
-                  "Le candidat présente un profil intéressant avec des compétences solides. Recommandation d'embauche sous réserve de formation complémentaire sur les aspects techniques spécifiques au poste."
-                }
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div className="space-y-6">
               <div>
                 <h6 className="font-medium text-green-600 mb-2">Points forts :</h6>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li>• Excellente présentation des documents</li>
-                  <li>• Bonne communication lors de l'entretien</li>
-                  <li>• Motivation et engagement démontrés</li>
-                  <li>• Expérience pertinente dans le domaine</li>
-                </ul>
+              <Editor
+                value={synthesisData.pointsForts}
+                onChange={(value) => handleUpdateRecommendations('pointsForts', value)}
+                placeholder="Listez les points forts du candidat..."
+                disabled={isReadOnly}
+              />
               </div>
               
               <div>
                 <h6 className="font-medium text-orange-600 mb-2">Points d'amélioration :</h6>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li>• Formation technique complémentaire nécessaire</li>
-                  <li>• Adaptation aux outils internes requis</li>
-                  <li>• Renforcement des compétences managériales</li>
-                  <li>• Familiarisation avec les processus</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Historique des Évaluations */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            Historique du Processus d'Évaluation
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <div className="flex-1">
-                <div className="font-medium text-sm">Protocole 1 complété</div>
-                <div className="text-xs text-muted-foreground">
-                  Score : {synthesisData.protocol1Score}/100 - Candidat validé pour la phase suivante
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground">Terminé</div>
+              <Editor
+                value={synthesisData.pointsAmelioration}
+                onChange={(value) => handleUpdateRecommendations('pointsAmelioration', value)}
+                placeholder="Listez les points d'amélioration..."
+                disabled={isReadOnly}
+              />
             </div>
             
-            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-blue-500" />
-              <div className="flex-1">
-                <div className="font-medium text-sm">Protocole 2 complété</div>
-                <div className="text-xs text-muted-foreground">
-                  Score : {synthesisData.protocol2Score}/100 - Tests pratiques réalisés
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground">Terminé</div>
-            </div>
-            
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <BarChart3 className="w-5 h-5 text-gray-500" />
-              <div className="flex-1">
-                <div className="font-medium text-sm">Synthèse générée</div>
-                <div className="text-xs text-muted-foreground">
-                  Score global : {synthesisData.globalScore}/100 - Décision finale disponible
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground">Maintenant</div>
+            <div className="flex justify-end pt-4">
+              <Button
+                onClick={handleDownloadReport}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={isReadOnly}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Télécharger le rapport
+              </Button>
             </div>
           </div>
         </CardContent>
