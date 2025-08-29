@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Star, CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp } from 'lucide-react';
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useProtocol2Evaluation } from "@/hooks/useProtocol2Evaluation";
 
 interface StarRatingProps {
   value: number;
@@ -19,7 +19,7 @@ interface StarRatingProps {
 const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium">{label}</Label>
+      <h5 className="font-medium text-sm">{label}</h5>
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
@@ -43,37 +43,6 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
     </div>
   );
 };
-
-interface Protocol2Data {
-  score: number;
-  status: 'pending' | 'in_progress' | 'completed';
-  miseEnSituation: {
-    jeuDeRole: {
-      score: number;
-      comments: string;
-    };
-    jeuCodir: {
-      score: number;
-      comments: string;
-    };
-  };
-  validationOperationnelle: {
-    ficheKPIS: {
-      score: number;
-      comments: string;
-    };
-  };
-  analyseCompetences: {
-    gapCompetences: {
-      score: number;
-      comments: string;
-    };
-    planFormation: {
-      score: number;
-      comments: string;
-    };
-  };
-}
 
 interface Protocol2DashboardProps {
   candidateName: string;
@@ -105,105 +74,69 @@ const getStatusBadge = (status: string) => {
 };
 
 export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange }: Protocol2DashboardProps) {
-  const [protocol2Data, setProtocol2Data] = useState<Protocol2Data>({
-    score: 0,
-    status: 'pending',
-    miseEnSituation: {
-      jeuDeRole: {
-        score: 0,
-        comments: ''
-      },
-      jeuCodir: {
-        score: 0,
-        comments: ''
-      }
-    },
-    validationOperationnelle: {
-      ficheKPIS: {
-        score: 0,
-        comments: ''
-      }
-    },
-    analyseCompetences: {
-      gapCompetences: {
-        score: 0,
-        comments: ''
-      },
-      planFormation: {
-        score: 0,
-        comments: ''
-      }
-    }
-  });
+  const {
+    evaluationData,
+    updateEvaluation,
+    calculateSectionScores,
+    isLoading,
+    isSaving,
+  } = useProtocol2Evaluation(applicationId);
 
-  const calculateSectionScores = () => {
-    const miseEnSituationScore = (protocol2Data.miseEnSituation.jeuDeRole.score + protocol2Data.miseEnSituation.jeuCodir.score) / 2;
-    const validationScore = protocol2Data.validationOperationnelle.ficheKPIS.score;
-    const analyseScore = (protocol2Data.analyseCompetences.gapCompetences.score + protocol2Data.analyseCompetences.planFormation.score) / 2;
-
-    return {
-      miseEnSituationScore,
-      validationScore,
-      analyseScore,
-      globalScore: ((miseEnSituationScore + validationScore + analyseScore) / 3) * 20 // Convertir en pourcentage
-    };
+  const handleDecision = (decision: 'embauche' | 'refuse') => {
+    onStatusChange(decision);
   };
 
-  const updateProtocol2 = (section: string, fieldPath: string, value: any) => {
-    setProtocol2Data(prev => {
+  const updateSection = (section: string, field: string, value: any) => {
+    updateEvaluation(prev => {
       const newData = { ...prev };
-      
-      // Mise à jour des données selon la section
-      if (section === 'miseEnSituation') {
-        const [activity, property] = fieldPath.split('.');
-        newData.miseEnSituation = {
-          ...newData.miseEnSituation,
-          [activity]: {
-            ...newData.miseEnSituation[activity as keyof typeof newData.miseEnSituation],
-            [property]: value
-          }
-        };
-      } else if (section === 'validationOperationnelle') {
-        const [activity, property] = fieldPath.split('.');
-        newData.validationOperationnelle = {
-          ...newData.validationOperationnelle,
-          [activity]: {
-            ...newData.validationOperationnelle[activity as keyof typeof newData.validationOperationnelle],
-            [property]: value
-          }
-        };
-      } else if (section === 'analyseCompetences') {
-        const [activity, property] = fieldPath.split('.');
-        newData.analyseCompetences = {
-          ...newData.analyseCompetences,
-          [activity]: {
-            ...newData.analyseCompetences[activity as keyof typeof newData.analyseCompetences],
-            [property]: value
-          }
-        };
-      }
+      const [category, subCategory] = field.split('.');
 
-      // Calculer le score global et mettre à jour le statut
-      const scores = calculateSectionScores();
-      newData.score = scores.globalScore;
-
-      // Mettre à jour le statut
-      if (newData.score > 0) {
-        newData.status = 'in_progress';
-      }
-      if (newData.score >= 60) {
-        newData.status = 'completed';
+      if (section === 'mise_en_situation') {
+        newData.mise_en_situation = {
+          ...newData.mise_en_situation,
+          [category]: {
+            ...newData.mise_en_situation[category as keyof typeof newData.mise_en_situation],
+            [subCategory]: value
+          }
+        };
+      } else if (section === 'validation_operationnelle') {
+        newData.validation_operationnelle = {
+          ...newData.validation_operationnelle,
+          [category]: {
+            ...newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle],
+            [subCategory]: value
+          }
+        };
+      } else if (section === 'analyse_competences') {
+        newData.analyse_competences = {
+          ...newData.analyse_competences,
+          [category]: {
+            ...newData.analyse_competences[category as keyof typeof newData.analyse_competences],
+            [subCategory]: value
+          }
+        };
       }
 
       return newData;
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm text-muted-foreground">Chargement de l'évaluation...</span>
+        </div>
+      </div>
+    );
+  }
+
   const scores = calculateSectionScores();
 
   return (
     <div className="space-y-6">
-      {/* Header - Synthèse de l'Évaluation */}
+      {/* En-tête du Protocole 2 */}
       <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
@@ -259,11 +192,11 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              {getStatusIcon(protocol2Data.status)}
+              {getStatusIcon(evaluationData.status)}
               Mise en Situation
             </CardTitle>
             <div className="flex items-center gap-3">
-              {getStatusBadge(protocol2Data.status)}
+              {getStatusBadge(evaluationData.status)}
             </div>
           </div>
         </CardHeader>
@@ -271,28 +204,28 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-3">
               <StarRating
-                value={protocol2Data.miseEnSituation.jeuDeRole.score}
-                onChange={(value) => updateProtocol2('miseEnSituation', 'jeuDeRole.score', value)}
+                value={evaluationData.mise_en_situation.jeu_de_role.score}
+                onChange={(value) => updateSection('mise_en_situation', 'jeu_de_role.score', value)}
                 label="Jeu de Rôle"
               />
               <Textarea
                 placeholder="Commentaires sur le jeu de rôle..."
-                value={protocol2Data.miseEnSituation.jeuDeRole.comments}
-                onChange={(e) => updateProtocol2('miseEnSituation', 'jeuDeRole.comments', e.target.value)}
+                value={evaluationData.mise_en_situation.jeu_de_role.comments}
+                onChange={(e) => updateSection('mise_en_situation', 'jeu_de_role.comments', e.target.value)}
                 className="min-h-[60px]"
               />
             </div>
             
             <div className="space-y-3">
               <StarRating
-                value={protocol2Data.miseEnSituation.jeuCodir.score}
-                onChange={(value) => updateProtocol2('miseEnSituation', 'jeuCodir.score', value)}
+                value={evaluationData.mise_en_situation.jeu_codir.score}
+                onChange={(value) => updateSection('mise_en_situation', 'jeu_codir.score', value)}
                 label="Jeu de mise en situation CODIR"
               />
               <Textarea
                 placeholder="Commentaires sur le jeu CODIR..."
-                value={protocol2Data.miseEnSituation.jeuCodir.comments}
-                onChange={(e) => updateProtocol2('miseEnSituation', 'jeuCodir.comments', e.target.value)}
+                value={evaluationData.mise_en_situation.jeu_codir.comments}
+                onChange={(e) => updateSection('mise_en_situation', 'jeu_codir.comments', e.target.value)}
                 className="min-h-[60px]"
               />
             </div>
@@ -305,25 +238,25 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              {getStatusIcon(protocol2Data.status)}
+              {getStatusIcon(evaluationData.status)}
               Validation Opérationnelle
             </CardTitle>
             <div className="flex items-center gap-3">
-              {getStatusBadge(protocol2Data.status)}
+              {getStatusBadge(evaluationData.status)}
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-3">
             <StarRating
-              value={protocol2Data.validationOperationnelle.ficheKPIS.score}
-              onChange={(value) => updateProtocol2('validationOperationnelle', 'ficheKPIS.score', value)}
+              value={evaluationData.validation_operationnelle.fiche_kpis.score}
+              onChange={(value) => updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
               label="Edition de Fiche KPI'S"
             />
             <Textarea
               placeholder="Commentaires sur la fiche KPI'S..."
-              value={protocol2Data.validationOperationnelle.ficheKPIS.comments}
-              onChange={(e) => updateProtocol2('validationOperationnelle', 'ficheKPIS.comments', e.target.value)}
+              value={evaluationData.validation_operationnelle.fiche_kpis.comments}
+              onChange={(e) => updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
               className="min-h-[60px]"
             />
           </div>
@@ -335,49 +268,60 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              {getStatusIcon(protocol2Data.status)}
+              {getStatusIcon(evaluationData.status)}
               Analyse des Compétences
             </CardTitle>
             <div className="flex items-center gap-3">
-              {getStatusBadge(protocol2Data.status)}
+              {getStatusBadge(evaluationData.status)}
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <Label>Analyse du "Gap" de compétences</Label>
-              <Select 
-                value={protocol2Data.analyseCompetences.gapCompetences.score.toString()}
-                onValueChange={(value) => updateProtocol2('analyseCompetences', 'gapCompetences.score', parseInt(value))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Élevé - Formation approfondie requise</SelectItem>
-                  <SelectItem value="3">Moyen - Formation significative nécessaire</SelectItem>
-                  <SelectItem value="5">Faible - Formation mineure requise</SelectItem>
-                </SelectContent>
-              </Select>
+              <StarRating
+                value={evaluationData.analyse_competences.gap_competences.score}
+                onChange={(value) => updateSection('analyse_competences', 'gap_competences.score', value)}
+                label="Analyse du Gap de compétences"
+              />
+              
+              {/* Select pour le niveau de gap */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Niveau de Gap identifié</Label>
+                <Select
+                  value={evaluationData.analyse_competences.gap_competences.gapLevel || ""}
+                  onValueChange={(value) => updateSection('analyse_competences', 'gap_competences.gapLevel', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Sélectionner le niveau de gap" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="faible">Faible - Compétences de base présentes</SelectItem>
+                    <SelectItem value="moyen">Moyen - Quelques lacunes identifiées</SelectItem>
+                    <SelectItem value="important">Important - Lacunes significatives</SelectItem>
+                    <SelectItem value="critique">Critique - Compétences majeures manquantes</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
               <Textarea
                 placeholder="Commentaires sur le gap de compétences..."
-                value={protocol2Data.analyseCompetences.gapCompetences.comments}
-                onChange={(e) => updateProtocol2('analyseCompetences', 'gapCompetences.comments', e.target.value)}
+                value={evaluationData.analyse_competences.gap_competences.comments}
+                onChange={(e) => updateSection('analyse_competences', 'gap_competences.comments', e.target.value)}
                 className="min-h-[60px]"
               />
             </div>
             
             <div className="space-y-3">
               <StarRating
-                value={protocol2Data.analyseCompetences.planFormation.score}
-                onChange={(value) => updateProtocol2('analyseCompetences', 'planFormation.score', value)}
+                value={evaluationData.analyse_competences.plan_formation.score}
+                onChange={(value) => updateSection('analyse_competences', 'plan_formation.score', value)}
                 label="Justification et Plan de Formation"
               />
               <Textarea
                 placeholder="Commentaires sur le plan de formation..."
-                value={protocol2Data.analyseCompetences.planFormation.comments}
-                onChange={(e) => updateProtocol2('analyseCompetences', 'planFormation.comments', e.target.value)}
+                value={evaluationData.analyse_competences.plan_formation.comments}
+                onChange={(e) => updateSection('analyse_competences', 'plan_formation.comments', e.target.value)}
                 className="min-h-[60px]"
               />
             </div>
@@ -405,7 +349,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             </Button>
             <Button 
               onClick={() => handleDecision('embauche')}
-              disabled={protocol2Data.status !== 'completed'}
+              disabled={evaluationData.status !== 'completed'}
               className="flex items-center gap-2"
             >
               <CheckCircle className="w-4 h-4" />
@@ -414,6 +358,14 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           </div>
         </CardContent>
       </Card>
+
+      {/* Indicateur de sauvegarde */}
+      {isSaving && (
+        <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 z-50">
+          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white"></div>
+          <span>Sauvegarde en cours...</span>
+        </div>
+      )}
     </div>
   );
 }
