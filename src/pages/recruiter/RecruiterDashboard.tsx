@@ -60,7 +60,7 @@ export default function RecruiterDashboard() {
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { isRecruiter } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('advanced');
+  const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
 
   const handleEditJob = (jobId: string) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);

@@ -12,11 +12,12 @@ import {
   Plus, 
   Bell, 
   BarChart3,
-  Target
+  Target,
+  TrendingUp
 } from "lucide-react";
 import { 
   AdvancedHistogram, 
-  AdvancedLineChart, 
+  AdvancedLineChart,
   MetricCard, 
   StatusDistributionChart 
 } from "@/components/ui/AdvancedCharts";
@@ -31,12 +32,11 @@ import { fr } from 'date-fns/locale/fr';
 
 export default function AdvancedDashboard() {
   const navigate = useNavigate();
-  const { stats, activeJobs, isLoading, error } = useRecruiterDashboard();
+  const { stats, activeJobs, statusEvolution, isLoading, error } = useRecruiterDashboard();
   const { stats: advancedStats, isLoading: isLoadingAdvancedStats, error: advancedStatsError } = useAdvancedRecruiterStats(activeJobs.length);
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { isRecruiter } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const [hideActiveListings, setHideActiveListings] = useState(false);
 
   const handleEditJob = (jobId: string) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
@@ -59,7 +59,7 @@ export default function AdvancedDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div className="min-w-0">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-            Recruiter & Observer Dashboard
+            Tableau de Bord Recruteur & Observateur
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             Tableau de bord moderne pour la gestion des candidatures et l'analyse des données
@@ -75,23 +75,6 @@ export default function AdvancedDashboard() {
         )}
       </div>
 
-      {/* Contrôle pour masquer les offres actives */}
-      <Card className="mb-6 shadow-soft">
-        <CardContent className="p-4">
-          <div className="flex items-center space-x-3">
-            <Switch
-              id="hide-active-listings"
-              checked={hideActiveListings}
-              onCheckedChange={setHideActiveListings}
-            />
-            <Label htmlFor="hide-active-listings" className="flex items-center gap-2 cursor-pointer">
-              <Users className="w-4 h-4" />
-              Masquer les Offres Actives
-            </Label>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Loading State */}
       {isLoading ? (
         <div className="flex flex-col sm:flex-row justify-center items-center py-8 sm:py-12 gap-2">
@@ -103,7 +86,7 @@ export default function AdvancedDashboard() {
           {/* KPIs Modernes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <MetricCard
-              title="Total Applications"
+              title="Total des Candidatures"
               value={advancedStats?.totalApplications || 0}
               change={{ value: 12, type: 'increase' }}
               icon={Users}
@@ -111,14 +94,14 @@ export default function AdvancedDashboard() {
             />
             
             <MetricCard
-              title="Coverage Rate"
+              title="Taux de Couverture"
               value={`${advancedStats?.coverageRate || 0}%`}
               icon={BarChart3}
               color="green"
             />
             
             <MetricCard
-              title="Open Positions"
+              title="Postes Ouverts"
               value={advancedStats?.openPositions || 0}
               icon={Target}
               color="purple"
@@ -135,7 +118,7 @@ export default function AdvancedDashboard() {
             ) : (
               <>
                 <AdvancedHistogram
-                  title="Applications by Position"
+                  title="Candidatures par Poste"
                   data={advancedStats?.applicationsByPosition.slice(0, 6).map(item => ({
                     label: item.position,
                     value: item.count,
@@ -144,22 +127,23 @@ export default function AdvancedDashboard() {
                   height={250}
                 />
 
+                {/* Graphique d'évolution des statuts avec données réelles */}
                 <AdvancedLineChart
-                  title="Status Evolution"
-                  data={advancedStats?.statusEvolution.slice(0, 6).map(month => ({
-                    period: month.month,
+                  title="Évolution des Statuts (7 jours)"
+                  data={statusEvolution.map(day => ({
+                    period: new Date(day.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
                     values: {
-                      applied: month.applied,
-                      interview: month.interview,
-                      offer: month.offer,
-                      rejected: month.rejected
+                      candidature: day.candidature,
+                      incubation: day.incubation,
+                      embauche: day.embauche,
+                      refuse: day.refuse
                     }
-                  })) || []}
+                  }))}
                   series={[
-                    { key: 'applied', label: 'Applied', color: '#3B82F6' },
-                    { key: 'interview', label: 'Interview', color: '#10B981' },
-                    { key: 'offer', label: 'Offer', color: '#F59E0B' },
-                    { key: 'rejected', label: 'Rejected', color: '#EF4444' }
+                    { key: 'candidature', label: 'Candidature', color: '#3B82F6' },
+                    { key: 'incubation', label: 'Incubation', color: '#F59E0B' },
+                    { key: 'embauche', label: 'Embauche', color: '#10B981' },
+                    { key: 'refuse', label: 'Refusé', color: '#EF4444' }
                   ]}
                   height={250}
                 />
@@ -171,95 +155,6 @@ export default function AdvancedDashboard() {
           {!isLoadingAdvancedStats && advancedStats && (
             <div className="mb-8">
               <StatusDistributionChart data={advancedStats.applicationsByStatus} />
-            </div>
-          )}
-
-          {/* Section des offres actives (conditionnelle) */}
-          {!hideActiveListings && (
-            <div className="space-y-4 sm:space-y-6 mb-8">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground">
-                  Offres actives ({activeJobs.length})
-                </h2>
-              </div>
-
-              {activeJobs.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                  {activeJobs.map((job, index) => (
-                    <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                      <Card className="hover:shadow-medium transition-all cursor-pointer group h-full">
-                        <CardContent className="p-4 sm:p-6 flex flex-col h-full">
-                          <div className="flex-1 space-y-3">
-                            <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary-dark transition-colors line-clamp-2">
-                              {job.title}
-                            </h3>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-                              <span className="truncate">{job.location}</span>
-                              <span className="hidden sm:inline">•</span>
-                              <span className="truncate">{job.contract_type}</span>
-                            </div>
-
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <Badge variant="secondary" className="bg-success-light text-success-foreground text-xs">
-                                {job.candidate_count} candidats
-                              </Badge>
-                              {job.new_candidates > 0 && (
-                                <Badge variant="default" className="bg-warning text-warning-foreground animate-bounce-soft text-xs">
-                                  {job.new_candidates} nouveaux
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="mt-4 pt-3 border-t border-border/50">
-                            <div className="flex flex-col sm:flex-row gap-2 w-full">
-                              <Link to={`/recruiter/jobs/${job.id}/pipeline`} className="flex-1">
-                                <Button variant="hero" size="sm" className="gap-2 w-full text-xs sm:text-sm h-8 sm:h-9">
-                                  <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                                  <span className="hidden sm:inline">Voir le pipeline</span>
-                                  <span className="sm:hidden">Pipeline</span>
-                                </Button>
-                              </Link>
-                              {isRecruiter && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="gap-2 px-2 sm:px-3 text-xs sm:text-sm h-8 sm:h-9 flex-shrink-0"
-                                  onClick={() => handleEditJob(job.id)}
-                                >
-                                  <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                                  <span className="hidden sm:inline">Modifier</span>
-                                  <span className="sm:hidden">Éditer</span>
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <Card className="shadow-soft">
-                  <CardContent className="text-center py-12">
-                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Plus className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-medium text-foreground mb-2">Aucune offre active</h3>
-                    <p className="text-muted-foreground mb-6">
-                      Commencez par créer votre première offre d'emploi pour attirer les meilleurs talents.
-                    </p>
-                    {isRecruiter && (
-                      <Link to="/recruiter/jobs/new">
-                        <Button variant="hero">
-                          Créer ma première offre
-                        </Button>
-                      </Link>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
             </div>
           )}
 
@@ -341,7 +236,7 @@ export default function AdvancedDashboard() {
       {/* Footer avec source des données */}
       <div className="mt-8 text-center">
         <p className="text-xs text-muted-foreground">
-          Real-time data powered by Supabase
+          Données en temps réel alimentées par Supabase
         </p>
       </div>
 
