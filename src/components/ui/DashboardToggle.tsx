@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from './button';
 import { Card, CardContent } from './card';
 import { BarChart3, LayoutDashboard } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface DashboardToggleProps {
   currentView: 'classic' | 'advanced';
@@ -9,6 +10,17 @@ interface DashboardToggleProps {
 }
 
 export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps) {
+  const { toast } = useToast();
+
+  const handleAdvancedClick = () => {
+    // Afficher le toast au lieu de basculer vers la vue avancée
+    toast({
+      title: "Fonctionnalité en cours de développement",
+      description: "Fonctionnalité disponible à partir de lundi 01 septembre 2025",
+      variant: "default",
+    });
+  };
+
   return (
     <Card className="shadow-soft mb-6">
       <CardContent className="p-4">
@@ -34,11 +46,11 @@ export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps)
             <Button
               variant={currentView === 'advanced' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => onToggle('advanced')}
+              onClick={handleAdvancedClick}
               className="gap-2"
             >
               <BarChart3 className="w-3 h-3" />
-              Avancé
+              Avancé (IA)
             </Button>
           </div>
         </div>
