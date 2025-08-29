@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Badge } from './badge';
 import { BarChart3, LineChart, TrendingUp, TrendingDown } from 'lucide-react';
@@ -83,6 +83,20 @@ export function AdvancedLineChart({
   series, 
   height = 200 
 }: LineChartProps) {
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    data: any;
+    period: string;
+  }>({
+    visible: false,
+    x: 0,
+    y: 0,
+    data: {},
+    period: ''
+  });
+
   const maxValue = Math.max(
     ...data.flatMap(d => Object.values(d.values))
   );
@@ -92,6 +106,26 @@ export function AdvancedLineChart({
   );
   
   const range = maxValue - minValue;
+  
+  const handleMouseEnter = (e: React.MouseEvent<SVGCircleElement>, d: any) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const cardElement = e.currentTarget.closest('.shadow-soft');
+    
+    if (cardElement) {
+      const cardRect = cardElement.getBoundingClientRect();
+      setTooltip({
+        visible: true,
+        x: rect.left - cardRect.left + rect.width / 2,
+        y: rect.top - cardRect.top - 10,
+        data: d.values,
+        period: d.period
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip(prev => ({ ...prev, visible: false }));
+  };
   
   return (
     <Card className="shadow-soft">
@@ -155,17 +189,57 @@ export function AdvancedLineChart({
                     : 50;
                   return (
                     <circle
-                      key={i}
+                      key={`${serie.key}-${i}`}
                       cx={`${x}%`}
                       cy={`${y}%`}
                       r="3"
                       fill={serie.color}
-                      className="transition-all duration-200 hover:r-4"
+                      className="transition-all duration-200 hover:r-4 cursor-pointer"
+                      onMouseEnter={(e) => handleMouseEnter(e, d)}
+                      onMouseLeave={handleMouseLeave}
+                      style={{ pointerEvents: 'all' }}
                     />
                   );
                 })}
               </svg>
             ))}
+            
+            {/* Tooltip */}
+            {tooltip.visible && (
+              <div 
+                className="absolute z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-3 text-xs pointer-events-none"
+                style={{
+                  left: tooltip.x - 75,
+                  top: tooltip.y - 80,
+                  minWidth: '150px',
+                  transform: 'translateY(-100%)'
+                }}
+              >
+                <div className="font-semibold text-center mb-2 text-gray-900 dark:text-gray-100">
+                  {tooltip.period}
+                </div>
+                <div className="space-y-1">
+                  {series.map((serie) => (
+                    <div key={serie.key} className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-2 h-2 rounded-full" 
+                          style={{ backgroundColor: serie.color }}
+                        />
+                        <span className="text-gray-600 dark:text-gray-400">{serie.label}</span>
+                      </div>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        {tooltip.data[serie.key] || 0}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {/* Flèche du tooltip */}
+                <div 
+                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-200 dark:border-t-gray-700"
+                />
+              </div>
+            )}
             
             {/* Labels des axes */}
             <div className="absolute -bottom-6 left-0 right-0 flex justify-between text-xs text-muted-foreground">
