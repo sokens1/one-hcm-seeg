@@ -273,9 +273,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         <CardContent className="space-y-4">
           {/* Barre de progression globale */}
           <div className="space-y-2">
-            <div className="flex justify-between text-sm">
+            <div className="text-sm">
               <span className="font-medium text-gray-600">Progression de l'évaluation</span>
-              <span className="font-semibold text-primary">{evaluationData.globalScore === 0 ? '0' : evaluationData.globalScore.toFixed(1)}%</span>
             </div>
             <Progress 
               value={evaluationData.globalScore} 
@@ -317,7 +316,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.protocol1.status)}
-              Protocole 1 : Validation et Entretien
+              Validation et Entretien
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.protocol1.status)}
@@ -394,7 +393,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                   </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
               <Users className="w-4 h-4" />
-              Évaluation MTP - Taux d'adhérence MTP
+              Évaluation MTP
             </h4>
             
             <div className="space-y-6">
@@ -442,8 +441,15 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 </div>
               </div>
               
-              {/* Bouton Programmer l'entretien */}
-              <div className="flex justify-end pt-4 border-t border-blue-200">
+              {/* Boutons Traitement IA et Programmer l'entretien */}
+              <div className="flex justify-end pt-4 border-t border-blue-200 gap-3">
+                <Button 
+                  size="lg"
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg shadow-lg flex items-center gap-3"
+                >
+                  <Users className="w-5 h-5" />
+                  Traitement IA
+                </Button>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button 
@@ -868,24 +874,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         </CardContent>
       </Card>
 
-      {/* Actions Protocole 1 */}
-      <div className="flex justify-end gap-3 pt-4">
-        <Button variant="outline">Sauvegarder le brouillon</Button>
-        <Button 
-          variant="outline" 
-          onClick={() => onStatusChange('refuse')}
-          className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
-        >
-          Refuser
-        </Button>
-        <Button 
-          onClick={() => onStatusChange('incubation')}
-          disabled={evaluationData.protocol1.score < 60}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          Passer au Protocole 2
-        </Button>
-      </div>
+
     </div>
   );
 };
