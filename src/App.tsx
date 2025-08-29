@@ -18,13 +18,18 @@ import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecrui
 import { Loader2 } from 'lucide-react';
 import { MAINTENANCE_MODE, MAINTENANCE_HOURS } from '@/config/maintenance';
 import './index.css';
+import { ErrorBoundary } from 'react-error-boundary';
+import type { FallbackProps } from 'react-error-boundary';
 
 //Maintenance page
 const Maintenance = lazy(() => import("./pages/maintenance"));
 
+// Error pages
+const NotFoundPage = lazy(() => import("./pages/404"));
+const ErrorPage = lazy(() => import("./pages/error").then(module => ({ default: module.ErrorFallback })));
+
 // Lazily load page components
 const Index = lazy(() => import("./pages/Index"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword").then(module => ({ default: module.ResetPassword })));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -106,8 +111,10 @@ const router = createBrowserRouter(
       <Route path="admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
       
       {/* Fallback routes */}
-      <Route path="index" element={<Index />} />
-      <Route path="*" element={<NotFound />} />
+      {/* Error handling routes */}
+      <Route path="/error" element={<ErrorPage />} />
+      <Route path="/404" element={<NotFoundPage />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
     </Route>
   )
 );
@@ -171,22 +178,25 @@ const withMaintenanceCheck = (element: React.ReactNode) => {
 };
 
 function App() {
+  // Composant de secours personnalisé pour ErrorBoundary
+  const ErrorFallback = (props: FallbackProps) => {
+    return <ErrorPage {...props} />;
+  };
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Suspense fallback={<LoadingFallback />}>
-            {withMaintenanceCheck(
-              <>
-                <RouterProvider router={router} />
-                <Toaster />
-                <Sonner />
-              </>
-            )}
-          </Suspense>
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <Suspense fallback={<LoadingFallback />}>
+              <RouterProvider router={router} />
+              <Toaster />
+              <Sonner />
+            </Suspense>
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

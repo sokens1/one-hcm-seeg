@@ -3,14 +3,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Phone, MapPin, Calendar, FileText, Download } from "lucide-react";
+import { User, Mail, Phone, MapPin, Calendar, FileText, Download, Archive } from "lucide-react";
 import { useApplication } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { downloadCandidateDocumentsAsZip } from "@/utils/downloadUtils";
+import { useToast } from "@/hooks/use-toast";
 
 interface CandidateDetailModalProps {
   applicationId: string;
@@ -32,6 +34,8 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
   const { data: application, isLoading, error } = useApplication(applicationId);
   const queryClient = useQueryClient();
   const { data: documents = [] } = useApplicationDocuments(applicationId);
+  const { toast } = useToast();
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
 
   // Normalise une URL de document pour pointer vers le bucket public Supabase
   const ensureAbsoluteUrl = (path?: string | null) => {
@@ -42,6 +46,48 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
     if (p.startsWith('storage/v1/object/public/')) return `${base}/${p}`;
     if (p.startsWith('application-documents/')) return `${base}/storage/v1/object/public/${p}`;
     return `${base}/storage/v1/object/public/application-documents/${p}`;
+  };
+
+  // Fonction pour télécharger tous les documents en ZIP
+  const handleDownloadAllDocuments = async () => {
+    if (!documents || documents.length === 0) {
+      toast({
+        title: "Aucun document",
+        description: "Ce candidat n'a fourni aucun document à télécharger.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!candidate) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de récupérer les informations du candidat.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDownloadingZip(true);
+    
+    try {
+      const candidateName = `${candidate.first_name} ${candidate.last_name}`;
+      await downloadCandidateDocumentsAsZip(documents, candidateName);
+      
+      toast({
+        title: "Téléchargement réussi",
+        description: `Le dossier de candidature de ${candidateName} a été téléchargé avec succès.`,
+      });
+    } catch (error) {
+      console.error('Erreur lors du téléchargement ZIP:', error);
+      toast({
+        title: "Erreur de téléchargement",
+        description: "Une erreur s'est produite lors de la création du fichier ZIP.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloadingZip(false);
+    }
   };
 
   // Temps réel: rafraîchir si le profil candidat (table users) ou la candidature change
@@ -249,7 +295,25 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
           {/* Documents de la candidature */}
           <Card className="mt-4 sm:mt-6">
             <CardHeader className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="text-base sm:text-lg">Documents de la candidature</CardTitle>
+                {documents.length > 0 && (
+                  <Button
+                    onClick={handleDownloadAllDocuments}
+                    disabled={isDownloadingZip}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs sm:text-sm"
+                  >
+                    {isDownloadingZip ? (
+                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-primary mr-1 sm:mr-2" />
+                    ) : (
+                      <Archive className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    )}
+                    {isDownloadingZip ? 'Création...' : 'Télécharger tout (ZIP)'}
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 space-y-3">
               {documents.length === 0 ? (
@@ -334,3 +398,339 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
     </Dialog>
   );
 }
+
+                        <div className="flex items-center gap-2">
+
+                          <User className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+
+                          <span className="font-medium text-xs sm:text-sm">Genre :</span>
+
+                        </div>
+
+                        <span className="text-xs sm:text-sm">{candidate.candidate_profiles.gender}</span>
+
+                      </div>
+
+                    )}
+
+                    {candidate.date_of_birth && (
+
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+
+                        <div className="flex items-center gap-2">
+
+                          <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+
+                          <span className="font-medium text-xs sm:text-sm">Date de naissance :</span>
+
+                        </div>
+
+                        <span className="text-xs sm:text-sm">{new Date(candidate.date_of_birth).toLocaleDateString('fr-FR')}</span>
+
+                      </div>
+
+                    )}
+
+                    {candidate.candidate_profiles?.current_position && (
+
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+
+                        <div className="flex items-center gap-2">
+
+                          <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+
+                          <span className="font-medium text-xs sm:text-sm">Poste actuel :</span>
+
+                        </div>
+
+                        <span className="text-xs sm:text-sm">{candidate.candidate_profiles.current_position}</span>
+
+                      </div>
+
+                    )}
+
+                    {candidate.candidate_profiles?.address && (
+
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+
+                        <div className="flex items-center gap-2">
+
+                          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+
+                          <span className="font-medium text-xs sm:text-sm">Adresse :</span>
+
+                        </div>
+
+                        <span className="text-xs sm:text-sm">{candidate.candidate_profiles.address}</span>
+
+                      </div>
+
+                    )}
+
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+
+                      <div className="flex items-center gap-2">
+
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+
+                        <span className="font-medium text-xs sm:text-sm">Candidature soumise :</span>
+
+                      </div>
+
+                      <span className="text-xs sm:text-sm">{formatDistanceToNow(new Date(application.created_at), { addSuffix: true, locale: fr })}</span>
+
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+
+                      <span className="font-medium text-xs sm:text-sm">Statut :</span>
+
+                      <Badge variant={statusConfig.variant} className="text-xs w-fit">{statusConfig.label}</Badge>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </CardContent>
+
+            </Card>
+
+
+
+            {/* Infos offre */}
+
+            {jobOffer && (
+
+              <Card>
+
+                <CardHeader className="p-4 sm:p-6">
+
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+
+                    <FileText className="w-4 h-4" />
+
+                    Offre d'emploi
+
+                  </CardTitle>
+
+                </CardHeader>
+
+                <CardContent className="p-4 sm:p-6 pt-0">
+
+                  <div className="space-y-2 sm:space-y-3">
+
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+
+                      <span className="font-medium text-xs sm:text-sm">Poste :</span>
+
+                      <span className="text-xs sm:text-sm">{jobOffer.title}</span>
+
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+
+                      <span className="font-medium text-xs sm:text-sm">Localisation :</span>
+
+                      <span className="text-xs sm:text-sm">{jobOffer.location}</span>
+
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+
+                      <span className="font-medium text-xs sm:text-sm">Type de contrat :</span>
+
+                      <span className="text-xs sm:text-sm">{jobOffer.contract_type}</span>
+
+                    </div>
+
+                  </div>
+
+                </CardContent>
+
+              </Card>
+
+            )}
+
+          </div>
+
+
+
+          {/* Documents de la candidature */}
+
+          <Card className="mt-4 sm:mt-6">
+
+            <CardHeader className="p-4 sm:p-6">
+
+              <CardTitle className="text-base sm:text-lg">Documents de la candidature</CardTitle>
+
+            </CardHeader>
+
+            <CardContent className="p-4 sm:p-6 pt-0 space-y-3">
+
+              {documents.length === 0 ? (
+
+                <p className="text-xs sm:text-sm text-muted-foreground">Aucun document fourni.</p>
+
+              ) : (
+
+                documents.map((doc) => (
+
+                  <div key={doc.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between border rounded-md p-3 gap-3">
+
+                    <div className="space-y-0.5 flex-1 min-w-0">
+
+                      <div className="font-medium text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</div>
+
+                      <div className="text-xs text-muted-foreground truncate">{doc.file_name} · {formatFileSize(doc.file_size)}</div>
+
+                    </div>
+
+                    <a href={ensureAbsoluteUrl(doc.file_url)} target="_blank" rel="noreferrer" className="flex-shrink-0">
+
+                      <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+
+                        <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Télécharger
+
+                      </Button>
+
+                    </a>
+
+                  </div>
+
+                ))
+
+              )}
+
+            </CardContent>
+
+          </Card>
+
+
+
+          {/* Détails de la candidature */}
+
+          <Card className="mt-4 sm:mt-6">
+
+            <CardHeader className="p-4 sm:p-6">
+
+              <CardTitle className="text-base sm:text-lg">Détails de la candidature</CardTitle>
+
+            </CardHeader>
+
+            <CardContent className="p-4 sm:p-6 pt-0 space-y-3 sm:space-y-4">
+
+              {application.cover_letter && (
+
+                <div>
+
+                  <span className="font-medium text-xs sm:text-sm">Lettre de motivation :</span>
+
+                  <div className="mt-2 p-3 bg-muted rounded-lg">
+
+                    <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.cover_letter}</p>
+
+                  </div>
+
+                </div>
+
+              )}
+
+              
+
+              {application.motivation && (
+
+                <div>
+
+                  <span className="font-medium text-xs sm:text-sm">Motivation :</span>
+
+                  <div className="mt-2 p-3 bg-muted rounded-lg">
+
+                    <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.motivation}</p>
+
+                  </div>
+
+                </div>
+
+              )}
+
+
+
+              {application.availability_start && (
+
+                <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+
+                  <span className="font-medium text-xs sm:text-sm">Disponibilité :</span>
+
+                  <span className="text-xs sm:text-sm">{new Date(application.availability_start).toLocaleDateString('fr-FR')}</span>
+
+                </div>
+
+              )}
+
+
+
+              {application.reference_contacts && (
+
+                <div>
+
+                  <span className="font-medium text-xs sm:text-sm">Contacts de référence :</span>
+
+                  <div className="mt-2 p-3 bg-muted rounded-lg">
+
+                    <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.reference_contacts}</p>
+
+                  </div>
+
+                </div>
+
+              )}
+
+            </CardContent>
+
+          </Card>
+
+
+
+          {/* Actions */}
+
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
+
+            <Button variant="outline" onClick={onClose} className="text-xs sm:text-sm">
+
+              Fermer
+
+            </Button>
+
+            <Button variant="default" className="text-xs sm:text-sm">
+
+              <Mail className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+
+              Contacter
+
+            </Button>
+
+          </div>
+
+          </>
+
+        ) : (
+
+          <div className="text-center py-8 text-muted-foreground">
+
+            <p>Aucune donnée disponible pour ce candidat.</p>
+
+          </div>
+
+        )}
+
+      </DialogContent>
+
+    </Dialog>
+
+  );
+
+}
+
+
