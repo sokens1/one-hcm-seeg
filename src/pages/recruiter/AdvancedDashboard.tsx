@@ -13,13 +13,17 @@ import {
   Bell, 
   BarChart3,
   Target,
-  TrendingUp
+  TrendingUp,
+  FileText,
+  UserCheck,
+  Calendar
 } from "lucide-react";
 import { 
   AdvancedHistogram, 
   AdvancedLineChart,
   MetricCard, 
-  StatusDistributionChart 
+  StatusDistributionChart,
+  ApplicationsPerJobChart
 } from "@/components/ui/AdvancedCharts";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
@@ -32,7 +36,7 @@ import { fr } from 'date-fns/locale/fr';
 
 export default function AdvancedDashboard() {
   const navigate = useNavigate();
-  const { stats, activeJobs, statusEvolution, isLoading, error } = useRecruiterDashboard();
+  const { stats, activeJobs, statusEvolution, applicationsPerJob, isLoading, error } = useRecruiterDashboard();
   const { stats: advancedStats, isLoading: isLoadingAdvancedStats, error: advancedStatsError } = useAdvancedRecruiterStats(activeJobs.length);
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { isRecruiter } = useAuth();
@@ -65,71 +69,81 @@ export default function AdvancedDashboard() {
             Tableau de bord moderne pour la gestion des candidatures et l'analyse des données
           </p>
         </div>
-        {isRecruiter && (
-          <Link to="/recruiter/jobs/new">
-            <Button variant="hero" className="gap-2 text-sm sm:text-base">
-              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-              Créer une offre
-            </Button>
-          </Link>
-        )}
+        
       </div>
 
       {/* Loading State */}
       {isLoading ? (
         <div className="flex flex-col sm:flex-row justify-center items-center py-8 sm:py-12 gap-2">
-          <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
+          <Loader2 className="w-6 h-6 sm:w-8 sm:w-8 animate-spin text-primary" />
           <span className="text-sm sm:text-base">Chargement du dashboard...</span>
         </div>
       ) : (
         <>
-          {/* KPIs Modernes */}
+          {/* KPIs dans l'ordre demandé */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <MetricCard
-              title="Total des Candidatures"
-              value={advancedStats?.totalApplications || 0}
-              change={{ value: 12, type: 'increase' }}
-              icon={Users}
+              title="Offres"
+              value={stats.totalJobs}
+              icon={FileText}
               color="blue"
             />
             
             <MetricCard
-              title="Taux de Couverture"
-              value={`${advancedStats?.coverageRate || 0}%`}
-              icon={BarChart3}
+              title="Total des candidatures"
+              value={advancedStats?.totalApplications || 0}
+              icon={Users}
               color="green"
             />
             
             <MetricCard
-              title="Postes Ouverts"
-              value={advancedStats?.openPositions || 0}
+              title="Nombre de candidatures par poste"
+              value={advancedStats?.totalApplications > 0 && stats.totalJobs > 0 ? Math.round(advancedStats.totalApplications / stats.totalJobs) : 0}
+              icon={BarChart3}
+              color="purple"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <MetricCard
+              title="Candidats multi-postes"
+              value={stats.multiPostCandidates || 0}
+              icon={UserCheck}
+              color="orange"
+            />
+            
+            <MetricCard
+              title="Taux de couverture"
+              value={`${advancedStats?.coverageRate || 0}%`}
               icon={Target}
+              color="green"
+            />
+            
+            <MetricCard
+              title="Entretiens"
+              value={stats.interviewsScheduled}
+              icon={Calendar}
               color="purple"
             />
           </div>
 
           {/* Visualisations des données */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Histogramme des candidatures par poste */}
-            {isLoadingAdvancedStats ? (
-              <div className="col-span-2 flex justify-center items-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              </div>
-            ) : (
-              <>
+            {/* Attractivité des candidatures (remplace Score de couverture par poste) */}
+            
                 <AdvancedHistogram
-                  title="Candidatures par Poste"
+                  title="Attractivité des candidatures"
                   data={advancedStats?.applicationsByPosition.slice(0, 6).map(item => ({
                     label: item.position,
                     value: item.count,
-                    color: '#3B82F6'
+                    color: '#8B5CF6' // Nouvelle couleur pour le 1er graphe
                   })) || []}
                   height={250}
                 />
 
-                {/* Graphique d'évolution des statuts avec données réelles */}
+                {/* Graphique d'évolution des statuts par jour avec nouvelle couleur */}
                 <AdvancedLineChart
-                  title="Évolution des Statuts (7 jours)"
+                  title="Évolution des statuts par jour"
                   data={statusEvolution.map(day => ({
                     period: new Date(day.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
                     values: {
@@ -140,24 +154,17 @@ export default function AdvancedDashboard() {
                     }
                   }))}
                   series={[
-                    { key: 'candidature', label: 'Candidature', color: '#3B82F6' },
+                    { key: 'candidature', label: 'Candidature', color: '#EC4899' }, // Nouvelle couleur
                     { key: 'incubation', label: 'Incubation', color: '#F59E0B' },
                     { key: 'embauche', label: 'Embauche', color: '#10B981' },
                     { key: 'refuse', label: 'Refusé', color: '#EF4444' }
                   ]}
                   height={250}
                 />
-              </>
-            )}
+            
           </div>
 
-          {/* Graphique de répartition par statut */}
-          {!isLoadingAdvancedStats && advancedStats && (
-            <div className="mb-8">
-              <StatusDistributionChart data={advancedStats.applicationsByStatus} />
-            </div>
-          )}
-
+          
           {/* Actions rapides et Activité récente */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="shadow-soft hover:shadow-medium transition-all">
@@ -175,7 +182,7 @@ export default function AdvancedDashboard() {
                 )}
                 <Link to="/recruiter/candidates" className="block">
                   <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                    <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Users className="w-3 h-3 sm:w-4 sm:w-4" />
                     Voir tous les candidats
                   </Button>
                 </Link>

@@ -349,3 +349,52 @@ export function StatusDistributionChart({
     </Card>
   );
 }
+
+export function ApplicationsPerJobChart({ 
+  data 
+}: { 
+  data: Array<{ title: string; applications_count: number; new_applications_24h: number }> 
+}) {
+  // Couleurs différentes pour ce graphique
+  const colors = ['#8B5CF6', '#EC4899', '#F97316', '#06B6D4', '#84CC16', '#F59E0B', '#EF4444', '#10B981'];
+  
+  return (
+    <Card className="shadow-soft">
+      <CardHeader>
+        <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {data.slice(0, 8).map((item, index) => (
+            <div key={index} className="space-y-2">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium truncate flex-1 pr-2" title={item.title}>
+                  {item.title}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {item.applications_count} total
+                  </Badge>
+                  {item.new_applications_24h > 0 && (
+                    <Badge variant="outline" className="text-xs text-green-600">
+                      +{item.new_applications_24h} 24h
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              <div className="relative w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div 
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{ 
+                    width: `${Math.min((item.applications_count / Math.max(...data.map(d => d.applications_count))) * 100, 100)}%`,
+                    backgroundColor: colors[index % colors.length]
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
