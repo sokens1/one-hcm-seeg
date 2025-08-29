@@ -14,6 +14,8 @@ import { useAuth } from "@/hooks/useAuth";
 
 import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X } from "lucide-react";
 import { EvaluationDashboard } from "@/components/evaluation/EvaluationDashboard";
+import { Protocol2Dashboard } from "@/components/evaluation/Protocol2Dashboard";
+import { SynthesisDashboard } from "@/components/evaluation/SynthesisDashboard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
@@ -409,6 +411,7 @@ export default function CandidateAnalysis() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isRecruiter } = useAuth();
+  const [activeTab, setActiveTab] = useState("info");
   
   const { data: application, isLoading, error } = useApplication(id);
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
@@ -458,10 +461,22 @@ export default function CandidateAnalysis() {
     if (!application) return;
     try {
       await updateApplicationStatus({ applicationId: application.id, status: newStatus });
-      if (jobId) {
-        navigate(`/recruiter/jobs/${jobId}/pipeline`);
-      } else {
-        navigate(-1);
+      
+      toast({
+        title: "Statut mis à jour",
+        description: `Le statut du candidat a été changé vers "${newStatus}".`,
+      });
+      
+      // Navigation automatique vers Protocole 2 quand on clique "Incuber"
+      if (newStatus === 'incubation') {
+        setActiveTab('protocol2');
+      } else if (newStatus === 'embauche' || newStatus === 'refuse') {
+        // Pour les décisions finales, rediriger vers le pipeline
+        if (jobId) {
+          navigate(`/recruiter/jobs/${jobId}/pipeline`);
+        } else {
+          navigate(-1);
+        }
       }
     } catch (e) {
       console.error("Erreur lors du changement de statut", e);
@@ -521,10 +536,12 @@ export default function CandidateAnalysis() {
           </div>
         </header>
 
-        <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
-            <TabsTrigger value="info" className="px-2 sm:px-4">Informations Candidat</TabsTrigger>
-            <TabsTrigger value="evaluation" className="px-2 sm:px-4">Évaluation</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 text-xs sm:text-sm">
+            <TabsTrigger value="info" className="px-1 sm:px-2">Informations Candidat</TabsTrigger>
+            <TabsTrigger value="protocol1" className="px-1 sm:px-2">Protocole 1</TabsTrigger>
+            <TabsTrigger value="protocol2" className="px-1 sm:px-2">Protocole 2</TabsTrigger>
+            <TabsTrigger value="synthesis" className="px-1 sm:px-2">Synthèse</TabsTrigger>
           </TabsList>
           <TabsContent value="info" className="mt-4 sm:mt-6">
             <div className="space-y-4 sm:space-y-6">
@@ -534,12 +551,36 @@ export default function CandidateAnalysis() {
               <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} />
             </div>
           </TabsContent>
-          <TabsContent value="evaluation" className="mt-4 sm:mt-6">
+          <TabsContent value="protocol1" className="mt-4 sm:mt-6">
             <EvaluationProtocol 
               candidateName={candidateName}
               jobTitle={jobTitle || 'Poste non spécifié'}
               applicationId={application.id}
               onStatusChange={handleStatusChange}
+            />
+          </TabsContent>
+          <TabsContent value="protocol2" className="mt-4 sm:mt-6">
+            <Protocol2Dashboard 
+              candidateName={candidateName}
+              jobTitle={jobTitle || 'Poste non spécifié'}
+              applicationId={application.id}
+              onStatusChange={handleStatusChange}
+            />
+          </TabsContent>
+          <TabsContent value="synthesis" className="mt-4 sm:mt-6">
+            <SynthesisDashboard 
+              candidateName={candidateName}
+              jobTitle={jobTitle || 'Poste non spécifié'}
+              applicationId={application.id}
+              synthesisData={{
+                protocol1Score: 75,
+                protocol1Status: 'completed',
+                protocol2Score: 80,
+                protocol2Status: 'completed',
+                globalScore: 78,
+                finalStatus: 'embauche',
+                recommendation: 'Candidat recommandé pour l\'embauche avec un excellent profil technique et une bonne adéquation culturelle.'
+              }}
             />
           </TabsContent>
         </Tabs>
