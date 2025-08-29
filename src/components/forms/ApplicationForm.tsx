@@ -1039,7 +1039,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Rejoignez l'Excellence</h1>
             <h2 className="text-lg sm:text-xl lg:text-2xl font-light break-words">{jobTitle}</h2>
             <p className="text-sm sm:text-base lg:text-lg opacity-90 max-w-2xl mx-auto">
-              Découvrez un processus de candidature révolutionnaire qui valorise vos compétences, 
+              Découvrez un processus de candidature innovant qui valorise vos compétences, 
               votre potentiel et votre ambition.
             </p>
             

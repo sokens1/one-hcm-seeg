@@ -15,83 +15,9 @@ import { CalendarIcon, Star, Users, CheckCircle, Clock, AlertCircle, FileText, U
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
+import { useProtocol1Evaluation } from "@/hooks/useProtocol1Evaluation";
 
-interface EvaluationData {
-  globalScore: number;
-  status: string;
-  protocol1: {
-    score: number;
-    status: 'pending' | 'in_progress' | 'completed';
-    // Partie 1: Validation des Prérequis (10%)
-    documentaryEvaluation: {
-      cv: {
-        score: number; // 5 étoiles
-        comments: string;
-      };
-      diplomas: {
-        score: number; // 5 étoiles
-        comments: string;
-      };
-      certificates: {
-        score: number; // 5 étoiles
-        comments: string;
-      };
-    };
-    // Evaluation MTP - Taux d'adhérence MTP (20%)
-    mtpAdherence: {
-      metier: {
-        score: number; // 5 étoiles
-        comments: string;
-      };
-      talent: {
-        score: number; // 5 étoiles
-        comments: string;
-      };
-      paradigme: {
-        score: number; // 5 étoiles
-        comments: string;
-      };
-    };
-    // Partie 2: Entretien (70%)
-    interview: {
-    interviewDate?: Date;
-      // Evaluation adhérence MTP physique
-      physicalMtpAdherence: {
-        metier: {
-          score: number; // 5 étoiles
-          comments: string;
-        };
-        talent: {
-          score: number; // 5 étoiles
-          comments: string;
-        };
-        paradigme: {
-          score: number; // 5 étoiles
-          comments: string;
-        };
-      };
-    generalSummary: string;
-    };
-  };
-  protocol2: {
-    score: number;
-    status: 'pending' | 'in_progress' | 'completed';
-    rolePlay: {
-      completed: boolean;
-      score: number;
-      reportAttached: boolean;
-    };
-    codirGame: {
-      completed: boolean;
-      score: number;
-      reportAttached: boolean;
-    };
-    physicalVisit: boolean;
-    jobDescriptionValidated: boolean;
-    skillsGap: 'low' | 'medium' | 'high';
-    skillsGapJustification: string;
-  };
-}
+
 
 interface StarRatingProps {
   value: number;
@@ -140,82 +66,15 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   applicationId,
   onStatusChange
 }) => {
-  const [evaluationData, setEvaluationData] = useState<EvaluationData>({
-    globalScore: 0,
-    status: "Évaluation - Protocole 1 en cours",
-    protocol1: {
-      score: 0,
-      status: 'pending',
-      // Partie 1: Validation des Prérequis (10%)
-      documentaryEvaluation: {
-        cv: {
-          score: 0,
-          comments: "",
-        },
-        diplomas: {
-          score: 0,
-          comments: "",
-        },
-        certificates: {
-          score: 0,
-          comments: "",
-        },
-      },
-      // Evaluation MTP - Taux d'adhérence MTP (20%)
-      mtpAdherence: {
-        metier: {
-          score: 0,
-          comments: "",
-        },
-        talent: {
-          score: 0,
-          comments: "",
-        },
-        paradigme: {
-          score: 0,
-          comments: "",
-        },
-      },
-      // Partie 2: Entretien (70%)
-      interview: {
-        physicalMtpAdherence: {
-          metier: {
-            score: 0,
-            comments: "",
-          },
-          talent: {
-            score: 0,
-            comments: "",
-          },
-          paradigme: {
-            score: 0,
-            comments: "",
-          },
-        },
-      generalSummary: ""
-      },
-    },
-    protocol2: {
-      score: 0,
-      status: 'pending',
-      rolePlay: {
-        completed: false,
-        score: 0,
-        reportAttached: false
-      },
-      codirGame: {
-        completed: false,
-        score: 0,
-        reportAttached: false
-      },
-      physicalVisit: false,
-      jobDescriptionValidated: false,
-      skillsGap: 'medium',
-      skillsGapJustification: ""
-    }
-  });
-
-  const [interviewDate, setInterviewDate] = useState<Date>();
+  const { 
+    evaluationData, 
+    updateEvaluation, 
+    calculateSectionScores, 
+    isLoading, 
+    isSaving 
+  } = useProtocol1Evaluation(applicationId);
+  
+  const [interviewDate, setInterviewDate] = useState<Date | undefined>(evaluationData.protocol1.interview.interviewDate);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
   
   // Données des entretiens occupés (exemple - à remplacer par des vraies données)
@@ -290,46 +149,12 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     return busySlotsForDate.includes(timeSlot);
   };
 
-  // Fonction pour calculer les scores partiels de chaque section
-  const calculateSectionScores = (protocol1: any) => {
-    // Validation des Prérequis (10%) - Moyenne des 3 évaluations documentaires
-    const documentaryScores = [
-      protocol1.documentaryEvaluation.cv.score,
-      protocol1.documentaryEvaluation.diplomas.score,
-      protocol1.documentaryEvaluation.certificates.score
-    ];
-    const documentaryAverage = documentaryScores.length > 0 ? documentaryScores.reduce((a, b) => a + b, 0) / documentaryScores.length : 0;
-    const documentaryScore = (documentaryAverage / 5) * 10;
-    
-    // Evaluation MTP - Taux d'adhérence MTP (20%)
-    const mtpScores = [
-      protocol1.mtpAdherence.metier.score,
-      protocol1.mtpAdherence.talent.score,
-      protocol1.mtpAdherence.paradigme.score
-    ];
-    const mtpAverage = mtpScores.length > 0 ? mtpScores.reduce((a, b) => a + b, 0) / mtpScores.length : 0;
-    const mtpScore = (mtpAverage / 5) * 20;
-    
-    // Entretien (70%)
-    const interviewScores = [
-      protocol1.interview.physicalMtpAdherence.metier.score,
-      protocol1.interview.physicalMtpAdherence.talent.score,
-      protocol1.interview.physicalMtpAdherence.paradigme.score
-    ];
-    const interviewAverage = interviewScores.length > 0 ? interviewScores.reduce((a, b) => a + b, 0) / interviewScores.length : 0;
-    const interviewScore = (interviewAverage / 5) * 70;
 
-    return {
-      documentaryScore,
-      mtpScore, 
-      interviewScore,
-      totalScore: documentaryScore + mtpScore + interviewScore
-    };
-  };
 
   const updateProtocol1 = (section: string, field: string, value: any) => {
-    setEvaluationData(prev => {
-      const newProtocol1 = { ...prev.protocol1 };
+    updateEvaluation(prev => {
+      const newData = { ...prev };
+      const newProtocol1 = { ...newData.protocol1 };
       
       // Mise à jour des données selon la section
       if (section === 'documentaryEvaluation') {
@@ -360,6 +185,12 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               [property]: value
             }
           };
+        } else if (field.startsWith('gapCompetence.')) {
+          const [_, property] = field.split('.');
+          newProtocol1.interview.gapCompetence = {
+            ...newProtocol1.interview.gapCompetence,
+            [property]: value
+          };
         } else {
           newProtocol1.interview = {
             ...newProtocol1.interview,
@@ -368,76 +199,12 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         }
       }
       
-      // Calculer le score selon la nouvelle pondération
-      const sectionScores = calculateSectionScores(newProtocol1);
-      newProtocol1.score = Math.round(sectionScores.totalScore);
-      
-      // Mettre à jour le statut
-      if (sectionScores.documentaryScore > 0 && sectionScores.mtpScore > 0) {
-        newProtocol1.status = 'in_progress';
-      }
-      if (newProtocol1.score >= 60) {
-        newProtocol1.status = 'completed';
-      }
-      
-      // Calculer le score global
-      const globalScore = newProtocol1.score;
-      
-      return {
-        ...prev,
-        protocol1: newProtocol1,
-        globalScore
-      };
+      newData.protocol1 = newProtocol1;
+      return newData;
     });
   };
 
-  const updateProtocol2 = (field: string, value: any) => {
-    setEvaluationData(prev => {
-      const newProtocol2 = {
-        ...prev.protocol2,
-        [field]: value
-      };
-      
-      // Calculer le score du protocole 2 dynamiquement
-      let totalScore = 0;
-      let scoreCount = 0;
-      
-      if (newProtocol2.rolePlay.completed && newProtocol2.rolePlay.score > 0) {
-        totalScore += newProtocol2.rolePlay.score;
-        scoreCount++;
-      }
-      
-      if (newProtocol2.codirGame.completed && newProtocol2.codirGame.score > 0) {
-        totalScore += newProtocol2.codirGame.score;
-        scoreCount++;
-      }
-      
-      // Bonus pour validations opérationnelles
-      if (newProtocol2.physicalVisit) totalScore += 5;
-      if (newProtocol2.jobDescriptionValidated) totalScore += 5;
-      
-      newProtocol2.score = scoreCount > 0 ? Math.round(totalScore / scoreCount) : 0;
-      
-      // Mettre à jour le statut
-      if (newProtocol2.rolePlay.completed || newProtocol2.codirGame.completed) {
-        newProtocol2.status = 'in_progress';
-      }
-      if (newProtocol2.rolePlay.completed && newProtocol2.codirGame.completed) {
-        newProtocol2.status = 'completed';
-      }
-      
-      // Calculer le score global (moyenne des deux protocoles)
-      const globalScore = prev.protocol1.score > 0 && newProtocol2.score > 0 
-        ? Math.round((prev.protocol1.score + newProtocol2.score) / 2)
-        : prev.protocol1.score;
-      
-      return {
-        ...prev,
-        protocol2: newProtocol2,
-        globalScore
-      };
-    });
-  };
+
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -461,8 +228,29 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+            <p className="text-muted-foreground">Chargement de l'évaluation...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Indicateur de sauvegarde */}
+      {isSaving && (
+        <div className="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 z-50">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          <span>Sauvegarde...</span>
+        </div>
+      )}
+      
       {/* Header - Synthèse de l'Évaluation */}
       <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
         <CardHeader className="pb-4">
@@ -483,31 +271,33 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Barre de progression globale */}
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Score Global Provisoire</span>
-              <span className="text-sm text-muted-foreground">{evaluationData.globalScore === 0 ? '0' : evaluationData.globalScore.toFixed(1)}%</span>
+            <div className="flex justify-between text-sm">
+              <span className="font-medium text-gray-600">Progression de l'évaluation</span>
+              <span className="font-semibold text-primary">{evaluationData.globalScore === 0 ? '0' : evaluationData.globalScore.toFixed(1)}%</span>
             </div>
-            <div className="relative h-3 w-full overflow-hidden rounded-full bg-gray-200">
-              <div 
-                className="h-full bg-blue-600 transition-all duration-300 ease-in-out"
-                style={{ width: `${Math.max(0, Math.min(100, evaluationData.globalScore || 0))}%` }}
-              />
-            </div>
+            <Progress 
+              value={evaluationData.globalScore} 
+              className="h-3 bg-gray-200"
+              style={{
+                '--progress-foreground': 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)'
+              } as React.CSSProperties}
+            />
           </div>
           
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">Validation Prérequis</div>
-              <div className="font-semibold text-sm text-blue-600">10%</div>
+              <div className="font-semibold text-sm text-blue-600">{calculateSectionScores().documentaryScore.toFixed(1)}%</div>
             </div>
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">Évaluation MTP</div>
-              <div className="font-semibold text-sm text-green-600">20%</div>
+              <div className="font-semibold text-sm text-green-600">{calculateSectionScores().mtpScore.toFixed(1)}%</div>
             </div>
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">Entretien</div>
-              <div className="font-semibold text-sm text-purple-600">70%</div>
+              <div className="font-semibold text-sm text-purple-600">{calculateSectionScores().interviewScore.toFixed(1)}%</div>
             </div>
           </div>
           
@@ -540,7 +330,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="border rounded-lg p-4 bg-gray-50 relative">
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
-                {calculateSectionScores(evaluationData.protocol1).documentaryScore.toFixed(1)}%
+                {calculateSectionScores().documentaryScore.toFixed(1)}%
               </Badge>
             </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
@@ -566,28 +356,28 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 
                 <div className="space-y-3">
                   <StarRating
-                    value={evaluationData.protocol1.documentaryEvaluation.diplomas.score}
-                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'diplomas.score', value)}
-                    label="Diplômes"
+                    value={evaluationData.protocol1.documentaryEvaluation.lettreMotivation.score}
+                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'lettreMotivation.score', value)}
+                    label="Lettre de motivation"
                   />
                   <Textarea
-                    placeholder="Commentaires sur les diplômes..."
-                    value={evaluationData.protocol1.documentaryEvaluation.diplomas.comments}
-                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'diplomas.comments', e.target.value)}
+                    placeholder="Commentaires sur la lettre de motivation..."
+                    value={evaluationData.protocol1.documentaryEvaluation.lettreMotivation.comments}
+                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'lettreMotivation.comments', e.target.value)}
                     className="min-h-[60px]"
                   />
                 </div>
 
                 <div className="space-y-3">
                   <StarRating
-                    value={evaluationData.protocol1.documentaryEvaluation.certificates.score}
-                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'certificates.score', value)}
-                    label="Certificats"
+                    value={evaluationData.protocol1.documentaryEvaluation.diplomesEtCertificats.score}
+                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'diplomesEtCertificats.score', value)}
+                    label="Diplômes & Certificats"
                   />
                   <Textarea
-                    placeholder="Commentaires sur les certificats..."
-                    value={evaluationData.protocol1.documentaryEvaluation.certificates.comments}
-                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'certificates.comments', e.target.value)}
+                    placeholder="Commentaires sur les diplômes et certificats..."
+                    value={evaluationData.protocol1.documentaryEvaluation.diplomesEtCertificats.comments}
+                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'diplomesEtCertificats.comments', e.target.value)}
                     className="min-h-[60px]"
                   />
                 </div>
@@ -599,7 +389,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="border rounded-lg p-4 bg-blue-50 relative">
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
-                {calculateSectionScores(evaluationData.protocol1).mtpScore.toFixed(1)}%
+                {calculateSectionScores().mtpScore.toFixed(1)}%
                     </Badge>
                   </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
@@ -812,7 +602,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="border rounded-lg p-4 bg-green-50 relative">
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
-                {calculateSectionScores(evaluationData.protocol1).interviewScore.toFixed(1)}%
+                {calculateSectionScores().interviewScore.toFixed(1)}%
               </Badge>
             </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
@@ -1029,6 +819,23 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 </div>
               </div>
 
+              {/* Gap de compétence */}
+              <div className="border-t pt-4">
+                <div className="space-y-3">
+                  <StarRating
+                    value={evaluationData.protocol1.interview.gapCompetence.score}
+                    onChange={(value) => updateProtocol1('interview', 'gapCompetence.score', value)}
+                    label="Gap de compétence"
+                  />
+                  <Textarea
+                    placeholder="Commentaires sur les gaps de compétences identifiés..."
+                    value={evaluationData.protocol1.interview.gapCompetence.comments}
+                    onChange={(e) => updateProtocol1('interview', 'gapCompetence.comments', e.target.value)}
+                    className="min-h-[60px]"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label>Compte-rendu général de l'entretien</Label>
                 <Textarea
@@ -1061,183 +868,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         </CardContent>
       </Card>
 
-      {/* Protocole 2 - Évaluation Approfondie & Tests */}
-      <Card className={cn(
-        "transition-all duration-200",
-        evaluationData.protocol1.score < 60 && "opacity-50 pointer-events-none"
-      )}>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              {getStatusIcon(evaluationData.protocol2.status)}
-              Protocole 2 : Évaluation Approfondie & Tests
-            </CardTitle>
-            <div className="flex items-center gap-3">
-              {getStatusBadge(evaluationData.protocol2.status)}
-              <div className="text-right">
-                <div className="font-bold text-lg">{evaluationData.protocol2.score}/100</div>
-                <div className="text-xs text-muted-foreground">Score Protocole 2</div>
-              </div>
-            </div>
-          </div>
-          {evaluationData.protocol1.score < 60 && (
-            <p className="text-sm text-amber-600 bg-amber-50 p-2 rounded flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              Ce protocole sera accessible une fois le Protocole 1 validé (score ≥ 60)
-            </p>
-          )}
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Module 2.1 : Mise en Situation & Tests Techniques */}
-          <div className="border rounded-lg p-4 bg-green-50">
-            <h4 className="font-semibold mb-4 flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              2.1 Mise en Situation & Tests Techniques
-            </h4>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h5 className="font-medium">Jeu de Rôle</h5>
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={evaluationData.protocol2.rolePlay.completed}
-                      onCheckedChange={(checked) => updateProtocol2('rolePlay', {
-                        ...evaluationData.protocol2.rolePlay,
-                        completed: checked
-                      })}
-                    />
-                    <Badge variant={evaluationData.protocol2.rolePlay.completed ? "default" : "secondary"}>
-                      {evaluationData.protocol2.rolePlay.completed ? "Réalisé" : "Non réalisé"}
-                    </Badge>
-                  </div>
-                  {evaluationData.protocol2.rolePlay.completed && (
-                    <div className="space-y-2">
-                      <Label>Score obtenu</Label>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={evaluationData.protocol2.rolePlay.score}
-                          onChange={(e) => updateProtocol2('rolePlay', {
-                            ...evaluationData.protocol2.rolePlay,
-                            score: parseInt(e.target.value) || 0
-                          })}
-                          className="w-20"
-                        />
-                        <span className="text-sm text-muted-foreground">/ 100</span>
-                      </div>
-                      <Button size="sm" variant="outline" className="flex items-center gap-2">
-                        <FileText className="w-4 h-4" />
-                        Joindre le rapport d'évaluation
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <h5 className="font-medium">Jeu de CODIR (Comité de Direction)</h5>
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={evaluationData.protocol2.codirGame.completed}
-                      onCheckedChange={(checked) => updateProtocol2('codirGame', {
-                        ...evaluationData.protocol2.codirGame,
-                        completed: checked
-                      })}
-                    />
-                    <Badge variant={evaluationData.protocol2.codirGame.completed ? "default" : "secondary"}>
-                      {evaluationData.protocol2.codirGame.completed ? "Réalisé" : "Non réalisé"}
-                    </Badge>
-                  </div>
-                  {evaluationData.protocol2.codirGame.completed && (
-                    <div className="space-y-2">
-                      <Label>Score obtenu</Label>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={evaluationData.protocol2.codirGame.score}
-                          onChange={(e) => updateProtocol2('codirGame', {
-                            ...evaluationData.protocol2.codirGame,
-                            score: parseInt(e.target.value) || 0
-                          })}
-                          className="w-20"
-                        />
-                        <span className="text-sm text-muted-foreground">/ 100</span>
-                      </div>
-                      <Button size="sm" variant="outline" className="flex items-center gap-2">
-                        <FileText className="w-4 h-4" />
-                        Joindre le rapport d'évaluation
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Module 2.2 : Validation Opérationnelle */}
-          <div className="border rounded-lg p-4 bg-purple-50">
-            <h4 className="font-semibold mb-4">2.2 Validation Opérationnelle</h4>
-            
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Checkbox 
-                  checked={evaluationData.protocol2.physicalVisit}
-                  onCheckedChange={(checked) => updateProtocol2('physicalVisit', checked)}
-                />
-                <Label>Visite physique effectuée</Label>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Checkbox 
-                  checked={evaluationData.protocol2.jobDescriptionValidated}
-                  onCheckedChange={(checked) => updateProtocol2('jobDescriptionValidated', checked)}
-                />
-                <Label>Fiche de fonction éditée et validée avec le candidat</Label>
-              </div>
-            </div>
-          </div>
-
-          {/* Module 2.3 : Synthèse des Compétences */}
-          <div className="border rounded-lg p-4 bg-orange-50">
-            <h4 className="font-semibold mb-4">2.3 Synthèse des Compétences</h4>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Analyse du "Gap" de compétences</Label>
-                <Select 
-                  value={evaluationData.protocol2.skillsGap}
-                  onValueChange={(value: 'low' | 'medium' | 'high') => updateProtocol2('skillsGap', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Faible</SelectItem>
-                    <SelectItem value="medium">Moyen</SelectItem>
-                    <SelectItem value="high">Élevé</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Justification</Label>
-                <Textarea
-                  placeholder="Le candidat devra être formé sur notre logiciel de paie interne. Excellente maîtrise des autres aspects."
-                  value={evaluationData.protocol2.skillsGapJustification}
-                  onChange={(e) => updateProtocol2('skillsGapJustification', e.target.value)}
-                  className="min-h-[80px]"
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Actions Protocole 2 */}
+      {/* Actions Protocole 1 */}
       <div className="flex justify-end gap-3 pt-4">
         <Button variant="outline">Sauvegarder le brouillon</Button>
         <Button 
@@ -1248,11 +879,11 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           Refuser
         </Button>
         <Button 
-          onClick={() => onStatusChange('embauche')}
-          disabled={evaluationData.protocol2.score < 70}
-          className="bg-green-600 hover:bg-green-700"
+          onClick={() => onStatusChange('incubation')}
+          disabled={evaluationData.protocol1.score < 60}
+          className="bg-blue-600 hover:bg-blue-700"
         >
-          Engager
+          Passer au Protocole 2
         </Button>
       </div>
     </div>
