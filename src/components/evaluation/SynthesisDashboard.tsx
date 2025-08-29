@@ -298,3 +298,5 @@ export function SynthesisDashboard({ candidateName, jobTitle, applicationId, syn
     </div>
   );
 }
+
+

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ComponentType, lazy, LazyExoticComponent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -127,6 +128,7 @@ export function ModuleLoadError({ error, resetError }: { error: Error; resetErro
 }
 
 // Wrapper pour créer des composants lazy avec gestion d'erreur améliorée
+// eslint-disable-next-line react-refresh/only-export-components
 export function createResilientLazyComponent<T extends ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
   displayName?: string
@@ -157,7 +159,7 @@ export function createResilientLazyComponent<T extends ComponentType<any>>(
     }
   });
   
-  LazyComponent.displayName = displayName || 'ResilientLazyComponent';
+  (LazyComponent as any).displayName = displayName || 'ResilientLazyComponent';
   return LazyComponent;
 }
 
@@ -168,10 +170,10 @@ interface ErrorBoundaryState {
 }
 
 export class LazyLoadErrorBoundary extends React.Component<
-  React.PropsWithChildren<{}>,
+  React.PropsWithChildren<object>,
   ErrorBoundaryState
 > {
-  constructor(props: React.PropsWithChildren<{}>) {
+  constructor(props: React.PropsWithChildren<object>) {
     super(props);
     this.state = { hasError: false, error: null };
   }
