@@ -478,6 +478,26 @@ export default function CandidateAnalysis() {
   const navigate = useNavigate();
   const { isRecruiter, isObserver } = useAuth();
   const [activeTab, setActiveTab] = useState("info");
+  const [synthesisData, setSynthesisData] = useState({
+    protocol1: {
+      score: 75,
+      status: 'completed',
+      validationPrerequis: 4,
+      evaluationMTP: 3,
+      entretien: 4
+    },
+    protocol2: {
+      score: 80,
+      status: 'completed',
+      miseEnSituation: 4,
+      validationOperationnelle: 5,
+      analyseCompetences: 4
+    },
+    globalScore: 78,
+    finalStatus: 'embauche',
+    pointsForts: '',
+    pointsAmelioration: ''
+  });
 
   const { data: application, isLoading, error } = useApplication(id);
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
@@ -677,14 +697,9 @@ export default function CandidateAnalysis() {
               jobTitle={jobTitle || 'Poste non spécifié'}
               applicationId={application.id}
               isReadOnly={isObserver}
-              synthesisData={{
-                protocol1Score: 75,
-                protocol1Status: 'completed',
-                protocol2Score: 80,
-                protocol2Status: 'completed',
-                globalScore: 78,
-                finalStatus: 'embauche',
-                recommendation: 'Candidat recommandé pour l\'embauche avec un excellent profil technique et une bonne adéquation culturelle.'
+              synthesisData={synthesisData}
+              onUpdate={(updates) => {
+                setSynthesisData(prev => ({ ...prev, ...updates }));
               }}
             />
           </TabsContent>
