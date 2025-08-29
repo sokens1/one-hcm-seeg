@@ -134,84 +134,147 @@ export default function RecruiterDashboard() {
           </div>
         ) : (
           <>
-            {/* Stats Cards - Mobile First Grid */}
+            {/* Stats Cards - Harmonisation de l'affichage */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {/* Total Candidats */}
+              {/* Offres */}
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300">
-                      Total Candidats
+                      Offres
                     </CardTitle>
-                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
+                    <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    {stats.totalCandidates}
+                    {stats.totalJobs}
                   </div>
                   <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    Actives
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Total des candidats uniques */}
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
+                      Total des candidats
+                    </CardTitle>
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="text-xl sm:text-2xl font-bold text-green-900 dark:text-green-100">
+                    {stats.totalCandidates}
+                  </div>
+                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                    Candidats uniques
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Total des candidatures */}
+              <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border-emerald-200 dark:border-emerald-800">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                      Total des candidatures
+                    </CardTitle>
+                    <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="text-xl sm:text-2xl font-bold text-emerald-900 dark:text-emerald-100">
+                    {jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)}
+                  </div>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
                     +{stats.newCandidates} ce jour
                   </p>
                 </CardContent>
               </Card>
 
-              {/* Offres Actives */}
-              <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
-                      Offres Actives
-                    </CardTitle>
-                    <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-green-900 dark:text-green-100">
-                    {stats.totalJobs}
-                  </div>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                    En cours
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Entretiens */}
-              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-orange-700 dark:text-orange-300">
-                      Entretiens
-                    </CardTitle>
-                    <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 dark:text-orange-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-orange-900 dark:text-orange-100">
-                    {stats.interviewsScheduled}
-                  </div>
-                  <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                    Planifiés
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Multi-postes */}
+              {/* Nombre de candidatures par poste */}
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-purple-700 dark:text-purple-300">
-                      Multi-postes
+                      Candidatures par poste
                     </CardTitle>
                     <Target className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-100">
-                    {stats.multiPostCandidates ?? 0}
+                    {stats.totalJobs > 0 ? Math.round((jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)) / stats.totalJobs) : 0}
                   </div>
                   <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                    Moyenne
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Deuxième rangée de KPIs - 3 cartes pour l'équilibre */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
+              {/* Candidats multi-postes */}
+              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xs sm:text-sm font-medium text-orange-700 dark:text-orange-300">
+                      Candidats multi-postes
+                    </CardTitle>
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="text-xl sm:text-2xl font-bold text-orange-900 dark:text-orange-100">
+                    {stats.multiPostCandidates ?? 0}
+                  </div>
+                  <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
                     Candidats
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Taux de couverture */}
+              <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
+                      Taux de couverture
+                    </CardTitle>
+                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600 dark:text-cyan-400" />
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="text-xl sm:text-2xl font-bold text-cyan-900 dark:text-cyan-100">
+                    {jobCoverage.length > 0 ? Math.round((jobCoverage.filter(job => job.current_applications > 0).length / jobCoverage.length) * 100) : 0}%
+                  </div>
+                  <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
+                    Postes avec candidats
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Entretiens */}
+              <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950 dark:to-indigo-900 border-indigo-200 dark:border-indigo-800">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xs sm:text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                      Entretiens
+                    </CardTitle>
+                    <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="text-xl sm:text-2xl font-bold text-indigo-900 dark:text-indigo-100">
+                    {stats.interviewsScheduled}
+                  </div>
+                  <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
+                    Planifiés
                   </p>
                 </CardContent>
               </Card>
@@ -224,16 +287,25 @@ export default function RecruiterDashboard() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base sm:text-lg">Score de couverture par poste</CardTitle>
+                    <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Basé sur le nombre de candidatures reçues
+                    Basé sur le nombre de candidatures reçues - 2 offres par catégorie
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="h-64 sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={jobCoverage.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <BarChart data={(() => {
+                        // Filtrer et organiser les données pour avoir 2 offres par catégorie
+                        const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
+                        const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
+                        const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
+                        const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
+                        
+                        // Combiner toutes les catégories
+                        return [...excellent, ...good, ...moderate, ...low];
+                      })()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <XAxis 
                           dataKey="title" 
                           tick={{ fontSize: 10 }}
@@ -242,11 +314,11 @@ export default function RecruiterDashboard() {
                           angle={-45}
                           textAnchor="end"
                         />
-                        <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
+                        <YAxis tick={{ fontSize: 12 }} />
                         <Tooltip 
                           formatter={(value: number, name: string) => [
-                            name === 'coverage_rate' ? `${value}%` : value,
-                            name === 'coverage_rate' ? 'Score de couverture' : 'Candidatures'
+                            value,
+                            'Nombre de candidatures'
                           ]}
                           labelFormatter={(value) => {
                             const job = jobCoverage.find(j => j.title === value);
@@ -254,21 +326,30 @@ export default function RecruiterDashboard() {
                           }}
                         />
                         <Bar 
-                          dataKey="coverage_rate" 
+                          dataKey="current_applications" 
                           radius={[4, 4, 0, 0]}
-                          name="coverage_rate"
+                          name="Nombre de candidatures"
                         >
-                          {jobCoverage.slice(0, 8).map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`}
-                              fill={
-                                entry.coverage_status === 'excellent' ? '#10b981' :
-                                entry.coverage_status === 'good' ? '#3b82f6' :
-                                entry.coverage_status === 'moderate' ? '#f59e0b' :
-                                '#ef4444'
-                              }
-                            />
-                          ))}
+                          {(() => {
+                            const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
+                            const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
+                            const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
+                            const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
+                            
+                            const allJobs = [...excellent, ...good, ...moderate, ...low];
+                            
+                            return allJobs.map((entry, index) => (
+                              <Cell 
+                                key={`cell-${index}`}
+                                fill={
+                                  entry.coverage_status === 'excellent' ? '#10b981' :
+                                  entry.coverage_status === 'good' ? '#3b82f6' :
+                                  entry.coverage_status === 'moderate' ? '#f59e0b' :
+                                  '#ef4444'
+                                }
+                              />
+                            ));
+                          })()}
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -300,7 +381,7 @@ export default function RecruiterDashboard() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base sm:text-lg">Candidatures par offre</CardTitle>
+                    <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -319,13 +400,13 @@ export default function RecruiterDashboard() {
                         <Tooltip />
                         <Bar 
                           dataKey="applications_count" 
-                          fill="#10b981" 
+                          fill="#8B5CF6" 
                           radius={[4, 4, 0, 0]}
                           name="Total candidatures"
                         />
                         <Bar 
                           dataKey="new_applications_24h" 
-                          fill="#f59e0b" 
+                          fill="#EC4899" 
                           radius={[4, 4, 0, 0]}
                           name="Nouvelles (24h)"
                         />
@@ -340,7 +421,7 @@ export default function RecruiterDashboard() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base sm:text-lg">Évolution des statuts (7 jours)</CardTitle>
+                    <CardTitle className="text-base sm:text-lg">Évolution des statuts par jour</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -365,8 +446,8 @@ export default function RecruiterDashboard() {
                           type="monotone" 
                           dataKey="candidature" 
                           stackId="1" 
-                          stroke="#3b82f6" 
-                          fill="#3b82f6" 
+                          stroke="#EC4899" 
+                          fill="#EC4899" 
                           fillOpacity={0.6}
                           name="Candidature"
                         />

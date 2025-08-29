@@ -13,13 +13,17 @@ import {
   Bell, 
   BarChart3,
   Target,
-  TrendingUp
+  TrendingUp,
+  FileText,
+  UserCheck,
+  Calendar
 } from "lucide-react";
 import { 
   AdvancedHistogram, 
   AdvancedLineChart,
   MetricCard, 
-  StatusDistributionChart 
+  StatusDistributionChart,
+  ApplicationsPerJobChart
 } from "@/components/ui/AdvancedCharts";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
@@ -32,7 +36,7 @@ import { fr } from 'date-fns/locale/fr';
 
 export default function AdvancedDashboard() {
   const navigate = useNavigate();
-  const { stats, activeJobs, statusEvolution, isLoading, error } = useRecruiterDashboard();
+  const { stats, activeJobs, statusEvolution, applicationsPerJob, isLoading, error } = useRecruiterDashboard();
   const { stats: advancedStats, isLoading: isLoadingAdvancedStats, error: advancedStatsError } = useAdvancedRecruiterStats(activeJobs.length);
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { isRecruiter } = useAuth();
@@ -59,77 +63,32 @@ export default function AdvancedDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div className="min-w-0">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-            Tableau de Bord Recruteur & Observateur
+            Traitement préléminaire avec l'IA embarquée
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Tableau de bord moderne pour la gestion des candidatures et l'analyse des données
+            Analyse IA des candidatures
           </p>
         </div>
-        {isRecruiter && (
-          <Link to="/recruiter/jobs/new">
-            <Button variant="hero" className="gap-2 text-sm sm:text-base">
-              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-              Créer une offre
-            </Button>
-          </Link>
-        )}
+        
       </div>
 
       {/* Loading State */}
       {isLoading ? (
         <div className="flex flex-col sm:flex-row justify-center items-center py-8 sm:py-12 gap-2">
-          <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
+          <Loader2 className="w-6 h-6 sm:w-8 sm:w-8 animate-spin text-primary" />
           <span className="text-sm sm:text-base">Chargement du dashboard...</span>
         </div>
       ) : (
         <>
-          {/* KPIs Modernes */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            <MetricCard
-              title="Total des Candidatures"
-              value={advancedStats?.totalApplications || 0}
-              change={{ value: 12, type: 'increase' }}
-              icon={Users}
-              color="blue"
-            />
-            
-            <MetricCard
-              title="Taux de Couverture"
-              value={`${advancedStats?.coverageRate || 0}%`}
-              icon={BarChart3}
-              color="green"
-            />
-            
-            <MetricCard
-              title="Postes Ouverts"
-              value={advancedStats?.openPositions || 0}
-              icon={Target}
-              color="purple"
-            />
-          </div>
+          
 
           {/* Visualisations des données */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Histogramme des candidatures par poste */}
-            {isLoadingAdvancedStats ? (
-              <div className="col-span-2 flex justify-center items-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              </div>
-            ) : (
-              <>
-                <AdvancedHistogram
-                  title="Candidatures par Poste"
-                  data={advancedStats?.applicationsByPosition.slice(0, 6).map(item => ({
-                    label: item.position,
-                    value: item.count,
-                    color: '#3B82F6'
-                  })) || []}
-                  height={250}
-                />
-
-                {/* Graphique d'évolution des statuts avec données réelles */}
-                <AdvancedLineChart
-                  title="Évolution des Statuts (7 jours)"
+            {/* Attractivité des candidatures (remplace Score de couverture par poste) */}
+            
+                {/* Graphique d'évolution des statuts par jour avec nouvelle couleur */}
+                {/* <AdvancedLineChart
+                  title="Évolution des statuts par jour"
                   data={statusEvolution.map(day => ({
                     period: new Date(day.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
                     values: {
@@ -140,24 +99,17 @@ export default function AdvancedDashboard() {
                     }
                   }))}
                   series={[
-                    { key: 'candidature', label: 'Candidature', color: '#3B82F6' },
+                    { key: 'candidature', label: 'Candidature', color: '#EC4899' }, // Nouvelle couleur
                     { key: 'incubation', label: 'Incubation', color: '#F59E0B' },
                     { key: 'embauche', label: 'Embauche', color: '#10B981' },
                     { key: 'refuse', label: 'Refusé', color: '#EF4444' }
                   ]}
                   height={250}
-                />
-              </>
-            )}
+                /> */}
+            
           </div>
 
-          {/* Graphique de répartition par statut */}
-          {!isLoadingAdvancedStats && advancedStats && (
-            <div className="mb-8">
-              <StatusDistributionChart data={advancedStats.applicationsByStatus} />
-            </div>
-          )}
-
+          
           {/* Actions rapides et Activité récente */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="shadow-soft hover:shadow-medium transition-all">
@@ -175,7 +127,7 @@ export default function AdvancedDashboard() {
                 )}
                 <Link to="/recruiter/candidates" className="block">
                   <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                    <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Users className="w-3 h-3 sm:w-4 sm:w-4" />
                     Voir tous les candidats
                   </Button>
                 </Link>
