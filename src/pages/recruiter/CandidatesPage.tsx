@@ -31,6 +31,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 // Types dérivés des applications
 type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse';
@@ -157,7 +158,7 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
   );
 }
 
-function CandidateDetails({ candidate }: { candidate: UICandidate }) {
+function CandidateDetails({ candidate, isObserver }: { candidate: UICandidate, isObserver: boolean }) {
   const { data: documents = [], isLoading, error } = useApplicationDocuments(candidate.id);
 
   const toUrl = (path: string) => {
@@ -263,6 +264,7 @@ export default function CandidatesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | ApplicationStatus>("all");
   const { applications, isLoading, error } = useRecruiterApplications();
+  const { isObserver } = useAuth();
   
   console.log('[CANDIDATES PAGE DEBUG] Applications hook result:', { applications, isLoading, error });
   console.log('[CANDIDATES PAGE DEBUG] Applications count:', applications?.length);
@@ -444,7 +446,13 @@ export default function CandidatesPage() {
                       <td className="p-4">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className={`gap-2 ${isObserver ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              disabled={isObserver}
+                              title={isObserver ? "Lecture seule - Mode observateur" : "Voir les détails"}
+                            >
                               <Eye className="w-4 h-4" />
                               Détails
                             </Button>
@@ -453,10 +461,14 @@ export default function CandidatesPage() {
                             <DialogHeader>
                               <DialogTitle>Détails du candidat</DialogTitle>
                               <DialogDescription>
-                                Consulter les informations détaillées du candidat et les documents soumis.
+                                {isObserver ? (
+                                  <span className="text-yellow-600">Mode observateur - Lecture seule</span>
+                                ) : (
+                                  "Consulter les informations détaillées du candidat et les documents soumis."
+                                )}
                               </DialogDescription>
                             </DialogHeader>
-                            <CandidateDetails candidate={candidate} />
+                            <CandidateDetails candidate={candidate} isObserver={isObserver} />
                           </DialogContent>
                         </Dialog>
                       </td>

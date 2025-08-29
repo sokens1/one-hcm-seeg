@@ -32,9 +32,9 @@ export default function RecruiterProfile() {
       current_position: currentPosition,
       phone,
       bio,
-      role: user?.user_metadata?.role
+      role: user?.user_metadata?.role || (isObserver ? 'observer' : 'recruiter')
     };
-    if (!isRecruiter) return; // extra safety
+    
     const success = await updateUser(metadataToUpdate);
 
     if (success) {
@@ -81,28 +81,26 @@ export default function RecruiterProfile() {
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <CardTitle className="text-lg sm:text-xl">Informations</CardTitle>
-                {isRecruiter && (
-                  !isEditing ? (
-                    <Button variant="outline" onClick={() => setIsEditing(true)} className="gap-1 sm:gap-2 text-sm sm:text-base">
-                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                      Modifier
+                {!isEditing ? (
+                  <Button variant="outline" onClick={() => setIsEditing(true)} className="gap-1 sm:gap-2 text-sm sm:text-base">
+                    <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                    Modifier
+                  </Button>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button variant="outline" size="sm" onClick={handleCancel} className="gap-1 sm:gap-2 text-xs sm:text-sm">
+                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
+                      Annuler
                     </Button>
-                  ) : (
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <Button variant="outline" size="sm" onClick={handleCancel} className="gap-1 sm:gap-2 text-xs sm:text-sm">
-                        <X className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Annuler
-                      </Button>
-                      <Button size="sm" onClick={handleSave} disabled={isUpdating} className="gap-1 sm:gap-2 text-xs sm:text-sm">
-                        {isUpdating ? (
-                          <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-                        ) : (
-                          <Save className="w-3 h-3 sm:w-4 sm:h-4" />
-                        )}
-                        Sauvegarder
-                      </Button>
-                    </div>
-                  )
+                    <Button size="sm" onClick={handleSave} disabled={isUpdating} className="gap-1 sm:gap-2 text-xs sm:text-sm">
+                      {isUpdating ? (
+                        <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+                      ) : (
+                        <Save className="w-3 h-3 sm:w-4 sm:h-4" />
+                      )}
+                      Sauvegarder
+                    </Button>
+                  </div>
                 )}
               </div>
             </CardHeader>
@@ -146,7 +144,12 @@ export default function RecruiterProfile() {
 
               <div>
                 <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
-                {isEditing ? (
+                {!isEditing ? (
+                  <div className="flex items-center gap-2 h-9 sm:h-10 px-3 py-2 border rounded-md bg-gray-50">
+                    <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+                    <span className="text-sm sm:text-base truncate">{formData.email}</span>
+                  </div>
+                ) : (
                   <Input
                     id="email"
                     type="email"
@@ -155,11 +158,6 @@ export default function RecruiterProfile() {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="text-sm sm:text-base"
                   />
-                ) : (
-                  <div className="flex items-center gap-2 h-9 sm:h-10 px-3 py-2 border rounded-md bg-gray-50">
-                    <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
-                    <span className="text-sm sm:text-base truncate">{formData.email}</span>
-                  </div>
                 )}
               </div>
 

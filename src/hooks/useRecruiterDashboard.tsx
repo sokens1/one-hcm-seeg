@@ -23,12 +23,41 @@ export interface RecruiterJobOffer {
   created_at: string;
 }
 
+export interface JobCoverageData {
+  id: string;
+  title: string;
+  current_applications: number;
+  coverage_rate: number;
+  coverage_status: 'excellent' | 'good' | 'moderate' | 'low';
+}
+
+export interface StatusEvolutionData {
+  date: string;
+  candidature: number;
+  incubation: number;
+  embauche: number;
+  refuse: number;
+}
+
+export interface ApplicationsPerJobData {
+  id: string;
+  title: string;
+  applications_count: number;
+  new_applications_24h: number;
+}
+
 export function useRecruiterDashboard() {
   const { user } = useAuth();
 
   const fetchDashboardData = async () => {
     if (!user) {
-      return { stats: null, activeJobs: [] };
+      return { 
+        stats: null, 
+        activeJobs: [], 
+        jobCoverage: [],
+        statusEvolution: [],
+        applicationsPerJob: []
+      };
     }
 
     // Check user role
@@ -57,7 +86,6 @@ export function useRecruiterDashboard() {
 
     // Extraire les détails des candidatures
     const allApplicationsData = (allEntries || []).map((app: any) => app.application_details);
-
 
     if (jobsError) {
       throw jobsError;
@@ -176,18 +204,107 @@ export function useRecruiterDashboard() {
       multiPostCandidates,
     };
 
-    return { stats, activeJobs: processedJobs };
+    // Calculate job coverage data - using a scoring system based on application count
+    const jobCoverage: JobCoverageData[] = (jobsData || []).map(job => {
+      const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
+      const currentApplications = jobApplications.length;
+      
+      // Create a coverage score based on number of applications
+      // This replaces the target_positions calculation
+      let coverageScore = 0;
+      let coverageStatus: JobCoverageData['coverage_status'] = 'low';
+      
+      if (currentApplications >= 10) {
+        coverageScore = 100;
+        coverageStatus = 'excellent';
+      } else if (currentApplications >= 7) {
+        coverageScore = 85;
+        coverageStatus = 'good';
+      } else if (currentApplications >= 4) {
+        coverageScore = 70;
+        coverageStatus = 'moderate';
+      } else if (currentApplications >= 1) {
+        coverageScore = 50;
+        coverageStatus = 'low';
+      }
+
+      return {
+        id: job.id,
+        title: job.title,
+        current_applications: currentApplications,
+        coverage_rate: coverageScore,
+        coverage_status: coverageStatus
+      };
+    });
+
+    // Calculate applications per job data
+    const applicationsPerJob: ApplicationsPerJobData[] = (jobsData || []).map(job => {
+      const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
+      const newApplications24h = jobApplications.filter(app => {
+        const appDate = new Date(app.created_at);
+        const oneDayAgo = new Date();
+        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        return appDate > oneDayAgo;
+      }).length;
+
+      return {
+        id: job.id,
+        title: job.title,
+        applications_count: jobApplications.length,
+        new_applications_24h: newApplications24h
+      };
+    });
+
+    // Calculate status evolution over the last 7 days
+    const statusEvolution: StatusEvolutionData[] = [];
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      return date.toISOString().split('T')[0];
+    }).reverse();
+
+    last7Days.forEach(date => {
+      const dayApplications = (allApplicationsData || []).filter(app => {
+        const appDate = new Date(app.created_at).toISOString().split('T')[0];
+        return appDate === date;
+      });
+
+      const candidature = dayApplications.filter(app => app.status === 'candidature').length;
+      const incubation = dayApplications.filter(app => app.status === 'incubation').length;
+      const embauche = dayApplications.filter(app => app.status === 'embauche').length;
+      const refuse = dayApplications.filter(app => app.status === 'refuse').length;
+
+      statusEvolution.push({
+        date,
+        candidature,
+        incubation,
+        embauche,
+        refuse
+      });
+    });
+
+    return { 
+      stats, 
+      activeJobs: processedJobs,
+      jobCoverage,
+      statusEvolution,
+      applicationsPerJob
+    };
   };
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['recruiterDashboard', user?.id],
     queryFn: fetchDashboardData,
     enabled: !!user,
+    refetchInterval: 30000, // Refresh every 30 seconds for real-time data
   });
 
   return {
     stats: data?.stats ?? { totalJobs: 0, totalCandidates: 0, newCandidates: 0, interviewsScheduled: 0 },
     activeJobs: data?.activeJobs ?? [],
+    jobCoverage: data?.jobCoverage ?? [],
+    statusEvolution: data?.statusEvolution ?? [],
+    applicationsPerJob: data?.applicationsPerJob ?? [],
     isLoading,
     error: error?.message || null,
     refetch
