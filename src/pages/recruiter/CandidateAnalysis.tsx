@@ -311,7 +311,7 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   );
 };
 
-const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, toast, candidateName }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void, toast: any, candidateName?: string }) => {
+const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, toast, candidateName, isObserver = false }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void, toast: any, candidateName?: string, isObserver?: boolean }) => {
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean, fileUrl: string, fileName: string }>({
     isOpen: false,
     fileUrl: '',
@@ -366,7 +366,7 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
         <CardHeader className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5" /> Documents</CardTitle>
-            {documents && documents.length > 0 && (
+            {!isObserver && documents && documents.length > 0 && (
               <Button
                 onClick={handleDownloadAllDocuments}
                 disabled={isDownloadingZip}
@@ -426,11 +426,16 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
                       }} className="p-1 sm:p-2">
                         <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
-                      {/* <Button size="sm" variant="outline" onClick={() => {
-                        downloadFile(doc.file_url, doc.file_name);
-                      }} className="p-1 sm:p-2">
-                        <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </Button> */}
+                      {!isObserver && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => downloadFile(doc.file_url, doc.file_name)} 
+                          className="p-1 sm:p-2"
+                        >
+                          <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );
@@ -507,7 +512,7 @@ export default function CandidateAnalysis() {
   const downloadFile = async (fileUrl: string, fileName: string) => {
     if (isObserver) {
       toast({
-        variant: 'info',
+        variant: 'default',
         title: 'Accès restreint',
         description: 'Les observateurs ne peuvent pas télécharger de documents.'
       });
@@ -616,7 +621,16 @@ export default function CandidateAnalysis() {
           <TabsContent value="info" className="mt-4 sm:mt-6">
             <div className="space-y-4 sm:space-y-6">
               <ProfileTab application={application} />
-              <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} toast={toast} candidateName={candidateName} />
+              <DocumentsTab 
+                documents={documents} 
+                isLoading={documentsLoading} 
+                error={documentsError} 
+                getFileUrl={getFileUrl} 
+                downloadFile={downloadFile} 
+                toast={toast} 
+                candidateName={candidateName} 
+                isObserver={isObserver}
+              />
               <ReferencesTab application={application} />
               <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} />
             </div>
