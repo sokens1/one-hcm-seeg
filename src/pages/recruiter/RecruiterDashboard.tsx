@@ -314,11 +314,11 @@ export default function RecruiterDashboard() {
                           angle={-45}
                           textAnchor="end"
                         />
-                        <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
+                        <YAxis tick={{ fontSize: 12 }} />
                         <Tooltip 
                           formatter={(value: number, name: string) => [
-                            name === 'coverage_rate' ? `${value}%` : value,
-                            name === 'coverage_rate' ? 'Score de couverture' : 'Candidatures'
+                            value,
+                            'Nombre de candidatures'
                           ]}
                           labelFormatter={(value) => {
                             const job = jobCoverage.find(j => j.title === value);
@@ -326,9 +326,9 @@ export default function RecruiterDashboard() {
                           }}
                         />
                         <Bar 
-                          dataKey="coverage_rate" 
+                          dataKey="current_applications" 
                           radius={[4, 4, 0, 0]}
-                          name="coverage_rate"
+                          name="Nombre de candidatures"
                         >
                           {(() => {
                             const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
