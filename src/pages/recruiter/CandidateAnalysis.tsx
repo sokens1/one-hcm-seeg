@@ -64,7 +64,7 @@ const ProfileTab = ({ application }: { application: Application }) => {
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><User className="w-4 h-4 sm:w-5 sm:h-5"/> Informations Personnelles</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><User className="w-4 h-4 sm:w-5 sm:h-5" /> Informations Personnelles</CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         {/* Layout horizontal avec grid responsive */}
@@ -95,7 +95,7 @@ const ReferencesTab = ({ application }: { application: Application }) => {
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><Users className="w-4 h-4 sm:w-5 sm:h-5"/> Références de Recommandation</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><Users className="w-4 h-4 sm:w-5 sm:h-5" /> Références de Recommandation</CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         {application.reference_contacts || application.ref_contacts ? (
@@ -165,7 +165,7 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
 const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl: string, fileName: string, isOpen: boolean, onClose: () => void }) => {
   const getFileType = (fileName: string) => {
     const ext = fileName.toLowerCase().split('.').pop() || '';
-    
+
     if (ext === 'pdf') return 'pdf';
     if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(ext)) return 'image';
     if (['doc', 'docx'].includes(ext)) return 'word';
@@ -179,7 +179,7 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   const fileType = getFileType(fileName);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     if (!isOpen) {
       setError(null);
@@ -194,7 +194,7 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
       setIsLoading(false);
     }
   }, [isOpen, fileUrl, fileName]);
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl h-[80vh]">
@@ -222,9 +222,9 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
                 <p className="text-sm font-medium">Document inaccessible</p>
                 <p className="text-xs text-muted-foreground max-w-md">{error}</p>
                 <div className="pt-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => window.open(fileUrl, '_blank')}
                     className="mr-2"
                   >
@@ -281,16 +281,16 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
                     Le type de fichier "{fileName.split('.').pop()?.toUpperCase()}" ne peut pas être prévisualisé directement.
                   </p>
                   <div className="flex gap-2 mt-4 justify-center">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => window.open(fileUrl, '_blank')}
                     >
                       Ouvrir dans un nouvel onglet
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => {
                         const link = document.createElement('a');
                         link.href = fileUrl;
@@ -340,10 +340,10 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
     }
 
     setIsDownloadingZip(true);
-    
+
     try {
       await downloadCandidateDocumentsAsZip(documents, candidateName);
-      
+
       toast({
         title: "Téléchargement réussi",
         description: `Le dossier de candidature de ${candidateName} a été téléchargé avec succès.`,
@@ -365,7 +365,7 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
       <Card>
         <CardHeader className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5"/> Documents</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5" /> Documents</CardTitle>
             {documents && documents.length > 0 && (
               <Button
                 onClick={handleDownloadAllDocuments}
@@ -413,7 +413,7 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
                           const { data } = supabase.storage
                             .from('application-documents')
                             .getPublicUrl(doc.file_url);
-                          
+
                           setPreviewModal({ isOpen: true, fileUrl: data.publicUrl, fileName: doc.file_name });
                         } catch (error) {
                           console.error('Error getting preview URL:', error);
@@ -426,11 +426,11 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
                       }} className="p-1 sm:p-2">
                         <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => {
+                      {/* <Button size="sm" variant="outline" onClick={() => {
                         downloadFile(doc.file_url, doc.file_name);
                       }} className="p-1 sm:p-2">
                         <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 );
@@ -444,7 +444,7 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
           )}
         </CardContent>
       </Card>
-      
+
       <DocumentPreviewModal
         fileUrl={previewModal.fileUrl}
         fileName={previewModal.fileName}
@@ -457,7 +457,7 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
 
 const EvaluationProtocol = ({ candidateName, jobTitle, applicationId, onStatusChange }: { candidateName: string, jobTitle: string, applicationId: string, onStatusChange: (status: 'incubation' | 'embauche' | 'refuse') => void }) => {
   return (
-    <EvaluationDashboard 
+    <EvaluationDashboard
       candidateName={candidateName}
       jobTitle={jobTitle}
       applicationId={applicationId}
@@ -471,9 +471,9 @@ export default function CandidateAnalysis() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { isRecruiter } = useAuth();
+  const { isRecruiter, isObserver } = useAuth();
   const [activeTab, setActiveTab] = useState("info");
-  
+
   const { data: application, isLoading, error } = useApplication(id);
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
   const { updateApplicationStatus } = useRecruiterApplications(application?.job_offer_id);
@@ -505,13 +505,22 @@ export default function CandidateAnalysis() {
   };
 
   const downloadFile = async (fileUrl: string, fileName: string) => {
+    if (isObserver) {
+      toast({
+        variant: 'info',
+        title: 'Accès restreint',
+        description: 'Les observateurs ne peuvent pas télécharger de documents.'
+      });
+      return;
+    }
+
     try {
       const finalUrl = await getFileUrl(fileUrl);
       window.open(finalUrl, '_blank');
     } catch (error) {
       console.error('Error downloading file:', error);
-      toast({ 
-        variant: 'destructive', 
+      toast({
+        variant: 'destructive',
         title: 'Erreur de téléchargement',
         description: 'Impossible de récupérer l\'URL du fichier.'
       });
@@ -519,15 +528,15 @@ export default function CandidateAnalysis() {
   };
 
   const handleStatusChange = async (newStatus: Application['status']) => {
-    if (!application) return;
+    if (!application || isObserver) return;
     try {
       await updateApplicationStatus({ applicationId: application.id, status: newStatus });
-      
+
       toast({
         title: "Statut mis à jour",
         description: `Le statut du candidat a été changé vers "${newStatus}".`,
       });
-      
+
       // Navigation automatique vers Protocole 2 quand on clique "Incuber"
       if (newStatus === 'incubation') {
         setActiveTab('protocol2');
@@ -613,26 +622,47 @@ export default function CandidateAnalysis() {
             </div>
           </TabsContent>
           <TabsContent value="protocol1" className="mt-4 sm:mt-6">
-            <EvaluationProtocol 
-              candidateName={candidateName}
-              jobTitle={jobTitle || 'Poste non spécifié'}
-              applicationId={application.id}
-              onStatusChange={handleStatusChange}
-            />
+            <div className={isObserver ? 'opacity-70 relative' : ''}>
+              {isObserver && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+                  <div className="bg-background p-4 rounded-lg border border-border shadow-lg text-center">
+                    <p className="font-medium">Mode consultation seule</p>
+                    <p className="text-sm text-muted-foreground mt-1">Les observateurs ne peuvent pas modifier les évaluations</p>
+                  </div>
+                </div>
+              )}
+              <EvaluationProtocol
+                candidateName={candidateName}
+                jobTitle={jobTitle || 'Poste non spécifié'}
+                applicationId={application.id}
+                onStatusChange={isObserver ? () => { } : handleStatusChange}
+              />
+            </div>
           </TabsContent>
           <TabsContent value="protocol2" className="mt-4 sm:mt-6">
-            <Protocol2Dashboard 
-              candidateName={candidateName}
-              jobTitle={jobTitle || 'Poste non spécifié'}
-              applicationId={application.id}
-              onStatusChange={handleStatusChange}
-            />
+            <div className={isObserver ? 'opacity-70 relative' : ''}>
+              {isObserver && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+                  <div className="bg-background p-4 rounded-lg border border-border shadow-lg text-center">
+                    <p className="font-medium">Mode consultation seule</p>
+                    <p className="text-sm text-muted-foreground mt-1">Les observateurs ne peuvent pas modifier les évaluations</p>
+                  </div>
+                </div>
+              )}
+              <Protocol2Dashboard
+                candidateName={candidateName}
+                jobTitle={jobTitle || 'Poste non spécifié'}
+                applicationId={application.id}
+                onStatusChange={isObserver ? () => { } : handleStatusChange}
+              />
+            </div>
           </TabsContent>
           <TabsContent value="synthesis" className="mt-4 sm:mt-6">
-            <SynthesisDashboard 
+            <SynthesisDashboard
               candidateName={candidateName}
               jobTitle={jobTitle || 'Poste non spécifié'}
               applicationId={application.id}
+              isReadOnly={isObserver}
               synthesisData={{
                 protocol1Score: 75,
                 protocol1Status: 'completed',
