@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X, Archive } from "lucide-react";
 import { EvaluationDashboard } from "@/components/evaluation/EvaluationDashboard";
 import { Protocol2Dashboard } from "@/components/evaluation/Protocol2Dashboard";
 import { SynthesisDashboard } from "@/components/evaluation/SynthesisDashboard";
@@ -21,6 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { downloadCandidateDocumentsAsZip } from "../../utils/downloadUtils";
 
 const getBadgeVariant = (status: Application['status']) => {
   switch (status) {
@@ -310,18 +311,78 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   );
 };
 
-const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, toast }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void, toast: any }) => {
+const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, toast, candidateName }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void, toast: any, candidateName?: string }) => {
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean, fileUrl: string, fileName: string }>({
     isOpen: false,
     fileUrl: '',
     fileName: ''
   });
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
+
+  // Fonction pour télécharger tous les documents en ZIP
+  const handleDownloadAllDocuments = async () => {
+    if (!documents || documents.length === 0) {
+      toast({
+        title: "Aucun document",
+        description: "Ce candidat n'a fourni aucun document à télécharger.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!candidateName) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de récupérer le nom du candidat.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDownloadingZip(true);
+    
+    try {
+      await downloadCandidateDocumentsAsZip(documents, candidateName);
+      
+      toast({
+        title: "Téléchargement réussi",
+        description: `Le dossier de candidature de ${candidateName} a été téléchargé avec succès.`,
+      });
+    } catch (error) {
+      console.error('Erreur lors du téléchargement ZIP:', error);
+      toast({
+        title: "Erreur de téléchargement",
+        description: "Une erreur s'est produite lors de la création du fichier ZIP.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloadingZip(false);
+    }
+  };
 
   return (
     <>
       <Card>
         <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5"/> Documents</CardTitle>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5"/> Documents</CardTitle>
+            {documents && documents.length > 0 && (
+              <Button
+                onClick={handleDownloadAllDocuments}
+                disabled={isDownloadingZip}
+                variant="outline"
+                size="sm"
+                className="text-xs sm:text-sm"
+              >
+                {isDownloadingZip ? (
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-primary mr-1 sm:mr-2" />
+                ) : (
+                  <Archive className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                )}
+                {isDownloadingZip ? 'Création...' : 'Télécharger tout (ZIP)'}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-2 sm:space-y-3 p-4 sm:p-6">
           {isLoading ? (
@@ -546,7 +607,7 @@ export default function CandidateAnalysis() {
           <TabsContent value="info" className="mt-4 sm:mt-6">
             <div className="space-y-4 sm:space-y-6">
               <ProfileTab application={application} />
-              <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} toast={toast} />
+              <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} toast={toast} candidateName={candidateName} />
               <ReferencesTab application={application} />
               <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} />
             </div>
