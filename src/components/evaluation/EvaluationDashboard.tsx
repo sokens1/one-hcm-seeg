@@ -24,11 +24,18 @@ interface EvaluationData {
     status: 'pending' | 'in_progress' | 'completed';
     // Partie 1: Validation des Prérequis (10%)
     documentaryEvaluation: {
-      score: number; // 5 étoiles
-      comments: string;
-      conformityRate: number; // Taux de conformité
-      isConform: boolean;
-      isValidated: boolean;
+      cv: {
+        score: number; // 5 étoiles
+        comments: string;
+      };
+      diplomas: {
+        score: number; // 5 étoiles
+        comments: string;
+      };
+      certificates: {
+        score: number; // 5 étoiles
+        comments: string;
+      };
     };
     // Evaluation MTP - Taux d'adhérence MTP (20%)
     mtpAdherence: {
@@ -47,7 +54,7 @@ interface EvaluationData {
     };
     // Partie 2: Entretien (70%)
     interview: {
-      interviewDate?: Date;
+    interviewDate?: Date;
       // Evaluation adhérence MTP physique
       physicalMtpAdherence: {
         metier: {
@@ -63,7 +70,7 @@ interface EvaluationData {
           comments: string;
         };
       };
-      generalSummary: string;
+    generalSummary: string;
     };
   };
   protocol2: {
@@ -141,11 +148,18 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
       status: 'pending',
       // Partie 1: Validation des Prérequis (10%)
       documentaryEvaluation: {
-        score: 0,
-        comments: "",
-        conformityRate: 0,
-        isConform: false,
-        isValidated: false,
+        cv: {
+          score: 0,
+          comments: "",
+        },
+        diplomas: {
+          score: 0,
+          comments: "",
+        },
+        certificates: {
+          score: 0,
+          comments: "",
+        },
       },
       // Evaluation MTP - Taux d'adhérence MTP (20%)
       mtpAdherence: {
@@ -178,7 +192,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             comments: "",
           },
         },
-        generalSummary: ""
+      generalSummary: ""
       },
     },
     protocol2: {
@@ -278,8 +292,14 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
 
   // Fonction pour calculer les scores partiels de chaque section
   const calculateSectionScores = (protocol1: any) => {
-    // Validation des Prérequis (10%)
-    const documentaryScore = (protocol1.documentaryEvaluation.score / 5) * 10;
+    // Validation des Prérequis (10%) - Moyenne des 3 évaluations documentaires
+    const documentaryScores = [
+      protocol1.documentaryEvaluation.cv.score,
+      protocol1.documentaryEvaluation.diplomas.score,
+      protocol1.documentaryEvaluation.certificates.score
+    ];
+    const documentaryAverage = documentaryScores.length > 0 ? documentaryScores.reduce((a, b) => a + b, 0) / documentaryScores.length : 0;
+    const documentaryScore = (documentaryAverage / 5) * 10;
     
     // Evaluation MTP - Taux d'adhérence MTP (20%)
     const mtpScores = [
@@ -313,14 +333,14 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
       
       // Mise à jour des données selon la section
       if (section === 'documentaryEvaluation') {
+        const [docType, property] = field.split('.');
         newProtocol1.documentaryEvaluation = {
           ...newProtocol1.documentaryEvaluation,
-          [field]: value
+          [docType]: {
+            ...newProtocol1.documentaryEvaluation[docType as keyof typeof newProtocol1.documentaryEvaluation],
+            [property]: value
+          }
         };
-        // Calculer le taux de conformité automatiquement
-        if (field === 'score') {
-          newProtocol1.documentaryEvaluation.conformityRate = (value / 5) * 100;
-        }
       } else if (section === 'mtpAdherence') {
         const [mtpField, property] = field.split('.');
         newProtocol1.mtpAdherence = {
@@ -353,7 +373,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
       newProtocol1.score = Math.round(sectionScores.totalScore);
       
       // Mettre à jour le statut
-      if (newProtocol1.documentaryEvaluation.isConform && sectionScores.mtpScore > 0) {
+      if (sectionScores.documentaryScore > 0 && sectionScores.mtpScore > 0) {
         newProtocol1.status = 'in_progress';
       }
       if (newProtocol1.score >= 60) {
@@ -511,10 +531,6 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.protocol1.status)}
-              <div className="text-right">
-                <div className="font-bold text-lg">{evaluationData.protocol1.score}/100</div>
-                <div className="text-xs text-muted-foreground">Score Protocole 1</div>
-              </div>
             </div>
           </div>
         </CardHeader>
@@ -524,7 +540,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="border rounded-lg p-4 bg-gray-50 relative">
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
-                {calculateSectionScores(evaluationData.protocol1).documentaryScore.toFixed(1)}/10
+                {calculateSectionScores(evaluationData.protocol1).documentaryScore.toFixed(1)}%
               </Badge>
             </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
@@ -532,22 +548,49 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               Validation des Prérequis
             </h4>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="space-y-3">
-                <Label className="text-sm font-medium">Évaluation Documentaire (CV, Diplômes, Certificats)</Label>
+                  <StarRating
+                    value={evaluationData.protocol1.documentaryEvaluation.cv.score}
+                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'cv.score', value)}
+                    label="CV"
+                  />
+                  <Textarea
+                    placeholder="Commentaires sur le CV..."
+                    value={evaluationData.protocol1.documentaryEvaluation.cv.comments}
+                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'cv.comments', e.target.value)}
+                    className="min-h-[60px]"
+                  />
+                </div>
                 
-                <StarRating
-                  value={evaluationData.protocol1.documentaryEvaluation.score}
-                  onChange={(value) => updateProtocol1('documentaryEvaluation', 'score', value)}
-                  label="Qualité et conformité des documents"
-                />
-                
-                <Textarea
-                  placeholder="Commentaires sur les documents..."
-                  value={evaluationData.protocol1.documentaryEvaluation.comments}
-                  onChange={(e) => updateProtocol1('documentaryEvaluation', 'comments', e.target.value)}
-                  className="min-h-[60px]"
-                />
+                <div className="space-y-3">
+                  <StarRating
+                    value={evaluationData.protocol1.documentaryEvaluation.diplomas.score}
+                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'diplomas.score', value)}
+                    label="Diplômes"
+                  />
+                  <Textarea
+                    placeholder="Commentaires sur les diplômes..."
+                    value={evaluationData.protocol1.documentaryEvaluation.diplomas.comments}
+                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'diplomas.comments', e.target.value)}
+                    className="min-h-[60px]"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <StarRating
+                    value={evaluationData.protocol1.documentaryEvaluation.certificates.score}
+                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'certificates.score', value)}
+                    label="Certificats"
+                  />
+                  <Textarea
+                    placeholder="Commentaires sur les certificats..."
+                    value={evaluationData.protocol1.documentaryEvaluation.certificates.comments}
+                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'certificates.comments', e.target.value)}
+                    className="min-h-[60px]"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -556,9 +599,9 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="border rounded-lg p-4 bg-blue-50 relative">
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
-                {calculateSectionScores(evaluationData.protocol1).mtpScore.toFixed(1)}/20
-              </Badge>
-            </div>
+                {calculateSectionScores(evaluationData.protocol1).mtpScore.toFixed(1)}%
+                    </Badge>
+                  </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
               <Users className="w-4 h-4" />
               Évaluation MTP - Taux d'adhérence MTP
@@ -579,7 +622,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                     className="min-h-[60px]"
                   />
                 </div>
-
+                
                 <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.mtpAdherence.talent.score}
@@ -626,7 +669,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                       <div className="text-center">
                         <h4 className="font-semibold text-lg mb-2">Programmer l'entretien</h4>
                         <p className="text-sm text-muted-foreground">Choisissez une date disponible</p>
-                      </div>
+                  </div>
                       
                       {/* Calendrier personnalisé */}
                       <div className="space-y-3">
@@ -705,8 +748,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                             );
                           })}
                         </div>
-                      </div>
-                      
+              </div>
+
                       {/* Sélection d'heure */}
                       {interviewDate && (
                         <div className="space-y-3 border-t pt-4">
@@ -747,7 +790,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                 </button>
                               );
                             })}
-                          </div>
+              </div>
                           
                           {selectedTimeSlot && (
                             <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
@@ -769,7 +812,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="border rounded-lg p-4 bg-green-50 relative">
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
-                {calculateSectionScores(evaluationData.protocol1).interviewScore.toFixed(1)}/70
+                {calculateSectionScores(evaluationData.protocol1).interviewScore.toFixed(1)}%
               </Badge>
             </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
@@ -778,31 +821,31 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             </h4>
             
             <div className="space-y-4">
-              <div className="space-y-2">
+                <div className="space-y-2">
                 <Label>Date d'entretien</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !interviewDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !interviewDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
                       {interviewDate && selectedTimeSlot ? 
                         format(interviewDate, "EEEE dd MMMM yyyy", { locale: fr }) + ` à ${selectedTimeSlot}` :
                         "Aucun entretien programmé"
                       }
-                    </Button>
-                  </PopoverTrigger>
+                      </Button>
+                    </PopoverTrigger>
                   <PopoverContent className="w-80 p-0" align="start">
                     <div className="p-4 space-y-4">
                       <div className="text-center">
                         <h4 className="font-semibold text-lg mb-2">Modifier l'entretien</h4>
                         <p className="text-sm text-muted-foreground">Choisissez une nouvelle date et heure</p>
-                      </div>
-                      
+                </div>
+                
                       {/* Calendrier personnalisé identique */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
@@ -822,9 +865,9 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                               <div className="w-3 h-3 bg-red-500 rounded"></div>
                               <span>Complet</span>
                             </div>
-                          </div>
-                        </div>
-                        
+                </div>
+              </div>
+
                         {/* En-têtes des jours */}
                         <div className="grid grid-cols-7 gap-1 text-xs text-center font-medium text-gray-500">
                           <div>Dim</div>
@@ -939,49 +982,49 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 </Popover>
               </div>
 
-              <div className="space-y-4">
+                <div className="space-y-4">
                 <Label className="text-sm font-medium">Évaluation Adhérence MTP (Évaluation Physique)</Label>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="space-y-3">
-                    <StarRating
+                  <StarRating
                       value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.score}
                       onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.metier.score', value)}
                       label="Métier"
-                    />
-                    <Textarea
+                  />
+                  <Textarea
                       placeholder="Commentaires métier..."
                       value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.comments}
                       onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.metier.comments', e.target.value)}
-                      className="min-h-[60px]"
-                    />
-                  </div>
+                    className="min-h-[60px]"
+                  />
+                </div>
 
                   <div className="space-y-3">
-                    <StarRating
+                  <StarRating
                       value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.score}
                       onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.talent.score', value)}
                       label="Talent"
-                    />
-                    <Textarea
+                  />
+                  <Textarea
                       placeholder="Commentaires talent..."
                       value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.comments}
                       onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.talent.comments', e.target.value)}
-                      className="min-h-[60px]"
-                    />
-                  </div>
+                    className="min-h-[60px]"
+                  />
+              </div>
 
                   <div className="space-y-3">
-                    <StarRating
+                <StarRating
                       value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.score}
                       onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.paradigme.score', value)}
                       label="Paradigme"
-                    />
-                    <Textarea
+                />
+                <Textarea
                       placeholder="Commentaires paradigme..."
                       value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.comments}
                       onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.paradigme.comments', e.target.value)}
-                      className="min-h-[60px]"
-                    />
+                  className="min-h-[60px]"
+                />
                   </div>
                 </div>
               </div>

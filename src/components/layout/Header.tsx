@@ -24,9 +24,28 @@ export function Header() {
   // Roles are handled in FR ('candidat', 'recruteur') by useAuth; keep helpers as source of truth
 
   const handleLogout = async () => {
-    await signOut();
-    toast.info("Déconnexion réussie. À bientôt !");
-    navigate('/');
+    try {
+      // Fermer tous les popovers/modals ouverts avant la déconnexion
+      setNotificationOpen(false);
+      
+      // Petit délai pour permettre aux composants de se fermer proprement
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const { error } = await signOut();
+      if (error) {
+        toast.error("Erreur lors de la déconnexion");
+        return;
+      }
+      toast.info("Déconnexion réussie. À bientôt !");
+      
+      // Délai supplémentaire pour permettre au toast de s'afficher
+      setTimeout(() => {
+        // Force une navigation complète pour éviter les problèmes de cache
+        window.location.href = '/';
+      }, 500);
+    } catch (error) {
+      toast.error("Erreur lors de la déconnexion");
+    }
   };
 
   const handleGoToOffers = () => {

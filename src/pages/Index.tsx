@@ -21,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, isCandidate, isRecruiter, isAdmin, isObserver } = useAuth();
+  const { user, isCandidate, isRecruiter, isAdmin, isObserver, isLoading: isAuthLoading, isRoleLoading } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [locationFilter, setLocationFilter] = useState("all");
@@ -58,25 +58,32 @@ const Index = () => {
   const uniqueContracts = [...new Set(jobOffers.map(job => job.contract_type) || [])];
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || isAuthLoading || isRoleLoading) return;
     
     // Only redirect if user is actually on the home page (not from a page reload)
     const currentPath = window.location.pathname;
     if (currentPath !== "/" && currentPath !== "/index") return;
+    
+    // Add a small delay to ensure the user state is properly set after login
+    const timeoutId = setTimeout(() => {
+      // Double check that user is still logged in after timeout
+      if (!user) return;
     
     // Use normalized role flags from useAuth to avoid FR/EN mismatch
     if (isAdmin) {
       navigate("/admin/dashboard", { replace: true });
     } else if (isRecruiter) {
       navigate("/recruiter/dashboard", { replace: true });
-      navigate("/recruiter/dashboard");
     } else if (isObserver) {
       // Observateurs: accès en lecture seule au dashboard recruteur
-      navigate("/recruiter/dashboard");
+        navigate("/recruiter/dashboard", { replace: true });
     } else if (isCandidate) {
       navigate("/candidate/dashboard?view=dashboard", { replace: true });
     }
-  }, [user, isAdmin, isRecruiter, isObserver, isCandidate, navigate]);
+    }, 100); // Small delay to ensure state is stable
+    
+    return () => clearTimeout(timeoutId);
+  }, [user, isAdmin, isRecruiter, isObserver, isCandidate, isAuthLoading, isRoleLoading, navigate]);
 
   // Ne pas afficher la page d'accueil si l'utilisateur est connecté ET qu'il est vraiment sur la home
   const currentPath = window.location.pathname;
