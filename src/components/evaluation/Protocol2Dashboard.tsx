@@ -197,15 +197,15 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="space-y-1">
                 <div className="text-xs text-muted-foreground">Mise en Situation</div>
-                <div className="font-semibold text-sm text-blue-600">{scores.miseEnSituationScore.toFixed(1)}%</div>
+                <div className="font-semibold text-sm text-gray-600">50%</div>
               </div>
               <div className="space-y-1">
                 <div className="text-xs text-muted-foreground">Planification de la performance</div>
-                <div className="font-semibold text-sm text-green-600">{scores.validationScore.toFixed(1)}%</div>
+                <div className="font-semibold text-sm text-gray-600">20%</div>
               </div>
               <div className="space-y-1">
                 <div className="text-xs text-muted-foreground">Compétence</div>
-                <div className="font-semibold text-sm text-purple-600">{scores.analyseScore.toFixed(1)}%</div>
+                <div className="font-semibold text-sm text-gray-600">30%</div>
               </div>
             </div>
           </div>
@@ -238,7 +238,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_de_role.score}
                 onChange={(value) => !isReadOnly && updateSection('mise_en_situation', 'jeu_de_role.score', value)}
-                label="Jeu de Rôle fonctionnel"
+                label="Jeu de rôle fonctionnel"
                 disabled={isReadOnly}
               />
               <Textarea
@@ -254,11 +254,11 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_codir.score}
                 onChange={(value) => !isReadOnly && updateSection('mise_en_situation', 'jeu_codir.score', value)}
-                label="Jeu de role CODIR"
+                label="Jeu de rôle CODIR"
                 disabled={isReadOnly}
               />
               <Textarea
-                placeholder="Commentaires sur le jeu CODIR..."
+                placeholder="Commentaires sur le jeu de rôle CODIR..."
                 value={evaluationData.mise_en_situation.jeu_codir.comments}
                 onChange={(e) => !isReadOnly && updateSection('mise_en_situation', 'jeu_codir.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}

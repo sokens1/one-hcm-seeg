@@ -129,12 +129,12 @@ export function SynthesisDashboard({
               </p>
             </div>
               <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-primary">{synthesisData.globalScore.toFixed(1)}%</div>
-                  <div className="text-xs text-muted-foreground">Score Global</div>
-                </div>
-
+              <div className="text-right">
+              <div className="text-2xl font-bold text-primary">{synthesisData.globalScore.toFixed(1)}%</div>
+                <div className="text-xs text-muted-foreground">Score Global</div>
               </div>
+
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -227,11 +227,11 @@ export function SynthesisDashboard({
             />
             <StarDisplay 
               value={synthesisData.protocol2.validationOperationnelle}
-              label="Validation Opérationnelle"
+              label="Planification de la performance"
             />
             <StarDisplay 
               value={synthesisData.protocol2.analyseCompetences}
-              label="Analyse des Compétences"
+              label="Compétence"
             />
           </div>
         </CardContent>

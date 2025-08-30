@@ -685,7 +685,7 @@ export default function CandidateAnalysis() {
                   <div>
                     <p className="font-medium text-yellow-800">Protocole 2 en lecture seule</p>
                     <p className="text-sm text-yellow-700">
-                      Le candidat doit d'abord être incubé dans le Protocole 1 pour accéder à l'édition
+                      Le candidat doit d'abord être incubé dans le Protocole 1 
                     </p>
                   </div>
                 </div>
