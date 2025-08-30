@@ -11,6 +11,7 @@ RETURNS TABLE (
     created_at TIMESTAMPTZ,
     activity_type TEXT
 )
+
 LANGUAGE plpgsql
 SECURITY DEFINER SET SEARCH_PATH = public
 AS $$
@@ -24,7 +25,7 @@ BEGIN
             WHEN a.status = 'interview' THEN 'Entretien programmé'
             WHEN a.status = 'hired' THEN 'Candidat embauché'
             WHEN a.status = 'rejected' THEN 'Candidature rejetée'
-            ELSE 'Mise à jour de candidature'
+            ELSE 'Nouvelle candidature pour le poste'
         END AS description,
         jo.title AS job_title,
         u.first_name || ' ' || u.last_name AS candidate_name,
