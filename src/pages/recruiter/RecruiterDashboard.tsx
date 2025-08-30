@@ -359,13 +359,13 @@ export default function RecruiterDashboard() {
                       })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                         <XAxis 
                           dataKey="title" 
-                          tick={{ fontSize: 10 }}
+                          tick={{ fontSize: window.innerWidth < 768 ? 7 : 10 }}
                           interval={0}
                           height={60}
                           angle={-45}
                           textAnchor="end"
                         />
-                        <YAxis tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 10 }} />
                         <Tooltip 
                           formatter={(value: number, name: string) => [
                             value,
@@ -456,7 +456,7 @@ export default function RecruiterDashboard() {
                        })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                          <XAxis 
                            dataKey="title" 
-                           tick={{ fontSize: 10 }}
+                           tick={{ fontSize: window.innerWidth < 768 ? 7 : 10 }}
                            interval={0}
                            height={60}
                            angle={-45}

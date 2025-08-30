@@ -28,7 +28,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
           <button
             key={star}
             type="button"
-onClick={() => !disabled && onChange(star)}
+            onClick={() => onChange(star)}
             className="transition-colors hover:scale-110"
           >
             <Star
@@ -77,13 +77,26 @@ const getStatusBadge = (status: string) => {
   }
 };
 
-export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
-  candidateName,
-  jobTitle,
-  applicationId,
-  onStatusChange,
-  isReadOnly = false,
-}: Protocol2DashboardProps) => {
+const translateStatus = (status: string) => {
+  switch (status) {
+    case 'candidature':
+      return 'Candidature';
+    case 'incubation':
+      return 'Incubation';
+    case 'embauche':
+      return 'Embauche';
+    case 'refuse':
+      return 'Refusé';
+    case 'completed':
+      return 'Terminé';
+    case 'in_progress':
+      return 'En cours';
+    default:
+      return status;
+  }
+};
+
+export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false }: Protocol2DashboardProps) {
   const {
     evaluationData,
     updateEvaluation,
@@ -96,7 +109,7 @@ export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
     onStatusChange(decision);
   };
 
-  const updateSection = (section: string, field: string, value: any) => {
+  const updateSection = (section: string, field: string, value: string | number) => {
     updateEvaluation(prev => {
       const newData = { ...prev };
       const [category, subCategory] = field.split('.');
@@ -180,19 +193,29 @@ export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
             />
           </div>
           
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Mise en Situation</div>
-              <div className="font-semibold text-sm text-blue-600">{scores.miseEnSituationScore.toFixed(1)}%</div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">Pondération :</div>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Mise en Situation</div>
+                <div className="font-semibold text-sm text-gray-600">50%</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Planification de la performance</div>
+                <div className="font-semibold text-sm text-gray-600">20%</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Compétence</div>
+                <div className="font-semibold text-sm text-gray-600">30%</div>
+              </div>
             </div>
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Validation Opérationnelle</div>
-              <div className="font-semibold text-sm text-green-600">{scores.validationScore.toFixed(1)}%</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Analyse des Compétences</div>
-              <div className="font-semibold text-sm text-purple-600">{scores.analyseScore.toFixed(1)}%</div>
-            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Statut Actuel:</span>
+            <Badge variant="outline" className="bg-blue-50 text-blue-700">
+              {translateStatus(evaluationData.status)}
+            </Badge>
           </div>
         </CardContent>
       </Card>
@@ -216,14 +239,14 @@ export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_de_role.score}
                 onChange={(value) => !isReadOnly && updateSection('mise_en_situation', 'jeu_de_role.score', value)}
+                label="Jeu de rôle fonctionnel"
                 disabled={isReadOnly}
-                label="Jeu de Rôle"
               />
               <Textarea
                 placeholder="Commentaires sur le jeu de rôle..."
                 value={evaluationData.mise_en_situation.jeu_de_role.comments}
                 onChange={(e) => !isReadOnly && updateSection('mise_en_situation', 'jeu_de_role.comments', e.target.value)}
-                className={cn("min-h-[60px]", isReadOnly ? "bg-gray-50 cursor-not-allowed" : "")}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
             </div>
@@ -232,14 +255,14 @@ export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_codir.score}
                 onChange={(value) => !isReadOnly && updateSection('mise_en_situation', 'jeu_codir.score', value)}
+                label="Jeu de rôle CODIR"
                 disabled={isReadOnly}
-                label="Jeu de mise en situation CODIR"
               />
               <Textarea
-                placeholder="Commentaires sur le jeu CODIR..."
+                placeholder="Commentaires sur le jeu de rôle CODIR..."
                 value={evaluationData.mise_en_situation.jeu_codir.comments}
                 onChange={(e) => !isReadOnly && updateSection('mise_en_situation', 'jeu_codir.comments', e.target.value)}
-                className={cn("min-h-[60px]", isReadOnly ? "bg-gray-50 cursor-not-allowed" : "")}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
             </div>
@@ -253,7 +276,7 @@ export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Validation Opérationnelle
+              Planification de la performance
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
@@ -261,20 +284,54 @@ export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-3">
-            <StarRating
-              value={evaluationData.validation_operationnelle.fiche_kpis.score}
-              onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
-              disabled={isReadOnly}
-              label="Edition de Fiche KPI'S"
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <StarRating
+                value={evaluationData.validation_operationnelle.fiche_kpis.score}
+                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                label="Key Performance Indicators (KPI's)"
+                disabled={isReadOnly}
+              />
               <Textarea
-                placeholder="Commentaires sur la fiche KPI'S..."
+                placeholder="Commentaires sur les KPI's..."
                 value={evaluationData.validation_operationnelle.fiche_kpis.comments}
                 onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
-                className={cn("min-h-[60px]", isReadOnly ? "bg-gray-50 cursor-not-allowed" : "")}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
+            </div>
+            
+            <div className="space-y-3">
+              <StarRating
+                value={evaluationData.validation_operationnelle.fiche_kpis.score}
+                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                label="Key Risque Indicators (KRI's)"
+                disabled={isReadOnly}
+              />
+              <Textarea
+                placeholder="Commentaires sur les KRI's..."
+                value={evaluationData.validation_operationnelle.fiche_kpis.comments}
+                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                readOnly={isReadOnly}
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <StarRating
+                value={evaluationData.validation_operationnelle.fiche_kpis.score}
+                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                label="Key Control Indicators (KCI's)"
+                disabled={isReadOnly}
+              />
+              <Textarea
+                placeholder="Commentaires sur les KCI's..."
+                value={evaluationData.validation_operationnelle.fiche_kpis.comments}
+                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                readOnly={isReadOnly}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -285,7 +342,7 @@ export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Analyse des Compétences
+              Compétence
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
@@ -298,32 +355,29 @@ export const Protocol2Dashboard: React.FC<Protocol2DashboardProps> = ({
               <StarRating
                 value={evaluationData.analyse_competences.gap_competences.score}
                 onChange={(value) => !isReadOnly && updateSection('analyse_competences', 'gap_competences.score', value)}
+                label="Gap de compétences"
                 disabled={isReadOnly}
-                label="Analyse du Gap de compétences"
               />
               <Textarea
                 placeholder="Commentaires sur l'analyse des compétences..."
                 value={evaluationData.analyse_competences.gap_competences.comments}
                 onChange={(e) => !isReadOnly && updateSection('analyse_competences', 'gap_competences.comments', e.target.value)}
-                className={cn("min-h-[60px]", isReadOnly ? "bg-gray-50 cursor-not-allowed" : "")}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
             </div>
             
             <div className="space-y-3">
-              <StarRating
-                value={evaluationData.analyse_competences.plan_formation.score}
-                onChange={(value) => !isReadOnly && updateSection('analyse_competences', 'plan_formation.score', value)}
-                disabled={isReadOnly}
-                label="Justification et Plan de Formation"
-              />
-              <Textarea
-                placeholder="Commentaires sur le plan de formation..."
-                value={evaluationData.analyse_competences.plan_formation.comments}
-                onChange={(e) => !isReadOnly && updateSection('analyse_competences', 'plan_formation.comments', e.target.value)}
-                className={cn("min-h-[60px]", isReadOnly ? "bg-gray-50 cursor-not-allowed" : "")}
-                readOnly={isReadOnly}
-              />
+              <div className="space-y-2">
+                <h5 className="font-medium text-sm">Formation requise et Justification</h5>
+                <Textarea
+                  placeholder="Commentaires sur la formation requise et justification..."
+                  value={evaluationData.analyse_competences.plan_formation.comments}
+                  onChange={(e) => !isReadOnly && updateSection('analyse_competences', 'plan_formation.comments', e.target.value)}
+                  className={cn("min-h-[120px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                  readOnly={isReadOnly}
+                />
+              </div>
             </div>
           </div>
         </CardContent>

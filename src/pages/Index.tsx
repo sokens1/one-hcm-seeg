@@ -186,10 +186,10 @@ const Index = () => {
               </div>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold animate-fade-in delay-100 px-2 leading-tight">
-              Vision SEEG 2025 - 2035
+            Rejoignez l'équipe dirigeante de la SEEG
             </h1>
             <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold opacity-90 animate-fade-in delay-150 px-4 leading-relaxed">
-              Comprendre les fondements stratégiques du recrutement de l’équipe dirigeante
+              et participez au développement énergétique du Gabon
             </h2>
             <div className="pt-4 sm:pt-6 animate-fade-in delay-400">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">

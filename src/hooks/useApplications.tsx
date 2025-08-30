@@ -491,15 +491,35 @@ export function useRecruiterApplications(jobOfferId?: string) {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ applicationId, status }: { applicationId: string; status: Application['status'] }) => {
-      const { error } = await supabase
+      console.log('🔧 [updateStatusMutation] Mise à jour du statut:', { applicationId, status });
+      
+      const { data, error } = await supabase
         .from('applications')
-        .update({ status })
-        .eq('id', applicationId);
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', applicationId)
+        .select();
 
-      if (error) throw new Error(error.message);
+      console.log('🔧 [updateStatusMutation] Résultat:', { data, error });
+
+      if (error) {
+        console.error('❌ [updateStatusMutation] Erreur:', error);
+        throw new Error(error.message);
+      }
+
+      if (!data || data.length === 0) {
+        console.warn('⚠️ [updateStatusMutation] Aucune ligne mise à jour');
+        throw new Error('Aucune application trouvée avec cet ID');
+      }
+
+      console.log('✅ [updateStatusMutation] Statut mis à jour avec succès');
     },
-    onSuccess: () => {
+    onSuccess: (_, { applicationId }) => {
       queryClient.invalidateQueries({ queryKey });
+      // Invalider aussi la query de l'application individuelle pour tous les utilisateurs
+      queryClient.invalidateQueries({ 
+        queryKey: ['application', applicationId],
+        exact: false 
+      });
     },
   });
 
