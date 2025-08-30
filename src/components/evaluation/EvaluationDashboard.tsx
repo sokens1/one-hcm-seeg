@@ -938,38 +938,55 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           </div>
           
           {/* Actions Protocole 1 */}
-          <div className="flex justify-end gap-3 pt-6 border-t">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-            <Button 
-              variant="outline" 
-              className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
-            >
-              Refuser
-            </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
-                    Confirmer le refus
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <Button 
-              onClick={handleIncubate}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Incuber
-            </Button>
-          </div>
+          {!isReadOnly && (
+            <div className="flex justify-end gap-3 pt-6 border-t">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+              >
+                Refuser
+              </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
+                      Confirmer le refus
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Button 
+                onClick={handleIncubate}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Incuber
+              </Button>
+            </div>
+          )}
+          
+          {/* Message pour la vue observateur */}
+          {isReadOnly && (
+            <div className="pt-6 border-t">
+              <div className="text-center py-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center justify-center gap-2 text-yellow-700">
+                  <AlertCircle className="w-5 h-5" />
+                  <span className="text-sm font-medium">Mode consultation seule</span>
+                </div>
+                <p className="text-xs text-yellow-600 mt-1">
+                  Vous pouvez consulter cette évaluation mais pas modifier le statut du candidat
+                </p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
