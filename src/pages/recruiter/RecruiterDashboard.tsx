@@ -238,6 +238,60 @@ export default function RecruiterDashboard() {
 
             {/* Deuxième rangée de KPIs - 3 cartes pour l'équilibre */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
+              {/* Taux de couverture par département */}
+              <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
+                      Répartition par type de métier
+                    </CardTitle>
+                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600 dark:text-cyan-400" />
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  {/* En-têtes du tableau */}
+                  <div className="grid grid-cols-4 gap-2 text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-2">
+                    <div>Type</div>
+                    <div className="text-center">Postes</div>
+                    <div className="text-center">Candidatures</div>
+                    <div className="text-center">%</div>
+                  </div>
+                  
+                  {/* Lignes de données */}
+                  <div className="space-y-2">
+                    {departmentStats.map((dept) => {
+                      // Calculer le pourcentage de couverture par rapport au total des candidatures
+                      const totalApplications = departmentStats.reduce((sum, d) => sum + d.applicationCount, 0);
+                      const coveragePercentage = totalApplications > 0 ? Math.round((dept.applicationCount / totalApplications) * 100) : 0;
+                      
+                      return (
+                        <div key={dept.department} className="grid grid-cols-4 gap-2 text-xs items-center">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${
+                              dept.department === 'Électricité' ? 'bg-orange-500' :
+                              dept.department === 'Eau' ? 'bg-blue-500' :
+                              'bg-gray-600'
+                            }`}></div>
+                            <span className="text-cyan-700 dark:text-cyan-300 font-medium">
+                              {dept.department}
+                            </span>
+                          </div>
+                          <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
+                            {dept.jobCount}
+                          </div>
+                          <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
+                            {dept.applicationCount}
+                          </div>
+                          <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
+                            {coveragePercentage}%
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+              
               {/* Candidats multi-postes */}
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800">
                 <CardHeader className="pb-2">
@@ -254,58 +308,6 @@ export default function RecruiterDashboard() {
                   </div>
                   <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
                     Candidats
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Taux de couverture par département */}
-              <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
-                      Répartition par secteur
-                    </CardTitle>
-                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600 dark:text-cyan-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {/* En-têtes du tableau */}
-                  <div className="grid grid-cols-4 gap-2 text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-2">
-                    <div>Secteur</div>
-                    <div className="text-center">Postes</div>
-                    <div className="text-center">Total Candidatures</div>
-                    <div className="text-center">Candidatures/Post</div>
-                  </div>
-                  
-                  {/* Lignes de données */}
-                  <div className="space-y-2">
-                    {departmentStats.map((dept) => (
-                      <div key={dept.department} className="grid grid-cols-4 gap-2 text-xs items-center">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${
-                            dept.department === 'Électricité' ? 'bg-orange-500' :
-                            dept.department === 'Eau' ? 'bg-blue-500' :
-                            'bg-gray-600'
-                          }`}></div>
-                          <span className="text-cyan-700 dark:text-cyan-300 font-medium">
-                            {dept.department}
-                          </span>
-                        </div>
-                        <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
-                          {dept.jobCount}
-                        </div>
-                        <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
-                          {dept.applicationCount}
-                        </div>
-                        <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
-                          {dept.jobCount > 0 ? Math.round(dept.applicationCount / dept.jobCount) : 0}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-3 text-center">
-                    Taux de candidature par secteur
                   </p>
                 </CardContent>
               </Card>
