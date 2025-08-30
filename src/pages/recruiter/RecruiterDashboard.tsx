@@ -566,7 +566,7 @@ export default function RecruiterDashboard() {
                  <CardHeader className="pb-3">
                    <div className="flex items-center gap-2">
                      <PieChart className="h-5 w-5 text-primary" />
-                     <CardTitle className="text-base sm:text-lg">Répartition des candidatures par secteur</CardTitle>
+                     <CardTitle className="text-base sm:text-lg">Répartition par type de métier</CardTitle>
                    </div>
                    {/* <p className="text-sm text-muted-foreground">
                      Distribution des candidatures : Métier (Eau + Électricité) vs Support
