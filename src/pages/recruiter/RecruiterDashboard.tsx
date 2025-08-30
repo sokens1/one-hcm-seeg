@@ -421,45 +421,72 @@ export default function RecruiterDashboard() {
                 </CardContent>
               </Card>
 
-              {/* Applications per Job Chart */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64 sm:h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={applicationsPerJob.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                        <XAxis 
-                          dataKey="title" 
-                          tick={{ fontSize: 10 }}
-                          interval={0}
-                          height={60}
-                          angle={-45}
-                          textAnchor="end"
-                        />
-                        <YAxis tick={{ fontSize: 12 }} />
-                        <Tooltip />
-                        <Bar 
-                          dataKey="applications_count" 
-                          fill="#8B5CF6" 
-                          radius={[4, 4, 0, 0]}
-                          name="Total candidatures"
-                        />
-                        <Bar 
-                          dataKey="new_applications_24h" 
-                          fill="#EC4899" 
-                          radius={[4, 4, 0, 0]}
-                          name="Nouvelles (24h)"
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
+                             {/* Applications per Job Chart */}
+               <Card>
+                 <CardHeader className="pb-3">
+                   <div className="flex items-center gap-2">
+                     <BarChart3 className="h-5 w-5 text-primary" />
+                     <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
+                   </div>
+                   <p className="text-sm text-muted-foreground">
+                     Total et nouvelles candidatures pour toutes les offres
+                   </p>
+                 </CardHeader>
+                 <CardContent>
+                   <div className="h-64 sm:h-80">
+                     <ResponsiveContainer width="100%" height="100%">
+                       <BarChart data={(() => {
+                         // Trier les offres par ordre de catégorie : excellent, bon, modéré, faible
+                         const sortedJobs = [...applicationsPerJob].sort((a, b) => {
+                           // Trouver le statut de couverture pour chaque offre
+                           const jobA = jobCoverage.find(job => job.title === a.title);
+                           const jobB = jobCoverage.find(job => job.title === b.title);
+                           
+                           if (!jobA || !jobB) return 0;
+                           
+                           const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
+                           return statusOrder[jobA.coverage_status] - statusOrder[jobB.coverage_status];
+                         });
+                         return sortedJobs;
+                       })()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                         <XAxis 
+                           dataKey="title" 
+                           tick={{ fontSize: 10 }}
+                           interval={0}
+                           height={60}
+                           angle={-45}
+                           textAnchor="end"
+                         />
+                         <YAxis tick={{ fontSize: 12 }} />
+                         <Tooltip 
+                           formatter={(value: number, name: string) => [
+                             value,
+                             name === 'applications_count' ? 'Total candidatures' : 'Nouvelles (24h)'
+                           ]}
+                           labelFormatter={(value) => {
+                             const job = applicationsPerJob.find(j => j.title === value);
+                             const coverageJob = jobCoverage.find(j => j.title === value);
+                             const status = coverageJob?.coverage_status || 'unknown';
+                             return `${value} (${status})`;
+                           }}
+                         />
+                         <Bar 
+                           dataKey="applications_count" 
+                           fill="#8B5CF6" 
+                           radius={[4, 4, 0, 0]}
+                           name="Total candidatures"
+                         />
+                         <Bar 
+                           dataKey="new_applications_24h" 
+                           fill="#EC4899" 
+                           radius={[4, 4, 0, 0]}
+                           name="Nouvelles (24h)"
+                         />
+                       </BarChart>
+                     </ResponsiveContainer>
+                   </div>
+                 </CardContent>
+               </Card>
 
               {/* Status Evolution Chart */}
               <Card>
