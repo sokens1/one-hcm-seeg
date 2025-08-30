@@ -13,6 +13,13 @@ export interface RecruiterStats {
   multiPostCandidates?: number;
 }
 
+export interface DepartmentStats {
+  department: string;
+  jobCount: number;
+  applicationCount: number;
+  coverageRate: number;
+}
+
 export interface RecruiterJobOffer {
   id: string;
   title: string;
@@ -76,7 +83,8 @@ export function useRecruiterDashboard() {
         location,
         contract_type,
         created_at,
-        recruiter_id
+        recruiter_id,
+        department
       `)
       .eq('status', 'active');
 
@@ -255,6 +263,40 @@ export function useRecruiterDashboard() {
       };
     });
 
+    // Calculate department statistics
+    const departmentStats: DepartmentStats[] = [];
+    const departments = ['Eau', 'Électricité', 'Support'];
+    
+    // Debug: Log all jobs and their departments
+    console.log('[DASHBOARD DEBUG] All jobs:', jobsData);
+    console.log('[DASHBOARD DEBUG] Jobs with departments:', (jobsData || []).map(job => ({ id: job.id, title: job.title, department: job.department })));
+    
+    departments.forEach(dept => {
+      const deptJobs = (jobsData || []).filter(job => job.department === dept);
+      const deptJobCount = deptJobs.length;
+      
+      // Debug: Log department filtering
+      console.log(`[DASHBOARD DEBUG] Department "${dept}":`, { deptJobCount, jobs: deptJobs.map(j => j.title) });
+      
+      // Always add the department, even if no jobs
+      const deptApplications = deptJobs.reduce((sum, job) => {
+        const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
+        return sum + jobApplications.length;
+      }, 0);
+      
+      const coverageRate = deptJobCount > 0 ? Math.round((deptApplications / deptJobCount) * 100) : 0;
+      
+      departmentStats.push({
+        department: dept,
+        jobCount: deptJobCount,
+        applicationCount: deptApplications,
+        coverageRate
+      });
+    });
+    
+    // Debug: Log final department stats
+    console.log('[DASHBOARD DEBUG] Final department stats:', departmentStats);
+
     // Calculate status evolution over the last 7 days
     const statusEvolution: StatusEvolutionData[] = [];
     const last7Days = Array.from({ length: 7 }, (_, i) => {
@@ -288,7 +330,8 @@ export function useRecruiterDashboard() {
       activeJobs: processedJobs,
       jobCoverage,
       statusEvolution,
-      applicationsPerJob
+      applicationsPerJob,
+      departmentStats
     };
   };
 
@@ -305,6 +348,7 @@ export function useRecruiterDashboard() {
     jobCoverage: data?.jobCoverage ?? [],
     statusEvolution: data?.statusEvolution ?? [],
     applicationsPerJob: data?.applicationsPerJob ?? [],
+    departmentStats: data?.departmentStats ?? [],
     isLoading,
     error: error?.message || null,
     refetch

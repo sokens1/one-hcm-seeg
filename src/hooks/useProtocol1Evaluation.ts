@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -195,7 +196,7 @@ export function useProtocol1Evaluation(applicationId: string) {
       if (data) {
         // Mapper les données de la DB vers notre structure
         const loadedData: EvaluationData = {
-          globalScore: data.total_score || 0,
+          globalScore: data.overall_score || 0,
           status: data.status === 'completed' ? 'Évaluation terminée' : 'Évaluation - Protocole 1 en cours',
           protocol1: {
             score: data.overall_score || 0,

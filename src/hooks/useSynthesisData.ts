@@ -73,30 +73,31 @@ interface SynthesisData {
   pointsAmelioration: string;
 }
 
-export function useSynthesisData(applicationId: string) {
-  const [synthesisData, setSynthesisData] = useState<SynthesisData>({
-    protocol1: {
-      score: 0,
-      status: 'pending',
-      validationPrerequis: 0,
-      evaluationMTP: 0,
-      entretien: 0,
-      data: null
-    },
-    protocol2: {
-      score: 0,
-      status: 'pending',
-      miseEnSituation: 0,
-      validationOperationnelle: 0,
-      analyseCompetences: 0,
-      data: null
-    },
-    globalScore: 0,
-    finalStatus: 'pending',
-    pointsForts: '',
-    pointsAmelioration: ''
-  });
+const defaultSynthesisData: SynthesisData = {
+  protocol1: {
+    score: 0,
+    status: 'pending',
+    validationPrerequis: 0,
+    evaluationMTP: 0,
+    entretien: 0,
+    data: null
+  },
+  protocol2: {
+    score: 0,
+    status: 'pending',
+    miseEnSituation: 0,
+    validationOperationnelle: 0,
+    analyseCompetences: 0,
+    data: null
+  },
+  globalScore: 0,
+  finalStatus: 'pending',
+  pointsForts: '',
+  pointsAmelioration: ''
+};
 
+export function useSynthesisData(applicationId: string) {
+  const [synthesisData, setSynthesisData] = useState<SynthesisData>(defaultSynthesisData);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -104,17 +105,18 @@ export function useSynthesisData(applicationId: string) {
   // Calculer le score global à partir des deux protocoles
   const calculateGlobalScore = useCallback((protocol1Score: number, protocol2Score: number) => {
     // Moyenne pondérée : 40% Protocol 1, 60% Protocol 2
-    return Math.round((protocol1Score * 0.4 + protocol2Score * 0.6) * 10) / 10;
+    // S'assurer que les scores ne dépassent jamais 100%
+    const safeProtocol1Score = Math.min(protocol1Score, 100);
+    const safeProtocol2Score = Math.min(protocol2Score, 100);
+    return Math.min(Math.round((safeProtocol1Score * 0.4 + safeProtocol2Score * 0.6) * 10) / 10, 100);
   }, []);
-
-
 
   // Calculer la moyenne des étoiles (les scores sont déjà sur 5)
   const calculateStarAverage = useCallback((scores: number[]) => {
     const validScores = scores.filter(score => score > 0);
     if (validScores.length === 0) return 0;
-    // Les scores sont déjà sur 5, on retourne la moyenne directement
-    return Math.round((validScores.reduce((sum, score) => sum + score, 0) / validScores.length) * 10) / 10;
+    // Les scores sont déjà sur 5, on retourne la moyenne arrondie à l'entier
+    return Math.round(validScores.reduce((sum, score) => sum + score, 0) / validScores.length);
   }, []);
 
   // Charger les données du Protocol 1
@@ -148,6 +150,14 @@ export function useSynthesisData(applicationId: string) {
             comments: data.interview_metier_comments || ''
           }
         };
+
+        console.log('🔍 [PROTOCOL 1 DEBUG] Données brutes:', {
+          overall_score: data.overall_score,
+          documentary_score: data.documentary_score,
+          mtp_score: data.mtp_score,
+          interview_score: data.interview_score,
+          total_score: data.total_score
+        });
 
         return {
           data: protocol1Data,
@@ -205,15 +215,8 @@ export function useSynthesisData(applicationId: string) {
           analyse_competences: {
             gap_competences: {
               score: data.overall_score || 0,
-              comments: (() => {
-                const notes = data.skills_gap_notes || '';
-                return notes.replace(/Niveau: (faible|moyen|important|critique) - /, '');
-              })(),
-              gapLevel: (() => {
-                const notes = data.skills_gap_notes || '';
-                const match = notes.match(/Niveau: (faible|moyen|important|critique)/);
-                return match ? match[1] : '';
-              })()
+              comments: data.skills_gap_notes || '',
+              gapLevel: data.skills_gap_level || ''
             },
             plan_formation: {
               score: data.overall_score || 0,
@@ -221,6 +224,13 @@ export function useSynthesisData(applicationId: string) {
             }
           }
         };
+
+        console.log('🔍 [PROTOCOL 2 DEBUG] Données brutes:', {
+          overall_score: data.overall_score,
+          qcm_role_score: data.qcm_role_score,
+          qcm_codir_score: data.qcm_codir_score,
+          completed: data.completed
+        });
 
         return {
           data: protocol2Data,
@@ -232,8 +242,10 @@ export function useSynthesisData(applicationId: string) {
             data.qcm_role_score || 0,
             data.qcm_codir_score || 0
           ]),
-          validationOperationnelle: data.overall_score || 0,
-          analyseCompetences: data.overall_score || 0
+          // Pour validation opérationnelle, convertir le pourcentage en entier (0-5)
+          validationOperationnelle: data.overall_score ? Math.round(Math.min(data.overall_score / 20, 5)) : 0,
+          // Pour analyse des compétences, convertir le pourcentage en entier (0-5)
+          analyseCompetences: data.overall_score ? Math.round(Math.min(data.overall_score / 20, 5)) : 0
         };
       }
 
@@ -255,9 +267,17 @@ export function useSynthesisData(applicationId: string) {
         loadProtocol2Data()
       ]);
 
-      const protocol1Score = protocol1Result?.score || 0;
-      const protocol2Score = protocol2Result?.score || 0;
+      const protocol1Score = Math.min(protocol1Result?.score || 0, 100);
+      const protocol2Score = Math.min(protocol2Result?.score || 0, 100);
       const globalScore = calculateGlobalScore(protocol1Score, protocol2Score);
+
+      console.log('🔍 [SYNTHESIS DEBUG] Scores finaux:', {
+        protocol1Score,
+        protocol2Score,
+        globalScore,
+        protocol1Result: protocol1Result ? 'trouvé' : 'non trouvé',
+        protocol2Result: protocol2Result ? 'trouvé' : 'non trouvé'
+      });
 
       setSynthesisData({
         protocol1: {
@@ -302,12 +322,14 @@ export function useSynthesisData(applicationId: string) {
         globalScore: globalScore + '%',
         finalStatus: globalScore >= 70 ? 'embauche' : globalScore >= 50 ? 'incubation' : 'refuse'
       });
+      
+
 
     } catch (error) {
       console.error('Erreur lors du chargement des données de synthèse:', error);
       toast({
         title: "Erreur de chargement",
-        description: "Impossible de charger les données de synthèse.",
+        description: "Impossible de charger les données de synthèse",
         variant: "destructive"
       });
     } finally {
@@ -328,12 +350,11 @@ export function useSynthesisData(applicationId: string) {
     if (applicationId && user) {
       loadSynthesisData();
     }
-  }, [applicationId, user]);
+  }, [applicationId, user, loadSynthesisData]);
 
   return {
     synthesisData,
     isLoading,
-    updateRecommendations,
-    refreshData: loadSynthesisData
+    updateRecommendations
   };
 }

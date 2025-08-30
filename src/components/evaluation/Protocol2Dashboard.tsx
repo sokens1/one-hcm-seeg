@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,8 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useProtocol2Evaluation } from "@/hooks/useProtocol2Evaluation";
 
@@ -14,9 +13,13 @@ interface StarRatingProps {
   value: number;
   onChange: (value: number) => void;
   label: string;
+  disabled?: boolean;
 }
 
-const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
+const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disabled = false }) => {
+  // S'assurer que la valeur ne dépasse jamais 5
+  const safeValue = Math.min(Math.max(value, 0), 5);
+  
   return (
     <div className="space-y-2">
       <h5 className="font-medium text-sm">{label}</h5>
@@ -31,15 +34,15 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
             <Star
               className={cn(
                 "w-5 h-5",
-                star <= value
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-gray-300 hover:text-yellow-300"
+                star <= safeValue
+                  ? disabled ? "fill-yellow-200 text-yellow-200" : "fill-yellow-400 text-yellow-400"
+                  : disabled ? "text-gray-200" : "text-gray-300 hover:text-yellow-300"
               )}
             />
           </button>
         ))}
       </div>
-      <span className="text-xs text-muted-foreground">{value}/5</span>
+      <span className="text-xs text-muted-foreground">{Math.round(safeValue)}/5</span>
     </div>
   );
 };
@@ -49,6 +52,7 @@ interface Protocol2DashboardProps {
   jobTitle: string;
   applicationId: string;
   onStatusChange: (status: 'embauche' | 'refuse') => void;
+  isReadOnly?: boolean;
 }
 
 const getStatusIcon = (status: string) => {
@@ -65,15 +69,34 @@ const getStatusIcon = (status: string) => {
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'completed':
-      return <Badge variant="default" className="bg-green-100 text-green-800">Terminé</Badge>;
+      return <Badge variant="default" className="bg-green-100 text-green-800 border border-green-200">Terminé</Badge>;
     case 'in_progress':
-      return <Badge variant="default" className="bg-blue-100 text-blue-800">En cours</Badge>;
+      return <Badge variant="default" className="bg-blue-100 text-blue-800 border border-blue-200 font-medium">En cours</Badge>;
     default:
-      return <Badge variant="secondary">En attente</Badge>;
+      return <Badge variant="default" className="bg-blue-500 text-white">En attente</Badge>;
   }
 };
 
-export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange }: Protocol2DashboardProps) {
+const translateStatus = (status: string) => {
+  switch (status) {
+    case 'candidature':
+      return 'Candidature';
+    case 'incubation':
+      return 'Incubation';
+    case 'embauche':
+      return 'Embauche';
+    case 'refuse':
+      return 'Refusé';
+    case 'completed':
+      return 'Terminé';
+    case 'in_progress':
+      return 'En cours';
+    default:
+      return status;
+  }
+};
+
+export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false }: Protocol2DashboardProps) {
   const {
     evaluationData,
     updateEvaluation,
@@ -86,7 +109,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
     onStatusChange(decision);
   };
 
-  const updateSection = (section: string, field: string, value: any) => {
+  const updateSection = (section: string, field: string, value: string | number) => {
     updateEvaluation(prev => {
       const newData = { ...prev };
       const [category, subCategory] = field.split('.');
@@ -170,19 +193,29 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             />
           </div>
           
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Mise en Situation</div>
-              <div className="font-semibold text-sm text-blue-600">{scores.miseEnSituationScore.toFixed(1)}%</div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">Poids :</div>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Situation</div>
+                <div className="font-semibold text-sm text-gray-600">50%</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Performance</div>
+                <div className="font-semibold text-sm text-gray-600">20%</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Compétence</div>
+                <div className="font-semibold text-sm text-gray-600">30%</div>
+              </div>
             </div>
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Validation Opérationnelle</div>
-              <div className="font-semibold text-sm text-green-600">{scores.validationScore.toFixed(1)}%</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Analyse des Compétences</div>
-              <div className="font-semibold text-sm text-purple-600">{scores.analyseScore.toFixed(1)}%</div>
-            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Statut Actuel:</span>
+            <Badge variant="outline" className="bg-blue-50 text-blue-700">
+              {translateStatus(evaluationData.status)}
+            </Badge>
           </div>
         </CardContent>
       </Card>
@@ -193,7 +226,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Mise en Situation
+              Situation
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
@@ -205,28 +238,32 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_de_role.score}
-                onChange={(value) => updateSection('mise_en_situation', 'jeu_de_role.score', value)}
-                label="Jeu de Rôle"
+                onChange={(value) => !isReadOnly && updateSection('mise_en_situation', 'jeu_de_role.score', value)}
+                label="Jeu de rôle fonctionnel"
+                disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur le jeu de rôle..."
                 value={evaluationData.mise_en_situation.jeu_de_role.comments}
-                onChange={(e) => updateSection('mise_en_situation', 'jeu_de_role.comments', e.target.value)}
-                className="min-h-[60px]"
+                onChange={(e) => !isReadOnly && updateSection('mise_en_situation', 'jeu_de_role.comments', e.target.value)}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                readOnly={isReadOnly}
               />
             </div>
             
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_codir.score}
-                onChange={(value) => updateSection('mise_en_situation', 'jeu_codir.score', value)}
-                label="Jeu de mise en situation CODIR"
+                onChange={(value) => !isReadOnly && updateSection('mise_en_situation', 'jeu_codir.score', value)}
+                label="Jeu de rôle CODIR"
+                disabled={isReadOnly}
               />
               <Textarea
-                placeholder="Commentaires sur le jeu CODIR..."
+                placeholder="Commentaires sur le jeu de rôle CODIR..."
                 value={evaluationData.mise_en_situation.jeu_codir.comments}
-                onChange={(e) => updateSection('mise_en_situation', 'jeu_codir.comments', e.target.value)}
-                className="min-h-[60px]"
+                onChange={(e) => !isReadOnly && updateSection('mise_en_situation', 'jeu_codir.comments', e.target.value)}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                readOnly={isReadOnly}
               />
             </div>
           </div>
@@ -239,7 +276,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Validation Opérationnelle
+              Performance
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
@@ -247,18 +284,54 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-3">
-            <StarRating
-              value={evaluationData.validation_operationnelle.fiche_kpis.score}
-              onChange={(value) => updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
-              label="Edition de Fiche KPI'S"
-            />
-            <Textarea
-              placeholder="Commentaires sur la fiche KPI'S..."
-              value={evaluationData.validation_operationnelle.fiche_kpis.comments}
-              onChange={(e) => updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
-              className="min-h-[60px]"
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <StarRating
+                value={evaluationData.validation_operationnelle.fiche_kpis.score}
+                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                label="Key Performance Indicators (KPI's)"
+                disabled={isReadOnly}
+              />
+              <Textarea
+                placeholder="Commentaires sur les KPI's..."
+                value={evaluationData.validation_operationnelle.fiche_kpis.comments}
+                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                readOnly={isReadOnly}
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <StarRating
+                value={evaluationData.validation_operationnelle.fiche_kpis.score}
+                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                label="Key Risque Indicators (KRI's)"
+                disabled={isReadOnly}
+              />
+              <Textarea
+                placeholder="Commentaires sur les KRI's..."
+                value={evaluationData.validation_operationnelle.fiche_kpis.comments}
+                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                readOnly={isReadOnly}
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <StarRating
+                value={evaluationData.validation_operationnelle.fiche_kpis.score}
+                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                label="Key Control Indicators (KCI's)"
+                disabled={isReadOnly}
+              />
+              <Textarea
+                placeholder="Commentaires sur les KCI's..."
+                value={evaluationData.validation_operationnelle.fiche_kpis.comments}
+                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                readOnly={isReadOnly}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -269,7 +342,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Analyse des Compétences
+              Compétence
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
@@ -281,49 +354,30 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.analyse_competences.gap_competences.score}
-                onChange={(value) => updateSection('analyse_competences', 'gap_competences.score', value)}
-                label="Analyse du Gap de compétences"
+                onChange={(value) => !isReadOnly && updateSection('analyse_competences', 'gap_competences.score', value)}
+                label="Gap de compétences"
+                disabled={isReadOnly}
               />
-              
-              {/* Select pour le niveau de gap */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Niveau de Gap identifié</Label>
-                <Select
-                  value={evaluationData.analyse_competences.gap_competences.gapLevel || ""}
-                  onValueChange={(value) => updateSection('analyse_competences', 'gap_competences.gapLevel', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Sélectionner le niveau de gap" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="faible">Faible - Compétences de base présentes</SelectItem>
-                    <SelectItem value="moyen">Moyen - Quelques lacunes identifiées</SelectItem>
-                    <SelectItem value="important">Important - Lacunes significatives</SelectItem>
-                    <SelectItem value="critique">Critique - Compétences majeures manquantes</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
               <Textarea
-                placeholder="Commentaires sur le gap de compétences..."
+                placeholder="Commentaires sur l'analyse des compétences..."
                 value={evaluationData.analyse_competences.gap_competences.comments}
-                onChange={(e) => updateSection('analyse_competences', 'gap_competences.comments', e.target.value)}
-                className="min-h-[60px]"
+                onChange={(e) => !isReadOnly && updateSection('analyse_competences', 'gap_competences.comments', e.target.value)}
+                className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                readOnly={isReadOnly}
               />
             </div>
             
             <div className="space-y-3">
-              <StarRating
-                value={evaluationData.analyse_competences.plan_formation.score}
-                onChange={(value) => updateSection('analyse_competences', 'plan_formation.score', value)}
-                label="Justification et Plan de Formation"
-              />
-              <Textarea
-                placeholder="Commentaires sur le plan de formation..."
-                value={evaluationData.analyse_competences.plan_formation.comments}
-                onChange={(e) => updateSection('analyse_competences', 'plan_formation.comments', e.target.value)}
-                className="min-h-[60px]"
-              />
+              <div className="space-y-2">
+                <h5 className="font-medium text-sm">Formation requise et Justification</h5>
+                <Textarea
+                  placeholder="Commentaires sur la formation requise et justification..."
+                  value={evaluationData.analyse_competences.plan_formation.comments}
+                  onChange={(e) => !isReadOnly && updateSection('analyse_competences', 'plan_formation.comments', e.target.value)}
+                  className={cn("min-h-[120px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                  readOnly={isReadOnly}
+                />
+              </div>
             </div>
           </div>
         </CardContent>
@@ -333,24 +387,25 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="w-5 h-5" />
+            <CheckCircle className="w-5 h-5" />
             Décision Finale
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <Button 
-              variant="destructive" 
-              onClick={() => handleDecision('refuse')}
-              className="flex items-center gap-2"
+              variant="outline" 
+              onClick={() => !isReadOnly && handleDecision('refuse')}
+              className={cn("text-red-600 border-red-300 hover:bg-red-50 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3", isReadOnly ? "opacity-50 cursor-not-allowed" : "")}
+              disabled={isReadOnly}
             >
               <AlertCircle className="w-4 h-4" />
               Refuser
             </Button>
             <Button 
-              onClick={() => handleDecision('embauche')}
-              disabled={evaluationData.status !== 'completed'}
-              className="flex items-center gap-2"
+              onClick={() => !isReadOnly && handleDecision('embauche')}
+              className={cn("bg-green-600 hover:bg-green-700 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3", isReadOnly ? "opacity-50 cursor-not-allowed" : "")}
+              disabled={isReadOnly}
             >
               <CheckCircle className="w-4 h-4" />
               Engager
