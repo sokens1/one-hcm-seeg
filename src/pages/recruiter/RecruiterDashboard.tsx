@@ -338,7 +338,7 @@ export default function RecruiterDashboard() {
                     <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Basé sur le nombre de candidatures reçues pour toutes les offres
+                    Basé sur le nombre de candidatures reçues
                   </p>
                 </CardHeader>
                 <CardContent>
@@ -429,7 +429,7 @@ export default function RecruiterDashboard() {
                      <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
                    </div>
                    <p className="text-sm text-muted-foreground">
-                     Total et nouvelles candidatures pour toutes les offres
+                     Total des candidatures et dernières 24h
                    </p>
                  </CardHeader>
                  <CardContent>
