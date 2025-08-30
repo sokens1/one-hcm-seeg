@@ -561,6 +561,89 @@ export default function RecruiterDashboard() {
                 </CardContent>
               </Card>
 
+                             {/* Répartition des candidatures par type de métier */}
+               <Card>
+                 <CardHeader className="pb-3">
+                   <div className="flex items-center gap-2">
+                     <PieChart className="h-5 w-5 text-primary" />
+                     <CardTitle className="text-base sm:text-lg">Répartition des candidatures par secteur</CardTitle>
+                   </div>
+                   {/* <p className="text-sm text-muted-foreground">
+                     Distribution des candidatures : Métier (Eau + Électricité) vs Support
+                   </p> */}
+                 </CardHeader>
+                 <CardContent>
+                   <div className="h-64 sm:h-80">
+                     <ResponsiveContainer width="100%" height="100%">
+                       <RechartsPieChart>
+                         <Pie
+                           data={(() => {
+                             // Calculer la somme des candidatures pour Eau + Électricité
+                             const metierApplications = departmentStats
+                               .filter(dept => dept.department === 'Eau' || dept.department === 'Électricité')
+                               .reduce((sum, dept) => sum + dept.applicationCount, 0);
+                             
+                             // Récupérer les candidatures Support
+                             const supportApplications = departmentStats
+                               .find(dept => dept.department === 'Support')?.applicationCount || 0;
+                             
+                             const totalApplications = metierApplications + supportApplications;
+                             
+                             return [
+                               {
+                                 name: 'Métier ',
+                                 value: metierApplications,
+                                 percentage: totalApplications > 0 ? (metierApplications / totalApplications) * 100 : 0,
+                                 fill: '#3b82f6'
+                               },
+                               {
+                                 name: 'Support',
+                                 value: supportApplications,
+                                 percentage: totalApplications > 0 ? (supportApplications / totalApplications) * 100 : 0,
+                                 fill: '#6b7280'
+                               }
+                             ];
+                           })()}
+                           cx="50%"
+                           cy="50%"
+                           outerRadius={80}
+                           innerRadius={40}
+                           paddingAngle={5}
+                           dataKey="value"
+                         >
+                           <Cell fill="#3b82f6" />
+                           <Cell fill="#6b7280" />
+                         </Pie>
+                         <Tooltip 
+                           formatter={(value: number, name: string, props: any) => [
+                             `${value} candidatures (${props.payload.percentage.toFixed(1)}%)`,
+                             name
+                           ]}
+                           contentStyle={{
+                             backgroundColor: 'hsl(var(--background))',
+                             border: '1px solid hsl(var(--border))',
+                             borderRadius: '8px',
+                             padding: '8px'
+                           }}
+                         />
+                         <Legend 
+                           verticalAlign="bottom" 
+                           height={36}
+                           formatter={(value, entry: any) => {
+                             const data = entry.payload;
+                             return (
+                               <span style={{ color: entry.color, fontSize: '14px' }}>
+                                 {value} ({data.value} candidatures - {data.percentage.toFixed(1)}%)
+                               </span>
+                             );
+                           }}
+                         />
+                       </RechartsPieChart>
+                     </ResponsiveContainer>
+                   </div>
+                 </CardContent>
+               </Card>
+
               {/* Gender Distribution */}
               <Card>
                 <CardHeader className="pb-3">
