@@ -120,11 +120,13 @@ const DocumentsTab = ({ application }: { application: Application }) => {
 
   const handleDownloadAll = async () => {
     try {
-      await downloadCandidateDocumentsAsZip(application.id, `${application.users?.first_name}_${application.users?.last_name}_documents.zip`);
-      toast({
-        title: "Téléchargement réussi",
-        description: "Tous les documents ont été téléchargés en ZIP",
-      });
+      if (documents && documents.length > 0) {
+        await downloadCandidateDocumentsAsZip(documents as any, `${application.users?.first_name}_${application.users?.last_name}_documents.zip`);
+        toast({
+          title: "Téléchargement réussi",
+          description: "Tous les documents ont été téléchargés en ZIP",
+        });
+      }
     } catch (error) {
       toast({
         title: "Erreur de téléchargement",
@@ -164,8 +166,8 @@ const DocumentsTab = ({ application }: { application: Application }) => {
               <div key={doc.id} className="border rounded-lg p-4 bg-card">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-sm mb-1 truncate" title={doc.filename}>
-                      {doc.filename}
+                    <h4 className="font-medium text-sm mb-1 truncate" title={doc.file_name}>
+                      {doc.file_name}
                     </h4>
                     <p className="text-xs text-muted-foreground">
                       {getDocumentTypeLabel(doc.document_type)} • {formatFileSize(doc.file_size)}
@@ -177,7 +179,7 @@ const DocumentsTab = ({ application }: { application: Application }) => {
                     variant="outline"
                     size="sm"
                     className="flex-1"
-                    onClick={() => window.open(toUrl(doc.file_path), '_blank')}
+                    onClick={() => window.open(toUrl(doc.file_name), '_blank')}
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     Voir
@@ -186,12 +188,12 @@ const DocumentsTab = ({ application }: { application: Application }) => {
                     variant="outline"
                     size="sm"
                     className="flex-1"
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.href = toUrl(doc.file_path);
-                      link.download = doc.filename;
-                      link.click();
-                    }}
+                                          onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = toUrl(doc.file_name);
+                        link.download = doc.file_name;
+                        link.click();
+                      }}
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Télécharger
@@ -552,7 +554,7 @@ export default function ObserverCandidateAnalysis() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <p className="text-red-500 mb-4">
-              {error || "Candidature non trouvée"}
+              {typeof error === 'string' ? error : "Candidature non trouvée"}
             </p>
             <Button variant="outline" onClick={() => navigate('/observer/candidates')}>
               Retour aux candidats

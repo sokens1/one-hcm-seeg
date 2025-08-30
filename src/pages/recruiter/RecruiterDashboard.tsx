@@ -54,6 +54,7 @@ export default function RecruiterDashboard() {
     jobCoverage, 
     statusEvolution, 
     applicationsPerJob, 
+    departmentStats,
     isLoading, 
     error 
   } = useRecruiterDashboard();
@@ -194,22 +195,7 @@ export default function RecruiterDashboard() {
 
               {/* Total des candidatures */}
               <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border-emerald-200 dark:border-emerald-800">
-                {/* <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                      Total des candidatures
-                    </CardTitle>
-                    <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-900 dark:text-emerald-100">
-                    {jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)}
-                  </div>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                    +{stats.newCandidates} Dernier 24h
-                  </p>
-                </CardContent> */}
+                
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
@@ -230,22 +216,7 @@ export default function RecruiterDashboard() {
 
               {/* Nombre de candidatures par poste */}
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
-                {/* <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-purple-700 dark:text-purple-300">
-                      Candidatures par poste
-                    </CardTitle>
-                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-100">
-                    {stats.totalJobs > 0 ? Math.round((jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)) / stats.totalJobs) : 0}
-                  </div>
-                  <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                    Moyenne
-                  </p>
-                </CardContent> */}
+                
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300">
@@ -259,7 +230,7 @@ export default function RecruiterDashboard() {
                     {jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)}
                   </div>
                   <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                    +{stats.newCandidates} Dernier 24h
+                    +{stats.newCandidates} Dernières 24h
                   </p>
                 </CardContent>
               </Card>
@@ -267,6 +238,60 @@ export default function RecruiterDashboard() {
 
             {/* Deuxième rangée de KPIs - 3 cartes pour l'équilibre */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
+              {/* Taux de couverture par département */}
+              <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
+                      Répartition par type de métier
+                    </CardTitle>
+                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600 dark:text-cyan-400" />
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  {/* En-têtes du tableau */}
+                  <div className="grid grid-cols-4 gap-2 text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-2">
+                    <div>Type</div>
+                    <div className="text-center">Postes</div>
+                    <div className="text-center">Candidatures</div>
+                    <div className="text-center">%</div>
+                  </div>
+                  
+                  {/* Lignes de données */}
+                  <div className="space-y-2">
+                    {departmentStats.map((dept) => {
+                      // Calculer le pourcentage de couverture par rapport au total des candidatures
+                      const totalApplications = departmentStats.reduce((sum, d) => sum + d.applicationCount, 0);
+                      const coveragePercentage = totalApplications > 0 ? Math.round((dept.applicationCount / totalApplications) * 100) : 0;
+                      
+                      return (
+                        <div key={dept.department} className="grid grid-cols-4 gap-2 text-xs items-center">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${
+                              dept.department === 'Électricité' ? 'bg-orange-500' :
+                              dept.department === 'Eau' ? 'bg-blue-500' :
+                              'bg-gray-600'
+                            }`}></div>
+                            <span className="text-cyan-700 dark:text-cyan-300 font-medium">
+                              {dept.department}
+                            </span>
+                          </div>
+                          <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
+                            {dept.jobCount}
+                          </div>
+                          <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
+                            {dept.applicationCount}
+                          </div>
+                          <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
+                            {coveragePercentage}%
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+              
               {/* Candidats multi-postes */}
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800">
                 <CardHeader className="pb-2">
@@ -285,26 +310,6 @@ export default function RecruiterDashboard() {
                     Candidats
                   </p>
                 </CardContent>
-              </Card>
-
-              {/* Taux de couverture */}
-              <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
-                {/* <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
-                      Taux de couverture
-                    </CardTitle>
-                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600 dark:text-cyan-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-cyan-900 dark:text-cyan-100">
-                    {jobCoverage.length > 0 ? Math.round((jobCoverage.filter(job => job.current_applications > 0).length / jobCoverage.length) * 100) : 0}%
-                  </div>
-                  <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
-                    Postes avec candidats
-                  </p>
-                </CardContent> */}
               </Card>
 
               {/* Entretiens */}
@@ -338,7 +343,7 @@ export default function RecruiterDashboard() {
                     <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Basé sur le nombre de candidatures reçues pour toutes les offres
+                    Basé sur le nombre de candidatures reçues
                   </p>
                 </CardHeader>
                 <CardContent>
@@ -429,7 +434,7 @@ export default function RecruiterDashboard() {
                      <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
                    </div>
                    <p className="text-sm text-muted-foreground">
-                     Total et nouvelles candidatures pour toutes les offres
+                     Total des candidatures et dernières 24h
                    </p>
                  </CardHeader>
                  <CardContent>
