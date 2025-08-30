@@ -107,17 +107,13 @@ export function useSynthesisData(applicationId: string) {
     return Math.round((protocol1Score * 0.4 + protocol2Score * 0.6) * 10) / 10;
   }, []);
 
-  // Calculer le score d'un protocole à partir de ses composants
-  const calculateProtocolScore = useCallback((scores: number[]) => {
-    const validScores = scores.filter(score => score > 0);
-    if (validScores.length === 0) return 0;
-    return Math.round((validScores.reduce((sum, score) => sum + score, 0) / validScores.length) * 20); // Convertir en pourcentage
-  }, []);
 
-  // Calculer la moyenne des étoiles (sur 5)
+
+  // Calculer la moyenne des étoiles (les scores sont déjà sur 5)
   const calculateStarAverage = useCallback((scores: number[]) => {
     const validScores = scores.filter(score => score > 0);
     if (validScores.length === 0) return 0;
+    // Les scores sont déjà sur 5, on retourne la moyenne directement
     return Math.round((validScores.reduce((sum, score) => sum + score, 0) / validScores.length) * 10) / 10;
   }, []);
 
@@ -140,32 +136,28 @@ export function useSynthesisData(applicationId: string) {
         const protocol1Data: Protocol1Data = {
           status: data.completed ? 'completed' : 'in_progress',
           validation_prerequis: {
-            score: data.validation_prerequis_score || 0,
-            comments: data.validation_prerequis_notes || ''
+            score: data.documentary_score || 0,
+            comments: data.cv_comments || ''
           },
           evaluation_mtp: {
-            score: data.evaluation_mtp_score || 0,
-            comments: data.evaluation_mtp_notes || ''
+            score: data.metier_score || 0,
+            comments: data.metier_comments || ''
           },
           entretien: {
-            score: data.entretien_score || 0,
-            comments: data.entretien_notes || ''
+            score: data.interview_score || 0,
+            comments: data.interview_metier_comments || ''
           }
         };
 
-        const scores = [
-          protocol1Data.validation_prerequis.score,
-          protocol1Data.evaluation_mtp.score,
-          protocol1Data.entretien.score
-        ];
-
         return {
           data: protocol1Data,
-          score: calculateProtocolScore(scores),
+          // Utiliser directement le score déjà calculé dans Protocol 1
+          score: data.overall_score || 0,
           status: protocol1Data.status,
-          validationPrerequis: calculateStarAverage([protocol1Data.validation_prerequis.score]),
-          evaluationMTP: calculateStarAverage([protocol1Data.evaluation_mtp.score]),
-          entretien: calculateStarAverage([protocol1Data.entretien.score])
+          // Utiliser les scores individuels (0-5) pour les étoiles
+          validationPrerequis: calculateStarAverage([data.cv_score || 0, data.lettre_motivation_score || 0, data.diplomes_certificats_score || 0]),
+          evaluationMTP: calculateStarAverage([data.metier_score || 0, data.talent_score || 0, data.paradigme_score || 0]),
+          entretien: calculateStarAverage([data.interview_metier_score || 0, data.interview_talent_score || 0, data.interview_paradigme_score || 0])
         };
       }
 
@@ -174,7 +166,7 @@ export function useSynthesisData(applicationId: string) {
       console.error('Erreur lors du chargement des données Protocol 1:', error);
       return null;
     }
-  }, [applicationId, user, calculateProtocolScore]);
+  }, [applicationId, user, calculateStarAverage]);
 
   // Charger les données du Protocol 2
   const loadProtocol2Data = useCallback(async () => {
@@ -230,24 +222,18 @@ export function useSynthesisData(applicationId: string) {
           }
         };
 
-        const scores = [
-          protocol2Data.mise_en_situation.jeu_de_role.score,
-          protocol2Data.mise_en_situation.jeu_codir.score,
-          protocol2Data.validation_operationnelle.fiche_kpis.score,
-          protocol2Data.analyse_competences.gap_competences.score,
-          protocol2Data.analyse_competences.plan_formation.score
-        ];
-
         return {
           data: protocol2Data,
-          score: calculateProtocolScore(scores),
+          // Utiliser directement le score déjà calculé en pourcentage dans Protocol 2
+          score: data.overall_score || 0,
           status: protocol2Data.status,
+          // Utiliser les scores individuels (0-5) pour les étoiles
           miseEnSituation: calculateStarAverage([
-            protocol2Data.mise_en_situation.jeu_de_role.score,
-            protocol2Data.mise_en_situation.jeu_codir.score
+            data.qcm_role_score || 0,
+            data.qcm_codir_score || 0
           ]),
-          validationOperationnelle: calculateStarAverage([protocol2Data.validation_operationnelle.fiche_kpis.score]),
-          analyseCompetences: calculateStarAverage([protocol2Data.analyse_competences.gap_competences.score])
+          validationOperationnelle: data.overall_score || 0,
+          analyseCompetences: data.overall_score || 0
         };
       }
 
@@ -256,7 +242,7 @@ export function useSynthesisData(applicationId: string) {
       console.error('Erreur lors du chargement des données Protocol 2:', error);
       return null;
     }
-  }, [applicationId, user, calculateProtocolScore]);
+  }, [applicationId, user, calculateStarAverage]);
 
   // Charger toutes les données de synthèse
   const loadSynthesisData = useCallback(async () => {
@@ -298,16 +284,22 @@ export function useSynthesisData(applicationId: string) {
 
       console.log('Données de synthèse chargées:', {
         protocol1: {
-          score: protocol1Score,
+          score: protocol1Score + '%',
           status: protocol1Result?.status,
-          data: protocol1Result?.data
+          validationPrerequis: protocol1Result?.validationPrerequis + '/5',
+          evaluationMTP: protocol1Result?.evaluationMTP + '/5',
+          entretien: protocol1Result?.entretien + '/5',
+          source: 'Score déjà calculé dans Protocol 1 (overall_score)'
         },
         protocol2: {
-          score: protocol2Score,
+          score: protocol2Score + '%',
           status: protocol2Result?.status,
-          data: protocol2Result?.data
+          miseEnSituation: protocol2Result?.miseEnSituation + '/5',
+          validationOperationnelle: protocol2Result?.validationOperationnelle + '/5',
+          analyseCompetences: protocol2Result?.analyseCompetences + '/5',
+          source: 'Score déjà calculé en pourcentage dans Protocol 2 (overall_score)'
         },
-        globalScore,
+        globalScore: globalScore + '%',
         finalStatus: globalScore >= 70 ? 'embauche' : globalScore >= 50 ? 'incubation' : 'refuse'
       });
 
