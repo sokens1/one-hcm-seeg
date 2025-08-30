@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Editor } from "@/components/ui/editor";
-import { CheckCircle, Clock, AlertCircle, FileText, BarChart3, TrendingUp, Star, Download, RefreshCw } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, FileText, BarChart3, TrendingUp, Star, Download } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 interface StarDisplayProps {
@@ -67,7 +67,6 @@ interface SynthesisDashboardProps {
   synthesisData: SynthesisData;
   isReadOnly?: boolean;
   onUpdate?: (data: Partial<SynthesisData>) => void;
-  onRefresh?: () => void;
 }
 
 const getStatusIcon = (status: string) => {
@@ -106,8 +105,7 @@ export function SynthesisDashboard({
   applicationId, 
   synthesisData, 
   isReadOnly = false,
-  onUpdate,
-  onRefresh
+  onUpdate
 }: SynthesisDashboardProps) {
   const handleDownloadReport = () => {
     // TODO: Implémenter la génération et le téléchargement du rapport
@@ -137,17 +135,7 @@ export function SynthesisDashboard({
                     {getStatusBadge(synthesisData.finalStatus)}
                   </div>
                 </div>
-                {!isReadOnly && onRefresh && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onRefresh}
-                    className="flex items-center gap-2"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    Actualiser
-                  </Button>
-                )}
+
               </div>
           </div>
         </CardHeader>
