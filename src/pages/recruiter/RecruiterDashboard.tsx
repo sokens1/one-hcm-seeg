@@ -342,8 +342,8 @@ export default function RecruiterDashboard() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64 sm:h-80">
-                    <ResponsiveContainer width="100%" height="100%">
+                  <div className="h-72 sm:h-96">
+                    <ResponsiveContainer width="106%" height="100%">
                       <BarChart data={(() => {
                         // Trier les offres par ordre de catégorie : excellent, bon, modéré, faible
                         const sortedJobs = [...jobCoverage].sort((a, b) => {
@@ -351,7 +351,7 @@ export default function RecruiterDashboard() {
                           return statusOrder[a.coverage_status] - statusOrder[b.coverage_status];
                         });
                         return sortedJobs;
-                      })()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                         <XAxis 
                           dataKey="title" 
                           tick={{ fontSize: 10 }}
@@ -403,15 +403,15 @@ export default function RecruiterDashboard() {
                   <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                      <span>Excellent (≥10 candidatures)</span>
+                      <span>Forte (≥10 candidatures)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                      <span>Bon (7-9 candidatures)</span>
+                      <span>Bonne (7-9 candidatures)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                      <span>Modéré (4-6 candidatures)</span>
+                      <span>Modérée (4-6 candidatures)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -433,8 +433,8 @@ export default function RecruiterDashboard() {
                    </p>
                  </CardHeader>
                  <CardContent>
-                   <div className="h-64 sm:h-80">
-                     <ResponsiveContainer width="100%" height="100%">
+                   <div className="h-72 sm:h-96">
+                     <ResponsiveContainer width="106%" height="100%">
                        <BarChart data={(() => {
                          // Trier les offres par ordre de catégorie : excellent, bon, modéré, faible
                          const sortedJobs = [...applicationsPerJob].sort((a, b) => {
@@ -448,7 +448,7 @@ export default function RecruiterDashboard() {
                            return statusOrder[jobA.coverage_status] - statusOrder[jobB.coverage_status];
                          });
                          return sortedJobs;
-                       })()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                       })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                          <XAxis 
                            dataKey="title" 
                            tick={{ fontSize: 10 }}
