@@ -338,21 +338,19 @@ export default function RecruiterDashboard() {
                     <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Basé sur le nombre de candidatures reçues - 2 offres par catégorie
+                    Basé sur le nombre de candidatures reçues pour toutes les offres
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="h-64 sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={(() => {
-                        // Filtrer et organiser les données pour avoir 2 offres par catégorie
-                        const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
-                        const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
-                        const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
-                        const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
-                        
-                        // Combiner toutes les catégories
-                        return [...excellent, ...good, ...moderate, ...low];
+                        // Trier les offres par ordre de catégorie : excellent, bon, modéré, faible
+                        const sortedJobs = [...jobCoverage].sort((a, b) => {
+                          const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
+                          return statusOrder[a.coverage_status] - statusOrder[b.coverage_status];
+                        });
+                        return sortedJobs;
                       })()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <XAxis 
                           dataKey="title" 
@@ -379,14 +377,13 @@ export default function RecruiterDashboard() {
                           name="Nombre de candidatures"
                         >
                           {(() => {
-                            const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
-                            const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
-                            const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
-                            const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
+                            // Trier les offres par ordre de catégorie pour les couleurs
+                            const sortedJobs = [...jobCoverage].sort((a, b) => {
+                              const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
+                              return statusOrder[a.coverage_status] - statusOrder[b.coverage_status];
+                            });
                             
-                            const allJobs = [...excellent, ...good, ...moderate, ...low];
-                            
-                            return allJobs.map((entry, index) => (
+                            return sortedJobs.map((entry, index) => (
                               <Cell 
                                 key={`cell-${index}`}
                                 fill={
