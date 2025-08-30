@@ -483,7 +483,7 @@ export default function CandidateAnalysis() {
   const { data: application, isLoading, error } = useApplication(id);
   
   // Utiliser le hook useSynthesisData pour récupérer les vraies données
-  const { synthesisData, isLoading: synthesisLoading, updateRecommendations, refreshData } = useSynthesisData(application?.id || '');
+  const { synthesisData, isLoading: synthesisLoading, updateRecommendations } = useSynthesisData(application?.id || '');
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
   const { updateApplicationStatus } = useRecruiterApplications(application?.job_offer_id);
 
@@ -698,7 +698,7 @@ export default function CandidateAnalysis() {
                     );
                   }
                 }}
-                onRefresh={refreshData}
+
               />
             )}
           </TabsContent>

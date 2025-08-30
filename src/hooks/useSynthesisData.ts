@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/use-toast';
@@ -101,7 +101,6 @@ export function useSynthesisData(applicationId: string) {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
-  const lastUpdateRef = useRef<number>(0);
 
   // Calculer le score global à partir des deux protocoles
   const calculateGlobalScore = useCallback((protocol1Score: number, protocol2Score: number) => {
@@ -323,8 +322,7 @@ export function useSynthesisData(applicationId: string) {
         finalStatus: globalScore >= 70 ? 'embauche' : globalScore >= 50 ? 'incubation' : 'refuse'
       });
       
-      // Mettre à jour la référence du dernier rafraîchissement
-      lastUpdateRef.current = Date.now();
+
 
     } catch (error) {
       console.error('Erreur lors du chargement des données de synthèse:', error);
@@ -350,25 +348,12 @@ export function useSynthesisData(applicationId: string) {
   useEffect(() => {
     if (applicationId && user) {
       loadSynthesisData();
-      
-      // Rafraîchir les données toutes les 3 secondes pour rendre les barres dynamiques
-      const interval = setInterval(() => {
-        const now = Date.now();
-        // Ne rafraîchir que si plus de 3 secondes se sont écoulées
-        if (now - lastUpdateRef.current > 3000) {
-          loadSynthesisData();
-          lastUpdateRef.current = now;
-        }
-      }, 3000);
-      
-      return () => clearInterval(interval);
     }
   }, [applicationId, user, loadSynthesisData]);
 
   return {
     synthesisData,
     isLoading,
-    updateRecommendations,
-    refreshData: loadSynthesisData
+    updateRecommendations
   };
 }

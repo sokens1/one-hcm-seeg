@@ -316,7 +316,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.protocol1.status)}
-              Validation et Entretien
+              Evaluation
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.protocol1.status)}
@@ -779,7 +779,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               </div>
 
                 <div className="space-y-4">
-                <Label className="text-sm font-medium">Évaluation Adhérence MTP (Évaluation Physique)</Label>
+                <Label className="text-sm font-medium">Adhérence MTP </Label>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="space-y-3">
                   <StarRating
