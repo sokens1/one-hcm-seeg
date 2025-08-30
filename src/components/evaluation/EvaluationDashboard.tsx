@@ -335,14 +335,14 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           </div>
           
           <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">Pondération :</div>
+            <div className="text-sm text-muted-foreground">Poids :</div>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Validation Prérequis</div>
+              <div className="text-xs text-muted-foreground">Prérequis</div>
               <div className="font-semibold text-sm text-gray-600">10%</div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Évaluation MTP</div>
+              <div className="text-xs text-muted-foreground">MTP</div>
               <div className="font-semibold text-sm text-gray-600">20%</div>
             </div>
             <div className="space-y-1">
