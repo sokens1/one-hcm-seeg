@@ -663,9 +663,9 @@ export default function CandidateAnalysis() {
           <TabsContent value="protocol1" className="mt-4 sm:mt-6">
             <div className="relative">
               {isObserver && (
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <p className="text-sm text-blue-800 font-medium">Mode consultation seule</p>
-                  <p className="text-xs text-blue-700">Vous pouvez consulter cette évaluation mais pas la modifier</p>
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-sm text-yellow-800 font-medium">Mode consultation seule</p>
+                  <p className="text-xs text-yellow-700">Vous pouvez consulter cette évaluation mais pas la modifier</p>
                 </div>
               )}
               <EvaluationProtocol
@@ -693,9 +693,9 @@ export default function CandidateAnalysis() {
             )}
             <div className="relative">
               {isObserver && (
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <p className="text-sm text-blue-800 font-medium">Mode consultation seule</p>
-                  <p className="text-xs text-blue-700">Vous pouvez consulter cette évaluation mais pas la modifier</p>
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-sm text-yellow-800 font-medium">Mode consultation seule</p>
+                  <p className="text-xs text-yellow-700">Vous pouvez consulter cette évaluation mais pas la modifier</p>
                 </div>
               )}
               <EvaluationProtocol

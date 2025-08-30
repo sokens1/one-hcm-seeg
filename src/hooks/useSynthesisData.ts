@@ -215,7 +215,8 @@ export function useSynthesisData(applicationId: string) {
           analyse_competences: {
             gap_competences: {
               score: data.overall_score || 0,
-              comments: data.skills_gap_notes || ''
+              comments: data.skills_gap_notes || '',
+              gapLevel: data.skills_gap_level || ''
             },
             plan_formation: {
               score: data.overall_score || 0,
