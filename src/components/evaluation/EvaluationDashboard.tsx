@@ -336,18 +336,18 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">Pondération :</div>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Validation Prérequis</div>
-                <div className="font-semibold text-sm text-blue-600">{calculateSectionScores().documentaryScore.toFixed(1)}%</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Évaluation MTP</div>
-                <div className="font-semibold text-sm text-green-600">{calculateSectionScores().mtpScore.toFixed(1)}%</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Entretien</div>
-                <div className="font-semibold text-sm text-purple-600">{calculateSectionScores().interviewScore.toFixed(1)}%</div>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Validation Prérequis</div>
+              <div className="font-semibold text-sm text-gray-600">10%</div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Évaluation MTP</div>
+              <div className="font-semibold text-sm text-gray-600">20%</div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Entretien</div>
+              <div className="font-semibold text-sm text-gray-600">70%</div>
               </div>
             </div>
           </div>
@@ -447,8 +447,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
                 {calculateSectionScores().mtpScore.toFixed(1)}%
-              </Badge>
-            </div>
+                    </Badge>
+                  </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
               <Users className="w-4 h-4" />
               Évaluation MTP
@@ -544,9 +544,9 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                             >
                               ←
                             </button>
-                            <h5 className="font-medium">
+                          <h5 className="font-medium">
                               {format(currentMonth, "MMMM yyyy", { locale: fr })}
-                            </h5>
+                          </h5>
                             <button
                               onClick={goToNextMonth}
                               className="p-1 hover:bg-gray-100 rounded"
@@ -691,19 +691,19 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               Entretien
             </h4>
             <div className="space-y-4">
-              <div className="space-y-2">
+                <div className="space-y-2">
                 <Label>Date d'entretien</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
                         !interviewDate && "text-muted-foreground",
                         isReadOnly && "bg-gray-100 cursor-not-allowed"
-                      )}
+                        )}
                       disabled={isReadOnly}
-                    >
+                      >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                       {interviewDate && selectedTimeSlot ? 
                         format(interviewDate, "EEEE dd MMMM yyyy", { locale: fr }) + ` à ${selectedTimeSlot}` :
@@ -854,56 +854,56 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
 
                 <div className="space-y-4">
                   <Label className="text-sm font-medium">Évaluation Adhérence MTP (Évaluation Physique)</Label>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="space-y-3">
-                      <StarRating
-                        value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.score}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                  <StarRating
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.score}
                         onChange={(value) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.metier.score', value)}
-                        label="Métier"
+                      label="Métier"
                         disabled={isReadOnly}
-                      />
-                      <Textarea
-                        placeholder="Commentaires métier..."
-                        value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.comments}
+                  />
+                  <Textarea
+                      placeholder="Commentaires métier..."
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.comments}
                         onChange={(e) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.metier.comments', e.target.value)}
                         className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                         readOnly={isReadOnly}
-                      />
-                    </div>
+                  />
+                </div>
 
-                    <div className="space-y-3">
-                      <StarRating
-                        value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.score}
+                  <div className="space-y-3">
+                  <StarRating
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.score}
                         onChange={(value) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.talent.score', value)}
-                        label="Talent"
+                      label="Talent"
                         disabled={isReadOnly}
-                      />
-                      <Textarea
-                        placeholder="Commentaires talent..."
-                        value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.comments}
+                  />
+                  <Textarea
+                      placeholder="Commentaires talent..."
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.comments}
                         onChange={(e) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.talent.comments', e.target.value)}
                         className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                         readOnly={isReadOnly}
-                      />
-                    </div>
+                  />
+              </div>
 
-                    <div className="space-y-3">
-                      <StarRating
-                        value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.score}
+                  <div className="space-y-3">
+                <StarRating
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.score}
                         onChange={(value) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.paradigme.score', value)}
-                        label="Paradigme"
+                      label="Paradigme"
                         disabled={isReadOnly}
-                      />
-                      <Textarea
-                        placeholder="Commentaires paradigme..."
-                        value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.comments}
+                />
+                <Textarea
+                      placeholder="Commentaires paradigme..."
+                      value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.comments}
                         onChange={(e) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.paradigme.comments', e.target.value)}
                         className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                         readOnly={isReadOnly}
-                      />
-                    </div>
+                />
                   </div>
                 </div>
+              </div>
 
               {/* Gap de compétence */}
               <div className="border-t pt-4">
@@ -941,12 +941,12 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="flex justify-end gap-3 pt-6 border-t">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
-                >
-                  Refuser
-                </Button>
+            <Button 
+              variant="outline" 
+              className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+            >
+              Refuser
+            </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
