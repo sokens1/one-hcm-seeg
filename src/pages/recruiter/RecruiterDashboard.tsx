@@ -472,7 +472,7 @@ export default function RecruiterDashboard() {
                              const job = applicationsPerJob.find(j => j.title === value);
                              const coverageJob = jobCoverage.find(j => j.title === value);
                              const status = coverageJob?.coverage_status || 'unknown';
-                             return `${value} (${status})`;
+                             return `${value}`;
                            }}
                          />
                          <Bar 
