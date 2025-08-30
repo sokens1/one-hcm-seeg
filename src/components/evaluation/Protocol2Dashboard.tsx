@@ -194,14 +194,14 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           </div>
           
           <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">Pondération :</div>
+            <div className="text-sm text-muted-foreground">Poids :</div>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Mise en Situation</div>
+                <div className="text-xs text-muted-foreground">Situation</div>
                 <div className="font-semibold text-sm text-gray-600">50%</div>
               </div>
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Planification de la performance</div>
+                <div className="text-xs text-muted-foreground">Performance</div>
                 <div className="font-semibold text-sm text-gray-600">20%</div>
               </div>
               <div className="space-y-1">
@@ -226,7 +226,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Mise en Situation
+              Situation
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
@@ -276,7 +276,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Planification de la performance
+              Performance
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
