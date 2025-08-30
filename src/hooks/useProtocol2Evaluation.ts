@@ -225,13 +225,13 @@ export function useProtocol2Evaluation(applicationId: string) {
           ? `Niveau: ${data.analyse_competences.gap_competences.gapLevel} - ${data.analyse_competences.gap_competences.comments}`
           : data.analyse_competences.gap_competences.comments,
         
-        // Score global calculé
+        // Score global calculé (converti en pourcentage)
         overall_score: Math.round(
-          (data.mise_en_situation.jeu_de_role.score +
+          ((data.mise_en_situation.jeu_de_role.score +
            data.mise_en_situation.jeu_codir.score +
            data.validation_operationnelle.fiche_kpis.score +
            data.analyse_competences.gap_competences.score +
-           data.analyse_competences.plan_formation.score) / 5
+           data.analyse_competences.plan_formation.score) / 5) * 20
         ),
         
         // Statut
