@@ -58,6 +58,7 @@ interface SynthesisData {
   finalStatus: string;
   pointsForts: string;
   pointsAmelioration: string;
+  conclusion?: string;
 }
 
 interface SynthesisDashboardProps {
@@ -131,9 +132,6 @@ export function SynthesisDashboard({
                 <div className="text-right">
                   <div className="text-2xl font-bold text-primary">{synthesisData.globalScore.toFixed(1)}%</div>
                   <div className="text-xs text-muted-foreground">Score Global</div>
-                  <div className="mt-2">
-                    {getStatusBadge(synthesisData.finalStatus)}
-                  </div>
                 </div>
 
               </div>
@@ -206,7 +204,7 @@ export function SynthesisDashboard({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
-            Analyse Détaillée des Performances
+            Analyse détaillé des performances
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -244,7 +242,7 @@ export function SynthesisDashboard({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5" />
-            Recommandations et Conclusion
+            Conclusion et Recommandation
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -269,11 +267,21 @@ export function SynthesisDashboard({
               />
             </div>
             
+            <div>
+              <h6 className="font-medium text-blue-600 mb-2">Conclusion :</h6>
+              <Editor
+                value={synthesisData.conclusion || ''}
+                onChange={(value) => onUpdate?.({ conclusion: value })}
+                placeholder="Rédigez la conclusion de l'évaluation..."
+                disabled={isReadOnly}
+              />
+            </div>
+            
             <div className="flex justify-end pt-4">
               <Button
                 onClick={handleDownloadReport}
-                className="bg-blue-600 hover:bg-blue-700"
-                disabled={isReadOnly}
+                className="bg-gray-400 hover:bg-gray-500"
+                disabled={true}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Télécharger le rapport

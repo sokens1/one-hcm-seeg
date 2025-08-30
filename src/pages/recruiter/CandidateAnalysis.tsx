@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X, Archive } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X, Archive, AlertCircle } from "lucide-react";
 import { EvaluationDashboard } from "@/components/evaluation/EvaluationDashboard";
 import { Protocol2Dashboard } from "@/components/evaluation/Protocol2Dashboard";
 import { SynthesisDashboard } from "@/components/evaluation/SynthesisDashboard";
@@ -493,12 +493,12 @@ export default function CandidateAnalysis() {
   const { isRecruiter, isObserver } = useAuth();
   const [activeTab, setActiveTab] = useState("info");
   
-  const { data: application, isLoading, error } = useApplication(id);
+  const { data: application, isLoading, error, refetch: refetchApplication } = useApplication(id);
   
   // Utiliser le hook useSynthesisData pour récupérer les vraies données
   const { synthesisData, isLoading: synthesisLoading, updateRecommendations } = useSynthesisData(application?.id || '');
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
-  const { updateApplicationStatus } = useRecruiterApplications(application?.job_offer_id);
+  const { updateApplicationStatus } = useRecruiterApplications();
 
   const jobId = searchParams.get('jobId') || application?.job_offer_id;
   const jobTitle = application?.job_offers?.title;
@@ -551,8 +551,16 @@ export default function CandidateAnalysis() {
 
   const handleStatusChange = async (newStatus: Application['status']) => {
     if (!application || isObserver) return;
+    console.log('🔄 handleStatusChange appelé avec:', { applicationId: application.id, newStatus });
     try {
+      console.log('📤 Appel de updateApplicationStatus...');
       await updateApplicationStatus({ applicationId: application.id, status: newStatus });
+      console.log('✅ updateApplicationStatus terminé');
+
+      // Recharger les données de l'application pour refléter le nouveau statut
+      console.log('🔄 Rechargement des données...');
+      await refetchApplication();
+      console.log('✅ Données rechargées');
 
       toast({
         title: "Statut mis à jour",
@@ -670,6 +678,19 @@ export default function CandidateAnalysis() {
             </div>
           </TabsContent>
           <TabsContent value="protocol2" className="mt-4 sm:mt-6">
+            {application.status !== 'incubation' && !isObserver && (
+              <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-yellow-600" />
+                  <div>
+                    <p className="font-medium text-yellow-800">Protocole 2 en lecture seule</p>
+                    <p className="text-sm text-yellow-700">
+                      Le candidat doit d'abord être incubé dans le Protocole 1 pour accéder à l'édition
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="relative">
               {isObserver && (
                 <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
@@ -682,7 +703,7 @@ export default function CandidateAnalysis() {
                 jobTitle={jobTitle || 'Poste non spécifié'}
                 applicationId={application.id}
                 onStatusChange={isObserver ? undefined : handleStatusChange}
-                isReadOnly={isObserver}
+                isReadOnly={isObserver || application.status !== 'incubation'}
                 protocol={2}
               />
             </div>
