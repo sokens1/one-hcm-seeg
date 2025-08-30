@@ -16,6 +16,8 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
 import { useProtocol1Evaluation } from "@/hooks/useProtocol1Evaluation";
+import { useToast } from "@/components/ui/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 
 
@@ -74,8 +76,57 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     isSaving 
   } = useProtocol1Evaluation(applicationId);
   
+  const { toast } = useToast();
+  
+  // Fonction pour gérer le clic sur le bouton "Traitement IA"
+  const handleAITreatment = () => {
+    toast({
+      title: "Traitement IA",
+      description: "Cette fonctionnalité sera disponible à partir du 01/09/2025",
+      duration: 3000,
+    });
+  };
+  
+  // Fonction pour gérer l'incubation
+  const handleIncubate = () => {
+    onStatusChange('incubation');
+    toast({
+      title: "Candidat incubé",
+      description: "Le candidat a été incubé et peut maintenant passer au protocole 2",
+      duration: 3000,
+    });
+  };
+  
+  // Fonction pour gérer le refus
+  const handleRefuse = () => {
+    onStatusChange('refuse');
+    toast({
+      title: "Candidat refusé",
+      description: "Le candidat a été refusé et sera redirigé vers la synthèse",
+      duration: 3000,
+    });
+  };
+  
   const [interviewDate, setInterviewDate] = useState<Date | undefined>(evaluationData.protocol1.interview.interviewDate);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  
+  // Fonctions pour naviguer entre les mois
+  const goToPreviousMonth = () => {
+    setCurrentMonth(prev => {
+      const newMonth = new Date(prev);
+      newMonth.setMonth(newMonth.getMonth() - 1);
+      return newMonth;
+    });
+  };
+  
+  const goToNextMonth = () => {
+    setCurrentMonth(prev => {
+      const newMonth = new Date(prev);
+      newMonth.setMonth(newMonth.getMonth() + 1);
+      return newMonth;
+    });
+  };
   
   // Données des entretiens occupés (exemple - à remplacer par des vraies données)
   const busySlots = {
@@ -85,10 +136,10 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     '2024-01-28': ['14:00', '15:30'], // 28 janvier 2024
   };
   
-  // Créneaux horaires disponibles
+  // Créneaux horaires disponibles (plages de 1h)
   const timeSlots = [
-    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
+    '09:00', '10:00', '11:00',
+    '14:00', '15:00', '16:00'
   ];
   
   // Fonction pour générer le calendrier du mois
@@ -123,12 +174,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     return busySlotsForDate.length >= timeSlots.length;
   };
   
-  // Fonction pour vérifier si une date a des créneaux partiellement occupés
-  const isDatePartiallyBooked = (date: Date) => {
-    const dateKey = getDateKey(date);
-    const busySlotsForDate = busySlots[dateKey] || [];
-    return busySlotsForDate.length > 0 && busySlotsForDate.length < timeSlots.length;
-  };
+
   
   // Fonction pour vérifier si une date est sélectionnée
   const isDateSelected = (date: Date) => {
@@ -285,18 +331,21 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             />
           </div>
           
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Validation Prérequis</div>
-              <div className="font-semibold text-sm text-blue-600">{calculateSectionScores().documentaryScore.toFixed(1)}%</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Évaluation MTP</div>
-              <div className="font-semibold text-sm text-green-600">{calculateSectionScores().mtpScore.toFixed(1)}%</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Entretien</div>
-              <div className="font-semibold text-sm text-purple-600">{calculateSectionScores().interviewScore.toFixed(1)}%</div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">Pondération :</div>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Validation Prérequis</div>
+                <div className="font-semibold text-sm text-blue-600">{calculateSectionScores().documentaryScore.toFixed(1)}%</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Évaluation MTP</div>
+                <div className="font-semibold text-sm text-green-600">{calculateSectionScores().mtpScore.toFixed(1)}%</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Entretien</div>
+                <div className="font-semibold text-sm text-purple-600">{calculateSectionScores().interviewScore.toFixed(1)}%</div>
+              </div>
             </div>
           </div>
           
@@ -445,6 +494,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               <div className="flex justify-end pt-4 border-t border-blue-200 gap-3">
                 <Button 
                   size="lg"
+                  onClick={handleAITreatment}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg shadow-lg flex items-center gap-3"
                 >
                   <Users className="w-5 h-5" />
@@ -470,17 +520,27 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                       {/* Calendrier personnalisé */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <h5 className="font-medium">
-                            {format(new Date(), "MMMM yyyy", { locale: fr })}
-                          </h5>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={goToPreviousMonth}
+                              className="p-1 hover:bg-gray-100 rounded"
+                            >
+                              ←
+                            </button>
+                            <h5 className="font-medium">
+                              {format(currentMonth, "MMMM yyyy", { locale: fr })}
+                            </h5>
+                            <button
+                              onClick={goToNextMonth}
+                              className="p-1 hover:bg-gray-100 rounded"
+                            >
+                              →
+                            </button>
+                          </div>
                           <div className="flex gap-2 text-xs">
                             <div className="flex items-center gap-1">
                               <div className="w-3 h-3 bg-green-500 rounded"></div>
                               <span>Sélectionné</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-orange-500 rounded"></div>
-                              <span>Partiel</span>
                             </div>
                             <div className="flex items-center gap-1">
                               <div className="w-3 h-3 bg-red-500 rounded"></div>
@@ -502,11 +562,10 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                         
                         {/* Grille du calendrier */}
                         <div className="grid grid-cols-7 gap-1">
-                          {generateCalendar().days.map((date, index) => {
-                            const isCurrentMonth = date.getMonth() === new Date().getMonth();
+                          {generateCalendar(currentMonth).days.map((date, index) => {
+                            const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
                             const isToday = date.toDateString() === new Date().toDateString();
                             const isFullyBooked = isDateFullyBooked(date);
-                            const isPartiallyBooked = isDatePartiallyBooked(date);
                             const isSelected = isDateSelected(date);
                             const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
                             
@@ -528,14 +587,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                     "bg-green-500 text-white hover:bg-green-600": isSelected,
                                     // Date complètement occupée
                                     "bg-red-500 text-white cursor-not-allowed": isFullyBooked,
-                                    // Date partiellement occupée
-                                    "bg-orange-500 text-white hover:bg-orange-600": isPartiallyBooked && !isSelected,
+
                                     // Date passée ou autre mois
                                     "text-gray-300 cursor-not-allowed": isPast || !isCurrentMonth,
                                     // Aujourd'hui
-                                    "border-2 border-blue-500": isToday && !isSelected && !isFullyBooked && !isPartiallyBooked,
+                                    "border-2 border-blue-500": isToday && !isSelected && !isFullyBooked,
                                     // Date normale disponible
-                                    "hover:bg-blue-50 text-gray-700": !isSelected && !isFullyBooked && !isPartiallyBooked && !isPast && isCurrentMonth,
+                                    "hover:bg-blue-50 text-gray-700": !isSelected && !isFullyBooked && !isPast && isCurrentMonth,
                                   }
                                 )}
                               >
@@ -677,11 +735,10 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                         
                         {/* Grille du calendrier */}
                         <div className="grid grid-cols-7 gap-1">
-                          {generateCalendar().days.map((date, index) => {
-                            const isCurrentMonth = date.getMonth() === new Date().getMonth();
+                          {generateCalendar(currentMonth).days.map((date, index) => {
+                            const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
                             const isToday = date.toDateString() === new Date().toDateString();
                             const isFullyBooked = isDateFullyBooked(date);
-                            const isPartiallyBooked = isDatePartiallyBooked(date);
                             const isSelected = isDateSelected(date);
                             const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
                             
@@ -704,14 +761,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                     "bg-green-500 text-white hover:bg-green-600": isSelected,
                                     // Date complètement occupée
                                     "bg-red-500 text-white cursor-not-allowed": isFullyBooked,
-                                    // Date partiellement occupée
-                                    "bg-orange-500 text-white hover:bg-orange-600": isPartiallyBooked && !isSelected,
+
                                     // Date passée ou autre mois
                                     "text-gray-300 cursor-not-allowed": isPast || !isCurrentMonth,
                                     // Aujourd'hui
-                                    "border-2 border-blue-500": isToday && !isSelected && !isFullyBooked && !isPartiallyBooked,
+                                    "border-2 border-blue-500": isToday && !isSelected && !isFullyBooked,
                                     // Date normale disponible
-                                    "hover:bg-blue-50 text-gray-700": !isSelected && !isFullyBooked && !isPartiallyBooked && !isPast && isCurrentMonth,
+                                    "hover:bg-blue-50 text-gray-700": !isSelected && !isFullyBooked && !isPast && isCurrentMonth,
                                   }
                                 )}
                               >
@@ -843,7 +899,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               </div>
 
               <div className="space-y-2">
-                <Label>Compte-rendu général de l'entretien</Label>
+                <Label>Appréciation général de l'entretien</Label>
                 <Textarea
                   placeholder="Résumé détaillé de l'entretien..."
                   value={evaluationData.protocol1.interview.generalSummary}
@@ -856,16 +912,32 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           
           {/* Actions Protocole 1 */}
           <div className="flex justify-end gap-3 pt-6 border-t">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+                >
+                  Refuser
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
+                    Confirmer le refus
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <Button 
-              variant="outline" 
-              onClick={() => onStatusChange('refuse')}
-              className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
-            >
-              Refuser
-            </Button>
-            <Button 
-              onClick={() => onStatusChange('incubation')}
-              disabled={evaluationData.protocol1.score < 60}
+              onClick={handleIncubate}
               className="bg-blue-600 hover:bg-blue-700"
             >
               Incuber
