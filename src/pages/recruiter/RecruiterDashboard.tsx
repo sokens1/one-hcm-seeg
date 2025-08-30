@@ -373,7 +373,7 @@ export default function RecruiterDashboard() {
                           ]}
                           labelFormatter={(value) => {
                             const job = jobCoverage.find(j => j.title === value);
-                            return `${value} (${job?.current_applications} candidatures)`;
+                            return `${value}`;
                           }}
                         />
                         <Bar 
