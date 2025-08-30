@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
+import { ObserverLayout } from "@/components/layout/ObserverLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
   Loader2, 
-  Plus, 
   Briefcase, 
   Bell, 
   TrendingUp, 
@@ -15,13 +14,10 @@ import {
   Calendar,
   BarChart3,
   PieChart,
-  Activity,
-  Eye,
-  Edit
+  Eye
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
-import { useAuth } from "@/hooks/useAuth";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
 import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
 import { DashboardToggle } from "@/components/ui/DashboardToggle";
@@ -44,11 +40,10 @@ import {
   Legend
 } from 'recharts';
 
-// Import du dashboard avancé
-import AdvancedDashboard from "./AdvancedDashboard";
+// Import du dashboard avancé observateur
+import ObserverAdvancedDashboard from "./ObserverAdvancedDashboard";
 
-export default function RecruiterDashboard() {
-  const navigate = useNavigate();
+export default function ObserverDashboard() {
   const { 
     stats, 
     jobCoverage, 
@@ -58,18 +53,13 @@ export default function RecruiterDashboard() {
     error 
   } = useRecruiterDashboard();
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
-  const { isRecruiter } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
-
-  const handleEditJob = (jobId: string) => {
-    navigate(`/recruiter/jobs/${jobId}/edit`);
-  };
 
   // Si la vue avancée est sélectionnée, afficher le dashboard avancé
   if (dashboardView === 'advanced') {
     return (
-      <RecruiterLayout>
+      <ObserverLayout>
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
           {/* Basculement entre les vues */}
           <DashboardToggle 
@@ -77,17 +67,17 @@ export default function RecruiterDashboard() {
             onToggle={setDashboardView} 
           />
           
-          {/* Dashboard Avancé */}
-          <AdvancedDashboard />
+          {/* Dashboard Avancé Observateur */}
+          <ObserverAdvancedDashboard />
         </div>
-      </RecruiterLayout>
+      </ObserverLayout>
     );
   }
 
   // Vue classique (dashboard original)
   if (error) {
     return (
-      <RecruiterLayout>
+      <ObserverLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <p className="text-red-500 mb-4">Erreur lors du chargement: {error}</p>
@@ -96,12 +86,12 @@ export default function RecruiterDashboard() {
             </Button>
           </div>
         </div>
-      </RecruiterLayout>
+      </ObserverLayout>
     );
   }
 
   return (
-    <RecruiterLayout>
+    <ObserverLayout>
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Basculement entre les vues */}
         <DashboardToggle 
@@ -112,19 +102,11 @@ export default function RecruiterDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Tableau de Bord</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Tableau de Bord Observateur</h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Gérez vos Offres d'emploi et suivez vos candidatures en temps réel
+              Visualisez les Offres d'emploi et suivez les candidatures en temps réel
             </p>
           </div>
-          {isRecruiter && (
-            <Link to="/recruiter/jobs/new">
-              <Button variant="hero" className="gap-2 w-full sm:w-auto">
-                <Plus className="w-4 h-4" />
-                Nouvelle offre
-              </Button>
-            </Link>
-          )}
         </div>
 
         {isLoading ? (
@@ -158,7 +140,7 @@ export default function RecruiterDashboard() {
 
               {/* Total des candidats uniques */}
               <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
-                {/* <CardHeader className="pb-2">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
                       Total des candidats
@@ -173,28 +155,12 @@ export default function RecruiterDashboard() {
                   <p className="text-xs text-green-600 dark:text-green-400 mt-1">
                     Candidats uniques
                   </p>
-                </CardContent> */}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
-                      Taux de couverture
-                    </CardTitle>
-                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600 dark:text-cyan-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-cyan-900 dark:text-cyan-100">
-                    {jobCoverage.length > 0 ? Math.round((jobCoverage.filter(job => job.current_applications > 0).length / jobCoverage.length) * 100) : 0}%
-                  </div>
-                  <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
-                    Postes avec candidats
-                  </p>
                 </CardContent>
               </Card>
 
               {/* Total des candidatures */}
               <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border-emerald-200 dark:border-emerald-800">
-                {/* <CardHeader className="pb-2">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300">
                       Total des candidatures
@@ -207,30 +173,14 @@ export default function RecruiterDashboard() {
                     {jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)}
                   </div>
                   <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                    +{stats.newCandidates} Dernier 24h
-                  </p>
-                </CardContent> */}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
-                      Total des candidats
-                    </CardTitle>
-                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-green-900 dark:text-green-100">
-                    {stats.totalCandidates}
-                  </div>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                    Candidats uniques
+                    +{stats.newCandidates} ce jour
                   </p>
                 </CardContent>
               </Card>
 
               {/* Nombre de candidatures par poste */}
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
-                {/* <CardHeader className="pb-2">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-purple-700 dark:text-purple-300">
                       Candidatures par poste
@@ -244,22 +194,6 @@ export default function RecruiterDashboard() {
                   </div>
                   <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
                     Moyenne
-                  </p>
-                </CardContent> */}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                      Total des candidatures
-                    </CardTitle>
-                    <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-900 dark:text-emerald-100">
-                    {jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)}
-                  </div>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                    +{stats.newCandidates} Dernier 24h
                   </p>
                 </CardContent>
               </Card>
@@ -289,7 +223,7 @@ export default function RecruiterDashboard() {
 
               {/* Taux de couverture */}
               <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
-                {/* <CardHeader className="pb-2">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
                       Taux de couverture
@@ -304,7 +238,7 @@ export default function RecruiterDashboard() {
                   <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
                     Postes avec candidats
                   </p>
-                </CardContent> */}
+                </CardContent>
               </Card>
 
               {/* Entretiens */}
@@ -338,20 +272,22 @@ export default function RecruiterDashboard() {
                     <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Basé sur le nombre de candidatures reçues pour toutes les offres
+                    Basé sur le nombre de candidatures reçues - 2 offres par catégorie
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-72 sm:h-96">
-                    <ResponsiveContainer width="106%" height="100%">
+                  <div className="h-64 sm:h-80">
+                    <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={(() => {
-                        // Trier les offres par ordre de catégorie : excellent, bon, modéré, faible
-                        const sortedJobs = [...jobCoverage].sort((a, b) => {
-                          const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
-                          return statusOrder[a.coverage_status] - statusOrder[b.coverage_status];
-                        });
-                        return sortedJobs;
-                      })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                        // Filtrer et organiser les données pour avoir 2 offres par catégorie
+                        const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
+                        const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
+                        const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
+                        const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
+                        
+                        // Combiner toutes les catégories
+                        return [...excellent, ...good, ...moderate, ...low];
+                      })()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <XAxis 
                           dataKey="title" 
                           tick={{ fontSize: 10 }}
@@ -377,13 +313,14 @@ export default function RecruiterDashboard() {
                           name="Nombre de candidatures"
                         >
                           {(() => {
-                            // Trier les offres par ordre de catégorie pour les couleurs
-                            const sortedJobs = [...jobCoverage].sort((a, b) => {
-                              const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
-                              return statusOrder[a.coverage_status] - statusOrder[b.coverage_status];
-                            });
+                            const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
+                            const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
+                            const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
+                            const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
                             
-                            return sortedJobs.map((entry, index) => (
+                            const allJobs = [...excellent, ...good, ...moderate, ...low];
+                            
+                            return allJobs.map((entry, index) => (
                               <Cell 
                                 key={`cell-${index}`}
                                 fill={
@@ -403,15 +340,15 @@ export default function RecruiterDashboard() {
                   <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                      <span>Forte (≥10 candidatures)</span>
+                      <span>Excellent (≥10 candidatures)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                      <span>Bonne (7-9 candidatures)</span>
+                      <span>Bon (7-9 candidatures)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                      <span>Modérée (4-6 candidatures)</span>
+                      <span>Modéré (4-6 candidatures)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -421,72 +358,45 @@ export default function RecruiterDashboard() {
                 </CardContent>
               </Card>
 
-                             {/* Applications per Job Chart */}
-               <Card>
-                 <CardHeader className="pb-3">
-                   <div className="flex items-center gap-2">
-                     <BarChart3 className="h-5 w-5 text-primary" />
-                     <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
-                   </div>
-                   <p className="text-sm text-muted-foreground">
-                     Total et nouvelles candidatures pour toutes les offres
-                   </p>
-                 </CardHeader>
-                 <CardContent>
-                   <div className="h-72 sm:h-96">
-                     <ResponsiveContainer width="106%" height="100%">
-                       <BarChart data={(() => {
-                         // Trier les offres par ordre de catégorie : excellent, bon, modéré, faible
-                         const sortedJobs = [...applicationsPerJob].sort((a, b) => {
-                           // Trouver le statut de couverture pour chaque offre
-                           const jobA = jobCoverage.find(job => job.title === a.title);
-                           const jobB = jobCoverage.find(job => job.title === b.title);
-                           
-                           if (!jobA || !jobB) return 0;
-                           
-                           const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
-                           return statusOrder[jobA.coverage_status] - statusOrder[jobB.coverage_status];
-                         });
-                         return sortedJobs;
-                       })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
-                         <XAxis 
-                           dataKey="title" 
-                           tick={{ fontSize: 10 }}
-                           interval={0}
-                           height={60}
-                           angle={-45}
-                           textAnchor="end"
-                         />
-                         <YAxis tick={{ fontSize: 12 }} />
-                         <Tooltip 
-                           formatter={(value: number, name: string) => [
-                             value,
-                             name === 'applications_count' ? 'Total candidatures' : 'Nouvelles (24h)'
-                           ]}
-                           labelFormatter={(value) => {
-                             const job = applicationsPerJob.find(j => j.title === value);
-                             const coverageJob = jobCoverage.find(j => j.title === value);
-                             const status = coverageJob?.coverage_status || 'unknown';
-                             return `${value} (${status})`;
-                           }}
-                         />
-                         <Bar 
-                           dataKey="applications_count" 
-                           fill="#8B5CF6" 
-                           radius={[4, 4, 0, 0]}
-                           name="Total candidatures"
-                         />
-                         <Bar 
-                           dataKey="new_applications_24h" 
-                           fill="#EC4899" 
-                           radius={[4, 4, 0, 0]}
-                           name="Nouvelles (24h)"
-                         />
-                       </BarChart>
-                     </ResponsiveContainer>
-                   </div>
-                 </CardContent>
-               </Card>
+              {/* Applications per Job Chart */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 sm:h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={applicationsPerJob.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <XAxis 
+                          dataKey="title" 
+                          tick={{ fontSize: 10 }}
+                          interval={0}
+                          height={60}
+                          angle={-45}
+                          textAnchor="end"
+                        />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip />
+                        <Bar 
+                          dataKey="applications_count" 
+                          fill="#8B5CF6" 
+                          radius={[4, 4, 0, 0]}
+                          name="Total candidatures"
+                        />
+                        <Bar 
+                          dataKey="new_applications_24h" 
+                          fill="#EC4899" 
+                          radius={[4, 4, 0, 0]}
+                          name="Nouvelles (24h)"
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Status Evolution Chart */}
               <Card>
@@ -631,22 +541,14 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Quick Actions */}
+            {/* Quick Actions - Version Observateur */}
             <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <Card className="shadow-soft hover:shadow-medium transition-all">
                 <CardHeader>
-                  <CardTitle className="text-base sm:text-lg">Actions rapides</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">Navigation</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {isRecruiter && (
-                    <Link to="/recruiter/jobs/new" className="block">
-                      <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                        <Plus className="w-3 h-3 sm:w-4 sm:w-4" />
-                        Créer une nouvelle offre
-                      </Button>
-                    </Link>
-                  )}
-                  <Link to="/recruiter/candidates" className="block">
+                  <Link to="/observer/candidates" className="block">
                     <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
                       <Users className="w-3 h-3 sm:w-4 sm:w-4" />
                       Voir tous les candidats
@@ -712,6 +614,6 @@ export default function RecruiterDashboard() {
           onClose={() => setIsHistoryModalOpen(false)}
         />
       </div>
-    </RecruiterLayout>
+    </ObserverLayout>
   );
 }

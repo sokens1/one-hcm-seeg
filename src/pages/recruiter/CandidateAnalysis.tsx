@@ -461,13 +461,26 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
   );
 };
 
-const EvaluationProtocol = ({ candidateName, jobTitle, applicationId, onStatusChange }: { candidateName: string, jobTitle: string, applicationId: string, onStatusChange: (status: 'incubation' | 'embauche' | 'refuse') => void }) => {
+const EvaluationProtocol = ({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false, protocol = 1 }: { candidateName: string, jobTitle: string, applicationId: string, onStatusChange: (status: 'incubation' | 'embauche' | 'refuse') => void, isReadOnly?: boolean, protocol?: number }) => {
+  if (protocol === 2) {
+    return (
+      <Protocol2Dashboard
+        candidateName={candidateName}
+        jobTitle={jobTitle}
+        applicationId={applicationId}
+        onStatusChange={onStatusChange}
+        isReadOnly={isReadOnly}
+      />
+    );
+  }
+  
   return (
     <EvaluationDashboard
       candidateName={candidateName}
       jobTitle={jobTitle}
       applicationId={applicationId}
       onStatusChange={onStatusChange}
+      isReadOnly={isReadOnly}
     />
   );
 };
@@ -640,38 +653,37 @@ export default function CandidateAnalysis() {
             </div>
           </TabsContent>
           <TabsContent value="protocol1" className="mt-4 sm:mt-6">
-            <div className={isObserver ? 'opacity-70 relative' : ''}>
+            <div className="relative">
               {isObserver && (
-                <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
-                  <div className="bg-background p-4 rounded-lg border border-border shadow-lg text-center">
-                    <p className="font-medium">Mode consultation seule</p>
-                    <p className="text-sm text-muted-foreground mt-1">Les observateurs ne peuvent pas modifier les évaluations</p>
-                  </div>
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800 font-medium">Mode consultation seule</p>
+                  <p className="text-xs text-blue-700">Vous pouvez consulter cette évaluation mais pas la modifier</p>
                 </div>
               )}
               <EvaluationProtocol
                 candidateName={candidateName}
                 jobTitle={jobTitle || 'Poste non spécifié'}
                 applicationId={application.id}
-                onStatusChange={isObserver ? () => { } : handleStatusChange}
+                onStatusChange={isObserver ? undefined : handleStatusChange}
+                isReadOnly={isObserver}
               />
             </div>
           </TabsContent>
           <TabsContent value="protocol2" className="mt-4 sm:mt-6">
-            <div className={isObserver ? 'opacity-70 relative' : ''}>
+            <div className="relative">
               {isObserver && (
-                <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
-                  <div className="bg-background p-4 rounded-lg border border-border shadow-lg text-center">
-                    <p className="font-medium">Mode consultation seule</p>
-                    <p className="text-sm text-muted-foreground mt-1">Les observateurs ne peuvent pas modifier les évaluations</p>
-                  </div>
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800 font-medium">Mode consultation seule</p>
+                  <p className="text-xs text-blue-700">Vous pouvez consulter cette évaluation mais pas la modifier</p>
                 </div>
               )}
-              <Protocol2Dashboard
+              <EvaluationProtocol
                 candidateName={candidateName}
                 jobTitle={jobTitle || 'Poste non spécifié'}
                 applicationId={application.id}
-                onStatusChange={isObserver ? () => { } : handleStatusChange}
+                onStatusChange={isObserver ? undefined : handleStatusChange}
+                isReadOnly={isObserver}
+                protocol={2}
               />
             </div>
           </TabsContent>

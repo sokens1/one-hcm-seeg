@@ -23,9 +23,10 @@ interface StarRatingProps {
   value: number;
   onChange: (value: number) => void;
   label: string;
+  disabled?: boolean;
 }
 
-const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
+const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disabled = false }) => {
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium">{label}</Label>
@@ -34,15 +35,15 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
           <button
             key={star}
             type="button"
-            onClick={() => onChange(star)}
+            onClick={() => !disabled && onChange(star)}
             className="transition-colors hover:scale-110"
           >
             <Star
               className={cn(
                 "w-5 h-5",
                 star <= value
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-gray-300 hover:text-yellow-300"
+                  ? disabled ? "fill-yellow-200 text-yellow-200" : "fill-yellow-400 text-yellow-400"
+                  : disabled ? "text-gray-200" : "text-gray-300 hover:text-yellow-300"
               )}
             />
           </button>
@@ -58,13 +59,15 @@ interface EvaluationDashboardProps {
   jobTitle: string;
   applicationId: string;
   onStatusChange: (status: 'incubation' | 'embauche' | 'refuse') => void;
+  isReadOnly?: boolean;
 }
 
 export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   candidateName,
   jobTitle,
   applicationId,
-  onStatusChange
+  onStatusChange,
+  isReadOnly = false
 }) => {
   const { 
     evaluationData, 
@@ -342,42 +345,48 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.documentaryEvaluation.cv.score}
-                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'cv.score', value)}
+                    onChange={(value) => !isReadOnly && updateProtocol1('documentaryEvaluation', 'cv.score', value)}
                     label="CV"
+                    disabled={isReadOnly}
                   />
                   <Textarea
                     placeholder="Commentaires sur le CV..."
                     value={evaluationData.protocol1.documentaryEvaluation.cv.comments}
-                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'cv.comments', e.target.value)}
-                    className="min-h-[60px]"
+                    onChange={(e) => !isReadOnly && updateProtocol1('documentaryEvaluation', 'cv.comments', e.target.value)}
+                    className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                    readOnly={isReadOnly}
                   />
                 </div>
                 
                 <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.documentaryEvaluation.lettreMotivation.score}
-                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'lettreMotivation.score', value)}
+                    onChange={(value) => !isReadOnly && updateProtocol1('documentaryEvaluation', 'lettreMotivation.score', value)}
                     label="Lettre de motivation"
+                    disabled={isReadOnly}
                   />
                   <Textarea
                     placeholder="Commentaires sur la lettre de motivation..."
                     value={evaluationData.protocol1.documentaryEvaluation.lettreMotivation.comments}
-                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'lettreMotivation.comments', e.target.value)}
-                    className="min-h-[60px]"
+                    onChange={(e) => !isReadOnly && updateProtocol1('documentaryEvaluation', 'lettreMotivation.comments', e.target.value)}
+                    className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                    readOnly={isReadOnly}
                   />
                 </div>
 
                 <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.documentaryEvaluation.diplomesEtCertificats.score}
-                    onChange={(value) => updateProtocol1('documentaryEvaluation', 'diplomesEtCertificats.score', value)}
+                    onChange={(value) => !isReadOnly && updateProtocol1('documentaryEvaluation', 'diplomesEtCertificats.score', value)}
                     label="Diplômes & Certificats"
+                    disabled={isReadOnly}
                   />
                   <Textarea
                     placeholder="Commentaires sur les diplômes et certificats..."
                     value={evaluationData.protocol1.documentaryEvaluation.diplomesEtCertificats.comments}
-                    onChange={(e) => updateProtocol1('documentaryEvaluation', 'diplomesEtCertificats.comments', e.target.value)}
-                    className="min-h-[60px]"
+                    onChange={(e) => !isReadOnly && updateProtocol1('documentaryEvaluation', 'diplomesEtCertificats.comments', e.target.value)}
+                    className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                    readOnly={isReadOnly}
                   />
                 </div>
               </div>
@@ -389,8 +398,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className="bg-white font-semibold">
                 {calculateSectionScores().mtpScore.toFixed(1)}%
-                    </Badge>
-                  </div>
+              </Badge>
+            </div>
             <h4 className="font-semibold mb-4 flex items-center gap-2 pr-16">
               <Users className="w-4 h-4" />
               Évaluation MTP
@@ -401,42 +410,48 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.mtpAdherence.metier.score}
-                    onChange={(value) => updateProtocol1('mtpAdherence', 'metier.score', value)}
+                    onChange={(value) => !isReadOnly && updateProtocol1('mtpAdherence', 'metier.score', value)}
                     label="Métier"
+                    disabled={isReadOnly}
                   />
                   <Textarea
                     placeholder="Commentaires métier..."
                     value={evaluationData.protocol1.mtpAdherence.metier.comments}
-                    onChange={(e) => updateProtocol1('mtpAdherence', 'metier.comments', e.target.value)}
-                    className="min-h-[60px]"
+                    onChange={(e) => !isReadOnly && updateProtocol1('mtpAdherence', 'metier.comments', e.target.value)}
+                    className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                    readOnly={isReadOnly}
                   />
                 </div>
                 
                 <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.mtpAdherence.talent.score}
-                    onChange={(value) => updateProtocol1('mtpAdherence', 'talent.score', value)}
+                    onChange={(value) => !isReadOnly && updateProtocol1('mtpAdherence', 'talent.score', value)}
                     label="Talent"
+                    disabled={isReadOnly}
                   />
                   <Textarea
                     placeholder="Commentaires talent..."
                     value={evaluationData.protocol1.mtpAdherence.talent.comments}
-                    onChange={(e) => updateProtocol1('mtpAdherence', 'talent.comments', e.target.value)}
-                    className="min-h-[60px]"
+                    onChange={(e) => !isReadOnly && updateProtocol1('mtpAdherence', 'talent.comments', e.target.value)}
+                    className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                    readOnly={isReadOnly}
                   />
                 </div>
 
                 <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.mtpAdherence.paradigme.score}
-                    onChange={(value) => updateProtocol1('mtpAdherence', 'paradigme.score', value)}
+                    onChange={(value) => !isReadOnly && updateProtocol1('mtpAdherence', 'paradigme.score', value)}
                     label="Paradigme"
+                    disabled={isReadOnly}
                   />
                   <Textarea
                     placeholder="Commentaires paradigme..."
                     value={evaluationData.protocol1.mtpAdherence.paradigme.comments}
-                    onChange={(e) => updateProtocol1('mtpAdherence', 'paradigme.comments', e.target.value)}
-                    className="min-h-[60px]"
+                    onChange={(e) => !isReadOnly && updateProtocol1('mtpAdherence', 'paradigme.comments', e.target.value)}
+                    className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                    readOnly={isReadOnly}
                   />
                 </div>
               </div>
@@ -446,6 +461,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 <Button 
                   size="lg"
                   className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg shadow-lg flex items-center gap-3"
+                  disabled={isReadOnly}
                 >
                   <Users className="w-5 h-5" />
                   Traitement IA
@@ -455,6 +471,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                     <Button 
                       size="lg"
                       className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg shadow-lg flex items-center gap-3"
+                      disabled={isReadOnly}
                     >
                       <CalendarLucide className="w-5 h-5" />
                       Programmer l'entretien
@@ -559,7 +576,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                 <button
                                   key={time}
                                   onClick={() => {
-                                    if (!isBusy) {
+                                    if (!isBusy && !isReadOnly) {
                                       setSelectedTimeSlot(time);
                                       const [hours, minutes] = time.split(':');
                                       const newDate = new Date(interviewDate);
@@ -615,19 +632,20 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               <User className="w-4 h-4" />
               Entretien
             </h4>
-            
             <div className="space-y-4">
-                <div className="space-y-2">
+              <div className="space-y-2">
                 <Label>Date d'entretien</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !interviewDate && "text-muted-foreground"
-                        )}
-                      >
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !interviewDate && "text-muted-foreground",
+                        isReadOnly && "bg-gray-100 cursor-not-allowed"
+                      )}
+                      disabled={isReadOnly}
+                    >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                       {interviewDate && selectedTimeSlot ? 
                         format(interviewDate, "EEEE dd MMMM yyyy", { locale: fr }) + ` à ${selectedTimeSlot}` :
@@ -689,13 +707,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                               <button
                                 key={index}
                                 onClick={() => {
-                                  if (!isFullyBooked && !isPast && isCurrentMonth) {
+                                  if (!isFullyBooked && !isPast && isCurrentMonth && !isReadOnly) {
                                     setInterviewDate(date);
-                                    setSelectedTimeSlot(''); // Reset time slot
+                                    setSelectedTimeSlot('');
                                     updateProtocol1('interview', 'interviewDate', date);
                                   }
                                 }}
-                                disabled={isFullyBooked || isPast || !isCurrentMonth}
+                                disabled={isFullyBooked || isPast || !isCurrentMonth || isReadOnly}
                                 className={cn(
                                   "w-8 h-8 text-xs rounded-md transition-all duration-200",
                                   "hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500",
@@ -735,7 +753,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                 <button
                                   key={time}
                                   onClick={() => {
-                                    if (!isBusy) {
+                                    if (!isBusy && !isReadOnly) {
                                       setSelectedTimeSlot(time);
                                       const [hours, minutes] = time.split(':');
                                       const newDate = new Date(interviewDate);
@@ -744,7 +762,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                       updateProtocol1('interview', 'interviewDate', newDate);
                                     }
                                   }}
-                                  disabled={isBusy}
+                                  disabled={isBusy || isReadOnly}
                                   className={cn(
                                     "px-3 py-2 text-xs rounded-md border transition-all duration-200",
                                     {
@@ -779,65 +797,73 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               </div>
 
                 <div className="space-y-4">
-                <Label className="text-sm font-medium">Adhérence MTP </Label>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="space-y-3">
-                  <StarRating
-                      value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.score}
-                      onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.metier.score', value)}
-                      label="Métier"
-                  />
-                  <Textarea
-                      placeholder="Commentaires métier..."
-                      value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.comments}
-                      onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.metier.comments', e.target.value)}
-                    className="min-h-[60px]"
-                  />
-                </div>
+                  <Label className="text-sm font-medium">Évaluation Adhérence MTP (Évaluation Physique)</Label>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="space-y-3">
+                      <StarRating
+                        value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.score}
+                        onChange={(value) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.metier.score', value)}
+                        label="Métier"
+                        disabled={isReadOnly}
+                      />
+                      <Textarea
+                        placeholder="Commentaires métier..."
+                        value={evaluationData.protocol1.interview.physicalMtpAdherence.metier.comments}
+                        onChange={(e) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.metier.comments', e.target.value)}
+                        className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                        readOnly={isReadOnly}
+                      />
+                    </div>
 
-                  <div className="space-y-3">
-                  <StarRating
-                      value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.score}
-                      onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.talent.score', value)}
-                      label="Talent"
-                  />
-                  <Textarea
-                      placeholder="Commentaires talent..."
-                      value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.comments}
-                      onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.talent.comments', e.target.value)}
-                    className="min-h-[60px]"
-                  />
-              </div>
+                    <div className="space-y-3">
+                      <StarRating
+                        value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.score}
+                        onChange={(value) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.talent.score', value)}
+                        label="Talent"
+                        disabled={isReadOnly}
+                      />
+                      <Textarea
+                        placeholder="Commentaires talent..."
+                        value={evaluationData.protocol1.interview.physicalMtpAdherence.talent.comments}
+                        onChange={(e) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.talent.comments', e.target.value)}
+                        className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                        readOnly={isReadOnly}
+                      />
+                    </div>
 
-                  <div className="space-y-3">
-                <StarRating
-                      value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.score}
-                      onChange={(value) => updateProtocol1('interview', 'physicalMtpAdherence.paradigme.score', value)}
-                      label="Paradigme"
-                />
-                <Textarea
-                      placeholder="Commentaires paradigme..."
-                      value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.comments}
-                      onChange={(e) => updateProtocol1('interview', 'physicalMtpAdherence.paradigme.comments', e.target.value)}
-                  className="min-h-[60px]"
-                />
+                    <div className="space-y-3">
+                      <StarRating
+                        value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.score}
+                        onChange={(value) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.paradigme.score', value)}
+                        label="Paradigme"
+                        disabled={isReadOnly}
+                      />
+                      <Textarea
+                        placeholder="Commentaires paradigme..."
+                        value={evaluationData.protocol1.interview.physicalMtpAdherence.paradigme.comments}
+                        onChange={(e) => !isReadOnly && updateProtocol1('interview', 'physicalMtpAdherence.paradigme.comments', e.target.value)}
+                        className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                        readOnly={isReadOnly}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
               {/* Gap de compétence */}
               <div className="border-t pt-4">
                 <div className="space-y-3">
                   <StarRating
                     value={evaluationData.protocol1.interview.gapCompetence.score}
-                    onChange={(value) => updateProtocol1('interview', 'gapCompetence.score', value)}
+                    onChange={(value) => !isReadOnly && updateProtocol1('interview', 'gapCompetence.score', value)}
                     label="Gap de compétence"
+                    disabled={isReadOnly}
                   />
                   <Textarea
                     placeholder="Commentaires sur les gaps de compétences identifiés..."
                     value={evaluationData.protocol1.interview.gapCompetence.comments}
-                    onChange={(e) => updateProtocol1('interview', 'gapCompetence.comments', e.target.value)}
-                    className="min-h-[60px]"
+                    onChange={(e) => !isReadOnly && updateProtocol1('interview', 'gapCompetence.comments', e.target.value)}
+                    className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                    readOnly={isReadOnly}
                   />
                 </div>
               </div>
@@ -847,8 +873,9 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 <Textarea
                   placeholder="Résumé détaillé de l'entretien..."
                   value={evaluationData.protocol1.interview.generalSummary}
-                  onChange={(e) => updateProtocol1('interview', 'generalSummary', e.target.value)}
-                  className="min-h-[120px]"
+                  onChange={(e) => !isReadOnly && updateProtocol1('interview', 'generalSummary', e.target.value)}
+                  className={cn("min-h-[120px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
+                  readOnly={isReadOnly}
                 />
               </div>
             </div>
@@ -858,14 +885,15 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="flex justify-end gap-3 pt-6 border-t">
             <Button 
               variant="outline" 
-              onClick={() => onStatusChange('refuse')}
+              onClick={() => !isReadOnly && onStatusChange('refuse')}
               className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+              disabled={isReadOnly}
             >
               Refuser
             </Button>
             <Button 
-              onClick={() => onStatusChange('incubation')}
-              disabled={evaluationData.protocol1.score < 60}
+              onClick={() => !isReadOnly && onStatusChange('incubation')}
+              disabled={evaluationData.protocol1.score < 60 || isReadOnly}
               className="bg-blue-600 hover:bg-blue-700"
             >
               Incuber
