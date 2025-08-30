@@ -13,6 +13,9 @@ interface StarDisplayProps {
 }
 
 const StarDisplay: React.FC<StarDisplayProps> = ({ value, label }) => {
+  // S'assurer que la valeur ne dépasse jamais 5
+  const safeValue = Math.min(Math.max(value, 0), 5);
+  
   return (
     <div className="space-y-2">
       <h5 className="font-medium text-sm">{label}</h5>
@@ -23,14 +26,14 @@ const StarDisplay: React.FC<StarDisplayProps> = ({ value, label }) => {
               key={star}
               className={cn(
                 "w-4 h-4",
-                star <= value
+                star <= safeValue
                   ? "fill-yellow-400 text-yellow-400"
                   : "text-gray-300"
               )}
             />
           ))}
         </div>
-        <span className="text-xs text-muted-foreground">{value}/5</span>
+        <span className="text-xs text-muted-foreground">{Math.round(safeValue)}/5</span>
       </div>
     </div>
   );
@@ -124,10 +127,16 @@ export function SynthesisDashboard({
                 Rapport de synthèse pour {candidateName} • {jobTitle}
               </p>
             </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-primary">{synthesisData.globalScore.toFixed(1)}%</div>
-              <div className="text-xs text-muted-foreground">Score Global</div>
-            </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-primary">{synthesisData.globalScore.toFixed(1)}%</div>
+                  <div className="text-xs text-muted-foreground">Score Global</div>
+                  <div className="mt-2">
+                    {getStatusBadge(synthesisData.finalStatus)}
+                  </div>
+                </div>
+
+              </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -240,18 +249,18 @@ export function SynthesisDashboard({
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <div>
-              <h6 className="font-medium text-green-600 mb-2">Points forts :</h6>
+              <div>
+                <h6 className="font-medium text-green-600 mb-2">Points forts :</h6>
               <Editor
                 value={synthesisData.pointsForts}
                 onChange={(value) => onUpdate?.({ pointsForts: value })}
                 placeholder="Listez les points forts du candidat..."
                 disabled={isReadOnly}
               />
-            </div>
-            
-            <div>
-              <h6 className="font-medium text-orange-600 mb-2">Points d'amélioration :</h6>
+              </div>
+              
+              <div>
+                <h6 className="font-medium text-orange-600 mb-2">Points d'amélioration :</h6>
               <Editor
                 value={synthesisData.pointsAmelioration}
                 onChange={(value) => onUpdate?.({ pointsAmelioration: value })}
@@ -259,7 +268,7 @@ export function SynthesisDashboard({
                 disabled={isReadOnly}
               />
             </div>
-
+            
             <div className="flex justify-end pt-4">
               <Button
                 onClick={handleDownloadReport}
