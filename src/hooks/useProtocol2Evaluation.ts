@@ -1,10 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Tables } from '@/integrations/supabase/types';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-
-type Protocol2Evaluation = Tables<'protocol2_evaluations'>;
 
 interface Protocol2EvaluationData {
   status: 'pending' | 'in_progress' | 'completed';
@@ -72,70 +69,47 @@ export function useProtocol2Evaluation(applicationId: string) {
   const [evaluationData, setEvaluationData] = useState<Protocol2EvaluationData>(defaultEvaluationData);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
   // Charger l'évaluation existante
   const loadEvaluation = useCallback(async () => {
-    if (!applicationId) return;
+    if (!applicationId || !user) return;
 
     setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('protocol2_evaluations')
-        .select(`
-          id,
-          application_id,
-          evaluator_id,
-          physical_visit,
-          interview_completed,
-          qcm_role_completed,
-          qcm_codir_completed,
-          job_sheet_created,
-          skills_gap_assessed,
-          interview_notes,
-          visit_notes,
-          qcm_role_score,
-          qcm_codir_score,
-          skills_gap_notes,
-          overall_score,
-          completed,
-          created_at,
-          updated_at
-        `)
+        .select('*')
         .eq('application_id', applicationId)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      if (error && error.code !== 'PGRST116') {
         throw error;
       }
 
       if (data) {
-        // Convertir les données de la base vers le format du composant
-        const convertedData: Protocol2EvaluationData = {
+        console.log('Évaluation Protocol 2 chargée avec succès:', data);
+        
+        setEvaluationData({
           status: data.completed ? 'completed' : 'in_progress',
           mise_en_situation: {
-            // Jeu de rôle (interview)
             jeu_de_role: {
               score: data.qcm_role_score || 0,
               comments: data.interview_notes || ''
             },
-            // Jeu de mise en situation CODIR
             jeu_codir: {
               score: data.qcm_codir_score || 0,
               comments: data.visit_notes || ''
             }
           },
           validation_operationnelle: {
-            // Edition de Fiche KPI'S
             fiche_kpis: {
               score: data.overall_score || 0,
               comments: data.skills_gap_notes || ''
             }
           },
           analyse_competences: {
-            // Analyse du Gap de compétences
             gap_competences: {
               score: data.overall_score || 0,
               comments: (() => {
@@ -155,43 +129,21 @@ export function useProtocol2Evaluation(applicationId: string) {
               comments: data.skills_gap_notes || ''
             }
           }
-        };
-        setEvaluationData(convertedData);
-        
-        console.log('Évaluation Protocol 2 chargée avec succès:', {
-          'Jeu de mise en situation CODIR': {
-            score: convertedData.mise_en_situation.jeu_codir.score,
-            comments: convertedData.mise_en_situation.jeu_codir.comments,
-            loaded_from: 'qcm_codir_score, visit_notes'
-          },
-          'Edition de Fiche KPI\'S': {
-            score: convertedData.validation_operationnelle.fiche_kpis.score,
-            comments: convertedData.validation_operationnelle.fiche_kpis.comments,
-            loaded_from: 'overall_score, skills_gap_notes'
-          },
-          'Analyse du Gap de compétences': {
-            score: convertedData.analyse_competences.gap_competences.score,
-            comments: convertedData.analyse_competences.gap_competences.comments,
-            gapLevel: convertedData.analyse_competences.gap_competences.gapLevel,
-            loaded_from: 'skills_gap_notes'
-          },
-          'Niveau de Gap identifié': {
-            gapLevel: convertedData.analyse_competences.gap_competences.gapLevel,
-            loaded_from: 'skills_gap_notes (extracted)'
-          }
         });
+      } else {
+        setEvaluationData(defaultEvaluationData);
       }
     } catch (error) {
-      console.error('Erreur lors du chargement de l\'évaluation:', error);
+      console.error('Erreur lors du chargement de l\'évaluation Protocol 2:', error);
       toast({
         title: "Erreur de chargement",
-        description: "Impossible de charger les données d'évaluation.",
+        description: "Impossible de charger l'évaluation Protocol 2",
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  }, [applicationId, toast]);
+  }, [applicationId, user, toast]);
 
   // Sauvegarder l'évaluation
   const saveEvaluation = useCallback(async (data: Protocol2EvaluationData) => {
@@ -207,13 +159,13 @@ export function useProtocol2Evaluation(applicationId: string) {
         // Jeu de mise en situation CODIR
         physical_visit: data.mise_en_situation.jeu_codir.score > 0,
         qcm_codir_completed: data.mise_en_situation.jeu_codir.score > 0,
-        qcm_codir_score: data.mise_en_situation.jeu_codir.score,
+        qcm_codir_score: Math.min(data.mise_en_situation.jeu_codir.score, 5),
         visit_notes: data.mise_en_situation.jeu_codir.comments,
         
         // Jeu de rôle (interview)
         interview_completed: data.mise_en_situation.jeu_de_role.score > 0,
         qcm_role_completed: data.mise_en_situation.jeu_de_role.score > 0,
-        qcm_role_score: data.mise_en_situation.jeu_de_role.score,
+        qcm_role_score: Math.min(data.mise_en_situation.jeu_de_role.score, 5),
         interview_notes: data.mise_en_situation.jeu_de_role.comments,
         
         // Edition de Fiche KPI'S
@@ -225,13 +177,16 @@ export function useProtocol2Evaluation(applicationId: string) {
           ? `Niveau: ${data.analyse_competences.gap_competences.gapLevel} - ${data.analyse_competences.gap_competences.comments}`
           : data.analyse_competences.gap_competences.comments,
         
-        // Score global calculé (converti en pourcentage)
-        overall_score: Math.round(
-          ((data.mise_en_situation.jeu_de_role.score +
-           data.mise_en_situation.jeu_codir.score +
-           data.validation_operationnelle.fiche_kpis.score +
-           data.analyse_competences.gap_competences.score +
-           data.analyse_competences.plan_formation.score) / 5) * 20
+        // Score global calculé (converti en pourcentage, limité à 100%)
+        overall_score: Math.min(
+          Math.round(
+            ((Math.min(data.mise_en_situation.jeu_de_role.score, 5) +
+             Math.min(data.mise_en_situation.jeu_codir.score, 5) +
+             Math.min(data.validation_operationnelle.fiche_kpis.score, 5) +
+             Math.min(data.analyse_competences.gap_competences.score, 5) +
+             Math.min(data.analyse_competences.plan_formation.score, 5)) / 5) * 20
+          ),
+          100
         ),
         
         // Statut
@@ -239,15 +194,19 @@ export function useProtocol2Evaluation(applicationId: string) {
         updated_at: new Date().toISOString()
       };
 
-      // Vérifier si l'évaluation existe déjà
-      const { data: existingRecord } = await supabase
+      // Vérifier si une évaluation existe déjà
+      const { data: existingData, error: checkError } = await supabase
         .from('protocol2_evaluations')
         .select('id')
         .eq('application_id', applicationId)
         .maybeSingle();
 
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
       let result;
-      if (existingRecord) {
+      if (existingData) {
         // Mettre à jour l'évaluation existante
         result = await supabase
           .from('protocol2_evaluations')
@@ -264,33 +223,12 @@ export function useProtocol2Evaluation(applicationId: string) {
         throw result.error;
       }
 
-      console.log('Évaluation Protocol 2 sauvegardée avec succès:', {
-        'Jeu de mise en situation CODIR': {
-          score: data.mise_en_situation.jeu_codir.score,
-          comments: data.mise_en_situation.jeu_codir.comments,
-          saved_to: 'qcm_codir_score, visit_notes'
-        },
-        'Edition de Fiche KPI\'S': {
-          score: data.validation_operationnelle.fiche_kpis.score,
-          comments: data.validation_operationnelle.fiche_kpis.comments,
-          saved_to: 'job_sheet_created'
-        },
-        'Analyse du Gap de compétences': {
-          score: data.analyse_competences.gap_competences.score,
-          comments: data.analyse_competences.gap_competences.comments,
-          gapLevel: data.analyse_competences.gap_competences.gapLevel,
-          saved_to: 'skills_gap_notes'
-        },
-        'Niveau de Gap identifié': {
-          gapLevel: data.analyse_competences.gap_competences.gapLevel,
-          saved_to: 'skills_gap_notes (with level prefix)'
-        }
-      });
+      console.log('Évaluation Protocol 2 sauvegardée avec succès:', evaluationRecord);
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
       toast({
         title: "Erreur de sauvegarde",
-        description: "Impossible de sauvegarder les données d'évaluation.",
+        description: "Impossible de sauvegarder l'évaluation Protocol 2",
         variant: "destructive"
       });
     } finally {
@@ -302,6 +240,13 @@ export function useProtocol2Evaluation(applicationId: string) {
   const updateEvaluation = useCallback((updater: (prev: Protocol2EvaluationData) => Protocol2EvaluationData) => {
     setEvaluationData(prev => {
       const newData = updater(prev);
+      
+      // S'assurer que tous les scores sont limités à 5
+      newData.mise_en_situation.jeu_de_role.score = Math.min(newData.mise_en_situation.jeu_de_role.score, 5);
+      newData.mise_en_situation.jeu_codir.score = Math.min(newData.mise_en_situation.jeu_codir.score, 5);
+      newData.validation_operationnelle.fiche_kpis.score = Math.min(newData.validation_operationnelle.fiche_kpis.score, 5);
+      newData.analyse_competences.gap_competences.score = Math.min(newData.analyse_competences.gap_competences.score, 5);
+      newData.analyse_competences.plan_formation.score = Math.min(newData.analyse_competences.plan_formation.score, 5);
       
       // Mettre à jour le statut
       const totalScore = (
@@ -330,19 +275,36 @@ export function useProtocol2Evaluation(applicationId: string) {
 
   // Calculer les scores des sections
   const calculateSectionScores = useCallback(() => {
-    const miseEnSituationScore = (
-      evaluationData.mise_en_situation.jeu_de_role.score +
-      evaluationData.mise_en_situation.jeu_codir.score
-    ) / 2 * 20; // Convertir en pourcentage (sur 5, donc * 20)
+    // S'assurer que les scores ne dépassent jamais 5
+    const jeuDeRoleScore = Math.min(evaluationData.mise_en_situation.jeu_de_role.score, 5);
+    const jeuCodirScore = Math.min(evaluationData.mise_en_situation.jeu_codir.score, 5);
+    const ficheKpisScore = Math.min(evaluationData.validation_operationnelle.fiche_kpis.score, 5);
+    const gapCompetencesScore = Math.min(evaluationData.analyse_competences.gap_competences.score, 5);
+    const planFormationScore = Math.min(evaluationData.analyse_competences.plan_formation.score, 5);
 
-    const validationScore = evaluationData.validation_operationnelle.fiche_kpis.score * 20;
+    // Utiliser le même calcul que pour overall_score en base de données
+    const globalScore = Math.min(
+      Math.round(
+        ((jeuDeRoleScore + jeuCodirScore + ficheKpisScore + gapCompetencesScore + planFormationScore) / 5) * 20
+      ),
+      100
+    );
 
-    const analyseScore = (
-      evaluationData.analyse_competences.gap_competences.score +
-      evaluationData.analyse_competences.plan_formation.score
-    ) / 2 * 20;
+    // Calculer les scores des sections pour l'affichage détaillé
+    const miseEnSituationScore = Math.min(
+      Math.round(((jeuDeRoleScore + jeuCodirScore) / 2) * 20),
+      100
+    );
 
-    const globalScore = (miseEnSituationScore + validationScore + analyseScore) / 3;
+    const validationScore = Math.min(
+      Math.round(ficheKpisScore * 20),
+      100
+    );
+
+    const analyseScore = Math.min(
+      Math.round(((gapCompetencesScore + planFormationScore) / 2) * 20),
+      100
+    );
 
     return {
       miseEnSituationScore,
@@ -360,10 +322,8 @@ export function useProtocol2Evaluation(applicationId: string) {
   return {
     evaluationData,
     updateEvaluation,
-    calculateSectionScores: () => calculateSectionScores(),
+    calculateSectionScores,
     isLoading,
-    isSaving,
-    error,
-    reload: loadEvaluation
+    isSaving
   };
 }

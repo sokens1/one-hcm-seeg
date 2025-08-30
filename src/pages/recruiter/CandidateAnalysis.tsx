@@ -16,6 +16,7 @@ import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileTe
 import { EvaluationDashboard } from "@/components/evaluation/EvaluationDashboard";
 import { Protocol2Dashboard } from "@/components/evaluation/Protocol2Dashboard";
 import { SynthesisDashboard } from "@/components/evaluation/SynthesisDashboard";
+import { useSynthesisData } from "@/hooks/useSynthesisData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
@@ -478,9 +479,11 @@ export default function CandidateAnalysis() {
   const navigate = useNavigate();
   const { isRecruiter, isObserver } = useAuth();
   const [activeTab, setActiveTab] = useState("info");
-
-
+  
   const { data: application, isLoading, error } = useApplication(id);
+  
+  // Utiliser le hook useSynthesisData pour récupérer les vraies données
+  const { synthesisData, isLoading: synthesisLoading, updateRecommendations, refreshData } = useSynthesisData(application?.id || '');
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
   const { updateApplicationStatus } = useRecruiterApplications(application?.job_offer_id);
 
@@ -673,12 +676,31 @@ export default function CandidateAnalysis() {
             </div>
           </TabsContent>
           <TabsContent value="synthesis" className="mt-4 sm:mt-6">
-            <SynthesisDashboard
-              candidateName={candidateName}
-              jobTitle={jobTitle || 'Poste non spécifié'}
-              applicationId={application.id}
-              isReadOnly={isObserver}
-            />
+            {synthesisLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-lg">Chargement des données de synthèse...</span>
+                </div>
+              </div>
+            ) : (
+              <SynthesisDashboard
+                candidateName={candidateName}
+                jobTitle={jobTitle || 'Poste non spécifié'}
+                applicationId={application.id}
+                isReadOnly={isObserver}
+                synthesisData={synthesisData}
+                onUpdate={(updates) => {
+                  if (updates.pointsForts !== undefined || updates.pointsAmelioration !== undefined) {
+                    updateRecommendations(
+                      updates.pointsForts || synthesisData.pointsForts,
+                      updates.pointsAmelioration || synthesisData.pointsAmelioration
+                    );
+                  }
+                }}
+                onRefresh={refreshData}
+              />
+            )}
           </TabsContent>
         </Tabs>
       </div>

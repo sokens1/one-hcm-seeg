@@ -5,8 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useProtocol2Evaluation } from "@/hooks/useProtocol2Evaluation";
 
@@ -17,6 +15,9 @@ interface StarRatingProps {
 }
 
 const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
+  // S'assurer que la valeur ne dépasse jamais 5
+  const safeValue = Math.min(Math.max(value, 0), 5);
+  
   return (
     <div className="space-y-2">
       <h5 className="font-medium text-sm">{label}</h5>
@@ -31,7 +32,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
             <Star
               className={cn(
                 "w-5 h-5",
-                star <= value
+                star <= safeValue
                   ? "fill-yellow-400 text-yellow-400"
                   : "text-gray-300 hover:text-yellow-300"
               )}
@@ -39,7 +40,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label }) => {
           </button>
         ))}
       </div>
-      <span className="text-xs text-muted-foreground">{value}/5</span>
+      <span className="text-xs text-muted-foreground">{Math.round(safeValue)}/5</span>
     </div>
   );
 };
@@ -284,26 +285,6 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 onChange={(value) => updateSection('analyse_competences', 'gap_competences.score', value)}
                 label="Analyse du Gap de compétences"
               />
-              
-              {/* Select pour le niveau de gap */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Niveau de Gap identifié</Label>
-                <Select
-                  value={evaluationData.analyse_competences.gap_competences.gapLevel || ""}
-                  onValueChange={(value) => updateSection('analyse_competences', 'gap_competences.gapLevel', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Sélectionner le niveau de gap" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="faible">Faible - Compétences de base présentes</SelectItem>
-                    <SelectItem value="moyen">Moyen - Quelques lacunes identifiées</SelectItem>
-                    <SelectItem value="important">Important - Lacunes significatives</SelectItem>
-                    <SelectItem value="critique">Critique - Compétences majeures manquantes</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
               <Textarea
                 placeholder="Commentaires sur le gap de compétences..."
                 value={evaluationData.analyse_competences.gap_competences.comments}
