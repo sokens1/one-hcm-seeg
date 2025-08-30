@@ -69,11 +69,11 @@ const getStatusIcon = (status: string) => {
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'completed':
-      return <Badge variant="default" className="bg-green-100 text-green-800">Terminé</Badge>;
+      return <Badge variant="default" className="bg-green-100 text-green-800 border border-green-200">Terminé</Badge>;
     case 'in_progress':
-      return <Badge variant="default" className="bg-blue-100 text-blue-800">En cours</Badge>;
+      return <Badge variant="default" className="bg-blue-100 text-blue-800 border border-blue-200 font-medium">En cours</Badge>;
     default:
-      return <Badge variant="secondary">En attente</Badge>;
+      return <Badge variant="default" className="bg-blue-500 text-white">En attente</Badge>;
   }
 };
 
@@ -396,7 +396,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <Button 
               variant="outline" 
               onClick={() => !isReadOnly && handleDecision('refuse')}
-              className={cn("text-red-600 border-red-300 hover:bg-red-50", isReadOnly ? "opacity-50 cursor-not-allowed" : "")}
+              className={cn("text-red-600 border-red-300 hover:bg-red-50 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3", isReadOnly ? "opacity-50 cursor-not-allowed" : "")}
               disabled={isReadOnly}
             >
               <AlertCircle className="w-4 h-4" />
@@ -404,7 +404,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             </Button>
             <Button 
               onClick={() => !isReadOnly && handleDecision('embauche')}
-              className={cn("bg-green-600 hover:bg-green-700", isReadOnly ? "opacity-50 cursor-not-allowed" : "")}
+              className={cn("bg-green-600 hover:bg-green-700 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3", isReadOnly ? "opacity-50 cursor-not-allowed" : "")}
               disabled={isReadOnly}
             >
               <CheckCircle className="w-4 h-4" />

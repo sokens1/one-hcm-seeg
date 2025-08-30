@@ -568,9 +568,9 @@ export default function RecruiterDashboard() {
                      <PieChart className="h-5 w-5 text-primary" />
                      <CardTitle className="text-base sm:text-lg">Répartition par type de métier</CardTitle>
                    </div>
-                   {/* <p className="text-sm text-muted-foreground">
-                     Distribution des candidatures : Métier (Eau + Électricité) vs Support
-                   </p> */}
+                   <p className="text-sm text-muted-foreground">
+                     Distribution des candidatures par type de poste
+                   </p>
                  </CardHeader>
                  <CardContent>
                    <div className="h-64 sm:h-80">
