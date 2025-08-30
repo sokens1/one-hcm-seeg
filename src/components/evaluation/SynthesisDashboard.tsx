@@ -280,7 +280,7 @@ export function SynthesisDashboard({
             <div className="flex justify-end pt-4">
               <Button
                 onClick={handleDownloadReport}
-                className="bg-gray-400 hover:bg-gray-500"
+                className="bg-gray-400 hover:bg-gray-500 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
                 disabled={true}
               >
                 <Download className="w-4 h-4 mr-2" />
