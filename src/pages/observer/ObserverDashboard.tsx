@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
+import { ObserverLayout } from "@/components/layout/ObserverLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
   Loader2, 
-  Plus, 
   Briefcase, 
   Bell, 
   TrendingUp, 
@@ -15,13 +14,10 @@ import {
   Calendar,
   BarChart3,
   PieChart,
-  Activity,
-  Eye,
-  Edit
+  Eye
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
-import { useAuth } from "@/hooks/useAuth";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
 import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
 import { DashboardToggle } from "@/components/ui/DashboardToggle";
@@ -44,11 +40,10 @@ import {
   Legend
 } from 'recharts';
 
-// Import du dashboard avancé
-import AdvancedDashboard from "./AdvancedDashboard";
+// Import du dashboard avancé observateur
+import ObserverAdvancedDashboard from "./ObserverAdvancedDashboard";
 
-export default function RecruiterDashboard() {
-  const navigate = useNavigate();
+export default function ObserverDashboard() {
   const { 
     stats, 
     jobCoverage, 
@@ -58,18 +53,13 @@ export default function RecruiterDashboard() {
     error 
   } = useRecruiterDashboard();
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
-  const { isRecruiter } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
-
-  const handleEditJob = (jobId: string) => {
-    navigate(`/recruiter/jobs/${jobId}/edit`);
-  };
 
   // Si la vue avancée est sélectionnée, afficher le dashboard avancé
   if (dashboardView === 'advanced') {
     return (
-      <RecruiterLayout>
+      <ObserverLayout>
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
           {/* Basculement entre les vues */}
           <DashboardToggle 
@@ -77,17 +67,17 @@ export default function RecruiterDashboard() {
             onToggle={setDashboardView} 
           />
           
-          {/* Dashboard Avancé */}
-          <AdvancedDashboard />
+          {/* Dashboard Avancé Observateur */}
+          <ObserverAdvancedDashboard />
         </div>
-      </RecruiterLayout>
+      </ObserverLayout>
     );
   }
 
   // Vue classique (dashboard original)
   if (error) {
     return (
-      <RecruiterLayout>
+      <ObserverLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <p className="text-red-500 mb-4">Erreur lors du chargement: {error}</p>
@@ -96,12 +86,12 @@ export default function RecruiterDashboard() {
             </Button>
           </div>
         </div>
-      </RecruiterLayout>
+      </ObserverLayout>
     );
   }
 
   return (
-    <RecruiterLayout>
+    <ObserverLayout>
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Basculement entre les vues */}
         <DashboardToggle 
@@ -112,19 +102,11 @@ export default function RecruiterDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Tableau de Bord</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Tableau de Bord Observateur</h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Gérez vos Offres d'emploi et suivez vos candidatures en temps réel
+              Visualisez les Offres d'emploi et suivez les candidatures en temps réel
             </p>
           </div>
-          {isRecruiter && (
-            <Link to="/recruiter/jobs/new">
-              <Button variant="hero" className="gap-2 w-full sm:w-auto">
-                <Plus className="w-4 h-4" />
-                Nouvelle offre
-              </Button>
-            </Link>
-          )}
         </div>
 
         {isLoading ? (
@@ -158,7 +140,7 @@ export default function RecruiterDashboard() {
 
               {/* Total des candidats uniques */}
               <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
-                {/* <CardHeader className="pb-2">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
                       Total des candidats
@@ -173,28 +155,12 @@ export default function RecruiterDashboard() {
                   <p className="text-xs text-green-600 dark:text-green-400 mt-1">
                     Candidats uniques
                   </p>
-                </CardContent> */}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
-                      Taux de couverture
-                    </CardTitle>
-                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-600 dark:text-cyan-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-cyan-900 dark:text-cyan-100">
-                    {jobCoverage.length > 0 ? Math.round((jobCoverage.filter(job => job.current_applications > 0).length / jobCoverage.length) * 100) : 0}%
-                  </div>
-                  <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
-                    Postes avec candidats
-                  </p>
                 </CardContent>
               </Card>
 
               {/* Total des candidatures */}
               <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border-emerald-200 dark:border-emerald-800">
-                {/* <CardHeader className="pb-2">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300">
                       Total des candidatures
@@ -207,30 +173,14 @@ export default function RecruiterDashboard() {
                     {jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)}
                   </div>
                   <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                    +{stats.newCandidates} Dernier 24h
-                  </p>
-                </CardContent> */}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
-                      Total des candidats
-                    </CardTitle>
-                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-green-900 dark:text-green-100">
-                    {stats.totalCandidates}
-                  </div>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                    Candidats uniques
+                    +{stats.newCandidates} ce jour
                   </p>
                 </CardContent>
               </Card>
 
               {/* Nombre de candidatures par poste */}
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
-                {/* <CardHeader className="pb-2">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-purple-700 dark:text-purple-300">
                       Candidatures par poste
@@ -244,22 +194,6 @@ export default function RecruiterDashboard() {
                   </div>
                   <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
                     Moyenne
-                  </p>
-                </CardContent> */}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                      Total des candidatures
-                    </CardTitle>
-                    <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-xl sm:text-2xl font-bold text-emerald-900 dark:text-emerald-100">
-                    {jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)}
-                  </div>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                    +{stats.newCandidates} Dernier 24h
                   </p>
                 </CardContent>
               </Card>
@@ -289,7 +223,7 @@ export default function RecruiterDashboard() {
 
               {/* Taux de couverture */}
               <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
-                {/* <CardHeader className="pb-2">
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-cyan-700 dark:text-cyan-300">
                       Taux de couverture
@@ -304,7 +238,7 @@ export default function RecruiterDashboard() {
                   <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
                     Postes avec candidats
                   </p>
-                </CardContent> */}
+                </CardContent>
               </Card>
 
               {/* Entretiens */}
@@ -607,22 +541,14 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Quick Actions */}
+            {/* Quick Actions - Version Observateur */}
             <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <Card className="shadow-soft hover:shadow-medium transition-all">
                 <CardHeader>
-                  <CardTitle className="text-base sm:text-lg">Actions rapides</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">Navigation</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {isRecruiter && (
-                    <Link to="/recruiter/jobs/new" className="block">
-                      <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                        <Plus className="w-3 h-3 sm:w-4 sm:w-4" />
-                        Créer une nouvelle offre
-                      </Button>
-                    </Link>
-                  )}
-                  <Link to="/recruiter/candidates" className="block">
+                  <Link to="/observer/candidates" className="block">
                     <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
                       <Users className="w-3 h-3 sm:w-4 sm:w-4" />
                       Voir tous les candidats
@@ -688,6 +614,6 @@ export default function RecruiterDashboard() {
           onClose={() => setIsHistoryModalOpen(false)}
         />
       </div>
-    </RecruiterLayout>
+    </ObserverLayout>
   );
 }
