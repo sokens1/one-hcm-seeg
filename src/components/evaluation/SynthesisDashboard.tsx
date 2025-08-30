@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Editor } from "@/components/ui/editor";
 import { CheckCircle, Clock, AlertCircle, FileText, BarChart3, TrendingUp, Star, Download, RefreshCw } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { useSynthesisData } from "@/hooks/useSynthesisData";
 
 interface StarDisplayProps {
   value: number;
@@ -14,6 +13,9 @@ interface StarDisplayProps {
 }
 
 const StarDisplay: React.FC<StarDisplayProps> = ({ value, label }) => {
+  // S'assurer que la valeur ne dépasse jamais 5
+  const safeValue = Math.min(Math.max(value, 0), 5);
+  
   return (
     <div className="space-y-2">
       <h5 className="font-medium text-sm">{label}</h5>
@@ -24,24 +26,48 @@ const StarDisplay: React.FC<StarDisplayProps> = ({ value, label }) => {
               key={star}
               className={cn(
                 "w-4 h-4",
-                star <= value
+                star <= safeValue
                   ? "fill-yellow-400 text-yellow-400"
                   : "text-gray-300"
               )}
             />
           ))}
         </div>
-        <span className="text-xs text-muted-foreground">{value}/5</span>
+        <span className="text-xs text-muted-foreground">{Math.round(safeValue)}/5</span>
       </div>
     </div>
   );
 };
 
+interface SynthesisData {
+  protocol1: {
+    score: number;
+    status: string;
+    validationPrerequis: number;
+    evaluationMTP: number;
+    entretien: number;
+  };
+  protocol2: {
+    score: number;
+    status: string;
+    miseEnSituation: number;
+    validationOperationnelle: number;
+    analyseCompetences: number;
+  };
+  globalScore: number;
+  finalStatus: string;
+  pointsForts: string;
+  pointsAmelioration: string;
+}
+
 interface SynthesisDashboardProps {
   candidateName: string;
   jobTitle: string;
   applicationId: string;
+  synthesisData: SynthesisData;
   isReadOnly?: boolean;
+  onUpdate?: (data: Partial<SynthesisData>) => void;
+  onRefresh?: () => void;
 }
 
 const getStatusIcon = (status: string) => {
@@ -78,34 +104,15 @@ export function SynthesisDashboard({
   candidateName, 
   jobTitle, 
   applicationId, 
-  isReadOnly = false
+  synthesisData, 
+  isReadOnly = false,
+  onUpdate,
+  onRefresh
 }: SynthesisDashboardProps) {
-  const { synthesisData, isLoading, updateRecommendations, refreshData } = useSynthesisData(applicationId);
-
   const handleDownloadReport = () => {
     // TODO: Implémenter la génération et le téléchargement du rapport
     console.log('Téléchargement du rapport...');
   };
-
-  const handleUpdateRecommendations = (field: 'pointsForts' | 'pointsAmelioration', value: string) => {
-    if (field === 'pointsForts') {
-      updateRecommendations(value, synthesisData.pointsAmelioration);
-    } else {
-      updateRecommendations(synthesisData.pointsForts, value);
-    }
-  };
-
-  // Toujours appeler les hooks avant les conditions
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-lg">Chargement des données de synthèse...</span>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -122,26 +129,26 @@ export function SynthesisDashboard({
                 Rapport de synthèse pour {candidateName} • {jobTitle}
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-2xl font-bold text-primary">{synthesisData.globalScore.toFixed(1)}%</div>
-                <div className="text-xs text-muted-foreground">Score Global</div>
-                <div className="mt-2">
-                  {getStatusBadge(synthesisData.finalStatus)}
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-primary">{synthesisData.globalScore.toFixed(1)}%</div>
+                  <div className="text-xs text-muted-foreground">Score Global</div>
+                  <div className="mt-2">
+                    {getStatusBadge(synthesisData.finalStatus)}
+                  </div>
                 </div>
+                {!isReadOnly && onRefresh && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onRefresh}
+                    className="flex items-center gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Actualiser
+                  </Button>
+                )}
               </div>
-              {!isReadOnly && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={refreshData}
-                  className="flex items-center gap-2"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Actualiser
-                </Button>
-              )}
-            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -216,7 +223,6 @@ export function SynthesisDashboard({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Protocol 1 - Évaluation Initiale */}
             <StarDisplay 
               value={synthesisData.protocol1.validationPrerequis}
               label="Validation des Prérequis"
@@ -229,8 +235,6 @@ export function SynthesisDashboard({
               value={synthesisData.protocol1.entretien}
               label="Entretien"
             />
-            
-            {/* Protocol 2 - Évaluation Approfondie */}
             <StarDisplay 
               value={synthesisData.protocol2.miseEnSituation}
               label="Mise en Situation"
@@ -261,7 +265,7 @@ export function SynthesisDashboard({
                 <h6 className="font-medium text-green-600 mb-2">Points forts :</h6>
               <Editor
                 value={synthesisData.pointsForts}
-                onChange={(value) => handleUpdateRecommendations('pointsForts', value)}
+                onChange={(value) => onUpdate?.({ pointsForts: value })}
                 placeholder="Listez les points forts du candidat..."
                 disabled={isReadOnly}
               />
@@ -271,7 +275,7 @@ export function SynthesisDashboard({
                 <h6 className="font-medium text-orange-600 mb-2">Points d'amélioration :</h6>
               <Editor
                 value={synthesisData.pointsAmelioration}
-                onChange={(value) => handleUpdateRecommendations('pointsAmelioration', value)}
+                onChange={(value) => onUpdate?.({ pointsAmelioration: value })}
                 placeholder="Listez les points d'amélioration..."
                 disabled={isReadOnly}
               />
