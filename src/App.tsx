@@ -190,9 +190,13 @@ function App() {
         <AuthProvider>
           <TooltipProvider>
             <Suspense fallback={<LoadingFallback />}>
-              <RouterProvider router={router} />
-              <Toaster />
-              <Sonner />
+              {withMaintenanceCheck(
+                <>
+                  <RouterProvider router={router} />
+                  <Toaster />
+                  <Sonner />
+                </>
+              )}
             </Suspense>
           </TooltipProvider>
         </AuthProvider>

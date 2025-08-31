@@ -1,10 +1,10 @@
 // Configuration de maintenance manuelle
 // Mettez à true pour activer la maintenance, false pour la désactiver
-export const MAINTENANCE_MODE = false;
+export const MAINTENANCE_MODE = true;
 
 // Heures de maintenance (pour référence)
 export const MAINTENANCE_HOURS = {
-  start: { hour: 9, minute: 0 },   // 08:55
+  start: { hour: 0, minute: 0 },   // 08:55
   end:   { hour: 0, minute: 40 }    // 00:40 (le lendemain ?)
 };
 
