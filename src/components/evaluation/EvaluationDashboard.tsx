@@ -335,14 +335,14 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           </div>
           
           <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">Pondération :</div>
+            <div className="text-sm text-muted-foreground">Poids :</div>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Validation Prérequis</div>
+              <div className="text-xs text-muted-foreground">Prérequis</div>
               <div className="font-semibold text-sm text-gray-600">10%</div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Évaluation MTP</div>
+              <div className="text-xs text-muted-foreground">MTP</div>
               <div className="font-semibold text-sm text-gray-600">20%</div>
             </div>
             <div className="space-y-1">
@@ -506,24 +506,24 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               </div>
               
               {/* Boutons Traitement IA et Programmer l'entretien */}
-              <div className="flex justify-end pt-4 border-t border-blue-200 gap-3">
+              <div className="flex flex-col sm:flex-row justify-end pt-4 border-t border-blue-200 gap-3">
                 <Button 
                   size="lg"
                   onClick={handleAITreatment}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg shadow-lg flex items-center gap-3"
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
                   disabled={isReadOnly}
                 >
-                  <Users className="w-5 h-5" />
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                   Traitement IA
                 </Button>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button 
                       size="lg"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg shadow-lg flex items-center gap-3"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
                       disabled={isReadOnly}
                     >
-                      <CalendarLucide className="w-5 h-5" />
+                      <CalendarLucide className="w-4 h-4 sm:w-5 sm:h-5" />
                       Programmer l'entretien
                     </Button>
                   </PopoverTrigger>
@@ -853,7 +853,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               </div>
 
                 <div className="space-y-4">
-                  <Label className="text-sm font-medium">Évaluation Adhérence MTP (Évaluation Physique)</Label>
+                  <Label className="text-sm font-medium">Évaluation Adhérence MTP </Label>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="space-y-3">
                   <StarRating
@@ -938,12 +938,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           </div>
           
           {/* Actions Protocole 1 */}
-          <div className="flex justify-end gap-3 pt-6 border-t">
+          {!isReadOnly && (
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <AlertDialog>
               <AlertDialogTrigger asChild>
             <Button 
               variant="outline" 
-              className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+                className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
             >
               Refuser
             </Button>
@@ -965,11 +966,27 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             </AlertDialog>
             <Button 
               onClick={handleIncubate}
-              className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
             >
               Incuber
             </Button>
           </div>
+          )}
+          
+          {/* Message pour la vue observateur */}
+          {isReadOnly && (
+            <div className="pt-6 border-t">
+              <div className="text-center py-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center justify-center gap-2 text-yellow-700">
+                  <AlertCircle className="w-5 h-5" />
+                  <span className="text-sm font-medium">Mode consultation seule</span>
+                </div>
+                <p className="text-xs text-yellow-600 mt-1">
+                  Vous pouvez consulter cette évaluation mais pas modifier le statut du candidat
+                </p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

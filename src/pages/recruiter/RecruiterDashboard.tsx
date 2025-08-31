@@ -71,7 +71,7 @@ export default function RecruiterDashboard() {
   if (dashboardView === 'advanced') {
     return (
       <RecruiterLayout>
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4 lg:py-6">
           {/* Basculement entre les vues */}
           <DashboardToggle 
             currentView={dashboardView} 
@@ -103,7 +103,7 @@ export default function RecruiterDashboard() {
 
   return (
     <RecruiterLayout>
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4 lg:py-6">
         {/* Basculement entre les vues */}
         <DashboardToggle 
           currentView={dashboardView} 
@@ -359,13 +359,13 @@ export default function RecruiterDashboard() {
                       })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                         <XAxis 
                           dataKey="title" 
-                          tick={{ fontSize: 10 }}
+                          tick={{ fontSize: window.innerWidth < 768 ? 7 : 10 }}
                           interval={0}
                           height={60}
                           angle={-45}
                           textAnchor="end"
                         />
-                        <YAxis tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 10 }} />
                         <Tooltip 
                           formatter={(value: number, name: string) => [
                             value,
@@ -373,7 +373,7 @@ export default function RecruiterDashboard() {
                           ]}
                           labelFormatter={(value) => {
                             const job = jobCoverage.find(j => j.title === value);
-                            return `${value} (${job?.current_applications} candidatures)`;
+                            return `${value}`;
                           }}
                         />
                         <Bar 
@@ -456,7 +456,7 @@ export default function RecruiterDashboard() {
                        })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                          <XAxis 
                            dataKey="title" 
-                           tick={{ fontSize: 10 }}
+                           tick={{ fontSize: window.innerWidth < 768 ? 7 : 10 }}
                            interval={0}
                            height={60}
                            angle={-45}
@@ -472,7 +472,7 @@ export default function RecruiterDashboard() {
                              const job = applicationsPerJob.find(j => j.title === value);
                              const coverageJob = jobCoverage.find(j => j.title === value);
                              const status = coverageJob?.coverage_status || 'unknown';
-                             return `${value} (${status})`;
+                             return `${value}`;
                            }}
                          />
                          <Bar 
@@ -568,9 +568,9 @@ export default function RecruiterDashboard() {
                      <PieChart className="h-5 w-5 text-primary" />
                      <CardTitle className="text-base sm:text-lg">Répartition par type de métier</CardTitle>
                    </div>
-                   {/* <p className="text-sm text-muted-foreground">
-                     Distribution des candidatures : Métier (Eau + Électricité) vs Support
-                   </p> */}
+                   <p className="text-sm text-muted-foreground">
+                     Distribution des candidatures par type de poste
+                   </p>
                  </CardHeader>
                  <CardContent>
                    <div className="h-64 sm:h-80">

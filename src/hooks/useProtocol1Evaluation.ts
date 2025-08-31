@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import { useState, useEffect, useCallback, useRef } from 'react';
+=======
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, useCallback } from 'react';
+>>>>>>> c6157c5caacfefac773187232d2925ac0285fdc8
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';

@@ -481,12 +481,12 @@ export default function CandidatesPage() {
         </Card>
 
         {filteredCandidates.length === 0 && !isLoading && !error && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-8 h-8 text-muted-foreground" />
+          <div className="text-center py-8 sm:py-12">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <User className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-medium text-foreground mb-2">Aucun candidat trouvé</h3>
-            <p className="text-muted-foreground mb-6">
+            <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">Aucun candidat trouvé</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
               Aucun candidat ne correspond à vos critères de recherche.
             </p>
             <Button 
@@ -495,6 +495,7 @@ export default function CandidatesPage() {
                 setSearchTerm("");
                 setStatusFilter("all");
               }}
+              className="text-xs sm:text-sm"
             >
               Réinitialiser les filtres
             </Button>

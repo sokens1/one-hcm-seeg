@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface Document {
-  id: string;
+  id: number;
   file_name: string;
   file_url: string;
   document_type: string;

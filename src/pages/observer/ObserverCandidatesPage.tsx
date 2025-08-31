@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Search, 
   Eye, 
@@ -161,36 +160,36 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {documents.map((doc) => (
               <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg bg-card">
-                <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">{doc.filename}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {getDocumentTypeLabel(doc.document_type)} • {formatFileSize(doc.file_size)}
-                    </p>
+                                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">{doc.file_name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {getDocumentTypeLabel(doc.document_type)} • {formatFileSize(doc.file_size)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(toUrl(doc.file_path), '_blank')}
-                  >
-                    <Eye className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.href = toUrl(doc.file_path);
-                      link.download = doc.filename;
-                      link.click();
-                    }}
-                  >
-                    <Download className="w-4 h-4" />
-                  </Button>
-                </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(toUrl(doc.file_url), '_blank')}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = toUrl(doc.file_url);
+                        link.download = doc.file_name;
+                        link.click();
+                      }}
+                    >
+                      <Download className="w-4 h-4" />
+                    </Button>
+                  </div>
               </div>
             ))}
           </div>
@@ -222,7 +221,7 @@ export default function ObserverCandidatesPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<UICandidate | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: applications, isLoading, error } = useRecruiterApplications();
+  const { applications, isLoading, error } = useRecruiterApplications();
 
   // Transformer les applications en candidats pour l'interface
   const candidates: UICandidate[] = useMemo(() => {
@@ -286,7 +285,7 @@ export default function ObserverCandidatesPage() {
       <ObserverLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <p className="text-red-500 mb-4">Erreur lors du chargement: {error}</p>
+            <p className="text-red-500 mb-4">Erreur lors du chargement: {error.message}</p>
             <Button variant="outline" onClick={() => window.location.reload()}>
               Réessayer
             </Button>

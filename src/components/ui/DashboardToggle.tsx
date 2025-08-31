@@ -15,8 +15,8 @@ export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps)
   const handleAdvancedClick = () => {
     // Afficher le toast au lieu de basculer vers la vue avancée
     toast({
-      // title: "Fonctionnalité en cours de développement",
-      description: "Fonctionnalité disponible à partir de lundi 01 septembre 2025",
+      title: "Avancé (IA)",
+      description: "Fonctionnalité disponible à partir du 01/09/2025",
       variant: "default",
     });
   };
