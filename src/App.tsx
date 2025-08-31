@@ -128,33 +128,21 @@ const LoadingFallback = () => (
 
 // Vérifier si nous sommes en période de maintenance
 const isMaintenanceTime = () => {
-  // Si MAINTENANCE_MODE est défini, on suit strictement cette valeur
-  if (MAINTENANCE_MODE !== undefined) {
-    console.log(`Maintenance ${MAINTENANCE_MODE ? 'activée' : 'désactivée'} manuellement`);
-    return MAINTENANCE_MODE;
-  }
-  
-  // Vérification de la plage horaire
+  // Vérifier si on est dans la plage horaire de maintenance
   const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  
-  // Calcul en minutes depuis minuit pour faciliter la comparaison
-  const currentTimeInMinutes = currentHour * 60 + currentMinute;
+  const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
   const startTimeInMinutes = MAINTENANCE_HOURS.start.hour * 60 + MAINTENANCE_HOURS.start.minute;
   const endTimeInMinutes = MAINTENANCE_HOURS.end.hour * 60 + MAINTENANCE_HOURS.end.minute;
   
-  // Déterminer si on est dans la plage de maintenance
-  let isInMaintenanceWindow = false;
+  // Déterminer si on est dans la plage de maintenance (00h00-00h40)
+  const isInMaintenanceWindow = startTimeInMinutes < endTimeInMinutes
+    ? currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes
+    : currentTimeInMinutes >= startTimeInMinutes || currentTimeInMinutes < endTimeInMinutes;
   
-  if (startTimeInMinutes < endTimeInMinutes) {
-    // Plage normale dans la même journée (ex: 14h-16h)
-    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes && 
-                           currentTimeInMinutes < endTimeInMinutes;
-  } else {
-    // Plage qui passe minuit (ex: 22h-02h)
-    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes || 
-                           currentTimeInMinutes < endTimeInMinutes;
+  // Si MAINTENANCE_MODE est défini, on suit sa valeur
+  // Sinon, on suit la plage horaire
+  if (typeof MAINTENANCE_MODE !== 'undefined') {
+    return MAINTENANCE_MODE && isInMaintenanceWindow;
   }
   
   return isInMaintenanceWindow;
@@ -190,9 +178,13 @@ function App() {
         <AuthProvider>
           <TooltipProvider>
             <Suspense fallback={<LoadingFallback />}>
-              <RouterProvider router={router} />
-              <Toaster />
-              <Sonner />
+              {withMaintenanceCheck(
+                <>
+                  <RouterProvider router={router} />
+                  <Toaster />
+                  <Sonner />
+                </>
+              )}
             </Suspense>
           </TooltipProvider>
         </AuthProvider>
