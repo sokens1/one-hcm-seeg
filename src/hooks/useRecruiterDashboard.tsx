@@ -107,8 +107,9 @@ export function useRecruiterDashboard() {
       const totalApplications = jobApplications.length;
       const newApplications = jobApplications.filter(app => {
         const appDate = new Date(app.created_at);
+        // Calculer la date d'il y a 24h en respectant le fuseau horaire local
         const oneDayAgo = new Date();
-        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        oneDayAgo.setHours(oneDayAgo.getHours() - 24);
         return appDate > oneDayAgo;
       }).length;
 
@@ -250,8 +251,9 @@ export function useRecruiterDashboard() {
       const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
       const newApplications24h = jobApplications.filter(app => {
         const appDate = new Date(app.created_at);
+        // Calculer la date d'il y a 24h en respectant le fuseau horaire local
         const oneDayAgo = new Date();
-        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        oneDayAgo.setHours(oneDayAgo.getHours() - 24);
         return appDate > oneDayAgo;
       }).length;
 
@@ -299,16 +301,22 @@ export function useRecruiterDashboard() {
 
     // Calculate status evolution over the last 7 days
     const statusEvolution: StatusEvolutionData[] = [];
+    
+    // Générer les 7 derniers jours en respectant le fuseau horaire local
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      return date.toISOString().split('T')[0];
+      // Utiliser toLocaleDateString pour éviter les problèmes de fuseau horaire
+      return date.toLocaleDateString('fr-CA'); // Format YYYY-MM-DD
     }).reverse();
 
     last7Days.forEach(date => {
       const dayApplications = (allApplicationsData || []).filter(app => {
-        const appDate = new Date(app.created_at).toISOString().split('T')[0];
-        return appDate === date;
+        // Créer une date locale à partir de la date de création
+        const appDate = new Date(app.created_at);
+        // Comparer avec la date locale du jour (00h00 à 23h59)
+        const appDateLocal = appDate.toLocaleDateString('fr-CA');
+        return appDateLocal === date;
       });
 
       const candidature = dayApplications.filter(app => app.status === 'candidature').length;
