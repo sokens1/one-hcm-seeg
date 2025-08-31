@@ -20,6 +20,7 @@ import { MAINTENANCE_MODE, MAINTENANCE_HOURS } from '@/config/maintenance';
 import './index.css';
 import { ErrorBoundary } from 'react-error-boundary';
 import type { FallbackProps } from 'react-error-boundary';
+import { ErrorFallback } from '@/components/ui/ErrorFallback';
 
 //Maintenance page
 const Maintenance = lazy(() => import("./pages/maintenance"));
@@ -179,12 +180,12 @@ const withMaintenanceCheck = (element: React.ReactNode) => {
 
 function App() {
   // Composant de secours personnalisé pour ErrorBoundary
-  const ErrorFallback = (props: FallbackProps) => {
-    return <ErrorPage {...props} />;
+  const CustomErrorFallback = (props: FallbackProps) => {
+    return <ErrorFallback error={props.error} onRetry={props.resetErrorBoundary} />;
   };
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <ErrorBoundary FallbackComponent={CustomErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <TooltipProvider>

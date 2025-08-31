@@ -86,3 +86,4 @@ grant execute on function public.get_user_role(uuid) to authenticated;
 
 commit;
 
+

@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
 import { useOptimizedProtocol1Evaluation } from "@/hooks/useOptimizedProtocol1Evaluation";
+import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
 import { useToast } from "@/components/ui/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
@@ -29,6 +30,14 @@ interface StarRatingProps {
 }
 
 const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disabled = false }) => {
+  const handleStarClick = (starValue: number) => {
+    if (disabled) return;
+    
+    // Empêcher les clics involontaires en vérifiant si c'est un clic intentionnel
+    console.log('⭐ [STAR DEBUG] Clic sur étoile:', starValue, 'pour', label);
+    onChange(starValue);
+  };
+
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium">{label}</Label>
@@ -37,8 +46,18 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
           <button
             key={star}
             type="button"
-            onClick={() => !disabled && onChange(star)}
-            className="transition-colors hover:scale-110"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleStarClick(star);
+            }}
+            onMouseDown={(e) => e.preventDefault()} // Empêcher le focus involontaire
+            className={cn(
+              "transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-sm p-1",
+              disabled && "cursor-not-allowed"
+            )}
+            disabled={disabled}
+            aria-label={`Noter ${star} étoile${star > 1 ? 's' : ''} pour ${label}`}
           >
             <Star
               className={cn(
@@ -76,8 +95,22 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     updateEvaluation, 
     calculateSectionScores, 
     isLoading, 
-    isSaving 
+    isSaving,
+    reload
   } = useOptimizedProtocol1Evaluation(applicationId);
+  
+  const {
+    schedules,
+    isLoading: isLoadingSlots,
+    isSaving: isSavingInterview,
+    timeSlots,
+    scheduleInterview,
+    cancelInterview,
+    isSlotBusy,
+    isDateFullyBooked,
+    getAvailableSlots,
+    generateCalendar
+  } = useInterviewScheduling(applicationId);
   
   const { toast } = useToast();
   
@@ -109,6 +142,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
       duration: 3000,
     });
   };
+
+
   
   const [interviewDate, setInterviewDate] = useState<Date | undefined>(evaluationData.protocol1.interview.interviewDate);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
@@ -131,71 +166,16 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     });
   };
   
-  // Données des entretiens occupés (exemple - à remplacer par des vraies données)
-  const busySlots = {
-    '2024-01-15': ['09:00', '10:30', '14:00'], // 15 janvier 2024
-    '2024-01-16': ['09:30', '11:00', '15:00'], // 16 janvier 2024
-    '2024-01-22': ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'], // 22 janvier - jour complet
-    '2024-01-28': ['14:00', '15:30'], // 28 janvier 2024
-  };
-  
-  // Créneaux horaires disponibles (plages de 1h)
-  const timeSlots = [
-    '09:00', '10:00', '11:00',
-    '14:00', '15:00', '16:00'
-  ];
-  
-  // Fonction pour générer le calendrier du mois
-  const generateCalendar = (date: Date = new Date()) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
-    const days = [];
-    const current = new Date(startDate);
-    
-    for (let i = 0; i < 42; i++) {
-      days.push(new Date(current));
-      current.setDate(current.getDate() + 1);
-    }
-    
-    return { days, month, year };
-  };
-  
-  // Fonction pour obtenir la clé de date au format YYYY-MM-DD
-  const getDateKey = (date: Date) => {
-    return date.toISOString().split('T')[0];
-  };
-  
-  // Fonction pour vérifier si une date est complètement occupée
-  const isDateFullyBooked = (date: Date) => {
-    const dateKey = getDateKey(date);
-    const busySlotsForDate = busySlots[dateKey] || [];
-    return busySlotsForDate.length >= timeSlots.length;
-  };
-  
-
+  // Les créneaux et fonctions sont maintenant fournis par le hook useInterviewScheduling
   
   // Fonction pour vérifier si une date est sélectionnée
   const isDateSelected = (date: Date) => {
     return interviewDate && interviewDate.toDateString() === date.toDateString();
   };
   
-  // Fonction pour obtenir les créneaux disponibles pour une date
-  const getAvailableSlots = (date: Date) => {
-    const dateKey = getDateKey(date);
-    const busySlotsForDate = busySlots[dateKey] || [];
-    return timeSlots.filter(slot => !busySlotsForDate.includes(slot));
-  };
-  
-  // Fonction pour vérifier si un créneau est occupé
-  const isTimeSlotBusy = (date: Date, timeSlot: string) => {
-    const dateKey = getDateKey(date);
-    const busySlotsForDate = busySlots[dateKey] || [];
-    return busySlotsForDate.includes(timeSlot);
+  // Fonction pour obtenir la clé de date au format YYYY-MM-DD
+  const getDateKey = (date: Date) => {
+    return date.toISOString().split('T')[0];
   };
 
 
@@ -299,6 +279,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <span>Sauvegarde...</span>
         </div>
       )}
+
+
       
       {/* Header - Synthèse de l'Évaluation */}
       <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
@@ -582,7 +564,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                           {generateCalendar(currentMonth).days.map((date, index) => {
                             const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
                             const isToday = date.toDateString() === new Date().toDateString();
-                            const isFullyBooked = isDateFullyBooked(date);
+                            const isFullyBooked = isDateFullyBooked(getDateKey(date));
                             const isSelected = isDateSelected(date);
                             const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
                             
@@ -625,22 +607,31 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                       {interviewDate && (
                         <div className="space-y-3 border-t pt-4">
                           <Label className="text-sm font-medium">Choisissez un créneau</Label>
-                          <div className="grid grid-cols-3 gap-2">
+                          {isLoadingSlots ? (
+                            <div className="flex items-center justify-center py-4">
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                              <span className="ml-2 text-sm text-gray-600">Chargement des créneaux...</span>
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-3 gap-2">
                             {timeSlots.map((time) => {
-                              const isBusy = isTimeSlotBusy(interviewDate, time);
+                              const isBusy = isSlotBusy(getDateKey(interviewDate), time);
                               const isSelected = selectedTimeSlot === time;
                               
                               return (
                                 <button
                                   key={time}
-                                  onClick={() => {
+                                  onClick={async () => {
                                     if (!isBusy && !isReadOnly) {
-                                      setSelectedTimeSlot(time);
-                                      const [hours, minutes] = time.split(':');
-                                      const newDate = new Date(interviewDate);
-                                      newDate.setHours(parseInt(hours), parseInt(minutes));
-                                      setInterviewDate(newDate);
-                                      updateProtocol1('interview', 'interviewDate', newDate);
+                                      const success = await scheduleInterview(getDateKey(interviewDate), time);
+                                      if (success) {
+                                        setSelectedTimeSlot(time);
+                                        const [hours, minutes] = time.split(':');
+                                        const newDate = new Date(interviewDate);
+                                        newDate.setHours(parseInt(hours), parseInt(minutes));
+                                        setInterviewDate(newDate);
+                                        updateProtocol1('interview', 'interviewDate', newDate);
+                                      }
                                     }
                                   }}
                                   disabled={isBusy}
@@ -661,7 +652,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                 </button>
                               );
                             })}
-              </div>
+                            </div>
+                          )}
                           
                           {selectedTimeSlot && (
                             <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
@@ -756,7 +748,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                           {generateCalendar(currentMonth).days.map((date, index) => {
                             const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
                             const isToday = date.toDateString() === new Date().toDateString();
-                            const isFullyBooked = isDateFullyBooked(date);
+                            const isFullyBooked = isDateFullyBooked(getDateKey(date));
                             const isSelected = isDateSelected(date);
                             const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
                             
@@ -802,20 +794,23 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                           <Label className="text-sm font-medium">Choisissez un créneau</Label>
                           <div className="grid grid-cols-3 gap-2">
                             {timeSlots.map((time) => {
-                              const isBusy = isTimeSlotBusy(interviewDate, time);
+                              const isBusy = isSlotBusy(getDateKey(interviewDate), time);
                               const isSelected = selectedTimeSlot === time;
                               
                               return (
                                 <button
                                   key={time}
-                                  onClick={() => {
+                                  onClick={async () => {
                                     if (!isBusy && !isReadOnly) {
-                                      setSelectedTimeSlot(time);
-                                      const [hours, minutes] = time.split(':');
-                                      const newDate = new Date(interviewDate);
-                                      newDate.setHours(parseInt(hours), parseInt(minutes));
-                                      setInterviewDate(newDate);
-                                      updateProtocol1('interview', 'interviewDate', newDate);
+                                      const success = await scheduleInterview(getDateKey(interviewDate), time);
+                                      if (success) {
+                                        setSelectedTimeSlot(time);
+                                        const [hours, minutes] = time.split(':');
+                                        const newDate = new Date(interviewDate);
+                                        newDate.setHours(parseInt(hours), parseInt(minutes));
+                                        setInterviewDate(newDate);
+                                        updateProtocol1('interview', 'interviewDate', newDate);
+                                      }
                                     }
                                   }}
                                   disabled={isBusy || isReadOnly}

@@ -71,3 +71,4 @@ grant execute on function public.is_user_recruiter_or_admin() to authenticated;
 
 commit;
 
+
