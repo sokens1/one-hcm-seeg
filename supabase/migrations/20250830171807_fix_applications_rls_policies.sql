@@ -60,3 +60,4 @@ CREATE POLICY "Users can update their own applications" ON applications
 -- Ensure RLS is enabled on applications table
 ALTER TABLE applications ENABLE ROW LEVEL SECURITY;
 
+

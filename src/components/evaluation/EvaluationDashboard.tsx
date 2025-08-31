@@ -29,6 +29,14 @@ interface StarRatingProps {
 }
 
 const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disabled = false }) => {
+  const handleStarClick = (starValue: number) => {
+    if (disabled) return;
+    
+    // Empêcher les clics involontaires en vérifiant si c'est un clic intentionnel
+    console.log('⭐ [STAR DEBUG] Clic sur étoile:', starValue, 'pour', label);
+    onChange(starValue);
+  };
+
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium">{label}</Label>
@@ -37,8 +45,18 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
           <button
             key={star}
             type="button"
-            onClick={() => !disabled && onChange(star)}
-            className="transition-colors hover:scale-110"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleStarClick(star);
+            }}
+            onMouseDown={(e) => e.preventDefault()} // Empêcher le focus involontaire
+            className={cn(
+              "transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-sm p-1",
+              disabled && "cursor-not-allowed"
+            )}
+            disabled={disabled}
+            aria-label={`Noter ${star} étoile${star > 1 ? 's' : ''} pour ${label}`}
           >
             <Star
               className={cn(
@@ -76,7 +94,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     updateEvaluation, 
     calculateSectionScores, 
     isLoading, 
-    isSaving 
+    isSaving,
+    reload
   } = useOptimizedProtocol1Evaluation(applicationId);
   
   const { toast } = useToast();
@@ -108,6 +127,25 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
       description: "Le candidat a été refusé et sera redirigé vers la synthèse",
       duration: 3000,
     });
+  };
+
+  // Fonction pour forcer la sauvegarde
+  const handleForceSave = async () => {
+    try {
+      await reload(); // Recharger les données depuis la base
+      toast({
+        title: "Données rechargées",
+        description: "Les données ont été rechargées depuis la base de données",
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur de rechargement",
+        description: "Impossible de recharger les données",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
   };
   
   const [interviewDate, setInterviewDate] = useState<Date | undefined>(evaluationData.protocol1.interview.interviewDate);
@@ -297,6 +335,28 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         <div className="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 z-50">
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
           <span>Sauvegarde...</span>
+        </div>
+      )}
+
+      {/* Bouton de rechargement des données */}
+      {!isReadOnly && (
+        <div className="fixed top-4 left-4 z-50">
+          <Button
+            onClick={handleForceSave}
+            variant="outline"
+            size="sm"
+            className="bg-white shadow-lg"
+            disabled={isSaving}
+          >
+            <div className="flex items-center gap-2">
+              {isSaving ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              ) : (
+                <div className="w-4 h-4">🔄</div>
+              )}
+              <span className="text-sm">Recharger</span>
+            </div>
+          </Button>
         </div>
       )}
       

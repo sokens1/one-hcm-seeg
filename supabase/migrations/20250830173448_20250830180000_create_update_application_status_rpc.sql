@@ -37,3 +37,4 @@ $$;
 -- Grant execute permission to authenticated users
 GRANT EXECUTE ON FUNCTION update_application_status(UUID, TEXT) TO authenticated;
 
+
