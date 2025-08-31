@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send, Building2, Banknote, Clock } from "lucide-react";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { ContentSpinner } from "@/components/ui/spinner";
 
@@ -220,9 +221,10 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                   onClick={onApply} 
                   className="w-full text-sm sm:text-base"
                   size="lg"
+                  disabled={isApplicationClosed()}
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  Postuler à cette offre
+                  {isApplicationClosed() ? 'Candidatures closes' : 'Postuler à cette offre'}
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
