@@ -204,7 +204,7 @@ export function SynthesisDashboard({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
-            Analyse détaillé des performances
+            Rubriques détaillées
           </CardTitle>
         </CardHeader>
         <CardContent>

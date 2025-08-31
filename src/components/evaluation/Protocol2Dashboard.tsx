@@ -227,7 +227,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Situation
+              Simulation 
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
