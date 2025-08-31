@@ -25,29 +25,34 @@ const generateTimeline = (application: Application | null | undefined): Timeline
   const status = application.status;
   const createdAt = format(new Date(application.created_at), 'dd MMMM yyyy', { locale: fr });
 
-  const isCompleted = (stepStatus: Application['status'][]) => stepStatus.includes(status);
-
   const timeline: TimelineStep[] = [
     {
-      title: "Dépôt de candidature",
+      title: "Candidature soumise",
       status: 'completed',
       icon: CheckCircle,
-      description: "Votre candidature a bien été soumise.",
+      description: "Votre candidature a bien été soumise et est en cours de traitement.",
       date: createdAt,
     },
     {
-      title: "Evaluation MTP",
-      status: status === 'incubation' ? 'current' : (isCompleted(['embauche', 'refuse']) ? 'completed' : 'pending'),
+      title: "Traitement",
+      status: status === 'candidature' ? 'current' : (['incubation', 'embauche', 'refuse'].includes(status) ? 'completed' : 'pending'),
       icon: Users,
-      description: "Entretien et évaluation MTP (Métier, Talent, Paradigme).",
-      date: status === 'incubation' ? 'En cours' : (isCompleted(['embauche', 'refuse']) ? createdAt : 'À venir'),
+      description: "Protocole 1 : Évaluation et Entretien",
+      date: status === 'candidature' ? 'En cours' : (['incubation', 'embauche', 'refuse'].includes(status) ? 'Terminé' : 'À venir'),
     },
     {
-      title: "Décision finale",
+      title: "Présélectionné (Incubation)",
+      status: status === 'incubation' ? 'current' : (status === 'embauche' ? 'completed' : (status === 'refuse' ? 'refused' : 'pending')),
+      icon: status === 'refuse' ? XCircle : Trophy,
+      description: "Protocole 2 : Simulation, Performance et Compétence",
+      date: status === 'incubation' ? 'En cours' : (status === 'embauche' ? 'Terminé' : (status === 'refuse' ? 'Refusé' : 'À venir')),
+    },
+    {
+      title: "Selectionné (Intégration)",
       status: status === 'embauche' ? 'completed' : (status === 'refuse' ? 'refused' : 'pending'),
       icon: status === 'refuse' ? XCircle : Trophy,
-      description: status === 'embauche' ? "Félicitations ! Votre candidature est retenue." : (status === 'refuse' ? "Nous ne donnons pas suite à votre candidature." : "En attente de la décision finale."),
-      date: isCompleted(['embauche', 'refuse']) ? format(new Date(application.updated_at), 'dd MMMM yyyy', { locale: fr }) : 'À venir',
+      description: status === 'embauche' ? "Félicitations ! Vous avez été engagé." : (status === 'refuse' ? "Nous ne donnons pas suite à votre candidature." : "Décision finale"),
+      date: status === 'embauche' ? format(new Date(application.updated_at), 'dd MMMM yyyy', { locale: fr }) : (status === 'refuse' ? format(new Date(application.updated_at), 'dd MMMM yyyy', { locale: fr }) : 'À venir'),
     },
   ];
 
@@ -173,7 +178,7 @@ export function ApplicationTracking() {
                     <h3 className="font-semibold text-base sm:text-lg leading-tight">{step.title}</h3>
                     {getStatusBadge(step.status)}
                   </div>
-                  <p className="text-muted-foreground mb-2 text-sm sm:text-base leading-relaxed">{step.description}</p>
+                  <p className="text-primary font-medium mb-1 text-sm sm:text-base leading-relaxed">{step.description}</p>
                   {step.date && (
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />

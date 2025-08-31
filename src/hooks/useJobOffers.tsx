@@ -35,7 +35,7 @@ const fetchJobOffers = async () => {
   // 1. Fetch all active job offers
   const { data: offers, error } = await supabase
     .from('job_offers')
-    .select('id,title,description,location,contract_type,requirements,status,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities')
+    .select('id,title,location,contract_type,status,created_at,recruiter_id,categorie_metier,date_limite')
     .eq('status', 'active')
     .order('created_at', { ascending: false });
 

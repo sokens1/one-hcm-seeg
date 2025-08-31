@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { useProtocol2Evaluation } from "@/hooks/useProtocol2Evaluation";
+import { useOptimizedProtocol2Evaluation } from "@/hooks/useOptimizedProtocol2Evaluation";
 
 interface StarRatingProps {
   value: number;
@@ -103,7 +102,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
     calculateSectionScores,
     isLoading,
     isSaving,
-  } = useProtocol2Evaluation(applicationId);
+  } = useOptimizedProtocol2Evaluation(applicationId);
 
   const handleDecision = (decision: 'embauche' | 'refuse') => {
     onStatusChange(decision);
@@ -161,19 +160,21 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
     <div className="space-y-6">
       {/* En-tête du Protocole 2 */}
       <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl flex items-center gap-2">
-                <CheckCircle className="w-5 h-5" />
+        <CardHeader className="pb-3 sm:pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                 Synthèse de l'Évaluation
               </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Candidat: {candidateName} • Poste: {jobTitle}
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                <span className="block sm:inline">Candidat: {candidateName}</span>
+                <span className="hidden sm:inline"> • </span>
+                <span className="block sm:inline">Poste: {jobTitle}</span>
               </p>
             </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-primary">{scores.globalScore.toFixed(1)}%</div>
+            <div className="text-center sm:text-right">
+              <div className="text-xl sm:text-2xl font-bold text-primary">{scores.global.toFixed(1)}%</div>
               <div className="text-xs text-muted-foreground">Score Global</div>
             </div>
           </div>
@@ -185,7 +186,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
               <span className="font-medium text-gray-600">Progression de l'évaluation</span>
             </div>
             <Progress 
-              value={scores.globalScore} 
+              value={scores.global} 
               className="h-3 bg-gray-200"
               style={{
                 '--progress-foreground': 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)'
@@ -193,9 +194,9 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             />
           </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div className="text-sm text-muted-foreground">Poids :</div>
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
               <div className="space-y-1">
                 <div className="text-xs text-muted-foreground">Situation</div>
                 <div className="font-semibold text-sm text-gray-600">50%</div>
@@ -226,15 +227,15 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.status)}
-              Situation
+              Simulation 
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_de_role.score}
@@ -283,8 +284,8 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.validation_operationnelle.fiche_kpis.score}
@@ -303,15 +304,15 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             
             <div className="space-y-3">
               <StarRating
-                value={evaluationData.validation_operationnelle.fiche_kpis.score}
-                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                value={evaluationData.validation_operationnelle.fiche_kris?.score || 0}
+                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kris.score', value)}
                 label="Key Risque Indicators (KRI's)"
                 disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur les KRI's..."
-                value={evaluationData.validation_operationnelle.fiche_kpis.comments}
-                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
+                value={evaluationData.validation_operationnelle.fiche_kris?.comments || ''}
+                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kris.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
@@ -319,15 +320,15 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             
             <div className="space-y-3">
               <StarRating
-                value={evaluationData.validation_operationnelle.fiche_kpis.score}
-                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                value={evaluationData.validation_operationnelle.fiche_kcis?.score || 0}
+                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kcis.score', value)}
                 label="Key Control Indicators (KCI's)"
                 disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur les KCI's..."
-                value={evaluationData.validation_operationnelle.fiche_kpis.comments}
-                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
+                value={evaluationData.validation_operationnelle.fiche_kcis?.comments || ''}
+                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kcis.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
@@ -349,8 +350,8 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.analyse_competences.gap_competences.score}
@@ -392,7 +393,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row gap-3 justify-end">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
             <Button 
               variant="outline" 
               onClick={() => !isReadOnly && handleDecision('refuse')}
@@ -416,9 +417,10 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
 
       {/* Indicateur de sauvegarde */}
       {isSaving && (
-        <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 z-50">
-          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white"></div>
-          <span>Sauvegarde en cours...</span>
+        <div className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 bg-blue-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md shadow-lg flex items-center gap-2 z-50 text-sm">
+          <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-white"></div>
+          <span className="hidden sm:inline">Sauvegarde en cours...</span>
+          <span className="sm:hidden">Sauvegarde...</span>
         </div>
       )}
     </div>
