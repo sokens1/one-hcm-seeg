@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -24,6 +24,8 @@ export const useInterviewScheduling = (applicationId?: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  const loadingTimeoutRef = useRef<NodeJS.Timeout>();
+  const lastApplicationIdRef = useRef<string>();
 
   // Créneaux horaires disponibles
   const timeSlots = [
@@ -35,15 +37,35 @@ export const useInterviewScheduling = (applicationId?: string) => {
   const loadInterviewSlots = useCallback(async () => {
     if (!applicationId) return;
 
+    // Éviter les appels multiples pour la même application
+    if (lastApplicationIdRef.current === applicationId && schedules.length > 0) {
+      console.log('⏭️ Chargement ignoré - données déjà présentes pour:', applicationId);
+      return;
+    }
+
+    // Annuler le timeout précédent s'il existe
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+    }
+
     setIsLoading(true);
+    lastApplicationIdRef.current = applicationId;
+    
     try {
+      console.log('🔄 Chargement des créneaux pour application:', applicationId);
+      
       const { data, error } = await supabase
         .from('interview_slots')
         .select('*')
         .eq('application_id', applicationId)
         .order('date', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erreur Supabase:', error);
+        throw error;
+      }
+
+      console.log('✅ Données reçues:', data);
 
       // Organiser les créneaux par date
       const schedulesMap = new Map<string, InterviewSlot[]>();
@@ -71,18 +93,22 @@ export const useInterviewScheduling = (applicationId?: string) => {
         schedules.push({ date, slots: allSlots });
       });
 
+      console.log('📅 Schedules générés:', schedules);
       setSchedules(schedules);
     } catch (error) {
-      console.error('Erreur lors du chargement des créneaux:', error);
+      console.error('❌ Erreur lors du chargement des créneaux:', error);
       toast({
         title: "Erreur",
         description: "Impossible de charger les créneaux d'entretien",
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      // Délai pour éviter les changements d'état trop rapides
+      loadingTimeoutRef.current = setTimeout(() => {
+        setIsLoading(false);
+      }, 200);
     }
-  }, [applicationId, timeSlots, toast]);
+  }, [applicationId, toast, schedules.length]);
 
   // Programmer un entretien
   const scheduleInterview = useCallback(async (date: string, time: string) => {
@@ -91,19 +117,19 @@ export const useInterviewScheduling = (applicationId?: string) => {
     setIsSaving(true);
     try {
       // Vérifier si le créneau est déjà pris
-      const { data: existingSlot, error: checkError } = await supabase
+      const { data: existingSlots, error: checkError } = await supabase
         .from('interview_slots')
         .select('*')
         .eq('date', date)
         .eq('time', time)
-        .eq('is_available', false)
-        .single();
+        .eq('is_available', false);
 
-      if (checkError && checkError.code !== 'PGRST116') {
+      if (checkError) {
+        console.error('❌ Erreur lors de la vérification du créneau:', checkError);
         throw checkError;
       }
 
-      if (existingSlot) {
+      if (existingSlots && existingSlots.length > 0) {
         toast({
           title: "Créneau occupé",
           description: "Ce créneau est déjà réservé",
@@ -112,10 +138,10 @@ export const useInterviewScheduling = (applicationId?: string) => {
         return false;
       }
 
-      // Créer ou mettre à jour le créneau
+      // Créer le créneau
       const { error } = await supabase
         .from('interview_slots')
-        .upsert({
+        .insert({
           date,
           time,
           is_available: false,
@@ -145,6 +171,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       });
 
       // Recharger les créneaux
+      lastApplicationIdRef.current = undefined; // Force le rechargement
       await loadInterviewSlots();
       return true;
     } catch (error) {
@@ -158,7 +185,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, toast, loadInterviewSlots]);
+  }, [applicationId, toast]);
 
   // Annuler un entretien
   const cancelInterview = useCallback(async (date: string, time: string) => {
@@ -198,6 +225,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       });
 
       // Recharger les créneaux
+      lastApplicationIdRef.current = undefined; // Force le rechargement
       await loadInterviewSlots();
       return true;
     } catch (error) {
@@ -211,7 +239,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, toast, loadInterviewSlots]);
+  }, [applicationId, toast]);
 
   // Vérifier si un créneau est occupé
   const isSlotBusy = useCallback((date: string, time: string) => {
@@ -264,6 +292,19 @@ export const useInterviewScheduling = (applicationId?: string) => {
   // Charger les créneaux au montage du composant
   useEffect(() => {
     loadInterviewSlots();
+    
+    // Cleanup function
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [loadInterviewSlots]);
+
+  // Fonction pour forcer le rechargement
+  const forceReload = useCallback(() => {
+    lastApplicationIdRef.current = undefined;
+    loadInterviewSlots();
   }, [loadInterviewSlots]);
 
   return {
@@ -272,6 +313,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     isSaving,
     timeSlots,
     loadInterviewSlots,
+    forceReload,
     scheduleInterview,
     cancelInterview,
     isSlotBusy,

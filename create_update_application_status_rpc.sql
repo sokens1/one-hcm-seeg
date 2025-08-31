@@ -38,3 +38,4 @@ $$;
 GRANT EXECUTE ON FUNCTION update_application_status(UUID, TEXT) TO authenticated;
 
 
+

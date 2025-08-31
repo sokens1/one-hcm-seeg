@@ -51,3 +51,4 @@ COMMENT ON COLUMN public.application_drafts.user_id IS 'Référence vers l''util
 COMMENT ON COLUMN public.application_drafts.job_offer_id IS 'Référence vers l''offre d''emploi (doit exister dans job_offers)';
 COMMENT ON COLUMN public.application_drafts.form_data IS 'Données du formulaire de candidature en JSON';
 COMMENT ON COLUMN public.application_drafts.ui_state IS 'État de l''interface utilisateur (étape, onglet actif)';
+
