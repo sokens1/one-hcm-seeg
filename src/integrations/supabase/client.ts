@@ -34,5 +34,16 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+  },
+  // Optimisations pour réduire la charge IO
+  realtime: {
+    params: {
+      eventsPerSecond: 2, // Limiter les événements en temps réel
+    },
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'talent-flow-optimized',
+    },
+  },
 });

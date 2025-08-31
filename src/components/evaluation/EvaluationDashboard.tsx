@@ -15,7 +15,7 @@ import { CalendarIcon, Star, Users, CheckCircle, Clock, AlertCircle, FileText, U
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
-import { useProtocol1Evaluation } from "@/hooks/useProtocol1Evaluation";
+import { useOptimizedProtocol1Evaluation } from "@/hooks/useOptimizedProtocol1Evaluation";
 import { useToast } from "@/components/ui/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
@@ -77,7 +77,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     calculateSectionScores, 
     isLoading, 
     isSaving 
-  } = useProtocol1Evaluation(applicationId);
+  } = useOptimizedProtocol1Evaluation(applicationId);
   
   const { toast } = useToast();
   
@@ -853,7 +853,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               </div>
 
                 <div className="space-y-4">
-                  <Label className="text-sm font-medium">Évaluation Adhérence MTP (Évaluation Physique)</Label>
+                  <Label className="text-sm font-medium">Évaluation Adhérence MTP </Label>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="space-y-3">
                   <StarRating
@@ -940,37 +940,37 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           {/* Actions Protocole 1 */}
           {!isReadOnly && (
             <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-              <Button 
-                variant="outline" 
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+            <Button 
+              variant="outline" 
                 className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
-              >
-                Refuser
-              </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
-                      Confirmer le refus
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <Button 
-                onClick={handleIncubate}
+            >
+              Refuser
+            </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
+                    Confirmer le refus
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <Button 
+              onClick={handleIncubate}
                 className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
-              >
-                Incuber
-              </Button>
-            </div>
+            >
+              Incuber
+            </Button>
+          </div>
           )}
           
           {/* Message pour la vue observateur */}

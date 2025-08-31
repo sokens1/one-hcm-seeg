@@ -1,74 +1,9 @@
-<<<<<<< HEAD
 import { useState, useEffect, useCallback, useRef } from 'react';
-=======
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect, useCallback } from 'react';
->>>>>>> c6157c5caacfefac773187232d2925ac0285fdc8
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-
-export interface EvaluationData {
-  globalScore: number;
-  status: string;
-  protocol1: {
-    score: number;
-    status: 'pending' | 'in_progress' | 'completed';
-    // Partie 1: Validation des Prérequis
-    documentaryEvaluation: {
-      cv: {
-        score: number;
-        comments: string;
-      };
-      lettreMotivation: {
-        score: number;
-        comments: string;
-      };
-      diplomesEtCertificats: {
-        score: number;
-        comments: string;
-      };
-    };
-    // Evaluation MTP - Taux d'adhérence MTP
-    mtpAdherence: {
-      metier: {
-        score: number;
-        comments: string;
-      };
-      talent: {
-        score: number;
-        comments: string;
-      };
-      paradigme: {
-        score: number;
-        comments: string;
-      };
-    };
-    // Partie 2: Entretien
-    interview: {
-      interviewDate?: Date;
-      physicalMtpAdherence: {
-        metier: {
-          score: number;
-          comments: string;
-        };
-        talent: {
-          score: number;
-          comments: string;
-        };
-        paradigme: {
-          score: number;
-          comments: string;
-        };
-      };
-      gapCompetence: {
-        score: number;
-        comments: string;
-      };
-      generalSummary: string;
-    };
-  };
-}
+import { useOptimizedCache } from './useOptimizedCache';
+import { EvaluationData } from './useProtocol1Evaluation';
 
 const defaultEvaluationData: EvaluationData = {
   globalScore: 0,
@@ -98,16 +33,17 @@ const defaultEvaluationData: EvaluationData = {
   },
 };
 
-export function useProtocol1Evaluation(applicationId: string) {
+export function useOptimizedProtocol1Evaluation(applicationId: string) {
   const [evaluationData, setEvaluationData] = useState<EvaluationData>(defaultEvaluationData);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const cache = useOptimizedCache<EvaluationData>({ ttl: 2 * 60 * 1000 }); // 2 minutes de cache
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fonction pour calculer les scores partiels de chaque section
   const calculateSectionScores = useCallback((protocol1: any) => {
-    // Validation des Prérequis - Moyenne des 3 évaluations documentaires (convertie en %)
     const documentaryScores = [
       protocol1.documentaryEvaluation.cv.score,
       protocol1.documentaryEvaluation.lettreMotivation.score,
@@ -116,7 +52,6 @@ export function useProtocol1Evaluation(applicationId: string) {
     const documentaryAverage = documentaryScores.length > 0 ? documentaryScores.reduce((a, b) => a + b, 0) / documentaryScores.length : 0;
     const documentaryScore = (documentaryAverage / 5) * 100;
     
-    // Evaluation MTP - Taux d'adhérence MTP (convertie en %)
     const mtpScores = [
       protocol1.mtpAdherence.metier.score,
       protocol1.mtpAdherence.talent.score,
@@ -125,7 +60,6 @@ export function useProtocol1Evaluation(applicationId: string) {
     const mtpAverage = mtpScores.length > 0 ? mtpScores.reduce((a, b) => a + b, 0) / mtpScores.length : 0;
     const mtpScore = (mtpAverage / 5) * 100;
     
-    // Entretien - Moyenne des évaluations physiques MTP + Gap de compétence (convertie en %)
     const interviewScores = [
       protocol1.interview.physicalMtpAdherence.metier.score,
       protocol1.interview.physicalMtpAdherence.talent.score,
@@ -135,7 +69,6 @@ export function useProtocol1Evaluation(applicationId: string) {
     const interviewAverage = interviewScores.length > 0 ? interviewScores.reduce((a, b) => a + b, 0) / interviewScores.length : 0;
     const interviewScore = (interviewAverage / 5) * 100;
 
-    // Score global = moyenne pondérée des 3 sections
     const totalScore = (documentaryScore + mtpScore + interviewScore) / 3;
 
     return {
@@ -146,12 +79,21 @@ export function useProtocol1Evaluation(applicationId: string) {
     };
   }, []);
 
-  // Charger les données existantes
+  // Charger les données avec cache
   const loadEvaluation = useCallback(async () => {
     if (!applicationId) return;
     
+    // Vérifier le cache d'abord
+    const cachedData = cache.get(`evaluation_${applicationId}`);
+    if (cachedData) {
+      setEvaluationData(cachedData);
+      setIsLoading(false);
+      return;
+    }
+    
     setIsLoading(true);
     try {
+      // Requête optimisée - seulement les champs nécessaires
       const { data, error } = await supabase
         .from('protocol1_evaluations')
         .select(`
@@ -185,13 +127,13 @@ export function useProtocol1Evaluation(applicationId: string) {
         .eq('application_id', applicationId)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      if (error && error.code !== 'PGRST116') {
         throw error;
       }
 
+      let loadedData = defaultEvaluationData;
       if (data) {
-        // Mapper les données de la DB vers notre structure
-        const loadedData: EvaluationData = {
+        loadedData = {
           globalScore: data.overall_score || 0,
           status: data.status === 'completed' ? 'Évaluation terminée' : 'Évaluation - Protocole 1 en cours',
           protocol1: {
@@ -249,9 +191,12 @@ export function useProtocol1Evaluation(applicationId: string) {
             },
           },
         };
-        
-        setEvaluationData(loadedData);
       }
+      
+      setEvaluationData(loadedData);
+      // Mettre en cache les données
+      cache.set(`evaluation_${applicationId}`, loadedData);
+      
     } catch (error) {
       console.error('Erreur lors du chargement de l\'évaluation:', error);
       toast({
@@ -262,9 +207,9 @@ export function useProtocol1Evaluation(applicationId: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [applicationId, toast]);
+  }, [applicationId, toast, cache]);
 
-  // Sauvegarder les données
+  // Sauvegarder les données avec invalidation du cache
   const saveEvaluation = useCallback(async (data: EvaluationData) => {
     if (!applicationId || !user) return;
     
@@ -275,24 +220,18 @@ export function useProtocol1Evaluation(applicationId: string) {
       const evaluationRecord = {
         application_id: applicationId,
         evaluator_id: user.id,
-        
-        // Évaluation documentaire
         cv_score: data.protocol1.documentaryEvaluation.cv.score,
         cv_comments: data.protocol1.documentaryEvaluation.cv.comments,
         lettre_motivation_score: data.protocol1.documentaryEvaluation.lettreMotivation.score,
         lettre_motivation_comments: data.protocol1.documentaryEvaluation.lettreMotivation.comments,
         diplomes_certificats_score: data.protocol1.documentaryEvaluation.diplomesEtCertificats.score,
         diplomes_certificats_comments: data.protocol1.documentaryEvaluation.diplomesEtCertificats.comments,
-        
-        // Évaluation MTP
         metier_score: data.protocol1.mtpAdherence.metier.score,
         metier_comments: data.protocol1.mtpAdherence.metier.comments,
         talent_score: data.protocol1.mtpAdherence.talent.score,
         talent_comments: data.protocol1.mtpAdherence.talent.comments,
         paradigme_score: data.protocol1.mtpAdherence.paradigme.score,
         paradigme_comments: data.protocol1.mtpAdherence.paradigme.comments,
-        
-        // Entretien
         interview_date: data.protocol1.interview.interviewDate?.toISOString(),
         interview_metier_score: data.protocol1.interview.physicalMtpAdherence.metier.score,
         interview_metier_comments: data.protocol1.interview.physicalMtpAdherence.metier.comments,
@@ -303,18 +242,13 @@ export function useProtocol1Evaluation(applicationId: string) {
         gap_competence_score: data.protocol1.interview.gapCompetence.score,
         gap_competence_comments: data.protocol1.interview.gapCompetence.comments,
         general_summary: data.protocol1.interview.generalSummary,
-        
-        // Scores calculés
         documentary_score: sectionScores.documentaryScore,
         mtp_score: sectionScores.mtpScore,
         interview_score: sectionScores.interviewScore,
         total_score: sectionScores.totalScore,
         overall_score: Math.round(sectionScores.totalScore),
-        
-        // Statut
         status: data.protocol1.status,
         completed: data.protocol1.status === 'completed',
-        
         updated_at: new Date().toISOString()
       };
 
@@ -327,13 +261,11 @@ export function useProtocol1Evaluation(applicationId: string) {
 
       let result;
       if (existingRecord) {
-        // Mettre à jour l'enregistrement existant
         result = await supabase
           .from('protocol1_evaluations')
           .update(evaluationRecord)
           .eq('application_id', applicationId);
       } else {
-        // Créer un nouvel enregistrement
         result = await supabase
           .from('protocol1_evaluations')
           .insert(evaluationRecord);
@@ -343,6 +275,9 @@ export function useProtocol1Evaluation(applicationId: string) {
         throw result.error;
       }
 
+      // Invalider le cache après sauvegarde
+      cache.invalidate(`evaluation_${applicationId}`);
+      
       console.log('Évaluation sauvegardée avec succès');
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
@@ -354,22 +289,17 @@ export function useProtocol1Evaluation(applicationId: string) {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, user, calculateSectionScores, toast]);
-
-  // Debounce timer pour les sauvegardes automatiques
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  }, [applicationId, user, calculateSectionScores, toast, cache]);
 
   // Mettre à jour les données avec sauvegarde automatique optimisée
   const updateEvaluation = useCallback((updater: (prev: EvaluationData) => EvaluationData) => {
     setEvaluationData(prev => {
       const newData = updater(prev);
       
-      // Calculer les nouveaux scores
       const sectionScores = calculateSectionScores(newData.protocol1);
       newData.protocol1.score = Math.round(sectionScores.totalScore);
       newData.globalScore = sectionScores.totalScore;
       
-      // Mettre à jour le statut
       if (sectionScores.documentaryScore > 0 && sectionScores.mtpScore > 0) {
         newData.protocol1.status = 'in_progress';
       }
@@ -382,11 +312,11 @@ export function useProtocol1Evaluation(applicationId: string) {
         clearTimeout(saveTimeoutRef.current);
       }
       
-      // Sauvegarder automatiquement après un délai plus long (5 secondes au lieu de 1)
+      // Sauvegarder automatiquement après un délai plus long (10 secondes)
       saveTimeoutRef.current = setTimeout(() => {
         saveEvaluation(newData);
         saveTimeoutRef.current = null;
-      }, 5000);
+      }, 10000);
       
       return newData;
     });
@@ -396,6 +326,15 @@ export function useProtocol1Evaluation(applicationId: string) {
   useEffect(() => {
     loadEvaluation();
   }, [loadEvaluation]);
+
+  // Nettoyer le cache périodiquement
+  useEffect(() => {
+    const interval = setInterval(() => {
+      cache.cleanup();
+    }, 60000); // Nettoyer toutes les minutes
+
+    return () => clearInterval(interval);
+  }, [cache]);
 
   return {
     evaluationData,
