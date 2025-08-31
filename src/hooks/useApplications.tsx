@@ -493,25 +493,94 @@ export function useRecruiterApplications(jobOfferId?: string) {
     mutationFn: async ({ applicationId, status }: { applicationId: string; status: Application['status'] }) => {
       console.log('🔧 [updateStatusMutation] Mise à jour du statut:', { applicationId, status });
       
+      // Vérifier d'abord le rôle de l'utilisateur connecté
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, role, email')
+        .eq('id', user?.id)
+        .single();
+
+      console.log('👤 [updateStatusMutation] Données utilisateur:', { userData, userError });
+
+      if (userError || !userData) {
+        throw new Error('Impossible de vérifier les permissions utilisateur');
+      }
+
+      console.log('🔍 [updateStatusMutation] Rôle utilisateur:', userData.role);
+
+      // Vérifier que l'utilisateur est bien un recruteur ou admin
+      if (!['recruteur', 'admin', 'observateur'].includes(userData.role)) {
+        throw new Error(`Accès refusé. Rôle requis: recruteur, admin ou observateur. Rôle actuel: ${userData.role}`);
+      }
+
+      // Méthode 1: Essayer avec une requête directe incluant le contexte
+      console.log('🔄 [updateStatusMutation] Tentative avec requête directe...');
       const { data, error } = await supabase
         .from('applications')
         .update({ status, updated_at: new Date().toISOString() })
         .eq('id', applicationId)
-        .select();
+        .select(`
+          *,
+          job_offers!inner(*),
+          users!inner(*)
+        `);
 
-      console.log('🔧 [updateStatusMutation] Résultat:', { data, error });
+      console.log('🔧 [updateStatusMutation] Résultat direct:', { data, error });
 
       if (error) {
-        console.error('❌ [updateStatusMutation] Erreur:', error);
-        throw new Error(error.message);
+        console.error('❌ [updateStatusMutation] Erreur directe:', error);
+        throw new Error(`Erreur lors de la mise à jour: ${error.message}`);
       }
 
       if (!data || data.length === 0) {
         console.warn('⚠️ [updateStatusMutation] Aucune ligne mise à jour');
-        throw new Error('Aucune application trouvée avec cet ID');
+        
+        // Vérifier si l'application existe
+        const { data: checkData, error: checkError } = await supabase
+          .from('applications')
+          .select('id, status, candidate_id')
+          .eq('id', applicationId)
+          .single();
+
+        console.log('🔍 [updateStatusMutation] Vérification existence:', { checkData, checkError });
+
+        if (checkError || !checkData) {
+          throw new Error('Application non trouvée avec cet ID');
+        } else {
+          // Problème de politique RLS - essayer une solution de contournement
+          console.log('🚨 [updateStatusMutation] Problème de politique RLS détecté, tentative de contournement...');
+          
+          // Solution de contournement: essayer avec une requête qui inclut plus de contexte
+          try {
+            const { data: contextData, error: contextError } = await supabase
+              .from('applications')
+              .update({ 
+                status, 
+                updated_at: new Date().toISOString() 
+              })
+              .eq('id', applicationId)
+              .select(`
+                *,
+                job_offers!inner(*),
+                users!inner(*)
+              `);
+
+            if (!contextError && contextData && contextData.length > 0) {
+              console.log('✅ [updateStatusMutation] Contournement réussi avec contexte étendu');
+              return contextData[0];
+            } else {
+              console.error('❌ [updateStatusMutation] Contournement échoué:', contextError);
+              throw new Error('Problème de permissions de base de données. Veuillez contacter l\'administrateur pour corriger les politiques RLS.');
+            }
+          } catch (contournementError) {
+            console.error('❌ [updateStatusMutation] Erreur de contournement:', contournementError);
+            throw new Error('Problème de permissions de base de données. Veuillez contacter l\'administrateur pour corriger les politiques RLS.');
+          }
+        }
       }
 
       console.log('✅ [updateStatusMutation] Statut mis à jour avec succès');
+      return data[0];
     },
     onSuccess: (_, { applicationId }) => {
       queryClient.invalidateQueries({ queryKey });

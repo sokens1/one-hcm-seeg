@@ -222,3 +222,451 @@ export const useInterviewSlots = () => {
     loadBookedSlots
   };
 };
+
+      // Créer le nouveau créneau
+
+      const { error: insertError } = await supabase
+
+        .from('interview_slots')
+
+        .insert({
+
+          date: dateStr,
+
+          time,
+
+          application_id: applicationId,
+
+          candidate_name: candidateName,
+
+          job_title: jobTitle,
+
+          status: 'scheduled'
+
+        });
+
+
+
+      if (insertError) {
+
+        throw insertError;
+
+      }
+
+
+
+      // Recharger les créneaux
+
+      await loadBookedSlots();
+
+      return true;
+
+    } catch (error) {
+
+      console.error('Erreur lors de la réservation:', error);
+
+      return false;
+
+    }
+
+  }, [isSlotBooked, loadBookedSlots]);
+
+
+
+  // Annuler un créneau
+
+  const cancelSlot = useCallback(async (applicationId: string): Promise<boolean> => {
+
+    try {
+
+      const { error } = await supabase
+
+        .from('interview_slots')
+
+        .update({ status: 'cancelled' })
+
+        .eq('application_id', applicationId)
+
+        .eq('status', 'scheduled');
+
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+
+      // Recharger les créneaux
+
+      await loadBookedSlots();
+
+      return true;
+
+    } catch (error) {
+
+      console.error('Erreur lors de l\'annulation:', error);
+
+      return false;
+
+    }
+
+  }, [loadBookedSlots]);
+
+
+
+  // Obtenir le créneau réservé pour une candidature
+
+  const getBookedSlotForApplication = useCallback((applicationId: string): InterviewSlot | undefined => {
+
+    return bookedSlots.find(slot => 
+
+      slot.application_id === applicationId && 
+
+      slot.status === 'scheduled'
+
+    );
+
+  }, [bookedSlots]);
+
+
+
+  // Vérifier si une date est complètement occupée
+
+  const isDateFullyBooked = useCallback((date: Date): boolean => {
+
+    const availableSlots = getAvailableSlots(date);
+
+    return availableSlots.every(slot => !slot.isAvailable);
+
+  }, [getAvailableSlots]);
+
+
+
+  // Vérifier si une date est partiellement occupée
+
+  const isDatePartiallyBooked = useCallback((date: Date): boolean => {
+
+    const availableSlots = getAvailableSlots(date);
+
+    const hasAvailable = availableSlots.some(slot => slot.isAvailable);
+
+    const hasBooked = availableSlots.some(slot => !slot.isAvailable);
+
+    return hasAvailable && hasBooked;
+
+  }, [getAvailableSlots]);
+
+
+
+  // Charger les créneaux au montage du composant
+
+  useEffect(() => {
+
+    loadBookedSlots();
+
+  }, [loadBookedSlots]);
+
+
+
+  // Écouter les changements en temps réel
+
+  useEffect(() => {
+
+    const channel = supabase
+
+      .channel('interview_slots_changes')
+
+      .on(
+
+        'postgres_changes',
+
+        {
+
+          event: '*',
+
+          schema: 'public',
+
+          table: 'interview_slots'
+
+        },
+
+        () => {
+
+          // Recharger les créneaux quand il y a des changements
+
+          loadBookedSlots();
+
+        }
+
+      )
+
+      .subscribe();
+
+
+
+    return () => {
+
+      supabase.removeChannel(channel);
+
+    };
+
+  }, [loadBookedSlots]);
+
+
+
+  return {
+
+    bookedSlots,
+
+    isLoading,
+
+    timeSlots,
+
+    isSlotBooked,
+
+    getAvailableSlots,
+
+    bookSlot,
+
+    cancelSlot,
+
+    getBookedSlotForApplication,
+
+    isDateFullyBooked,
+
+    isDatePartiallyBooked,
+
+    loadBookedSlots
+
+  };
+
+};
+
+
+
+      // Créer le nouveau créneau
+
+      const { error: insertError } = await supabase
+
+        .from('interview_slots')
+
+        .insert({
+
+          date: dateStr,
+
+          time,
+
+          application_id: applicationId,
+
+          candidate_name: candidateName,
+
+          job_title: jobTitle,
+
+          status: 'scheduled'
+
+        });
+
+
+
+      if (insertError) {
+
+        throw insertError;
+
+      }
+
+
+
+      // Recharger les créneaux
+
+      await loadBookedSlots();
+
+      return true;
+
+    } catch (error) {
+
+      console.error('Erreur lors de la réservation:', error);
+
+      return false;
+
+    }
+
+  }, [isSlotBooked, loadBookedSlots]);
+
+
+
+  // Annuler un créneau
+
+  const cancelSlot = useCallback(async (applicationId: string): Promise<boolean> => {
+
+    try {
+
+      const { error } = await supabase
+
+        .from('interview_slots')
+
+        .update({ status: 'cancelled' })
+
+        .eq('application_id', applicationId)
+
+        .eq('status', 'scheduled');
+
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+
+      // Recharger les créneaux
+
+      await loadBookedSlots();
+
+      return true;
+
+    } catch (error) {
+
+      console.error('Erreur lors de l\'annulation:', error);
+
+      return false;
+
+    }
+
+  }, [loadBookedSlots]);
+
+
+
+  // Obtenir le créneau réservé pour une candidature
+
+  const getBookedSlotForApplication = useCallback((applicationId: string): InterviewSlot | undefined => {
+
+    return bookedSlots.find(slot => 
+
+      slot.application_id === applicationId && 
+
+      slot.status === 'scheduled'
+
+    );
+
+  }, [bookedSlots]);
+
+
+
+  // Vérifier si une date est complètement occupée
+
+  const isDateFullyBooked = useCallback((date: Date): boolean => {
+
+    const availableSlots = getAvailableSlots(date);
+
+    return availableSlots.every(slot => !slot.isAvailable);
+
+  }, [getAvailableSlots]);
+
+
+
+  // Vérifier si une date est partiellement occupée
+
+  const isDatePartiallyBooked = useCallback((date: Date): boolean => {
+
+    const availableSlots = getAvailableSlots(date);
+
+    const hasAvailable = availableSlots.some(slot => slot.isAvailable);
+
+    const hasBooked = availableSlots.some(slot => !slot.isAvailable);
+
+    return hasAvailable && hasBooked;
+
+  }, [getAvailableSlots]);
+
+
+
+  // Charger les créneaux au montage du composant
+
+  useEffect(() => {
+
+    loadBookedSlots();
+
+  }, [loadBookedSlots]);
+
+
+
+  // Écouter les changements en temps réel
+
+  useEffect(() => {
+
+    const channel = supabase
+
+      .channel('interview_slots_changes')
+
+      .on(
+
+        'postgres_changes',
+
+        {
+
+          event: '*',
+
+          schema: 'public',
+
+          table: 'interview_slots'
+
+        },
+
+        () => {
+
+          // Recharger les créneaux quand il y a des changements
+
+          loadBookedSlots();
+
+        }
+
+      )
+
+      .subscribe();
+
+
+
+    return () => {
+
+      supabase.removeChannel(channel);
+
+    };
+
+  }, [loadBookedSlots]);
+
+
+
+  return {
+
+    bookedSlots,
+
+    isLoading,
+
+    timeSlots,
+
+    isSlotBooked,
+
+    getAvailableSlots,
+
+    bookSlot,
+
+    cancelSlot,
+
+    getBookedSlotForApplication,
+
+    isDateFullyBooked,
+
+    isDatePartiallyBooked,
+
+    loadBookedSlots
+
+  };
+
+};
+
+

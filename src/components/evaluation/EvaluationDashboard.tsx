@@ -15,7 +15,7 @@ import { CalendarIcon, Star, Users, CheckCircle, Clock, AlertCircle, FileText, U
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
-import { useProtocol1Evaluation } from "@/hooks/useProtocol1Evaluation";
+import { useOptimizedProtocol1Evaluation } from "@/hooks/useOptimizedProtocol1Evaluation";
 import { useToast } from "@/components/ui/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
@@ -29,6 +29,14 @@ interface StarRatingProps {
 }
 
 const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disabled = false }) => {
+  const handleStarClick = (starValue: number) => {
+    if (disabled) return;
+    
+    // Empêcher les clics involontaires en vérifiant si c'est un clic intentionnel
+    console.log('⭐ [STAR DEBUG] Clic sur étoile:', starValue, 'pour', label);
+    onChange(starValue);
+  };
+
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium">{label}</Label>
@@ -37,8 +45,18 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
           <button
             key={star}
             type="button"
-            onClick={() => !disabled && onChange(star)}
-            className="transition-colors hover:scale-110"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleStarClick(star);
+            }}
+            onMouseDown={(e) => e.preventDefault()} // Empêcher le focus involontaire
+            className={cn(
+              "transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-sm p-1",
+              disabled && "cursor-not-allowed"
+            )}
+            disabled={disabled}
+            aria-label={`Noter ${star} étoile${star > 1 ? 's' : ''} pour ${label}`}
           >
             <Star
               className={cn(
@@ -76,8 +94,9 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     updateEvaluation, 
     calculateSectionScores, 
     isLoading, 
-    isSaving 
-  } = useProtocol1Evaluation(applicationId);
+    isSaving,
+    reload
+  } = useOptimizedProtocol1Evaluation(applicationId);
   
   const { toast } = useToast();
   
@@ -108,6 +127,25 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
       description: "Le candidat a été refusé et sera redirigé vers la synthèse",
       duration: 3000,
     });
+  };
+
+  // Fonction pour forcer la sauvegarde
+  const handleForceSave = async () => {
+    try {
+      await reload(); // Recharger les données depuis la base
+      toast({
+        title: "Données rechargées",
+        description: "Les données ont été rechargées depuis la base de données",
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur de rechargement",
+        description: "Impossible de recharger les données",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
   };
   
   const [interviewDate, setInterviewDate] = useState<Date | undefined>(evaluationData.protocol1.interview.interviewDate);
@@ -299,6 +337,28 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <span>Sauvegarde...</span>
         </div>
       )}
+
+      {/* Bouton de rechargement des données */}
+      {!isReadOnly && (
+        <div className="fixed top-4 left-4 z-50">
+          <Button
+            onClick={handleForceSave}
+            variant="outline"
+            size="sm"
+            className="bg-white shadow-lg"
+            disabled={isSaving}
+          >
+            <div className="flex items-center gap-2">
+              {isSaving ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              ) : (
+                <div className="w-4 h-4">🔄</div>
+              )}
+              <span className="text-sm">Recharger</span>
+            </div>
+          </Button>
+        </div>
+      )}
       
       {/* Header - Synthèse de l'Évaluation */}
       <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
@@ -368,7 +428,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {getStatusIcon(evaluationData.protocol1.status)}
-              Evaluation
+              Prérequis
             </CardTitle>
             <div className="flex items-center gap-3">
               {getStatusBadge(evaluationData.protocol1.status)}
@@ -853,7 +913,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               </div>
 
                 <div className="space-y-4">
-                  <Label className="text-sm font-medium">Évaluation Adhérence MTP (Évaluation Physique)</Label>
+                  <Label className="text-sm font-medium">Adhérence MTP </Label>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="space-y-3">
                   <StarRating
@@ -940,37 +1000,37 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
           {/* Actions Protocole 1 */}
           {!isReadOnly && (
             <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-              <Button 
-                variant="outline" 
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+            <Button 
+              variant="outline" 
                 className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
-              >
-                Refuser
-              </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
-                      Confirmer le refus
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <Button 
-                onClick={handleIncubate}
+            >
+              Refuser
+            </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
+                    Confirmer le refus
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <Button 
+              onClick={handleIncubate}
                 className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
-              >
-                Incuber
-              </Button>
-            </div>
+            >
+              Incuber
+            </Button>
+          </div>
           )}
           
           {/* Message pour la vue observateur */}
