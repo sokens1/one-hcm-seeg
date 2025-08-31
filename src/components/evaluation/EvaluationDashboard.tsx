@@ -15,7 +15,7 @@ import { CalendarIcon, Star, Users, CheckCircle, Clock, AlertCircle, FileText, U
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
-import { useProtocol1Evaluation } from "@/hooks/useProtocol1Evaluation";
+import { useOptimizedProtocol1Evaluation } from "@/hooks/useOptimizedProtocol1Evaluation";
 import { useToast } from "@/components/ui/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
@@ -77,7 +77,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     calculateSectionScores, 
     isLoading, 
     isSaving 
-  } = useProtocol1Evaluation(applicationId);
+  } = useOptimizedProtocol1Evaluation(applicationId);
   
   const { toast } = useToast();
   
