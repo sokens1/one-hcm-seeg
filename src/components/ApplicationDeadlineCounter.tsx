@@ -15,7 +15,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
       const difference = endDate.getTime() - now.getTime();
 
       if (difference <= 0) {
-        setTimeLeft("Les candidatures sont closes");
+        setTimeLeft("0j 00h 00m 00s");
         return;
       }
 
@@ -109,16 +109,15 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
               {timeLeft.split(': ')[1] || timeLeft}
             </div>
             {showClosedMessage && (
-              <div className="mt-2 text-center text-yellow-400 font-semibold text-xs sm:text-sm px-2">
+              <div className="mt-2 text-left text-yellow-400 font-semibold text-xs sm:text-sm pl-0 pr-2">
                 L'appel à candidature est clôturé
               </div>
             )}
-            {/* <div className="text-xs text-white/70 text-left mt-1">
-              Fermeture des candidatures
-            </div> */}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+
