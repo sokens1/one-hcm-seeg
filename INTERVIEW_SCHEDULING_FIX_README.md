@@ -1,173 +1,111 @@
-# Correction de la Fonctionnalité "Programmer l'Entretien" - Protocole 1
+# 🔧 Fix Fonctionnalité "Programmer l'Entretien" - Protocol 1
 
-## 🚨 Problème Identifié
+## 🚨 **Problème Initial**
+- Bouton "Programmer l'entretien" non fonctionnel
+- Erreur 400 lors de la programmation
+- Message d'erreur : "impossible de programmer l'entretien"
 
-La fonctionnalité "Programmer l'entretien" dans le protocole 1 ne fonctionnait pas et générait des erreurs 400 lors de la création de créneaux d'entretien.
+## ✅ **Solutions Appliquées**
 
-### Erreurs Constatées
-- Erreur 400 lors de la création d'un créneau d'entretien
-- Message d'erreur : "Impossible de programmer l'entretien"
-- Structure de base de données incohérente entre le code et la DB
+### 1. **Migration Base de Données** ✅
+- Migration ultra-sécurisée appliquée via Supabase SQL Editor
+- Ajout de la colonne `interview_date` à la table `applications`
+- Mise à jour du statut CHECK pour inclure `entretien_programme`
 
-## 🔧 Corrections Apportées
+### 2. **Correction du Hook useInterviewScheduling** ✅
+- Adaptation à la structure existante de la table `interview_slots`
+- Remplacement de `upsert` par logique `insert/update` manuelle
+- Ajout de la récupération des détails candidat/job
+- Gestion des champs obligatoires (`candidate_name`, `job_title`, `status`)
 
-### 1. Migration de la Table `interview_slots`
-**Fichier :** `supabase/migrations/20250131000003_fix_interview_slots_structure.sql`
+### 3. **Mise à Jour des Types TypeScript** ✅
+- Ajout du champ `interview_date` dans les interfaces
+- Ajout du statut `entretien_programme`
 
-- Recréation complète de la table avec la structure correcte
-- Ajout des colonnes manquantes : `is_available`, `recruiter_id`, `candidate_id`, `notes`
-- Correction des contraintes d'unicité
-- Mise en place des politiques RLS appropriées
-- Ajout des index pour optimiser les performances
+## 🔧 **Dernières Modifications**
 
-### 2. Migration de la Table `applications`
-**Fichier :** `supabase/migrations/20250131000004_fix_applications_table.sql`
+### Hook useInterviewScheduling.ts
+```typescript
+// Récupération des détails candidat/job
+const { data: applicationDetails, error: appDetailsError } = await supabase
+  .from('applications')
+  .select(`
+    candidate_id,
+    job_offer_id,
+    users!applications_candidate_id_fkey(first_name, last_name),
+    job_offers!applications_job_offer_id_fkey(title)
+  `)
+  .eq('id', applicationId)
+  .single();
 
-- Ajout de la colonne `interview_date` pour stocker la date/heure de l'entretien
-- Mise à jour de la contrainte CHECK du statut pour inclure `'entretien_programme'`
-- Ajout des index nécessaires
-- Correction des valeurs par défaut
-
-### 3. Mise à Jour du Hook `useInterviewScheduling`
-**Fichier :** `src/hooks/useInterviewScheduling.ts`
-
-- Correction de la logique de création des créneaux
-- Utilisation de `upsert` au lieu de `insert` pour éviter les conflits
-- Ajout de la gestion des erreurs détaillée
-- Intégration avec le système d'authentification
-- Amélioration de la gestion des états
-
-### 4. Mise à Jour des Types TypeScript
-**Fichiers :** 
-- `src/types/application.ts`
-- `src/hooks/useApplications.tsx`
-
-- Ajout du statut `'entretien_programme'`
-- Ajout de la propriété `interview_date`
-- Mise à jour des interfaces pour la cohérence
-
-## 🚀 Déploiement
-
-### 1. Appliquer les Migrations
-```bash
-# Dans votre projet Supabase
-supabase db push
+// Logique insert/update manuelle au lieu d'upsert
+if (existingSlot) {
+  // Mise à jour du créneau existant
+  const { error } = await supabase
+    .from('interview_slots')
+    .update({...})
+    .eq('id', existingSlot.id);
+} else {
+  // Création d'un nouveau créneau
+  const { error } = await supabase
+    .from('interview_slots')
+    .insert({...});
+}
 ```
 
-### 2. Vérifier la Structure
-```bash
-# Exécuter le script de test
-node scripts/test-interview-scheduling.js
-```
+## 🚀 **Étapes de Test**
 
-### 3. Redémarrer l'Application
-```bash
-npm run dev
-```
-
-## 🧪 Test de la Fonctionnalité
-
-### 1. Connexion en tant que Recruteur
-- Se connecter avec un compte recruteur
-- Accéder au protocole 1 d'une candidature
-
-### 2. Programmer un Entretien
-- Cliquer sur "Programmer l'entretien"
-- Sélectionner une date disponible
-- Choisir un créneau horaire
-- Confirmer la programmation
-
-### 3. Vérifications
-- L'entretien doit être programmé sans erreur
-- Le statut de la candidature doit passer à "entretien_programme"
-- La date d'entretien doit être enregistrée
-- Le créneau doit être marqué comme indisponible
-
-## 📊 Structure de la Base de Données
-
-### Table `interview_slots`
+### 1. Créer des Créneaux de Test
+Exécuter dans Supabase SQL Editor :
 ```sql
-CREATE TABLE public.interview_slots (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    date DATE NOT NULL,
-    time TIME NOT NULL,
-    is_available BOOLEAN DEFAULT true NOT NULL,
-    application_id UUID REFERENCES public.applications(id) ON DELETE CASCADE,
-    recruiter_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
-    candidate_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    UNIQUE(date, time)
-);
+INSERT INTO public.interview_slots (
+  date, time, application_id, candidate_name, job_title, 
+  status, is_available, recruiter_id, candidate_id, notes, 
+  created_at, updated_at
+) VALUES 
+  ('2024-02-15', '09:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW()),
+  ('2024-02-15', '10:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW()),
+  ('2024-02-15', '11:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW()),
+  ('2024-02-16', '09:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW()),
+  ('2024-02-16', '10:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW()),
+  ('2024-02-16', '11:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW()),
+  ('2024-02-17', '09:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW()),
+  ('2024-02-17', '10:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW()),
+  ('2024-02-17', '11:00:00', NULL, NULL, NULL, 'available', true, NULL, NULL, 'Créneau disponible', NOW(), NOW())
+ON CONFLICT (date, time) DO NOTHING;
 ```
 
-### Table `applications` (colonnes ajoutées)
-```sql
--- Colonnes ajoutées
-interview_date TIMESTAMP WITH TIME ZONE,
-status TEXT DEFAULT 'candidature' CHECK (status IN ('candidature', 'incubation', 'embauche', 'refuse', 'entretien_programme'))
+### 2. Tester la Fonctionnalité
+1. Recharger l'application
+2. Se connecter en tant que recruteur
+3. Accéder au protocole 1 d'une candidature
+4. Cliquer sur "Programmer l'entretien"
+5. Sélectionner une date (15, 16 ou 17 février)
+6. Choisir un créneau horaire (9h, 10h ou 11h)
+7. Confirmer
+
+## 📊 **Logs Attendus**
+```
+🔄 Programmation entretien pour: { date, time, applicationId, userId }
+📋 Détails récupérés: { candidateName, jobTitle, candidateId }
+✅ Créneau créé avec succès
 ```
 
-## 🔒 Sécurité (RLS)
+## 🔍 **Diagnostic en Cas d'Échec**
+Si l'erreur 400 persiste, vérifier :
+1. Les logs détaillés dans la console
+2. La structure exacte de la table `interview_slots`
+3. Les permissions RLS sur la table
+4. Les contraintes de la base de données
 
-### Politiques sur `interview_slots`
-- **Recruteurs** : Accès complet (CRUD)
-- **Candidats** : Lecture de leurs propres créneaux
-- **Admins** : Accès complet
+## 📝 **Fichiers Modifiés**
+- `src/hooks/useInterviewScheduling.ts` - Logique principale
+- `src/types/application.ts` - Types TypeScript
+- `src/hooks/useApplications.tsx` - Interface Application
+- `supabase/migrations/20250131000005_combined_interview_fix.sql` - Migration DB
 
-### Politiques sur `applications`
-- Mise à jour du statut et de la date d'entretien
-- Contrôle d'accès basé sur les rôles
-
-## 🐛 Résolution des Erreurs
-
-### Erreur 400
-- **Cause** : Structure de table incorrecte
-- **Solution** : Migration complète de la table
-
-### "Impossible de programmer l'entretien"
-- **Cause** : Gestion d'erreur insuffisante
-- **Solution** : Amélioration de la gestion des erreurs et logging
-
-### Conflits de Créneaux
-- **Cause** : Contraintes d'unicité mal définies
-- **Solution** : Utilisation d'`upsert` avec gestion des conflits
-
-## 📝 Logs et Debug
-
-Le hook `useInterviewScheduling` inclut maintenant des logs détaillés :
-- `🔄 Programmation entretien pour:` - Début de la programmation
-- `✅ Créneau créé avec succès` - Succès de la création
-- `❌ Erreur lors de la programmation:` - Erreurs détaillées
-
-## 🔄 Rollback (si nécessaire)
-
-Si des problèmes surviennent, vous pouvez annuler les migrations :
-
-```sql
--- Annuler la migration interview_slots
-DROP TABLE IF EXISTS public.interview_slots CASCADE;
-
--- Annuler la migration applications
-ALTER TABLE public.applications DROP COLUMN IF EXISTS interview_date;
-ALTER TABLE public.applications DROP CONSTRAINT IF EXISTS applications_status_check;
-```
-
-## ✅ Validation
-
-Après le déploiement, vérifiez que :
-1. ✅ La table `interview_slots` a la bonne structure
-2. ✅ La table `applications` a les nouvelles colonnes
-3. ✅ Les contraintes CHECK sont correctes
-4. ✅ Les politiques RLS sont en place
-5. ✅ La fonctionnalité fonctionne sans erreur 400
-6. ✅ Les entretiens peuvent être programmés et annulés
-
-## 🆘 Support
-
-En cas de problème :
-1. Vérifier les logs de la console
-2. Exécuter le script de test
-3. Vérifier la structure de la base de données
-4. Contrôler les politiques RLS
+## 🎯 **Statut Actuel**
+- ✅ Migration appliquée
+- ✅ Hook corrigé
+- ✅ Types mis à jour
+- 🔄 En attente de test final

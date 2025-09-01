@@ -39,6 +39,24 @@ export const useInterviewScheduling = (applicationId?: string) => {
   const loadInterviewSlots = useCallback(async () => {
     if (!applicationId) return;
 
+    // Cache simple pour éviter les rechargements inutiles
+    const cacheKey = `slots_${applicationId}`;
+    const cachedData = sessionStorage.getItem(cacheKey);
+    const cacheTime = sessionStorage.getItem(`${cacheKey}_time`);
+    
+    // Utiliser le cache si il a moins de 30 secondes
+    if (cachedData && cacheTime && (Date.now() - parseInt(cacheTime)) < 30000) {
+      try {
+        const parsedData = JSON.parse(cachedData);
+        setSchedules(parsedData);
+        setIsLoading(false);
+        console.log('📦 Données chargées depuis le cache');
+        return;
+      } catch (e) {
+        console.log('❌ Cache invalide, rechargement...');
+      }
+    }
+
     // Éviter les appels multiples pour la même application
     if (lastApplicationIdRef.current === applicationId && schedules.length > 0) {
       console.log('⏭️ Chargement ignoré - données déjà présentes pour:', applicationId);
@@ -56,12 +74,14 @@ export const useInterviewScheduling = (applicationId?: string) => {
     try {
       console.log('🔄 Chargement des créneaux pour application:', applicationId);
       
-      // Récupérer tous les créneaux disponibles et ceux réservés pour cette application
+      // Récupérer seulement les créneaux nécessaires avec une requête optimisée
       const { data, error } = await supabase
         .from('interview_slots')
-        .select('*')
+        .select('id, date, time, is_available, application_id, recruiter_id, candidate_id, created_at, updated_at')
         .or(`is_available.eq.true,application_id.eq.${applicationId}`)
-        .order('date', { ascending: true });
+        .gte('date', new Date().toISOString().split('T')[0]) // Seulement les dates futures
+        .order('date', { ascending: true })
+        .limit(100); // Limiter le nombre de résultats
 
       if (error) {
         console.error('❌ Erreur Supabase:', error);
@@ -70,15 +90,18 @@ export const useInterviewScheduling = (applicationId?: string) => {
 
       console.log('✅ Données reçues:', data);
 
-      // Organiser les créneaux par date
-      const schedulesMap = new Map<string, InterviewSlot[]>();
+      // Optimisation : Organiser les créneaux par date avec Map plus efficace
+      const schedulesMap = new Map<string, Map<string, InterviewSlot>>();
       
       data?.forEach(slot => {
         const date = slot.date;
+        const time = slot.time;
+        
         if (!schedulesMap.has(date)) {
-          schedulesMap.set(date, []);
+          schedulesMap.set(date, new Map());
         }
-        schedulesMap.get(date)!.push({
+        
+        schedulesMap.get(date)!.set(time, {
           id: slot.id,
           date: slot.date,
           time: slot.time,
@@ -91,12 +114,11 @@ export const useInterviewScheduling = (applicationId?: string) => {
         });
       });
 
-      // Convertir en array et s'assurer que toutes les heures sont présentes
+      // Convertir en array avec génération optimisée des créneaux manquants
       const schedules: InterviewSchedule[] = [];
-      schedulesMap.forEach((slots, date) => {
+      schedulesMap.forEach((timeMap, date) => {
         const allSlots: InterviewSlot[] = timeSlots.map(time => {
-          const existingSlot = slots.find(slot => slot.time === time);
-          return existingSlot || {
+          return timeMap.get(time) || {
             date,
             time,
             isAvailable: true,
@@ -107,6 +129,15 @@ export const useInterviewScheduling = (applicationId?: string) => {
       });
 
       console.log('📅 Schedules générés:', schedules);
+      
+      // Mettre en cache les données pour 30 secondes
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify(schedules));
+        sessionStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+      } catch (e) {
+        console.log('⚠️ Impossible de mettre en cache');
+      }
+      
       setSchedules(schedules);
     } catch (error) {
       console.error('❌ Erreur lors du chargement des créneaux:', error);
@@ -131,28 +162,6 @@ export const useInterviewScheduling = (applicationId?: string) => {
     try {
       console.log('🔄 Programmation entretien pour:', { date, time, applicationId, userId: user.id });
 
-      // Vérifier si le créneau est déjà pris
-      const { data: existingSlots, error: checkError } = await supabase
-        .from('interview_slots')
-        .select('*')
-        .eq('date', date)
-        .eq('time', time)
-        .eq('is_available', false);
-
-      if (checkError) {
-        console.error('❌ Erreur lors de la vérification du créneau:', checkError);
-        throw checkError;
-      }
-
-      if (existingSlots && existingSlots.length > 0) {
-        toast({
-          title: "Créneau occupé",
-          description: "Ce créneau est déjà réservé",
-          variant: "destructive",
-        });
-        return false;
-      }
-
       // Récupérer les informations du job et du candidat pour remplir les champs obligatoires
       const { data: applicationDetails, error: appDetailsError } = await supabase
         .from('applications')
@@ -173,30 +182,79 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const candidateName = `${applicationDetails.users?.first_name || ''} ${applicationDetails.users?.last_name || ''}`.trim();
       const jobTitle = applicationDetails.job_offers?.title || 'Poste non spécifié';
 
-      // Créer ou mettre à jour le créneau avec tous les champs obligatoires
-      const { error: insertError } = await supabase
+      console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
+
+      // Vérifier si le créneau existe déjà et s'il est occupé
+      const { data: existingSlot, error: checkError } = await supabase
         .from('interview_slots')
-        .upsert({
-          date,
-          time,
-          application_id: applicationId,
-          candidate_name: candidateName,
-          job_title: jobTitle,
-          status: 'scheduled',
-          is_available: false,
-          recruiter_id: user.id,
-          candidate_id: applicationDetails.candidate_id,
-          notes: 'Entretien programmé',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'date,time'
+        .select('id, application_id, is_available')
+        .eq('date', date)
+        .eq('time', time)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('❌ Erreur lors de la vérification du créneau:', checkError);
+        throw checkError;
+      }
+
+      // Si le créneau existe et est occupé par une autre application
+      if (existingSlot && existingSlot.application_id && existingSlot.application_id !== applicationId && !existingSlot.is_available) {
+        toast({
+          title: "Créneau occupé",
+          description: "Ce créneau est déjà réservé par une autre candidature",
+          variant: "destructive",
         });
+        return false;
+      }
+
+      let insertError;
+      if (existingSlot) {
+        // Mettre à jour le créneau existant
+        const { error } = await supabase
+          .from('interview_slots')
+          .update({
+            application_id: applicationId,
+            candidate_name: candidateName,
+            job_title: jobTitle,
+            status: 'scheduled',
+            is_available: false,
+            recruiter_id: user.id,
+            candidate_id: applicationDetails.candidate_id,
+            notes: 'Entretien programmé',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingSlot.id);
+        insertError = error;
+      } else {
+        // Créer un nouveau créneau
+        const { error } = await supabase
+          .from('interview_slots')
+          .insert({
+            date,
+            time,
+            application_id: applicationId,
+            candidate_name: candidateName,
+            job_title: jobTitle,
+            status: 'scheduled',
+            is_available: false,
+            recruiter_id: user.id,
+            candidate_id: applicationDetails.candidate_id,
+            notes: 'Entretien programmé',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+        insertError = error;
+      }
 
       if (insertError) {
         console.error('❌ Erreur lors de la création du créneau:', insertError);
         throw insertError;
       }
+
+      // Invalider le cache après une programmation réussie
+      const cacheKey = `slots_${applicationId}`;
+      sessionStorage.removeItem(cacheKey);
+      sessionStorage.removeItem(`${cacheKey}_time`);
 
       // Mettre à jour l'application avec la date d'entretien
       const interviewDateTime = new Date(`${date}T${time}`);
