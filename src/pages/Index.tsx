@@ -41,7 +41,7 @@ const Index = () => {
   } | null>(null);
   
   const { data, isLoading, error } = useJobOffers();
-  const jobOffers: JobOffer[] = data ?? [];
+  const jobOffers: JobOffer[] = Array.isArray(data) ? data : [];
   const preLaunch = isPreLaunch();
 
   // Helper to normalize location which can be string | string[] from the API

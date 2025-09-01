@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Star, Users, CheckCircle, Clock, AlertCircle, FileText, User, Calendar as CalendarLucide } from 'lucide-react';
+import { CalendarIcon, Star, Users, CheckCircle, Clock, AlertCircle, FileText, User, Calendar as CalendarLucide, CalendarDays } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ import { useOptimizedProtocol1Evaluation } from "@/hooks/useOptimizedProtocol1Ev
 import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
 import { useToast } from "@/components/ui/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { InterviewCalendarModal } from './InterviewCalendarModal';
 
 
 
@@ -145,9 +146,27 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
 
 
   
-  const [interviewDate, setInterviewDate] = useState<Date | undefined>(evaluationData.protocol1.interview.interviewDate);
+  const [interviewDate, setInterviewDate] = useState<Date | undefined>(undefined);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  
+  // Synchroniser l'état local avec les données chargées
+  useEffect(() => {
+    if (evaluationData.protocol1.interview.interviewDate) {
+      setInterviewDate(evaluationData.protocol1.interview.interviewDate);
+      // Extraire l'heure si elle existe dans la date
+      const date = evaluationData.protocol1.interview.interviewDate;
+      if (date instanceof Date && !isNaN(date.getTime())) {
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        if (hours > 0 || minutes > 0) {
+          const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+          setSelectedTimeSlot(timeString);
+        }
+      }
+    }
+  }, [evaluationData.protocol1.interview.interviewDate]);
   
   // Fonctions pour naviguer entre les mois
   const goToPreviousMonth = () => {
@@ -497,6 +516,15 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 >
                   <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                   Traitement IA
+                </Button>
+                <Button 
+                  size="lg"
+                  onClick={() => setIsCalendarModalOpen(true)}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
+                  disabled={isReadOnly}
+                >
+                  <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Voir le calendrier
                 </Button>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -985,6 +1013,12 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         </CardContent>
       </Card>
 
+      {/* Modal du calendrier des entretiens */}
+      <InterviewCalendarModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        currentApplicationId={applicationId}
+      />
 
     </div>
   );

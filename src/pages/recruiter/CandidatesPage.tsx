@@ -34,7 +34,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
 // Types dérivés des applications
-type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse';
+type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme';
 
 interface UICandidate {
   id: string;
@@ -258,6 +258,7 @@ const statusConfig: Record<ApplicationStatus, { label: string; color: string }> 
   incubation: { label: "Incubé", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
   embauche: { label: "Engagé", color: "bg-green-100 text-green-800 border-green-200" },
   refuse: { label: "Refusé", color: "bg-red-100 text-red-800 border-red-200" },
+  entretien_programme: { label: "Entretien-Programmé", color: "bg-purple-100 text-purple-800 border-purple-200" },
 };
 
 export default function CandidatesPage() {
