@@ -105,17 +105,17 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
           {/* Compte à rebours */}
           <div className="bg-white/15 rounded-lg p-3 backdrop-blur-sm">
             <div className="text-xs text-white/80 mb-2 font-medium">COMPTE À REBOURS</div>
-            <div className="font-mono text-lg font-bold tracking-wider text-yellow-400">
+            <div className="font-mono text-base sm:text-lg font-bold tracking-wider text-yellow-400 break-words">
               {timeLeft.split(': ')[1] || timeLeft}
             </div>
             {showClosedMessage && (
-              <div className="mt-2 text-center text-yellow-400 font-semibold text-sm">
+              <div className="mt-2 text-center text-yellow-400 font-semibold text-xs sm:text-sm px-2">
                 L'appel à candidature est clôturé
               </div>
             )}
-            <div className="text-xs text-white/70 text-left mt-1">
+            {/* <div className="text-xs text-white/70 text-left mt-1">
               Fermeture des candidatures
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
