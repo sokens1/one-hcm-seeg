@@ -4,11 +4,12 @@ export interface Application {
   candidate_id: string;
   job_offer_id: string;
   cover_letter: string | null;
-  status: 'candidature' | 'incubation' | 'embauche' | 'refuse';
+  status: 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme';
   motivation: string | null;
   availability_start: string | null;
   reference_contacts?: string | null;
   ref_contacts?: string | null;
+  interview_date?: string | null; // Date et heure de l'entretien programmé
   mtp_answers?: {
     metier?: string[];
     talent?: string[];
@@ -72,7 +73,7 @@ export interface Application {
 // This interface is used for the PDF generation
 export interface ApplicationData {
   // From Application
-  id: string;
+  id: string
   created_at: string;
   status: string;
   gender: string;
@@ -99,5 +100,5 @@ export interface ApplicationData {
   integrityLetter?: { name: string; url: string } | null;
   projectIdea?: { name: string; url: string } | null;
   jobTitle: string;
-  applicationDate: string;
+  interviewDate?: string | null; // Date et heure de l'entretien programmé
 }
