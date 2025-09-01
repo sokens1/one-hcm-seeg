@@ -357,7 +357,7 @@ const Index = () => {
                     onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
                     onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")}
-                    candidateCount={isApplicationClosed() ? 0 : undefined} // Forcer la désactivation si les candidatures sont closes
+                    // candidateCount={isApplicationClosed() ? 0 : undefined} // Forcer la désactivation si les candidatures sont closes
                   />
                 </div>
               ))}
