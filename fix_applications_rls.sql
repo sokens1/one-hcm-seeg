@@ -64,3 +64,4 @@ CREATE POLICY "Users can update their own applications" ON applications
 ALTER TABLE applications ENABLE ROW LEVEL SECURITY;
 
 
+
