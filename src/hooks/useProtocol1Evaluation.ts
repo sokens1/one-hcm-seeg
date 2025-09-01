@@ -1,5 +1,9 @@
+<<<<<<< HEAD
+import { useState, useEffect, useCallback, useRef } from 'react';
+=======
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from 'react';
+>>>>>>> c6157c5caacfefac773187232d2925ac0285fdc8
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -153,7 +157,6 @@ export function useProtocol1Evaluation(applicationId: string) {
         .select(`
           id,
           application_id,
-          evaluator_id,
           cv_score,
           cv_comments,
           lettre_motivation_score,
@@ -176,15 +179,8 @@ export function useProtocol1Evaluation(applicationId: string) {
           gap_competence_score,
           gap_competence_comments,
           general_summary,
-          documentary_score,
-          mtp_score,
-          interview_score,
-          total_score,
           overall_score,
-          status,
-          completed,
-          created_at,
-          updated_at
+          status
         `)
         .eq('application_id', applicationId)
         .maybeSingle();
@@ -360,7 +356,10 @@ export function useProtocol1Evaluation(applicationId: string) {
     }
   }, [applicationId, user, calculateSectionScores, toast]);
 
-  // Mettre à jour les données avec sauvegarde automatique
+  // Debounce timer pour les sauvegardes automatiques
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Mettre à jour les données avec sauvegarde automatique optimisée
   const updateEvaluation = useCallback((updater: (prev: EvaluationData) => EvaluationData) => {
     setEvaluationData(prev => {
       const newData = updater(prev);
@@ -378,10 +377,16 @@ export function useProtocol1Evaluation(applicationId: string) {
         newData.protocol1.status = 'completed';
       }
       
-      // Sauvegarder automatiquement après un délai
-      setTimeout(() => {
+      // Annuler la sauvegarde précédente si elle existe
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      
+      // Sauvegarder automatiquement après un délai plus long (5 secondes au lieu de 1)
+      saveTimeoutRef.current = setTimeout(() => {
         saveEvaluation(newData);
-      }, 1000);
+        saveTimeoutRef.current = null;
+      }, 5000);
       
       return newData;
     });

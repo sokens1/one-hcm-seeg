@@ -9,6 +9,7 @@ import { useJobOfferNotifications } from "@/hooks/useJobOfferNotifications";
 import { isPreLaunch } from "@/utils/launchGate";
 import { toast } from "sonner";
 import { ContentSpinner } from "@/components/ui/spinner";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 
 export default function CandidateJobs() {
   useJobOfferNotifications();
@@ -81,6 +82,7 @@ export default function CandidateJobs() {
                 variant="secondary" 
                 size="lg"
                 className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                disabled={isApplicationClosed()}
                 onClick={() => {
                   const element = document.getElementById('job-list');
                   if (element && typeof element.scrollIntoView === 'function') {
@@ -88,7 +90,7 @@ export default function CandidateJobs() {
                   }
                 }}
               >
-                Postuler maintenant
+                {isApplicationClosed() ? 'Candidatures closes' : 'Postuler maintenant'}
               </Button>
             </div>
           </div>

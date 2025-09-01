@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Briefcase } from "lucide-react";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 
 interface JobCardProps {
   title: string;
@@ -90,8 +91,13 @@ export function JobCard({
                 <span className="md:hidden">Voir</span>
               </Button>
             ) : (
-              <Button variant="outline" size="sm" className="group-hover:border-primary group-hover:text-primary w-full md:w-auto text-xs sm:text-sm h-8 md:h-9">
-                {candidateCount !== undefined ? 'Gérer' : 'Postuler'}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="group-hover:border-primary group-hover:text-primary w-full md:w-auto text-xs sm:text-sm h-8 md:h-9"
+                disabled={candidateCount === undefined && isApplicationClosed()}
+              >
+                {candidateCount !== undefined ? 'Gérer' : (isApplicationClosed() ? 'Candidatures closes' : 'Postuler')}
               </Button>
             )}
           </div>

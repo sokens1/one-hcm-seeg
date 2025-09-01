@@ -23,6 +23,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { downloadCandidateDocumentsAsZip } from "../../utils/downloadUtils";
+import { ErrorFallback } from "@/components/ui/ErrorFallback";
 
 const getBadgeVariant = (status: Application['status']) => {
   switch (status) {
@@ -612,12 +613,13 @@ export default function CandidateAnalysis() {
 
   if (error || !application) {
     return (
-      <RecruiterLayout>
-        <div className="container mx-auto px-4 py-8 text-center">
-          <p className="text-red-600 mb-4">Erreur: Impossible de charger les données du candidat.</p>
-          <Button onClick={() => navigate(-1)}>Retour</Button>
-        </div>
-      </RecruiterLayout>
+      <ErrorFallback
+        error={error}
+        resetError={() => {
+          refetchApplication();
+        }}
+        type="generic"
+      />
     );
   }
 
