@@ -14,6 +14,7 @@ import { Chatbot } from "@/components/ui/Chatbot";
 import { Search, Filter, Grid, List, Building, Loader2, Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { isPreLaunch } from "@/utils/launchGate";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -40,7 +41,7 @@ const Index = () => {
   } | null>(null);
   
   const { data, isLoading, error } = useJobOffers();
-  const jobOffers: JobOffer[] = data ?? [];
+  const jobOffers: JobOffer[] = Array.isArray(data) ? data : [];
   const preLaunch = isPreLaunch();
 
   // Helper to normalize location which can be string | string[] from the API
@@ -355,7 +356,8 @@ const Index = () => {
                     isPreview={true}
                     onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")}
+                    candidateCount={isApplicationClosed() ? 0 : undefined} // Forcer la désactivation si les candidatures sont closes
                   />
                 </div>
               ))}

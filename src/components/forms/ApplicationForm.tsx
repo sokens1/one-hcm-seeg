@@ -20,6 +20,7 @@ import { DraftSaveIndicator, DraftRestoreNotification } from "@/components/ui/Dr
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
@@ -1777,11 +1778,18 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       variant="success"
                       onClick={handleSubmit}
                       className="w-full sm:w-auto"
-                      disabled={!formData.consent}
+                      disabled={!formData.consent || isApplicationClosed()}
+                      title={isApplicationClosed() ? "Les candidatures sont closes" : ""}
                     >
-                      <span className="hidden sm:inline">Envoyer ma candidature</span>
-                      <span className="sm:hidden">Envoyer</span>
-                      <Send className="w-4 h-4 ml-2" />
+                      {isApplicationClosed() ? (
+                        <span className="hidden sm:inline">Candidatures closes</span>
+                      ) : (
+                        <>
+                          <span className="hidden sm:inline">Envoyer ma candidature</span>
+                          <span className="sm:hidden">Envoyer</span>
+                          <Send className="w-4 h-4 ml-2" />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
