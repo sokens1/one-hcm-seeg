@@ -47,11 +47,12 @@ export interface Application {
   candidate_id: string;
   job_offer_id: string;
   cover_letter: string | null;
-  status: 'candidature' | 'incubation' | 'embauche' | 'refuse';
+  status: 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme';
   motivation: string | null;
   availability_start: string | null;
   reference_contacts?: string | null; // Database column name
   ref_contacts?: string | null; // API compatibility alias used by UI
+  interview_date?: string | null; // Date et heure de l'entretien programmé
   mtp_answers?: {
     metier?: string[];
     talent?: string[];
