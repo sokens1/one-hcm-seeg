@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Building2, Users, Banknote, Clock } from "lucide-react";
@@ -281,20 +281,20 @@ export default function JobDetail() {
                       </Button>
                     </div>
                   ) : (
-                    <>
-                      <Button 
-                        onClick={handleApply} 
-                        className="w-full text-sm sm:text-base"
-                        size="lg"
+                    <div className="space-y-2">
+                      <button 
+                        onClick={(e) => e.preventDefault()}
+                        className="w-full text-sm sm:text-base cursor-not-allowed border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8 inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                        disabled
+                        title="Les candidatures sont désormais closes"
                       >
-                        <span className="hidden sm:inline">{user ? "Postuler à cette offre" : "Se connecter pour postuler"}</span>
-                        <span className="sm:hidden">{user ? "Postuler" : "Se connecter"}</span>
-                      </Button>
+                        Candidatures closes
+                      </button>
                       
                       <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                        Processus de candidature en ligne sécurisé
+                        La période de candidature est terminée
                       </p>
-                    </>
+                    </div>
                   )}
                 </CardContent>
               </Card>
