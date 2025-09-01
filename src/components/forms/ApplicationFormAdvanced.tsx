@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 
 interface ApplicationFormAdvancedProps {
   jobTitle: string;
@@ -508,11 +509,12 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                   <Button
                     variant="default"
                     onClick={handleSubmit}
-                    disabled={!formData.consent}
+                    disabled={!formData.consent || isApplicationClosed()}
                     className="bg-green-600 hover:bg-green-700"
+                    title={isApplicationClosed() ? "Les candidatures sont closes" : ""}
                   >
-                    Envoyer ma candidature
-                    <Send className="w-4 h-4 ml-2" />
+                    {isApplicationClosed() ? "Candidatures closes" : "Envoyer ma candidature..."}
+                    {!isApplicationClosed() && <Send className="w-4 h-4 ml-2" />}
                   </Button>
                 )}
               </div>
