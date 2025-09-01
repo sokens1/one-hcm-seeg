@@ -177,9 +177,9 @@ export default function JobPipeline() {
                                 </p>
                                 {/* Date de l'entretien si programmé */}
                                 {candidate.status === 'entretien_programme' && candidate.interviewDate && (
-                                  <div className="flex items-center gap-1 text-xs text-purple-600">
-                                    <Calendar className="w-3 h-3" />
-                                    <span>Entretien : {new Date(candidate.interviewDate).toLocaleDateString('fr-FR')}</span>
+                                  <div className="flex items-center gap-1 text-xs text-purple-600 whitespace-nowrap">
+                                    <Calendar className="w-3 h-3 flex-shrink-0" />
+                                    <span className="truncate">Entretien : {new Date(candidate.interviewDate).toLocaleDateString('fr-FR')}</span>
                                   </div>
                                 )}
                               </div>
