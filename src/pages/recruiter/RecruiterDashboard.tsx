@@ -350,11 +350,8 @@ export default function RecruiterDashboard() {
                   <div className="h-72 sm:h-96">
                     <ResponsiveContainer width="106%" height="100%">
                       <BarChart data={(() => {
-                        // Trier les offres par ordre de catégorie : excellent, bon, modéré, faible
-                        const sortedJobs = [...jobCoverage].sort((a, b) => {
-                          const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
-                          return statusOrder[a.coverage_status] - statusOrder[b.coverage_status];
-                        });
+                        // Trier les offres par ordre décroissant du nombre de candidatures
+                        const sortedJobs = [...jobCoverage].sort((a, b) => b.current_applications - a.current_applications);
                         return sortedJobs;
                       })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                         <XAxis 
@@ -382,11 +379,8 @@ export default function RecruiterDashboard() {
                           name="Nombre de candidatures"
                         >
                           {(() => {
-                            // Trier les offres par ordre de catégorie pour les couleurs
-                            const sortedJobs = [...jobCoverage].sort((a, b) => {
-                              const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
-                              return statusOrder[a.coverage_status] - statusOrder[b.coverage_status];
-                            });
+                            // Trier les offres par ordre décroissant du nombre de candidatures pour les couleurs
+                            const sortedJobs = [...jobCoverage].sort((a, b) => b.current_applications - a.current_applications);
                             
                             return sortedJobs.map((entry, index) => (
                               <Cell 
@@ -441,17 +435,8 @@ export default function RecruiterDashboard() {
                    <div className="h-72 sm:h-96">
                      <ResponsiveContainer width="106%" height="100%">
                        <BarChart data={(() => {
-                         // Trier les offres par ordre de catégorie : excellent, bon, modéré, faible
-                         const sortedJobs = [...applicationsPerJob].sort((a, b) => {
-                           // Trouver le statut de couverture pour chaque offre
-                           const jobA = jobCoverage.find(job => job.title === a.title);
-                           const jobB = jobCoverage.find(job => job.title === b.title);
-                           
-                           if (!jobA || !jobB) return 0;
-                           
-                           const statusOrder = { excellent: 0, good: 1, moderate: 2, low: 3 };
-                           return statusOrder[jobA.coverage_status] - statusOrder[jobB.coverage_status];
-                         });
+                         // Trier les offres par ordre décroissant du nombre total de candidatures
+                         const sortedJobs = [...applicationsPerJob].sort((a, b) => b.applications_count - a.applications_count);
                          return sortedJobs;
                        })()} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                          <XAxis 
