@@ -340,7 +340,7 @@ export default function RecruiterDashboard() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
+                    <CardTitle className="text-base sm:text-lg">Attractivité des postes</CardTitle>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Basé sur le nombre de candidatures reçues
