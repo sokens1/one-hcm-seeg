@@ -13,6 +13,13 @@ export interface RecruiterStats {
   multiPostCandidates?: number;
 }
 
+export interface DepartmentStats {
+  department: string;
+  jobCount: number;
+  applicationCount: number;
+  coverageRate: number;
+}
+
 export interface RecruiterJobOffer {
   id: string;
   title: string;
@@ -76,7 +83,8 @@ export function useRecruiterDashboard() {
         location,
         contract_type,
         created_at,
-        recruiter_id
+        recruiter_id,
+        department
       `)
       .eq('status', 'active');
 
@@ -99,8 +107,9 @@ export function useRecruiterDashboard() {
       const totalApplications = jobApplications.length;
       const newApplications = jobApplications.filter(app => {
         const appDate = new Date(app.created_at);
+        // Calculer la date d'il y a 24h en respectant le fuseau horaire local
         const oneDayAgo = new Date();
-        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        oneDayAgo.setHours(oneDayAgo.getHours() - 24);
         return appDate > oneDayAgo;
       }).length;
 
@@ -242,8 +251,9 @@ export function useRecruiterDashboard() {
       const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
       const newApplications24h = jobApplications.filter(app => {
         const appDate = new Date(app.created_at);
+        // Calculer la date d'il y a 24h en respectant le fuseau horaire local
         const oneDayAgo = new Date();
-        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        oneDayAgo.setHours(oneDayAgo.getHours() - 24);
         return appDate > oneDayAgo;
       }).length;
 
@@ -255,18 +265,58 @@ export function useRecruiterDashboard() {
       };
     });
 
+    // Calculate department statistics
+    const departmentStats: DepartmentStats[] = [];
+    const departments = ['Eau', 'Électricité', 'Support'];
+    
+    // Debug: Log all jobs and their departments
+    console.log('[DASHBOARD DEBUG] All jobs:', jobsData);
+    console.log('[DASHBOARD DEBUG] Jobs with departments:', (jobsData || []).map(job => ({ id: job.id, title: job.title, department: job.department })));
+    
+    departments.forEach(dept => {
+      const deptJobs = (jobsData || []).filter(job => job.department === dept);
+      const deptJobCount = deptJobs.length;
+      
+      // Debug: Log department filtering
+      console.log(`[DASHBOARD DEBUG] Department "${dept}":`, { deptJobCount, jobs: deptJobs.map(j => j.title) });
+      
+      // Always add the department, even if no jobs
+      const deptApplications = deptJobs.reduce((sum, job) => {
+        const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
+        return sum + jobApplications.length;
+      }, 0);
+      
+      const coverageRate = deptJobCount > 0 ? Math.round((deptApplications / deptJobCount) * 100) : 0;
+      
+      departmentStats.push({
+        department: dept,
+        jobCount: deptJobCount,
+        applicationCount: deptApplications,
+        coverageRate
+      });
+    });
+    
+    // Debug: Log final department stats
+    console.log('[DASHBOARD DEBUG] Final department stats:', departmentStats);
+
     // Calculate status evolution over the last 7 days
     const statusEvolution: StatusEvolutionData[] = [];
+    
+    // Générer les 7 derniers jours en respectant le fuseau horaire local
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      return date.toISOString().split('T')[0];
+      // Utiliser toLocaleDateString pour éviter les problèmes de fuseau horaire
+      return date.toLocaleDateString('fr-CA'); // Format YYYY-MM-DD
     }).reverse();
 
     last7Days.forEach(date => {
       const dayApplications = (allApplicationsData || []).filter(app => {
-        const appDate = new Date(app.created_at).toISOString().split('T')[0];
-        return appDate === date;
+        // Créer une date locale à partir de la date de création
+        const appDate = new Date(app.created_at);
+        // Comparer avec la date locale du jour (00h00 à 23h59)
+        const appDateLocal = appDate.toLocaleDateString('fr-CA');
+        return appDateLocal === date;
       });
 
       const candidature = dayApplications.filter(app => app.status === 'candidature').length;
@@ -288,7 +338,8 @@ export function useRecruiterDashboard() {
       activeJobs: processedJobs,
       jobCoverage,
       statusEvolution,
-      applicationsPerJob
+      applicationsPerJob,
+      departmentStats
     };
   };
 
@@ -305,6 +356,7 @@ export function useRecruiterDashboard() {
     jobCoverage: data?.jobCoverage ?? [],
     statusEvolution: data?.statusEvolution ?? [],
     applicationsPerJob: data?.applicationsPerJob ?? [],
+    departmentStats: data?.departmentStats ?? [],
     isLoading,
     error: error?.message || null,
     refetch

@@ -166,12 +166,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Explicitly get the initial session to avoid blank screen on reload
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setSession(session);
-      setUser(session?.user ?? null);
-      await setupForUid(session?.user?.id);
-      setIsLoading(false);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.warn('Session retrieval error:', error);
+          // Si le refresh token est invalide, nettoyer le state
+          if (error.message?.includes('refresh_token_not_found') || error.message?.includes('Invalid Refresh Token')) {
+            if (mounted) {
+              setUser(null);
+              setSession(null);
+              setDbRole(null);
+              setIsLoading(false);
+              setIsRoleLoading(false);
+            }
+            return;
+          }
+        }
+        
+        if (!mounted) return;
+        setSession(session);
+        setUser(session?.user ?? null);
+        await setupForUid(session?.user?.id);
+        setIsLoading(false);
+      } catch (sessionError) {
+        console.warn('Session setup error:', sessionError);
+        if (mounted) {
+          setUser(null);
+          setSession(null);
+          setDbRole(null);
+          setIsLoading(false);
+          setIsRoleLoading(false);
+        }
+      }
     })();
 
     return () => {
@@ -217,18 +244,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    // Proactively clear local state to avoid stale role/guards during redirect
     try {
-      if (channelRef.current) {
-        try { supabase.removeChannel(channelRef.current); } catch { /* empty */ }
-        channelRef.current = null;
-      }
+      // Clear local state first to ensure immediate UI update
       setUser(null);
       setSession(null);
       setDbRole(null);
-    } catch { /* empty */ }
-    return { error };
+      setIsLoading(false);
+      setIsRoleLoading(false);
+      
+      // Clean up realtime channel
+      if (channelRef.current) {
+        try { 
+          supabase.removeChannel(channelRef.current); 
+        } catch { 
+          /* empty */ 
+        }
+        channelRef.current = null;
+      }
+      
+      // Clear any cached data first
+      if (typeof window !== 'undefined') {
+        // Clear localStorage
+        localStorage.removeItem('supabase.auth.token');
+        // Clear all supabase related storage
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('sb-') || key.includes('supabase')) {
+            localStorage.removeItem(key);
+          }
+        });
+      }
+      
+      // Then perform the actual sign out - ignore errors as we've already cleared local state
+      try {
+        await supabase.auth.signOut({ scope: 'local' }); // Use local scope to avoid 403 errors
+      } catch (signOutError) {
+        console.warn('Sign out error (non-blocking):', signOutError);
+        // Don't return error as local state is already cleared
+      }
+      
+      return { error: null };
+    } catch (error) {
+      console.error('Error during sign out:', error);
+      return { error: error as AuthError };
+    }
   };
 
   const updateUser = async (metadata: Partial<SignUpMetadata>) => {

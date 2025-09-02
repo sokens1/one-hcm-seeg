@@ -120,7 +120,7 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl h-[80vh] flex flex-col fixed right-4 top-1/2 -translate-y-1/2 translate-x-full data-[state=open]:translate-x-0 data-[state=closed]:translate-x-full transition-transform duration-300 ease-in-out">
+      <DialogContent className="max-w-2xl h-[80vh] flex flex-col sm:fixed sm:right-4 sm:top-1/2 sm:-translate-y-1/2 sm:translate-x-full sm:data-[state=open]:translate-x-0 sm:data-[state=closed]:translate-x-full sm:transition-transform sm:duration-300 sm:ease-in-out w-full h-full sm:w-auto sm:h-[80vh]">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-xl font-semibold">
             Historique complet des activités

@@ -31,9 +31,10 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 // Types dérivés des applications
-type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse';
+type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme';
 
 interface UICandidate {
   id: string;
@@ -157,7 +158,7 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
   );
 }
 
-function CandidateDetails({ candidate }: { candidate: UICandidate }) {
+function CandidateDetails({ candidate, isObserver }: { candidate: UICandidate, isObserver: boolean }) {
   const { data: documents = [], isLoading, error } = useApplicationDocuments(candidate.id);
 
   const toUrl = (path: string) => {
@@ -257,12 +258,14 @@ const statusConfig: Record<ApplicationStatus, { label: string; color: string }> 
   incubation: { label: "Incubé", color: "bg-yellow-100 text-yellow-800 border-yellow-200" },
   embauche: { label: "Engagé", color: "bg-green-100 text-green-800 border-green-200" },
   refuse: { label: "Refusé", color: "bg-red-100 text-red-800 border-red-200" },
+  entretien_programme: { label: "Entretien-Programmé", color: "bg-purple-100 text-purple-800 border-purple-200" },
 };
 
 export default function CandidatesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | ApplicationStatus>("all");
   const { applications, isLoading, error } = useRecruiterApplications();
+  const { isObserver } = useAuth();
   
   console.log('[CANDIDATES PAGE DEBUG] Applications hook result:', { applications, isLoading, error });
   console.log('[CANDIDATES PAGE DEBUG] Applications count:', applications?.length);
@@ -444,7 +447,13 @@ export default function CandidatesPage() {
                       <td className="p-4">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className={`gap-2 ${isObserver ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              disabled={isObserver}
+                              title={isObserver ? "Lecture seule - Mode observateur" : "Voir les détails"}
+                            >
                               <Eye className="w-4 h-4" />
                               Détails
                             </Button>
@@ -453,10 +462,14 @@ export default function CandidatesPage() {
                             <DialogHeader>
                               <DialogTitle>Détails du candidat</DialogTitle>
                               <DialogDescription>
-                                Consulter les informations détaillées du candidat et les documents soumis.
+                                {isObserver ? (
+                                  <span className="text-yellow-600">Mode observateur - Lecture seule</span>
+                                ) : (
+                                  "Consulter les informations détaillées du candidat et les documents soumis."
+                                )}
                               </DialogDescription>
                             </DialogHeader>
-                            <CandidateDetails candidate={candidate} />
+                            <CandidateDetails candidate={candidate} isObserver={isObserver} />
                           </DialogContent>
                         </Dialog>
                       </td>
@@ -469,12 +482,12 @@ export default function CandidatesPage() {
         </Card>
 
         {filteredCandidates.length === 0 && !isLoading && !error && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-8 h-8 text-muted-foreground" />
+          <div className="text-center py-8 sm:py-12">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <User className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-medium text-foreground mb-2">Aucun candidat trouvé</h3>
-            <p className="text-muted-foreground mb-6">
+            <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">Aucun candidat trouvé</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
               Aucun candidat ne correspond à vos critères de recherche.
             </p>
             <Button 
@@ -483,6 +496,7 @@ export default function CandidatesPage() {
                 setSearchTerm("");
                 setStatusFilter("all");
               }}
+              className="text-xs sm:text-sm"
             >
               Réinitialiser les filtres
             </Button>

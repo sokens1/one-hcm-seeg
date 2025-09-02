@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,23 +11,37 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Chatbot } from "@/components/ui/Chatbot";
-import { Search, Filter, Grid, List, Building, Loader2 } from "lucide-react";
+import { Search, Filter, Grid, List, Building, Loader2, Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { isPreLaunch } from "@/utils/launchGate";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, isCandidate, isRecruiter, isAdmin, isObserver } = useAuth();
+  const { user, isCandidate, isRecruiter, isAdmin, isObserver, isLoading: isAuthLoading, isRoleLoading } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [locationFilter, setLocationFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  
+  // États pour le test d'email
+  const [testEmail, setTestEmail] = useState("");
+  const [testFirstName, setTestFirstName] = useState("Test");
+  const [testJobTitle, setTestJobTitle] = useState("Développeur Full Stack");
+  const [isSendingTest, setIsSendingTest] = useState(false);
+  const [testResult, setTestResult] = useState<{
+    success: boolean;
+    message: string;
+    details?: any;
+  } | null>(null);
+  
   const { data, isLoading, error } = useJobOffers();
-  const jobOffers: JobOffer[] = data ?? [];
+  const jobOffers: JobOffer[] = Array.isArray(data) ? data : [];
   const preLaunch = isPreLaunch();
 
   // Helper to normalize location which can be string | string[] from the API
@@ -44,25 +59,32 @@ const Index = () => {
   const uniqueContracts = [...new Set(jobOffers.map(job => job.contract_type) || [])];
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || isAuthLoading || isRoleLoading) return;
     
     // Only redirect if user is actually on the home page (not from a page reload)
     const currentPath = window.location.pathname;
     if (currentPath !== "/" && currentPath !== "/index") return;
+    
+    // Add a small delay to ensure the user state is properly set after login
+    const timeoutId = setTimeout(() => {
+      // Double check that user is still logged in after timeout
+      if (!user) return;
     
     // Use normalized role flags from useAuth to avoid FR/EN mismatch
     if (isAdmin) {
       navigate("/admin/dashboard", { replace: true });
     } else if (isRecruiter) {
       navigate("/recruiter/dashboard", { replace: true });
-      navigate("/recruiter/dashboard");
     } else if (isObserver) {
       // Observateurs: accès en lecture seule au dashboard recruteur
-      navigate("/recruiter/dashboard");
+        navigate("/recruiter/dashboard", { replace: true });
     } else if (isCandidate) {
       navigate("/candidate/dashboard?view=dashboard", { replace: true });
     }
-  }, [user, isAdmin, isRecruiter, isObserver, isCandidate, navigate]);
+    }, 100); // Small delay to ensure state is stable
+    
+    return () => clearTimeout(timeoutId);
+  }, [user, isAdmin, isRecruiter, isObserver, isCandidate, isAuthLoading, isRoleLoading, navigate]);
 
   // Ne pas afficher la page d'accueil si l'utilisateur est connecté ET qu'il est vraiment sur la home
   const currentPath = window.location.pathname;
@@ -94,6 +116,53 @@ const Index = () => {
     return matchesSearch && matchesLocation && matchesContract;
   });
 
+  // Fonction de test d'email
+  const handleTestEmail = async () => {
+    if (!testEmail.trim()) {
+      toast.error("Veuillez saisir un email de destination");
+      return;
+    }
+
+    setIsSendingTest(true);
+    setTestResult(null);
+
+    try {
+      const result = await supabase.functions.invoke('send_application_confirmation', {
+        body: {
+          to: testEmail.trim(),
+          firstName: testFirstName.trim(),
+          jobTitle: testJobTitle.trim(),
+          applicationId: 'TEST-' + Date.now(),
+        },
+      });
+
+      if (result.error) {
+        setTestResult({
+          success: false,
+          message: "Erreur lors de l'envoi",
+          details: result.error
+        });
+        toast.error("Test d'email échoué");
+      } else {
+        setTestResult({
+          success: true,
+          message: "Email de test envoyé avec succès !",
+          details: result.data
+        });
+        toast.success("Email de test envoyé ! Vérifiez votre boîte de réception");
+      }
+    } catch (error) {
+      setTestResult({
+        success: false,
+        message: "Erreur inattendue",
+        details: error
+      });
+      toast.error("Erreur lors du test d'email");
+    } finally {
+      setIsSendingTest(false);
+    }
+  };
+
   return (
     <Layout showFooter={true}>
       {/* Hero Section with enhanced design */}
@@ -118,10 +187,10 @@ const Index = () => {
               </div>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold animate-fade-in delay-100 px-2 leading-tight">
-              Vision SEEG 2025 - 2035
+            Rejoignez l'équipe dirigeante de la SEEG
             </h1>
             <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold opacity-90 animate-fade-in delay-150 px-4 leading-relaxed">
-              Comprendre les fondements stratégiques du recrutement de l’équipe dirigeante
+              et participez au développement énergétique du Gabon
             </h2>
             <div className="pt-4 sm:pt-6 animate-fade-in delay-400">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
@@ -287,7 +356,8 @@ const Index = () => {
                     isPreview={true}
                     onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")}
+                    // candidateCount={isApplicationClosed() ? 0 : undefined} // Forcer la désactivation si les candidatures sont closes
                   />
                 </div>
               ))}
@@ -418,6 +488,7 @@ const Index = () => {
             </Button>
           </div>
         </div>
+
       </div>
       
       {/* Chatbot */}

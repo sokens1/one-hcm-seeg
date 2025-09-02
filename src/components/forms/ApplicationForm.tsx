@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/SafeSelect";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,9 +15,12 @@ import { useApplications } from "@/hooks/useApplications";
 import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { useApplicationDraft } from "@/hooks/useApplicationDraft";
+import { DraftSaveIndicator, DraftRestoreNotification } from "@/components/ui/DraftSaveIndicator";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
@@ -80,16 +83,79 @@ interface FormData {
 
 export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<number>(
-    typeof initialStep === 'number' && initialStep >= 1 ? initialStep : (mode === 'edit' ? 4 : 1)
-  );
-  const [activeTab, setActiveTab] = useState<'metier' | 'talent' | 'paradigme'>('metier');
+  
+  // Hook pour gérer les brouillons (seulement en mode création)
+  const {
+    draftData,
+    isDraftLoaded,
+    isSaving,
+    lastSaved,
+    saveDraft,
+    clearDraft,
+    enableAutoSave,
+    disableAutoSave
+  } = useApplicationDraft(jobId || '');
+  
+  // État pour gérer la notification de restauration
+  const [showDraftRestore, setShowDraftRestore] = useState(false);
+  const [currentStep, setCurrentStep] = useState<number>(() => {
+    if (typeof initialStep === 'number' && initialStep >= 1) return initialStep;
+    try {
+      const jid = jobId || 'no-job';
+      const raw = localStorage.getItem(`application_form_shared_${jid}_ui`);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        const step = Number(saved?.currentStep);
+        if (step >= 1) return step;
+      }
+    } catch { /* ignore */ }
+    return (mode === 'edit' ? 4 : 1);
+  });
+  const [activeTab, setActiveTab] = useState<'metier' | 'talent' | 'paradigme'>(() => {
+    try {
+      const jid = jobId || 'no-job';
+      const raw = localStorage.getItem(`application_form_shared_${jid}_ui`);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved?.activeTab === 'metier' || saved?.activeTab === 'talent' || saved?.activeTab === 'paradigme') {
+          return saved.activeTab;
+        }
+      }
+    } catch { /* ignore */ }
+    return 'metier';
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { submitApplication } = useApplications();
   const { uploadFile, isUploading, getFileUrl, deleteFile } = useFileUpload();
   const { user } = useAuth();
-  const [formData, setFormData] = useState<FormData>({
+  // Clé de persistance unique par utilisateur et offre
+  const storageKey = useMemo(() => {
+    const uid = user?.id || 'guest';
+    const jid = jobId || 'no-job';
+    return `application_form_${uid}_${jid}`;
+  }, [user?.id, jobId]);
+  // Shared fallback key (job-scoped), used when auth is not yet restored on refresh
+  const sharedKey = useMemo(() => {
+    const jid = jobId || 'no-job';
+    return `application_form_shared_${jid}`;
+  }, [jobId]);
+
+  const [formData, setFormData] = useState<FormData>(() => {
+    // Essayer de recharger l'état depuis le stockage local
+    try {
+      let raw = localStorage.getItem(storageKey);
+      if (!raw) raw = localStorage.getItem(sharedKey);
+      if (raw) {
+        const parsed = JSON.parse(raw) as FormData;
+        // Restaurer Date
+        return {
+          ...parsed,
+          dateOfBirth: parsed.dateOfBirth ? new Date(parsed.dateOfBirth as unknown as string) : null,
+        };
+      }
+    } catch { /* ignore */ }
+    return {
     firstName: "",
     lastName: "",
     email: "",
@@ -118,6 +184,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     // Partie Paradigme
     paradigme1: "", paradigme2: "", paradigme3: "", paradigme4: "", paradigme5: "", paradigme6: "", paradigme7: "",
     consent: false
+    };
   });
 
   // Prefill personal info from public.users and candidate_profiles
@@ -156,7 +223,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!metaLast && parts.length > 1) metaLast = parts.slice(1).join(' ');
         }
 
-        setFormData((prev) => ({
+        setFormData((prev) => {
+          const next = {
           ...prev,
           firstName: prev.firstName || dbUser?.first_name || metaFirst || '',
           lastName: prev.lastName || dbUser?.last_name || metaLast || '',
@@ -168,7 +236,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           gender: prev.gender || profile?.gender || '',
           yearsOfExperience: prev.yearsOfExperience || (profile?.years_experience ? String(profile.years_experience) : ''),
           address: prev.address || profile?.address || '',
-        }));
+          };
+          try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+          return next;
+        });
       } catch (e: any) {
         console.error('Prefill error:', e);
         // Ne bloque pas l'utilisateur, informe simplement en silencieux
@@ -179,7 +250,68 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     return () => {
       isMounted = false;
     };
-  }, [user, user?.id, user?.email]);
+  }, [user, user?.id, user?.email, storageKey]);
+
+  // Gérer la restauration des brouillons
+  useEffect(() => {
+    if (mode === 'create' && isDraftLoaded && draftData && Object.keys(draftData.form_data).length > 0) {
+      // Vérifier s'il y a des données significatives dans le brouillon
+      const hasSignificantData = Object.entries(draftData.form_data).some(([key, value]) => {
+        if (key === 'firstName' || key === 'lastName' || key === 'email') return false; // Données pré-remplies
+        return value && value !== '';
+      });
+      
+      if (hasSignificantData) {
+        setShowDraftRestore(true);
+      }
+    }
+  }, [mode, isDraftLoaded, draftData]);
+
+  // Fonctions de gestion des brouillons
+  const restoreDraft = () => {
+    if (draftData) {
+      // Restaurer les données du formulaire
+      setFormData(prevData => ({
+        ...prevData,
+        ...draftData.form_data
+      }));
+      
+      // Restaurer l'état de l'UI
+      if (draftData.ui_state.currentStep) {
+        setCurrentStep(draftData.ui_state.currentStep);
+      }
+      if (draftData.ui_state.activeTab) {
+        setActiveTab(draftData.ui_state.activeTab as 'metier' | 'talent' | 'paradigme');
+      }
+      
+      setShowDraftRestore(false);
+      toast.success('Brouillon restauré avec succès !');
+    }
+  };
+
+  const ignoreDraft = () => {
+    setShowDraftRestore(false);
+    clearDraft(); // Supprimer le brouillon de la base de données
+  };
+
+  // Auto-save des brouillons
+  useEffect(() => {
+    if (mode === 'create' && isDraftLoaded && !showDraftRestore) {
+      const uiState = {
+        currentStep,
+        activeTab,
+        completedSections: [], // Vous pouvez ajouter la logique pour tracker les sections complétées
+        lastActiveField: '' // Vous pouvez tracker le dernier champ actif
+      };
+      
+      // Activer l'auto-save avec les données actuelles
+      enableAutoSave(formData, uiState);
+    }
+    
+    return () => {
+      disableAutoSave();
+    };
+  }, [mode, isDraftLoaded, showDraftRestore, formData, currentStep, activeTab, enableAutoSave, disableAutoSave]);
 
   // Prefill from existing application when editing
   useEffect(() => {
@@ -204,7 +336,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
         const refContacts = (data as any).reference_contacts ?? (data as any).ref_contacts;
 
-        setFormData(prev => ({
+        setFormData(prev => {
+          const next = {
           ...prev,
           // Références et MTP
           references: refContacts ?? prev.references,
@@ -229,7 +362,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           paradigme5: mtp?.paradigme?.[4] ?? prev.paradigme5,
           paradigme6: mtp?.paradigme?.[5] ?? prev.paradigme6,
           paradigme7: mtp?.paradigme?.[6] ?? prev.paradigme7,
-        }));
+          };
+          try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+          return next;
+        });
 
         // Récupérer les informations utilisateur et profil séparément (enrichissement, non bloquant)
         const candidateId = (data as any).candidate_id;
@@ -247,7 +383,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
               .maybeSingle()
           ]);
 
-          setFormData(prev => ({
+          setFormData(prev => {
+            const next = {
             ...prev,
             // Informations personnelles depuis la candidature existante
             firstName: userData?.first_name || prev.firstName,
@@ -256,7 +393,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             dateOfBirth: userData?.date_of_birth ? new Date(userData.date_of_birth) : prev.dateOfBirth,
             gender: profileData?.gender || prev.gender,
             currentPosition: profileData?.current_position || prev.currentPosition,
-          }));
+            };
+            try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+            return next;
+          });
         }
       } catch (e) {
         console.warn('Chargement de la candidature (édition) échoué:', (e as any)?.message || e);
@@ -264,7 +404,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     };
     loadExisting();
     return () => { aborted = true; };
-  }, [mode, applicationId]);
+  }, [mode, applicationId, storageKey]);
 
   // Prefill documents from existing application when editing
   useEffect(() => {
@@ -291,30 +431,175 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                 const certificates = data.filter(d => d.document_type === 'diploma').map(makeUploaded);
         const additionalCertificates = data.filter(d => d.document_type === 'certificate').map(makeUploaded);
 
-        setFormData(prev => ({
+        setFormData(prev => {
+          const next = {
           ...prev,
           cv: cv ? makeUploaded(cv) : prev.cv,
           coverLetter: cover ? makeUploaded(cover) : prev.coverLetter,
           certificates: certificates.length ? certificates : prev.certificates,
           additionalCertificates: additionalCertificates.length ? additionalCertificates : prev.additionalCertificates,
-        }));
+          };
+          try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+          return next;
+        });
       } catch (e) {
         console.warn('Chargement des documents échoué:', (e as any)?.message || e);
       }
     };
     loadDocuments();
     return () => { cancelled = true; };
-  }, [mode, applicationId]);
+  }, [mode, applicationId, storageKey]);
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
   const mtpQuestions = useMemo(() => getMetierQuestionsForTitle(jobTitle), [jobTitle]);
 
+  // Migrate guest data to user-specific key after login (one-time per job)
+  useEffect(() => {
+    const uid = user?.id;
+    const jid = jobId || 'no-job';
+    if (!uid) return;
+    const userKey = `application_form_${uid}_${jid}`;
+    const guestKey = `application_form_guest_${jid}`;
+    const userUiKey = userKey + '_ui';
+    const guestUiKey = guestKey + '_ui';
+    try {
+      const hasUserData = !!localStorage.getItem(userKey);
+      const guestData = localStorage.getItem(guestKey);
+      if (!hasUserData && guestData) {
+        localStorage.setItem(userKey, guestData);
+        const guestUi = localStorage.getItem(guestUiKey);
+        if (guestUi && !localStorage.getItem(userUiKey)) {
+          localStorage.setItem(userUiKey, guestUi);
+        }
+        // Optionally keep guest data; do not remove to allow anonymous continuation in other sessions
+      }
+    } catch { /* ignore */ }
+  }, [user?.id, jobId]);
+
+  // Persist form data locally and to server (if authenticated) whenever it changes
+  const saveTimeoutRef = useRef<number | null>(null);
+  useEffect(() => {
+    try {
+      // Always persist locally
+      const payload = JSON.stringify(formData);
+      localStorage.setItem(storageKey, payload);
+      // also write shared key to survive auth-late refresh
+      localStorage.setItem(sharedKey, payload);
+    } catch { /* ignore */ }
+
+    // Debounced server sync for cross-device persistence
+    if (user?.id && jobId) {
+      if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = window.setTimeout(async () => {
+        try {
+          await supabase.from('application_drafts').upsert({
+            user_id: user.id,
+            job_offer_id: jobId,
+            form_data: formData,
+            ui_state: { currentStep, activeTab },
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,job_offer_id' });
+        } catch (e) {
+          console.warn('Draft sync failed (non-blocking):', (e as any)?.message || e);
+        }
+      }, 600);
+    }
+
+    return () => { if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current); };
+  }, [formData, storageKey, sharedKey, user?.id, jobId, currentStep, activeTab]);
+
+  // Load saved UI state (step and active tab) when available
+  useEffect(() => {
+    const load = async () => {
+      // 1) Try server draft first if authenticated
+      let restored = false;
+      if (user?.id && jobId) {
+        try {
+          const { data, error } = await supabase
+            .from('application_drafts')
+            .select('form_data, ui_state')
+            .eq('user_id', user.id)
+            .eq('job_offer_id', jobId)
+            .maybeSingle();
+          if (!error && data) {
+            const srvForm = (data as any).form_data as Partial<FormData> | undefined;
+            const srvUi = (data as any).ui_state as { currentStep?: number; activeTab?: 'metier' | 'talent' | 'paradigme' } | undefined;
+            if (srvForm) {
+              setFormData(prev => {
+                const merged = {
+                  ...prev,
+                  ...srvForm,
+                  dateOfBirth: srvForm.dateOfBirth ? new Date(srvForm.dateOfBirth as any) : prev.dateOfBirth,
+                } as FormData;
+                try {
+                  localStorage.setItem(storageKey, JSON.stringify(merged));
+                  localStorage.setItem(sharedKey, JSON.stringify(merged));
+                } catch (e) {
+                  if (import.meta.env.DEV) {
+                    console.warn('Local draft persist failed (non-blocking):', (e as any)?.message || e);
+                  }
+                }
+                return merged;
+              });
+              restored = true;
+            }
+            if (srvUi) {
+              if (typeof srvUi.currentStep === 'number' && srvUi.currentStep >= 1 && srvUi.currentStep <= totalSteps && typeof initialStep !== 'number') {
+                setCurrentStep(srvUi.currentStep);
+              }
+              if (srvUi.activeTab === 'metier' || srvUi.activeTab === 'talent' || srvUi.activeTab === 'paradigme') {
+                setActiveTab(srvUi.activeTab);
+              }
+              try {
+                localStorage.setItem(storageKey + '_ui', JSON.stringify(srvUi));
+                localStorage.setItem(sharedKey + '_ui', JSON.stringify(srvUi));
+              } catch (e) {
+                if (import.meta.env.DEV) {
+                  console.warn('Local UI persist failed (non-blocking):', (e as any)?.message || e);
+                }
+              }
+            }
+          }
+        } catch {
+          // ignore server load errors
+        }
+      }
+
+      // 2) Fallback to local UI state
+      try {
+        let raw = localStorage.getItem(storageKey + '_ui');
+        if (!raw) raw = localStorage.getItem(sharedKey + '_ui');
+        if (!restored && raw) {
+          const saved = JSON.parse(raw) as { currentStep?: number; activeTab?: 'metier' | 'talent' | 'paradigme' };
+          if (typeof initialStep !== 'number') {
+            const step = Number(saved.currentStep);
+            if (step >= 1 && step <= totalSteps) setCurrentStep(step);
+          }
+          if (saved.activeTab === 'metier' || saved.activeTab === 'talent' || saved.activeTab === 'paradigme') {
+            setActiveTab(saved.activeTab);
+          }
+        }
+      } catch { /* ignore */ }
+    };
+    load();
+  }, [storageKey, sharedKey, initialStep, totalSteps, user?.id, jobId]);
+
+  // Persist UI state to localStorage
+  useEffect(() => {
+    try {
+      const payload = JSON.stringify({ currentStep, activeTab });
+      localStorage.setItem(storageKey + '_ui', payload);
+      // also persist to shared to survive auth-late refresh
+      localStorage.setItem(sharedKey + '_ui', payload);
+    } catch { /* ignore */ }
+  }, [currentStep, activeTab, storageKey, sharedKey]);
+
   // Validation functions for each step
   const validateStep1 = () => {
     // Validation de l'email avec nos utilitaires
             // const isEmailValid = isValidEmail(formData.email); // DÉSACTIVÉ
-        const isEmailValid = true; // Validation d'email désactivée
+        const isEmailValid = true; // Validation d'email désactivée (forcer vrai sans condition constante)
     
     return (
       formData.firstName.trim() !== '' &&
@@ -370,8 +655,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!formData.email.trim()) {
             missing.push("Email");
           } else {
-            // if (!isValidEmail(formData.email)) { // DÉSACTIVÉ
-      if (false) { // Validation d'email désactivée
+            // Validation d'email désactivée (ne pas pousser d'erreur)
+            // const emailFormatValid = isValidEmail(formData.email);
+            const emailFormatValid = true;
+            if (!emailFormatValid) {
               missing.push("Email (format invalide)");
             }
           }
@@ -633,6 +920,16 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         closeButton: true,
       });
       
+      // Supprimer le brouillon après un envoi réussi
+      if (mode === 'create') {
+        try {
+          await clearDraft();
+          console.log('✅ Brouillon supprimé après soumission réussie');
+        } catch (e) {
+          console.warn('Failed to delete draft after submit (non-blocking):', (e as any)?.message || e);
+        }
+      }
+      
       // Appeler onSubmit si fourni après un délai
       setTimeout(() => {
         onSubmit?.();
@@ -743,9 +1040,20 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Rejoignez l'Excellence</h1>
             <h2 className="text-lg sm:text-xl lg:text-2xl font-light break-words">{jobTitle}</h2>
             <p className="text-sm sm:text-base lg:text-lg opacity-90 max-w-2xl mx-auto">
-              Découvrez un processus de candidature révolutionnaire qui valorise vos compétences, 
+              Découvrez un processus de candidature innovant qui valorise vos compétences, 
               votre potentiel et votre ambition.
             </p>
+            
+            {/* Indicateur de sauvegarde pour les brouillons */}
+            {mode === 'create' && (
+              <div className="flex justify-center mt-4">
+                <DraftSaveIndicator 
+                  isSaving={isSaving}
+                  lastSaved={lastSaved}
+                  className="bg-white/20 text-white border-white/30"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -787,6 +1095,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             {/* Top guide text removed to avoid duplication; sidebar guide remains */}
           </div>
         </div>
+
+        {/* Notification de restauration de brouillon */}
+        {showDraftRestore && lastSaved && (
+          <div className="max-w-4xl mx-auto mb-6">
+            <DraftRestoreNotification
+              onRestore={restoreDraft}
+              onIgnore={ignoreDraft}
+              lastSaved={lastSaved}
+            />
+          </div>
+        )}
 
         {/* Form Content with modern layout */}
         <div className="max-w-4xl mx-auto">
@@ -1372,6 +1691,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                           <p>{formData.dateOfBirth ? format(formData.dateOfBirth, "PPP", { locale: fr }) : "Non renseigné"}</p>
                         </div>
                         <div>
+                          <span className="text-muted-foreground">Sexe:</span>
+                          <p>{formData.gender || "Non renseigné"}</p>
+                        </div>
+                        <div>
                           <span className="text-muted-foreground">Poste actuel:</span>
                           <p>{formData.currentPosition || "Non renseigné"}</p>
                         </div>
@@ -1386,6 +1709,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="font-medium">Parcours & Documents</h5>
                         <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">CV:</span>
+                        <p>{formData.cv ? formData.cv.name : "Non fourni"}</p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Lettre de motivation:</span>
@@ -1451,11 +1778,18 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       variant="success"
                       onClick={handleSubmit}
                       className="w-full sm:w-auto"
-                      disabled={!formData.consent}
+                      disabled={!formData.consent || isApplicationClosed()}
+                      title={isApplicationClosed() ? "Les candidatures sont closes" : ""}
                     >
-                      <span className="hidden sm:inline">Envoyer ma candidature</span>
-                      <span className="sm:hidden">Envoyer</span>
-                      <Send className="w-4 h-4 ml-2" />
+                      {isApplicationClosed() ? (
+                        <span className="hidden sm:inline">Candidatures closes</span>
+                      ) : (
+                        <>
+                          <span className="hidden sm:inline">Envoyer ma candidature</span>
+                          <span className="sm:hidden">Envoyer</span>
+                          <Send className="w-4 h-4 ml-2" />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>

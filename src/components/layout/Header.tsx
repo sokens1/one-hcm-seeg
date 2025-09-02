@@ -21,13 +21,33 @@ export function Header() {
   const isAuthenticated = !!user;
   const preLaunch = isPreLaunch();
   const [showMaintenanceBanner, setShowMaintenanceBanner] = useState(false);
+  const [showClosedBanner, setShowClosedBanner] = useState(false);
 
   // Roles are handled in FR ('candidat', 'recruteur') by useAuth; keep helpers as source of truth
 
   const handleLogout = async () => {
-    await signOut();
-    toast.info("Déconnexion réussie. À bientôt !");
-    navigate('/');
+    try {
+      // Fermer tous les popovers/modals ouverts avant la déconnexion
+      setNotificationOpen(false);
+      
+      // Petit délai pour permettre aux composants de se fermer proprement
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const { error } = await signOut();
+      if (error) {
+        toast.error("Erreur lors de la déconnexion");
+        return;
+      }
+      toast.info("Déconnexion réussie. À bientôt !");
+      
+      // Délai supplémentaire pour permettre au toast de s'afficher
+      setTimeout(() => {
+        // Force une navigation complète pour éviter les problèmes de cache
+        window.location.href = '/';
+      }, 500);
+    } catch (error) {
+      toast.error("Erreur lors de la déconnexion");
+    }
   };
 
   const handleRefreshRole = async () => {
@@ -67,28 +87,46 @@ export function Header() {
   };
 
   useEffect(() => {
-    // Vérifier si nous sommes dans la plage de maintenance
     const now = new Date();
-    const maintenanceStart = new Date();
-    maintenanceStart.setHours(18, 0, 0); // 19h56
-    const maintenanceEnd = new Date();
-    maintenanceEnd.setHours(24, 40, 0); // 24h40
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+    
+    // Vérifier si nous sommes dans la plage de maintenance (18h00 à 00h40)
+    const isMaintenanceTime = 
+      (currentHour === 18 && currentMinutes >= 0) ||  // À partir de 18h00
+      (currentHour > 18 && currentHour < 24) ||       // Entre 19h et 23h59
+      (currentHour === 0 && currentMinutes <= 40);    // Jusqu'à 00h40
 
-    if (now >= maintenanceStart && now <= maintenanceEnd) { 
+    if (isMaintenanceTime) { 
       setShowMaintenanceBanner(true);
+      setShowClosedBanner(false);
+    } else {
+      setShowMaintenanceBanner(false);
+      setShowClosedBanner(true);
     }
   }, []);
 
   return (
     <>
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        {showMaintenanceBanner && (
+        {showMaintenanceBanner ? (
           <div className="bg-red-700 text-yellow-400 text-center mb-2">
             <div className="bg-white/10 py-2 px-4">
               <div className="container mx-auto">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
                   <span className="font-bold whitespace-nowrap">MISE À JOUR :</span>
                   <span className="text-white text-sm sm:text-base">Une indisponibilité du site est prévue de 00h00 à 00h40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : showClosedBanner && (
+          <div className="bg-red-700 text-yellow-400 text-center mb-2">
+            <div className="bg-white/10 py-2 px-4">
+              <div className="container mx-auto">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                  <span className="font-bold whitespace-nowrap">APPEL À CANDIDATURE CLÔTURÉ :</span>
+                  <span className="text-white text-sm sm:text-base">La période de dépôt des candidatures est terminée. Merci pour votre intérêt.</span>
                 </div>
               </div>
             </div>

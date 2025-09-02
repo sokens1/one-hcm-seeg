@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Search, Filter, Grid, List, X, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { JobDetail } from "./JobDetail";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
@@ -21,6 +21,7 @@ export function JobCatalog() {
   const [showFilters, setShowFilters] = useState(false);
   const { setCurrentView } = useCandidateLayout();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { data: jobs, isLoading, error } = useJobOffers();
 
@@ -55,16 +56,35 @@ export function JobCatalog() {
 
   const handleJobClick = (jobId: string) => {
     setSelectedJobId(jobId);
+    // Mettre à jour l'URL pour permettre le rafraîchissement sans perdre l'état
+    const params = new URLSearchParams(location.search);
+    params.set("view", "jobs");
+    params.set("jobId", jobId);
+    params.delete("apply");
+    navigate(`/candidate/dashboard?${params.toString()}`);
   };
 
   const handleApplyClick = (jobId: string) => {
     setSelectedJobId(jobId);
     setShowApplicationForm(true);
+    // Mettre à jour l'URL pour qu'un refresh revienne sur le formulaire
+    const params = new URLSearchParams(location.search);
+    params.set("view", "jobs");
+    params.set("jobId", jobId);
+    params.set("apply", "1");
+    navigate(`/candidate/dashboard?${params.toString()}`);
   };
 
   const handleBackToCatalog = () => {
+    // Préserver les paramètres actuels sauf ceux spécifiques à l'application
+    const params = new URLSearchParams(location.search);
+    params.delete("jobId");
+    params.delete("apply");
     setSelectedJobId(null);
     setShowApplicationForm(false);
+    // Forcer la vue jobs pour revenir au catalogue
+    params.set("view", "jobs");
+    navigate(`/candidate/dashboard?${params.toString()}`);
   };
 
   const handleApplicationSubmit = () => {

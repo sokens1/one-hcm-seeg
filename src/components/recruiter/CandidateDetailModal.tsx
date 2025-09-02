@@ -3,14 +3,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Phone, MapPin, Calendar, FileText, Download } from "lucide-react";
+import { User, Mail, Phone, MapPin, Calendar, FileText, Download, Archive } from "lucide-react";
 import { useApplication } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { downloadCandidateDocumentsAsZip } from "@/utils/downloadUtils";
+import { useToast } from "@/hooks/use-toast";
 
 interface CandidateDetailModalProps {
   applicationId: string;
@@ -32,6 +34,8 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
   const { data: application, isLoading, error } = useApplication(applicationId);
   const queryClient = useQueryClient();
   const { data: documents = [] } = useApplicationDocuments(applicationId);
+  const { toast } = useToast();
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
 
   // Normalise une URL de document pour pointer vers le bucket public Supabase
   const ensureAbsoluteUrl = (path?: string | null) => {
@@ -42,6 +46,48 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
     if (p.startsWith('storage/v1/object/public/')) return `${base}/${p}`;
     if (p.startsWith('application-documents/')) return `${base}/storage/v1/object/public/${p}`;
     return `${base}/storage/v1/object/public/application-documents/${p}`;
+  };
+
+  // Fonction pour télécharger tous les documents en ZIP
+  const handleDownloadAllDocuments = async () => {
+    if (!documents || documents.length === 0) {
+      toast({
+        title: "Aucun document",
+        description: "Ce candidat n'a fourni aucun document à télécharger.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!candidate) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de récupérer les informations du candidat.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDownloadingZip(true);
+    
+    try {
+      const candidateName = `${candidate.first_name} ${candidate.last_name}`;
+      await downloadCandidateDocumentsAsZip(documents, candidateName);
+      
+      toast({
+        title: "Téléchargement réussi",
+        description: `Le dossier de candidature de ${candidateName} a été téléchargé avec succès.`,
+      });
+    } catch (error) {
+      console.error('Erreur lors du téléchargement ZIP:', error);
+      toast({
+        title: "Erreur de téléchargement",
+        description: "Une erreur s'est produite lors de la création du fichier ZIP.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloadingZip(false);
+    }
   };
 
   // Temps réel: rafraîchir si le profil candidat (table users) ou la candidature change
@@ -249,7 +295,25 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
           {/* Documents de la candidature */}
           <Card className="mt-4 sm:mt-6">
             <CardHeader className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="text-base sm:text-lg">Documents de la candidature</CardTitle>
+                {documents.length > 0 && (
+                  <Button
+                    onClick={handleDownloadAllDocuments}
+                    disabled={isDownloadingZip}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs sm:text-sm"
+                  >
+                    {isDownloadingZip ? (
+                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-primary mr-1 sm:mr-2" />
+                    ) : (
+                      <Archive className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    )}
+                    {isDownloadingZip ? 'Création...' : 'Télécharger tout (ZIP)'}
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 space-y-3">
               {documents.length === 0 ? (
@@ -334,3 +398,5 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
     </Dialog>
   );
 }
+
+

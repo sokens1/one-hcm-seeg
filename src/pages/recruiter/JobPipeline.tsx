@@ -4,7 +4,7 @@ import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Users, Eye, Loader2 } from "lucide-react";
+import { ArrowLeft, Users, Eye, Loader2, Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRecruiterApplications } from "@/hooks/useApplications";
 import { useState } from "react";
@@ -16,10 +16,11 @@ interface Candidate {
   statusLabel: string;
   phone: string;
   experience: string;
-  status: 'candidature' | 'incubation' | 'embauche' | 'refuse';
+  status: 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme';
   score: number;
   applicationDate: string;
   email: string;
+  interviewDate?: string; // Date de l'entretien programmé
 
   gender?: string;
   birthDate?: string;
@@ -63,6 +64,7 @@ export default function JobPipeline() {
       score: 0, // TODO: Calculate from evaluations
       applicationDate: new Date(app.created_at).toISOString().split('T')[0],
       email: app.users?.email || '',
+      interviewDate: app.interview_date, // Assuming interview_date is available in the application data
 
       gender: (app.users as any)?.sexe,
       birthDate: app.users?.date_of_birth
@@ -71,6 +73,12 @@ export default function JobPipeline() {
 
   const jobTitle = applications[0]?.job_offers?.title || "Offre d'emploi";
   const getCandidatesByStatus = (status: string) => {
+    if (status === 'candidature') {
+      // Inclure les candidats avec statut 'candidature' ET 'entretien_programme'
+      return candidates.filter(candidate => 
+        candidate.status === 'candidature' || candidate.status === 'entretien_programme'
+      );
+    }
     return candidates.filter(candidate => candidate.status === status);
   };
 
@@ -145,9 +153,9 @@ export default function JobPipeline() {
                       <CardHeader className="pb-2 sm:pb-3">
                         <div className="flex items-center justify-between gap-2">
                           <CardTitle className="text-base sm:text-lg font-semibold truncate">{status.label}</CardTitle>
-                          <Badge variant="secondary" className="text-xs sm:text-sm flex-shrink-0">
-                            {statusCandidates.length}
-                          </Badge>
+                                                     <Badge variant="secondary" className="text-xs sm:text-sm flex-shrink-0">
+                             {statusCandidates.length}
+                           </Badge>
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-3 sm:space-y-4 min-h-[300px] sm:min-h-[400px]">
@@ -155,9 +163,9 @@ export default function JobPipeline() {
                           <Card key={candidate.id} className="p-3 sm:p-4 hover:shadow-medium transition-all cursor-pointer group">
                             <div className="space-y-2 sm:space-y-3">
                               <div className="space-y-1">
-                                <h4 className="text-sm sm:text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                                  {candidate.name}
-                                </h4>
+                                                                 <h4 className="text-sm sm:text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                                   {candidate.name}
+                                 </h4>
                                 <p className="text-xs sm:text-sm text-muted-foreground truncate" title={candidate.email}>
                                   {candidate.email}
                                 </p>
@@ -167,6 +175,13 @@ export default function JobPipeline() {
                                 <p className="text-xs sm:text-sm text-muted-foreground">
                                   Candidature : {new Date(candidate.applicationDate).toLocaleDateString('fr-FR')}
                                 </p>
+                                {/* Date de l'entretien si programmé */}
+                                {candidate.status === 'entretien_programme' && candidate.interviewDate && (
+                                  <div className="flex items-center gap-1 text-xs text-purple-600 whitespace-nowrap">
+                                    <Calendar className="w-3 h-3 flex-shrink-0" />
+                                    <span className="truncate">Entretien : {new Date(candidate.interviewDate).toLocaleDateString('fr-FR')}</span>
+                                  </div>
+                                )}
                               </div>
                               
                               {/* Afficher le score uniquement pour les candidats évalués (incubés, embauchés, refusés) */}

@@ -32,8 +32,8 @@ const htmlTemplate = (firstName: string, jobTitle: string) => `
       
       <div style="background: #e0f2fe; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <p style="margin: 0; font-size: 14px; color: #0c4a6e;">
-          <strong>📧 Contact :</strong> recrutement@seeg.ga<br>
-          <strong>📞 Support :</strong> +241 11 73 90 22
+          <strong>📧 Contact :</strong> support@seeg-talentsource.com<br>
+          <strong>📞 Support :</strong> +241 076402886
         </p>
       </div>
       
@@ -83,61 +83,82 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const payload = (await req.json()) as Payload;
-    const { to, firstName, jobTitle } = payload || {} as any;
+    // Parse the request body
+    const payload = await req.json() as Payload;
+    const { to, firstName, jobTitle } = payload;
 
+    // Validate required fields
     if (!to || !jobTitle) {
-      return new Response(JSON.stringify({ error: "Missing 'to' or 'jobTitle'" }), {
+      return new Response(JSON.stringify({ 
+        error: "Missing required fields: 'to' and 'jobTitle' are required" 
+      }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    // Get environment variables
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "SEEG Recrutement <support@seeg-talentsource.com>";
-    
-    // Configuration spécifique pour SEEG
-    const SUPPORT_EMAIL = "support@seeg-talentsource.com";
-    const SUPPORT_PHONE = "+241 076402886";
 
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({
-        error: "RESEND_API_KEY not set. Configure via 'supabase secrets set RESEND_API_KEY=...'.",
+        error: "RESEND_API_KEY not configured",
+        hint: "Set RESEND_API_KEY via 'supabase secrets set RESEND_API_KEY=...'"
       }), { 
         status: 501, 
         headers: { ...corsHeaders, "Content-Type": "application/json" } 
       });
     }
 
+    // Prepare email data
+    const emailData = {
+      from: FROM_EMAIL,
+      to: to.trim(),
+      subject: `Confirmation de candidature – ${jobTitle.trim()}`,
+      html: htmlTemplate(firstName || "", jobTitle.trim()),
+      text: textTemplate(firstName || "", jobTitle.trim()),
+    };
+
+    // Send email via Resend API
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to,
-        subject: `Confirmation de candidature – ${jobTitle}`,
-        html: htmlTemplate(firstName, jobTitle),
-        text: textTemplate(firstName, jobTitle),
-      }),
+      body: JSON.stringify(emailData),
     });
 
     const data = await res.json();
+    
     if (!res.ok) {
-      return new Response(JSON.stringify({ error: data?.message || "Failed to send email" }), {
+      return new Response(JSON.stringify({ 
+        error: "Failed to send email",
+        details: data?.message || "Unknown error",
+        status: res.status
+      }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(JSON.stringify({ ok: true, id: data?.id }), {
+    return new Response(JSON.stringify({ 
+      ok: true, 
+      id: data?.id,
+      message: "Email sent successfully"
+    }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (e) {
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
+    const errorMessage = e instanceof Error ? e.message : "Unknown error occurred";
+    
+    return new Response(JSON.stringify({ 
+      error: "Internal server error",
+      message: errorMessage
+    }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

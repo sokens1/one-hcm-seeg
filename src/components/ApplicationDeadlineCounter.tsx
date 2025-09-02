@@ -15,7 +15,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
       const difference = endDate.getTime() - now.getTime();
 
       if (difference <= 0) {
-        setTimeLeft("Les candidatures sont closes");
+        setTimeLeft("0j 00h 00m 00s");
         return;
       }
 
@@ -37,6 +37,16 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
   }, [endDate]);
 
   const [isVisible, setIsVisible] = useState(true);
+  const [showClosedMessage, setShowClosedMessage] = useState(false);
+
+  useEffect(() => {
+    // Vérifier si on est après minuit aujourd'hui (31 août 2025)
+    const deadlineDate = new Date('2025-08-31T23:59:59');
+    const now = new Date();
+    
+    // Afficher le message de clôture si la date actuelle est postérieure à la date limite
+    setShowClosedMessage(now > deadlineDate);
+  }, []);
 
   if (!timeLeft || !isVisible) return null;
 
@@ -95,15 +105,19 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
           {/* Compte à rebours */}
           <div className="bg-white/15 rounded-lg p-3 backdrop-blur-sm">
             <div className="text-xs text-white/80 mb-2 font-medium">COMPTE À REBOURS</div>
-            <div className="font-mono text-lg font-bold tracking-wider text-yellow-400">
+            <div className="font-mono text-base sm:text-lg font-bold tracking-wider text-yellow-400 break-words">
               {timeLeft.split(': ')[1] || timeLeft}
             </div>
-            <div className="text-xs text-white/70 text-left mt-1">
-              Fermeture des candidatures
-            </div>
+            {showClosedMessage && (
+              <div className="mt-2 text-left text-yellow-400 font-semibold text-xs sm:text-sm pl-0 pr-2">
+                L'appel à candidature est clôturé
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+

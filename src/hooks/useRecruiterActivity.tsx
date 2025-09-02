@@ -5,7 +5,7 @@ import { useAuth } from "./useAuth";
 
 export interface Activity {
   id: string;
-  type: "new_application" | "interview_scheduled" | "offer_published";
+  type: "new_application" | "interview_scheduled" | "offer_published" | "status_change";
   description: string;
   created_at: string;
   job_title: string;
@@ -14,8 +14,11 @@ export interface Activity {
 const fetchRecruiterActivity = async (userId: string): Promise<Activity[]> => {
   if (!userId) return [];
 
-  // Use the RPC function to get all recent activities, bypassing RLS.
-  const { data: activities, error } = await supabase.rpc('get_recruiter_activities');
+  // Use the RPC function with required pagination params (see migrations 20250827*)
+  const { data: activities, error } = await supabase.rpc('get_recruiter_activities', {
+    p_limit: 5,
+    p_offset: 0,
+  });
 
   if (error) {
     console.error("Error fetching activities:", error);
@@ -23,10 +26,10 @@ const fetchRecruiterActivity = async (userId: string): Promise<Activity[]> => {
   }
 
   // Transform the RPC result into the Activity format
-  return (activities || []).slice(0, 5).map((activity: any) => ({
+  return (activities || []).map((activity: any) => ({
     id: activity.id,
-    type: "new_application" as const, // Assuming all activities are new applications for now
-    description: `Nouvelle candidature de ${activity.candidate_name}`,
+    type: (activity.activity_type === 'application' ? 'new_application' : 'status_change') as Activity['type'],
+    description: activity.description,
     created_at: activity.created_at,
     job_title: activity.job_title,
   }));

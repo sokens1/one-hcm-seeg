@@ -12,13 +12,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Calendar, MapPin, Briefcase, Info, FileText, Eye, Download, Users, X, Archive, AlertCircle } from "lucide-react";
 import { EvaluationDashboard } from "@/components/evaluation/EvaluationDashboard";
+import { Protocol2Dashboard } from "@/components/evaluation/Protocol2Dashboard";
+import { SynthesisDashboard } from "@/components/evaluation/SynthesisDashboard";
+import { useSynthesisData } from "@/hooks/useSynthesisData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { downloadCandidateDocumentsAsZip } from "../../utils/downloadUtils";
+import { ErrorFallback } from "@/components/ui/ErrorFallback";
 
 const getBadgeVariant = (status: Application['status']) => {
   switch (status) {
@@ -61,7 +66,7 @@ const ProfileTab = ({ application }: { application: Application }) => {
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><User className="w-4 h-4 sm:w-5 sm:h-5"/> Informations Personnelles</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><User className="w-4 h-4 sm:w-5 sm:h-5" /> Informations Personnelles</CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         {/* Layout horizontal avec grid responsive */}
@@ -92,7 +97,11 @@ const ReferencesTab = ({ application }: { application: Application }) => {
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><Users className="w-4 h-4 sm:w-5 sm:h-5"/> Références de Recommandation</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Users className="w-4 h-4 sm:w-5 sm:h-5" /> 
+          <span className="hidden sm:inline">Références de Recommandation</span>
+          <span className="sm:hidden">Références</span>
+        </CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         {application.reference_contacts || application.ref_contacts ? (
@@ -148,7 +157,10 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="text-base sm:text-lg">Réponses au Questionnaire MTP</CardTitle>
+        <CardTitle className="text-base sm:text-lg">
+          <span className="hidden sm:inline">Réponses au Questionnaire MTP</span>
+          <span className="sm:hidden">Questionnaire MTP</span>
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 p-4 sm:p-6">
         {renderSection('Questions Métier', 'metier', 'border-blue-500', mtpAnswers.metier, 'bg-blue-100 text-blue-800')}
@@ -162,7 +174,7 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
 const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl: string, fileName: string, isOpen: boolean, onClose: () => void }) => {
   const getFileType = (fileName: string) => {
     const ext = fileName.toLowerCase().split('.').pop() || '';
-    
+
     if (ext === 'pdf') return 'pdf';
     if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(ext)) return 'image';
     if (['doc', 'docx'].includes(ext)) return 'word';
@@ -176,7 +188,7 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   const fileType = getFileType(fileName);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     if (!isOpen) {
       setError(null);
@@ -191,43 +203,43 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
       setIsLoading(false);
     }
   }, [isOpen, fileUrl, fileName]);
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[80vh]">
+      <DialogContent className="max-w-[95vw] sm:max-w-4xl h-[90vh] sm:h-[80vh] w-[95vw] sm:w-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>Prévisualisation - {fileName}</span>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="w-4 h-4" />
+          <DialogTitle className="flex items-center justify-between text-sm sm:text-base">
+            <span className="truncate">Prévisualisation - {fileName}</span>
+            <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
+              <X className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             Prévisualisation du document {fileName}. Utilisez les contrôles pour naviguer dans le contenu.
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-full space-y-4">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-sm text-muted-foreground">Chargement du document...</p>
+            <div className="flex flex-col items-center justify-center h-full space-y-3 sm:space-y-4">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-xs sm:text-sm text-muted-foreground">Chargement du document...</p>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-full text-red-500 space-y-4 p-6">
-              <FileText className="w-16 h-16 text-red-300" />
+            <div className="flex flex-col items-center justify-center h-full text-red-500 space-y-3 sm:space-y-4 p-3 sm:p-6">
+              <FileText className="w-12 h-12 sm:w-16 sm:h-16 text-red-300" />
               <div className="text-center space-y-2">
-                <p className="text-sm font-medium">Document inaccessible</p>
+                <p className="text-xs sm:text-sm font-medium">Document inaccessible</p>
                 <p className="text-xs text-muted-foreground max-w-md">{error}</p>
-                <div className="pt-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                <div className="pt-3 sm:pt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => window.open(fileUrl, '_blank')}
-                    className="mr-2"
+                    className="mr-2 text-xs sm:text-sm"
                   >
                     Essayer dans un nouvel onglet
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={onClose}>
+                  <Button variant="ghost" size="sm" onClick={onClose} className="text-xs sm:text-sm">
                     Fermer
                   </Button>
                 </div>
@@ -270,30 +282,32 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <FileText className="w-16 h-16 text-muted-foreground mx-auto" />
+              <div className="text-center space-y-3 sm:space-y-4 p-3 sm:p-6">
+                <FileText className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto" />
                 <div>
-                  <p className="text-sm font-medium">Prévisualisation non disponible</p>
+                  <p className="text-xs sm:text-sm font-medium">Prévisualisation non disponible</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Le type de fichier "{fileName.split('.').pop()?.toUpperCase()}" ne peut pas être prévisualisé directement.
                   </p>
-                  <div className="flex gap-2 mt-4 justify-center">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                  <div className="flex flex-col sm:flex-row gap-2 mt-3 sm:mt-4 justify-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => window.open(fileUrl, '_blank')}
+                      className="text-xs sm:text-sm"
                     >
                       Ouvrir dans un nouvel onglet
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => {
                         const link = document.createElement('a');
                         link.href = fileUrl;
                         link.download = fileName;
                         link.click();
                       }}
+                      className="text-xs sm:text-sm"
                     >
                       Télécharger
                     </Button>
@@ -308,20 +322,80 @@ const DocumentPreviewModal = ({ fileUrl, fileName, isOpen, onClose }: { fileUrl:
   );
 };
 
-const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, toast }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void, toast: any }) => {
+const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, toast, candidateName, isObserver = false }: { documents: any[], isLoading: boolean, error: Error | null, getFileUrl: (path: string) => Promise<string>, downloadFile: (path: string, name: string) => void, toast: any, candidateName?: string, isObserver?: boolean }) => {
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean, fileUrl: string, fileName: string }>({
     isOpen: false,
     fileUrl: '',
     fileName: ''
   });
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
+
+  // Fonction pour télécharger tous les documents en ZIP
+  const handleDownloadAllDocuments = async () => {
+    if (!documents || documents.length === 0) {
+      toast({
+        title: "Aucun document",
+        description: "Ce candidat n'a fourni aucun document à télécharger.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!candidateName) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de récupérer le nom du candidat.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDownloadingZip(true);
+
+    try {
+      await downloadCandidateDocumentsAsZip(documents, candidateName);
+
+      toast({
+        title: "Téléchargement réussi",
+        description: `Le dossier de candidature de ${candidateName} a été téléchargé avec succès.`,
+      });
+    } catch (error) {
+      console.error('Erreur lors du téléchargement ZIP:', error);
+      toast({
+        title: "Erreur de téléchargement",
+        description: "Une erreur s'est produite lors de la création du fichier ZIP.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloadingZip(false);
+    }
+  };
 
   return (
     <>
       <Card>
-        <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5"/> Documents</CardTitle>
+        <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+            <CardTitle className="flex items-center gap-2 text-sm sm:text-base lg:text-lg"><FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" /> Documents</CardTitle>
+            {!isObserver && documents && documents.length > 0 && (
+              <Button
+                onClick={handleDownloadAllDocuments}
+                disabled={isDownloadingZip}
+                variant="outline"
+                size="sm"
+                className="text-xs sm:text-sm w-full sm:w-auto"
+              >
+                {isDownloadingZip ? (
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-primary mr-1 sm:mr-2" />
+                ) : (
+                  <Archive className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                )}
+                {isDownloadingZip ? 'Création...' : 'Télécharger tout (ZIP)'}
+              </Button>
+            )}
+          </div>
         </CardHeader>
-        <CardContent className="space-y-2 sm:space-y-3 p-4 sm:p-6">
+        <CardContent className="space-y-2 sm:space-y-3 p-3 sm:p-4 lg:p-6">
           {isLoading ? (
             <p className="text-xs sm:text-sm">Chargement des documents...</p>
           ) : error ? (
@@ -332,13 +406,13 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
             </div>
           ) : documents && documents.length > 0 ? (
             <div>
-              <p className="text-xs text-muted-foreground mb-3">{documents.length} document(s) trouvé(s)</p>
+              <p className="text-xs text-muted-foreground mb-2 sm:mb-3">{documents.length} document(s) trouvé(s)</p>
               {documents.map((doc) => {
                 return (
                   <div key={doc.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0">
-                      <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
-                      <div className="overflow-hidden min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 overflow-hidden min-w-0 flex-1">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-muted-foreground flex-shrink-0" />
+                      <div className="overflow-hidden min-w-0 flex-1">
                         <p className="font-medium truncate text-xs sm:text-sm">{getDocumentTypeLabel(doc.document_type)}</p>
                         <p className="text-xs text-muted-foreground truncate">{doc.file_name} ({formatFileSize(doc.file_size)})</p>
                       </div>
@@ -350,7 +424,7 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
                           const { data } = supabase.storage
                             .from('application-documents')
                             .getPublicUrl(doc.file_url);
-                          
+
                           setPreviewModal({ isOpen: true, fileUrl: data.publicUrl, fileName: doc.file_name });
                         } catch (error) {
                           console.error('Error getting preview URL:', error);
@@ -360,28 +434,33 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
                             description: "Impossible de récupérer l'URL du fichier pour la prévisualisation.",
                           });
                         }
-                      }} className="p-1 sm:p-2">
+                      }} className="p-1 sm:p-2 h-8 w-8 sm:h-9 sm:w-9">
                         <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => {
-                        downloadFile(doc.file_url, doc.file_name);
-                      }} className="p-1 sm:p-2">
-                        <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </Button>
+                      {!isObserver && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => downloadFile(doc.file_url, doc.file_name)} 
+                          className="p-1 sm:p-2 h-8 w-8 sm:h-9 sm:w-9"
+                        >
+                          <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="text-center text-xs sm:text-sm text-muted-foreground py-4">
+            <div className="text-center text-xs sm:text-sm text-muted-foreground py-3 sm:py-4">
               <p>Aucun document trouvé.</p>
               <p className="text-xs mt-2">Les documents peuvent ne pas être visibles en raison de permissions ou d'un problème de récupération.</p>
             </div>
           )}
         </CardContent>
       </Card>
-      
+
       <DocumentPreviewModal
         fileUrl={previewModal.fileUrl}
         fileName={previewModal.fileName}
@@ -392,13 +471,26 @@ const DocumentsTab = ({ documents, isLoading, error, getFileUrl, downloadFile, t
   );
 };
 
-const EvaluationProtocol = ({ candidateName, jobTitle, applicationId, onStatusChange }: { candidateName: string, jobTitle: string, applicationId: string, onStatusChange: (status: 'incubation' | 'embauche' | 'refuse') => void }) => {
+const EvaluationProtocol = ({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false, protocol = 1 }: { candidateName: string, jobTitle: string, applicationId: string, onStatusChange: (status: 'incubation' | 'embauche' | 'refuse') => void, isReadOnly?: boolean, protocol?: number }) => {
+  if (protocol === 2) {
+    return (
+      <Protocol2Dashboard
+        candidateName={candidateName}
+        jobTitle={jobTitle}
+        applicationId={applicationId}
+        onStatusChange={onStatusChange}
+        isReadOnly={isReadOnly}
+      />
+    );
+  }
+  
   return (
-    <EvaluationDashboard 
+    <EvaluationDashboard
       candidateName={candidateName}
       jobTitle={jobTitle}
       applicationId={applicationId}
       onStatusChange={onStatusChange}
+      isReadOnly={isReadOnly}
     />
   );
 };
@@ -408,11 +500,15 @@ export default function CandidateAnalysis() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { isRecruiter } = useAuth();
+  const { isRecruiter, isObserver } = useAuth();
+  const [activeTab, setActiveTab] = useState("info");
   
-  const { data: application, isLoading, error } = useApplication(id);
+  const { data: application, isLoading, error, refetch: refetchApplication } = useApplication(id);
+  
+  // Utiliser le hook useSynthesisData pour récupérer les vraies données
+  const { synthesisData, isLoading: synthesisLoading, updateRecommendations } = useSynthesisData(application?.id || '');
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
-  const { updateApplicationStatus } = useRecruiterApplications(application?.job_offer_id);
+  const { updateApplicationStatus } = useRecruiterApplications();
 
   const jobId = searchParams.get('jobId') || application?.job_offer_id;
   const jobTitle = application?.job_offers?.title;
@@ -441,13 +537,22 @@ export default function CandidateAnalysis() {
   };
 
   const downloadFile = async (fileUrl: string, fileName: string) => {
+    if (isObserver) {
+      toast({
+        variant: 'default',
+        title: 'Accès restreint',
+        description: 'Les observateurs ne peuvent pas télécharger de documents.'
+      });
+      return;
+    }
+
     try {
       const finalUrl = await getFileUrl(fileUrl);
       window.open(finalUrl, '_blank');
     } catch (error) {
       console.error('Error downloading file:', error);
-      toast({ 
-        variant: 'destructive', 
+      toast({
+        variant: 'destructive',
         title: 'Erreur de téléchargement',
         description: 'Impossible de récupérer l\'URL du fichier.'
       });
@@ -455,13 +560,33 @@ export default function CandidateAnalysis() {
   };
 
   const handleStatusChange = async (newStatus: Application['status']) => {
-    if (!application) return;
+    if (!application || isObserver) return;
+    console.log('🔄 handleStatusChange appelé avec:', { applicationId: application.id, newStatus });
     try {
+      console.log('📤 Appel de updateApplicationStatus...');
       await updateApplicationStatus({ applicationId: application.id, status: newStatus });
-      if (jobId) {
-        navigate(`/recruiter/jobs/${jobId}/pipeline`);
-      } else {
-        navigate(-1);
+      console.log('✅ updateApplicationStatus terminé');
+
+      // Recharger les données de l'application pour refléter le nouveau statut
+      console.log('🔄 Rechargement des données...');
+      await refetchApplication();
+      console.log('✅ Données rechargées');
+
+      toast({
+        title: "Statut mis à jour",
+        description: `Le statut du candidat a été changé vers "${newStatus}".`,
+      });
+
+      // Navigation automatique vers Protocole 2 quand on clique "Incuber"
+      if (newStatus === 'incubation') {
+        setActiveTab('protocol2');
+      } else if (newStatus === 'embauche' || newStatus === 'refuse') {
+        // Pour les décisions finales, rediriger vers le pipeline
+        if (jobId) {
+          navigate(`/recruiter/jobs/${jobId}/pipeline`);
+        } else {
+          navigate(-1);
+        }
       }
     } catch (e) {
       console.error("Erreur lors du changement de statut", e);
@@ -488,12 +613,13 @@ export default function CandidateAnalysis() {
 
   if (error || !application) {
     return (
-      <RecruiterLayout>
-        <div className="container mx-auto px-4 py-8 text-center">
-          <p className="text-red-600 mb-4">Erreur: Impossible de charger les données du candidat.</p>
-          <Button onClick={() => navigate(-1)}>Retour</Button>
-        </div>
-      </RecruiterLayout>
+      <ErrorFallback
+        error={error}
+        resetError={() => {
+          refetchApplication();
+        }}
+        type="generic"
+      />
     );
   }
 
@@ -501,46 +627,133 @@ export default function CandidateAnalysis() {
 
   return (
     <RecruiterLayout>
-      <div className="container mx-auto px-4 py-6 sm:py-8">
-        <div className="mb-4 sm:mb-6">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div className="mb-3 sm:mb-4 lg:mb-6">
           <RouterLink to={jobId ? `/recruiter/jobs/${jobId}/pipeline` : "#"} onClick={(e) => { if (!jobId) { e.preventDefault(); navigate(-1); } }}>
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm">
-              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm w-full sm:w-auto">
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Retour au pipeline
             </Button>
           </RouterLink>
         </div>
 
-        <header className="mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-tight">{candidateName}</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">Candidature pour le poste de {application.job_offers?.title}</p>
+        <header className="mb-4 sm:mb-6 lg:mb-8">
+          <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-foreground leading-tight">{candidateName}</h1>
+          <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">Candidature pour le poste de {application.job_offers?.title}</p>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">Candidature reçue le {format(new Date(application.created_at), 'PPP', { locale: fr })}</p>
           <div className="flex items-center mt-2">
             <p className="text-xs sm:text-sm text-muted-foreground mr-2">Statut:</p>
-            <Badge variant={getBadgeVariant(application.status)}>{application.status}</Badge>
+            <Badge variant={getBadgeVariant(application.status)} className="text-xs sm:text-sm">{application.status}</Badge>
           </div>
         </header>
 
-        <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
-            <TabsTrigger value="info" className="px-2 sm:px-4">Informations Candidat</TabsTrigger>
-            <TabsTrigger value="evaluation" className="px-2 sm:px-4">Évaluation</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 text-xs sm:text-sm h-10 sm:h-11">
+            <TabsTrigger value="info" className="px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Informations Candidat</span>
+              <span className="sm:hidden">Informations</span>
+            </TabsTrigger>
+            <TabsTrigger value="protocol1" className="px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Protocole 1</span>
+              <span className="sm:hidden">Protocole 1</span>
+            </TabsTrigger>
+            <TabsTrigger value="protocol2" className="px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Protocole 2</span>
+              <span className="sm:hidden">Protocole 2</span>
+            </TabsTrigger>
+            <TabsTrigger value="synthesis" className="px-1 sm:px-2 text-xs sm:text-sm">Synthèse</TabsTrigger>
           </TabsList>
-          <TabsContent value="info" className="mt-4 sm:mt-6">
-            <div className="space-y-4 sm:space-y-6">
+          <TabsContent value="info" className="mt-3 sm:mt-4 lg:mt-6">
+            <div className="space-y-3 sm:space-y-4 lg:space-y-6">
               <ProfileTab application={application} />
-              <DocumentsTab documents={documents} isLoading={documentsLoading} error={documentsError} getFileUrl={getFileUrl} downloadFile={downloadFile} toast={toast} />
+              <DocumentsTab 
+                documents={documents} 
+                isLoading={documentsLoading} 
+                error={documentsError} 
+                getFileUrl={getFileUrl} 
+                downloadFile={downloadFile} 
+                toast={toast} 
+                candidateName={candidateName} 
+                isObserver={isObserver}
+              />
               <ReferencesTab application={application} />
               <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} />
             </div>
           </TabsContent>
-          <TabsContent value="evaluation" className="mt-4 sm:mt-6">
-            <EvaluationProtocol 
-              candidateName={candidateName}
-              jobTitle={jobTitle || 'Poste non spécifié'}
-              applicationId={application.id}
-              onStatusChange={handleStatusChange}
-            />
+          <TabsContent value="protocol1" className="mt-3 sm:mt-4 lg:mt-6">
+            <div className="relative">
+              {isObserver && (
+                <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-xs sm:text-sm text-yellow-800 font-medium">Mode consultation seule</p>
+                  <p className="text-xs text-yellow-700">Vous pouvez consulter cette évaluation mais pas la modifier</p>
+                </div>
+              )}
+              <EvaluationProtocol
+                candidateName={candidateName}
+                jobTitle={jobTitle || 'Poste non spécifié'}
+                applicationId={application.id}
+                onStatusChange={isObserver ? undefined : handleStatusChange}
+                isReadOnly={isObserver}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="protocol2" className="mt-3 sm:mt-4 lg:mt-6">
+            {application.status !== 'incubation' && !isObserver && (
+              <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+                  <div>
+                    <p className="text-xs sm:text-sm lg:text-base font-medium text-yellow-800">Protocole 2 en lecture seule</p>
+                    <p className="text-xs sm:text-sm text-yellow-700">
+                      Le candidat doit d'abord être incubé dans le Protocole 1 
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="relative">
+              {isObserver && (
+                <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-xs sm:text-sm text-yellow-800 font-medium">Mode consultation seule</p>
+                  <p className="text-xs text-yellow-700">Vous pouvez consulter cette évaluation mais pas la modifier</p>
+                </div>
+              )}
+              <EvaluationProtocol
+                candidateName={candidateName}
+                jobTitle={jobTitle || 'Poste non spécifié'}
+                applicationId={application.id}
+                onStatusChange={isObserver ? undefined : handleStatusChange}
+                isReadOnly={isObserver || application.status !== 'incubation'}
+                protocol={2}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="synthesis" className="mt-3 sm:mt-4 lg:mt-6">
+            {synthesisLoading ? (
+              <div className="flex items-center justify-center h-48 sm:h-64">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-sm sm:text-lg">Chargement des données de synthèse...</span>
+                </div>
+              </div>
+            ) : (
+              <SynthesisDashboard
+                candidateName={candidateName}
+                jobTitle={jobTitle || 'Poste non spécifié'}
+                applicationId={application.id}
+                isReadOnly={isObserver}
+                synthesisData={synthesisData}
+                onUpdate={(updates) => {
+                  if (updates.pointsForts !== undefined || updates.pointsAmelioration !== undefined) {
+                    updateRecommendations(
+                      updates.pointsForts || synthesisData.pointsForts,
+                      updates.pointsAmelioration || synthesisData.pointsAmelioration
+                    );
+                  }
+                }}
+
+              />
+            )}
           </TabsContent>
         </Tabs>
       </div>

@@ -18,13 +18,19 @@ import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecrui
 import { Loader2 } from 'lucide-react';
 import { MAINTENANCE_MODE, MAINTENANCE_HOURS } from '@/config/maintenance';
 import './index.css';
+import { ErrorBoundary } from 'react-error-boundary';
+import type { FallbackProps } from 'react-error-boundary';
+import { ErrorFallback } from '@/components/ui/ErrorFallback';
 
 //Maintenance page
 const Maintenance = lazy(() => import("./pages/maintenance"));
 
+// Error pages
+const NotFoundPage = lazy(() => import("./pages/404"));
+const ErrorPage = lazy(() => import("./pages/error").then(module => ({ default: module.ErrorFallback })));
+
 // Lazily load page components
 const Index = lazy(() => import("./pages/Index"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword").then(module => ({ default: module.ResetPassword })));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -106,8 +112,10 @@ const router = createBrowserRouter(
       <Route path="admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
       
       {/* Fallback routes */}
-      <Route path="index" element={<Index />} />
-      <Route path="*" element={<NotFound />} />
+      {/* Error handling routes */}
+      <Route path="/error" element={<ErrorPage />} />
+      <Route path="/404" element={<NotFoundPage />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
     </Route>
   )
 );
@@ -120,33 +128,21 @@ const LoadingFallback = () => (
 
 // Vérifier si nous sommes en période de maintenance
 const isMaintenanceTime = () => {
-  // Si MAINTENANCE_MODE est défini, on suit strictement cette valeur
-  if (MAINTENANCE_MODE !== undefined) {
-    console.log(`Maintenance ${MAINTENANCE_MODE ? 'activée' : 'désactivée'} manuellement`);
-    return MAINTENANCE_MODE;
-  }
-  
-  // Vérification de la plage horaire
+  // Vérifier si on est dans la plage horaire de maintenance
   const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  
-  // Calcul en minutes depuis minuit pour faciliter la comparaison
-  const currentTimeInMinutes = currentHour * 60 + currentMinute;
+  const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
   const startTimeInMinutes = MAINTENANCE_HOURS.start.hour * 60 + MAINTENANCE_HOURS.start.minute;
   const endTimeInMinutes = MAINTENANCE_HOURS.end.hour * 60 + MAINTENANCE_HOURS.end.minute;
   
-  // Déterminer si on est dans la plage de maintenance
-  let isInMaintenanceWindow = false;
+  // Déterminer si on est dans la plage de maintenance (00h00-00h40)
+  const isInMaintenanceWindow = startTimeInMinutes < endTimeInMinutes
+    ? currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes
+    : currentTimeInMinutes >= startTimeInMinutes || currentTimeInMinutes < endTimeInMinutes;
   
-  if (startTimeInMinutes < endTimeInMinutes) {
-    // Plage normale dans la même journée (ex: 14h-16h)
-    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes && 
-                           currentTimeInMinutes < endTimeInMinutes;
-  } else {
-    // Plage qui passe minuit (ex: 22h-02h)
-    isInMaintenanceWindow = currentTimeInMinutes >= startTimeInMinutes || 
-                           currentTimeInMinutes < endTimeInMinutes;
+  // Si MAINTENANCE_MODE est défini, on suit sa valeur
+  // Sinon, on suit la plage horaire
+  if (typeof MAINTENANCE_MODE !== 'undefined') {
+    return MAINTENANCE_MODE && isInMaintenanceWindow;
   }
   
   return isInMaintenanceWindow;
@@ -171,22 +167,29 @@ const withMaintenanceCheck = (element: React.ReactNode) => {
 };
 
 function App() {
+  // Composant de secours personnalisé pour ErrorBoundary
+  const CustomErrorFallback = (props: FallbackProps) => {
+    return <ErrorFallback error={props.error} onRetry={props.resetErrorBoundary} />;
+  };
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Suspense fallback={<LoadingFallback />}>
-            {withMaintenanceCheck(
-              <>
-                <RouterProvider router={router} />
-                <Toaster />
-                <Sonner />
-              </>
-            )}
-          </Suspense>
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary FallbackComponent={CustomErrorFallback}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <Suspense fallback={<LoadingFallback />}>
+              {withMaintenanceCheck(
+                <>
+                  <RouterProvider router={router} />
+                  <Toaster />
+                  <Sonner />
+                </>
+              )}
+            </Suspense>
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

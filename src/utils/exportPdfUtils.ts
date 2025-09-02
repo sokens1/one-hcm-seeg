@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Application } from '@/types/application';
 import { generateApplicationPdf } from './generateApplicationPdf';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,12 +9,16 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
     const user = application.users;
     const profile = user?.candidate_profiles;
     
-    // Debug: Log all relevant data
+    // Debug: Log all relevant data to identify gender issue
+    console.log('=== PDF Export Debug ===');
     console.log('User data:', user);
     console.log('Profile data:', profile);
-    console.log('Date of birth from user:', user?.date_of_birth);
-    console.log('Date of birth from profile:', profile?.date_of_birth);
-    console.log('Profile birth_date field:', profile?.birth_date);
+    console.log('Profile gender:', (profile as any)?.gender);
+    console.log('User date_of_birth:', user?.date_of_birth);
+    console.log('Profile birth_date:', (profile as any)?.birth_date);
+    console.log('User date_of_birth type:', typeof user?.date_of_birth);
+    console.log('Profile birth_date type:', typeof (profile as any)?.birth_date);
+    console.log('========================');
     
     // Fetch application documents
     const { data: documents, error: documentsError } = await supabase
@@ -78,7 +83,6 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       id: application.id,
       created_at: application.created_at,
       status: application.status,
-      gender: profile?.gender || '',
       metier1: metier1 || '',
       metier2: metier2 || '',
       metier3: metier3 || '',
@@ -97,9 +101,9 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       firstName: user?.first_name || '',
       lastName: user?.last_name || '',
       email: user?.email || '',
-      dateOfBirth: user?.date_of_birth ? new Date(user.date_of_birth) : (profile?.date_of_birth ? new Date(profile.date_of_birth) : (profile?.birth_date ? new Date(profile.birth_date) : null)),
+      dateOfBirth: user?.date_of_birth ? new Date(user.date_of_birth) : ((profile as any)?.birth_date ? new Date((profile as any).birth_date) : null),
       currentPosition: profile?.current_position || '',
-      gender: profile?.gender || (user as any)?.sexe || (user as any)?.gender || '',
+      gender: (profile as any)?.gender || (user as { sexe?: string; gender?: string })?.sexe || (user as { sexe?: string; gender?: string })?.gender || '',
       
       // Map documents from database
       cv: documentsByType.cv?.[0] ? { 
@@ -128,6 +132,9 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
         day: 'numeric',
       }),
     };
+    
+    console.log('Gender value passed to PDF generator:', applicationData.gender);
+    console.log('DateOfBirth value passed to PDF generator:', applicationData.dateOfBirth);
     
     const doc = generateApplicationPdf(applicationData);
     
