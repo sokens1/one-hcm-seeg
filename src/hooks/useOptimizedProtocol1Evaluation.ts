@@ -43,7 +43,7 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
   const LOCAL_MTIME_KEY = `protocol1_evaluation_details_${applicationId}_mtime`;
   const LOCAL_DIRTY_KEY = `protocol1_evaluation_details_${applicationId}_dirty`;
 
-  // Fonction pour calculer les scores partiels de chaque section (moyenne simple des %)
+  // Fonction pour calculer les scores partiels de chaque section (pondération 10/20/70, sans arrondi côté UI)
   const calculateSectionScores = useCallback((protocol1: any) => {
     // 1) Score documentaire: moyenne des 3 documents (sur 5) -> %
     const documentaryScores = [
@@ -75,8 +75,8 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
       : 0;
     const interviewScore = (interviewAverage / 5) * 100;
     
-    // Score global = moyenne simple des trois pourcentages
-    const totalScore = (documentaryScore + mtpScore + interviewScore) / 3;
+    // Score global pondéré = 10% documentaire, 20% MTP, 70% entretien
+    const totalScore = (0.10 * documentaryScore) + (0.20 * mtpScore) + (0.70 * interviewScore);
 
     return {
       documentaryScore,
@@ -259,8 +259,8 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
       // Recalculer le score global à partir des champs actuels
       try {
         const sectionScores = calculateSectionScores(loadedData.protocol1);
-        loadedData.protocol1.score = Math.round(sectionScores.totalScore);
-        loadedData.globalScore = Math.round(sectionScores.totalScore);
+        loadedData.protocol1.score = sectionScores.totalScore;
+        loadedData.globalScore = sectionScores.totalScore;
       } catch (e) {
         console.warn('Erreur lors du recalcul du score global Protocol 1 au chargement:', e);
       }
@@ -500,8 +500,8 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
       console.log('🔄 [UPDATE DEBUG] Données mises à jour:', newData);
       
       const sectionScores = calculateSectionScores(newData.protocol1);
-      newData.protocol1.score = Math.round(sectionScores.totalScore);
-      newData.globalScore = Math.round(sectionScores.totalScore);
+      newData.protocol1.score = sectionScores.totalScore;
+      newData.globalScore = sectionScores.totalScore;
       
       // Mettre à jour le statut basé sur les scores
       if (sectionScores.documentaryScore > 0 || sectionScores.mtpScore > 0) {
