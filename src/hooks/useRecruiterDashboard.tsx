@@ -303,7 +303,7 @@ export function useRecruiterDashboard() {
     const statusEvolution: StatusEvolutionData[] = [];
     
     // Date limite de candidature : 01 septembre 2025
-    const applicationDeadline = new Date('2025-01-31T23:59:59');
+    const applicationDeadline = new Date('2025-09-01T23:59:59');
     const now = new Date();
     
     // Si on est après la date limite, on s'arrête au 31 août
