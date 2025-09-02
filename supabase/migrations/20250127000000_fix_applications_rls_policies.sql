@@ -1,10 +1,12 @@
 -- Fix applications RLS policies to work with current user role system
 -- This migration ensures that recruiters and admins can properly update application statuses
 
-begin;
-
--- Ensure RLS is enabled on the applications table
-alter table public.applications enable row level security;
+-- Vérifier si la table existe avant de la modifier
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'applications') THEN
+    -- Ensure RLS is enabled on the applications table
+    ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies to avoid conflicts
 drop policy if exists applications_select_candidate on public.applications;
@@ -79,12 +81,12 @@ with check (
   )
 );
 
--- Grant necessary permissions
-grant usage on schema public to authenticated;
-grant select, insert, update on public.applications to authenticated;
-grant execute on function public.get_user_role(uuid) to authenticated;
-
-commit;
+    -- Grant necessary permissions
+    GRANT USAGE ON SCHEMA public TO authenticated;
+    GRANT SELECT, INSERT, UPDATE ON public.applications TO authenticated;
+    GRANT EXECUTE ON FUNCTION public.get_user_role(uuid) TO authenticated;
+  END IF;
+END $$;
 
 
 

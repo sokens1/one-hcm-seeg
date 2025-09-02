@@ -32,19 +32,6 @@ export interface JobOffer {
 }
 
 const fetchJobOffers = async () => {
-  // 1. Fetch all active job offers
-  const { data: offers, error } = await supabase
-    .from('job_offers')
-    .select('id,title,location,contract_type,status,created_at,recruiter_id,categorie_metier,date_limite')
-    .eq('status', 'active')
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  if (!offers || offers.length === 0) return [];
-
-  // 2. Récupérer les candidatures via RPC par offre (signature 1-argument)
-  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
   try {
     // 1. Fetch all active job offers
     const { data: offers, error } = await supabase
