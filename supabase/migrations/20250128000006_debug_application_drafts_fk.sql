@@ -8,6 +8,7 @@ DECLARE
     orphaned_jobs_count INTEGER;
     total_drafts_count INTEGER;
     constraint_exists BOOLEAN;
+    rec RECORD;
 BEGIN
     -- Compter les brouillons orphelins
     SELECT COUNT(*) INTO orphaned_users_count 

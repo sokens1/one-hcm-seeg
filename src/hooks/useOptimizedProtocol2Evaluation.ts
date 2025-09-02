@@ -166,6 +166,22 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
           }
         };
       }
+      // Fusionner avec les données locales détaillées (non stockées en DB)
+      try {
+        const localRaw = localStorage.getItem(`protocol2_evaluation_details_${applicationId}`);
+        if (localRaw) {
+          const localData = JSON.parse(localRaw) as Protocol2EvaluationData;
+          // On privilégie les champs locaux pour ne pas perdre les sous-scores
+          loadedData = {
+            ...loadedData,
+            mise_en_situation: localData.mise_en_situation || loadedData.mise_en_situation,
+            validation_operationnelle: localData.validation_operationnelle || loadedData.validation_operationnelle,
+            analyse_competences: localData.analyse_competences || loadedData.analyse_competences,
+          };
+        }
+      } catch (e) {
+        console.warn('Impossible de charger les détails locaux Protocol 2:', e);
+      }
       
       setEvaluationData(loadedData);
       // Mettre en cache les données
@@ -189,6 +205,26 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     
     setIsSaving(true);
     try {
+      // Calcul cohérent avec calculateSectionScores (pourcentages pondérés)
+      const situationAvgOn5 = (
+        Math.min(data.mise_en_situation.jeu_de_role.score, 5) +
+        Math.min(data.mise_en_situation.jeu_codir.score, 5)
+      ) / 2;
+      const performanceAvgOn5 = (
+        Math.min(data.validation_operationnelle.fiche_kpis.score, 5) +
+        Math.min(data.validation_operationnelle.fiche_kris.score, 5) +
+        Math.min(data.validation_operationnelle.fiche_kcis.score, 5)
+      ) / 3;
+      const competenceAvgOn5 = (
+        Math.min(data.analyse_competences.gap_competences.score, 5) +
+        Math.min(data.analyse_competences.plan_formation.score, 5)
+      ) / 2;
+
+      const situationPct = (situationAvgOn5 / 5) * 100;
+      const performancePct = (performanceAvgOn5 / 5) * 100;
+      const competencePct = (competenceAvgOn5 / 5) * 100;
+      const globalPct = situationPct * 0.5 + performancePct * 0.2 + competencePct * 0.3;
+
       const evaluationRecord = {
         application_id: applicationId,
         evaluator_id: user.id,
@@ -196,15 +232,8 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
         interview_notes: data.mise_en_situation.jeu_de_role.comments,
         qcm_codir_score: data.mise_en_situation.jeu_codir.score,
         visit_notes: data.mise_en_situation.jeu_codir.comments,
-        overall_score: Math.round(
-          (data.mise_en_situation.jeu_de_role.score + 
-           data.mise_en_situation.jeu_codir.score + 
-           data.validation_operationnelle.fiche_kpis.score + 
-           data.validation_operationnelle.fiche_kris.score + 
-           data.validation_operationnelle.fiche_kcis.score + 
-           data.analyse_competences.gap_competences.score + 
-           data.analyse_competences.plan_formation.score) / 7
-        ),
+        // Sauvegarde du score global en pourcentage arrondi
+        overall_score: Math.round(globalPct),
         skills_gap_notes: data.analyse_competences.gap_competences.comments + 
           (data.analyse_competences.gap_competences.gapLevel ? 
             ` Niveau: ${data.analyse_competences.gap_competences.gapLevel}` : ''),
@@ -233,6 +262,13 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
 
       if (result.error) {
         throw result.error;
+      }
+
+      // Sauvegarde locale des détails non persistés en DB
+      try {
+        localStorage.setItem(`protocol2_evaluation_details_${applicationId}` , JSON.stringify(data));
+      } catch (e) {
+        console.warn('Impossible d\'écrire les détails Protocol 2 en localStorage:', e);
       }
 
       // Invalider le cache après sauvegarde
@@ -296,7 +332,34 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     return () => clearInterval(interval);
   }, [cache]);
 
-  // Calculer les scores des sections
+  // Sauvegarde forcée avant rafraîchissement/fermeture pour ne pas perdre le global
+  useEffect(() => {
+    const handleImmediatePersist = () => {
+      try {
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+          saveTimeoutRef.current = null;
+        }
+        localStorage.setItem(`protocol2_evaluation_details_${applicationId}`, JSON.stringify(evaluationData));
+        saveEvaluation(evaluationData);
+      } catch (e) {
+        console.warn('Erreur lors de la persistance immédiate Protocol 2:', e);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleImmediatePersist);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        handleImmediatePersist();
+      }
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', handleImmediatePersist);
+    };
+  }, [applicationId, evaluationData, saveEvaluation]);
+
+  // Calculer les scores des sections (retour en pourcentage, pondéré 50/20/30)
   const calculateSectionScores = useCallback(() => {
     // S'assurer que les scores ne dépassent jamais 5
     const jeuDeRoleScore = Math.min(evaluationData.mise_en_situation.jeu_de_role.score, 5);
@@ -307,19 +370,24 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     const gapCompetencesScore = Math.min(evaluationData.analyse_competences.gap_competences.score, 5);
     const planFormationScore = Math.min(evaluationData.analyse_competences.plan_formation.score, 5);
 
-    // Calculer le score global avec tous les champs
-    const globalScore = Math.min(
-      Math.round(
-        (jeuDeRoleScore + jeuCodirScore + ficheKpisScore + ficheKrisScore + ficheKcisScore + gapCompetencesScore + planFormationScore) / 7
-      ),
-      5
-    );
+    // Moyennes par section (sur 5)
+    const situationAvgOn5 = (jeuDeRoleScore + jeuCodirScore) / 2;
+    const performanceAvgOn5 = (ficheKpisScore + ficheKrisScore + ficheKcisScore) / 3;
+    const competenceAvgOn5 = (gapCompetencesScore + planFormationScore) / 2;
+
+    // Conversion en pourcentage
+    const situationPct = (situationAvgOn5 / 5) * 100;
+    const performancePct = (performanceAvgOn5 / 5) * 100;
+    const competencePct = (competenceAvgOn5 / 5) * 100;
+
+    // Pondération: 50% / 20% / 30%
+    const globalPct = situationPct * 0.5 + performancePct * 0.2 + competencePct * 0.3;
 
     return {
-      miseEnSituation: Math.round((jeuDeRoleScore + jeuCodirScore) / 2),
-      validationOperationnelle: Math.round((ficheKpisScore + ficheKrisScore + ficheKcisScore) / 3),
-      analyseCompetences: Math.round((gapCompetencesScore + planFormationScore) / 2),
-      global: globalScore
+      miseEnSituation: Math.max(0, Math.min(100, Number(situationPct.toFixed(1)))) ,
+      validationOperationnelle: Math.max(0, Math.min(100, Number(performancePct.toFixed(1)))) ,
+      analyseCompetences: Math.max(0, Math.min(100, Number(competencePct.toFixed(1)))) ,
+      global: Math.max(0, Math.min(100, Number(globalPct.toFixed(1))))
     };
   }, [evaluationData]);
 
