@@ -63,13 +63,16 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
     const mtpAverage = mtpScores.length > 0 ? mtpScores.reduce((a: number, b: number) => a + (b || 0), 0) / mtpScores.length : 0;
     const mtpScore = (mtpAverage / 5) * 100;
     
-    // 3) Score Entretien: moyenne des 3 axes physiques MTP (sur 5) -> %
+    // 3) Score Entretien: moyenne des 3 axes physiques MTP + gap de compétence (sur 5) -> %
     const interviewScores = [
       protocol1.interview.physicalMtpAdherence.metier.score,
       protocol1.interview.physicalMtpAdherence.talent.score,
-      protocol1.interview.physicalMtpAdherence.paradigme.score
+      protocol1.interview.physicalMtpAdherence.paradigme.score,
+      protocol1.interview.gapCompetence.score
     ];
-    const interviewAverage = interviewScores.length > 0 ? interviewScores.reduce((a: number, b: number) => a + (b || 0), 0) / interviewScores.length : 0;
+    const interviewAverage = interviewScores.length > 0
+      ? interviewScores.reduce((a: number, b: number) => a + (b || 0), 0) / interviewScores.length
+      : 0;
     const interviewScore = (interviewAverage / 5) * 100;
     
     // Score global = moyenne simple des trois pourcentages
