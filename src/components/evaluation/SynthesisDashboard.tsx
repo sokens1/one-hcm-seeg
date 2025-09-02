@@ -97,7 +97,7 @@ const getStatusBadge = (status: string) => {
 const getScoreColor = (score: number) => {
   if (score >= 80) return 'text-green-600';
   if (score >= 60) return 'text-orange-600';
-  return 'text-red-600';
+  return 'text-blue-600';
 };
 
 export function SynthesisDashboard({ 
