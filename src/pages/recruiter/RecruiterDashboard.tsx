@@ -706,10 +706,8 @@ export default function RecruiterDashboard() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Diagramme du taux de couverture des entretiens */}
-            <div className="mt-8 sm:mt-12">
+              {/* Diagramme du taux de couverture des entretiens */}
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
