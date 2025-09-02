@@ -8,78 +8,78 @@ BEGIN
     -- Ensure RLS is enabled on the applications table
     ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies to avoid conflicts
-drop policy if exists applications_select_candidate on public.applications;
-drop policy if exists applications_select_recruiter_or_admin on public.applications;
-drop policy if exists applications_insert_candidate on public.applications;
-drop policy if exists applications_update_candidate_or_recruiter_or_admin on public.applications;
+    -- Drop existing policies to avoid conflicts
+    DROP POLICY IF EXISTS applications_select_candidate ON public.applications;
+    DROP POLICY IF EXISTS applications_select_recruiter_or_admin ON public.applications;
+    DROP POLICY IF EXISTS applications_insert_candidate ON public.applications;
+    DROP POLICY IF EXISTS applications_update_candidate_or_recruiter_or_admin ON public.applications;
 
--- Create a helper function to get user role from database
-create or replace function public.get_user_role(user_id uuid)
-returns text
-language sql
-stable
-security definer
-as $$
-  select role from public.users where id = user_id;
-$$;
+    -- Create a helper function to get user role from database
+    CREATE OR REPLACE FUNCTION public.get_user_role(user_id uuid)
+    RETURNS text
+    LANGUAGE sql
+    STABLE
+    SECURITY DEFINER
+    AS $$
+      SELECT role FROM public.users WHERE id = user_id;
+    $$;
 
--- SELECT: candidates can see their own applications
-create policy applications_select_candidate
-on public.applications
-for select
-using (candidate_id = auth.uid());
+    -- SELECT: candidates can see their own applications
+    CREATE POLICY applications_select_candidate
+    ON public.applications
+    FOR SELECT
+    USING (candidate_id = auth.uid());
 
--- SELECT: recruiters or admin can see applications for jobs they own
-create policy applications_select_recruiter_or_admin
-on public.applications
-for select
-using (
-  exists (
-    select 1
-    from public.job_offers j
-    where j.id = applications.job_offer_id
-      and (
-        j.recruiter_id = auth.uid() 
-        or public.get_user_role(auth.uid()) = 'admin'
+    -- SELECT: recruiters or admin can see applications for jobs they own
+    CREATE POLICY applications_select_recruiter_or_admin
+    ON public.applications
+    FOR SELECT
+    USING (
+      EXISTS (
+        SELECT 1
+        FROM public.job_offers j
+        WHERE j.id = applications.job_offer_id
+          AND (
+            j.recruiter_id = auth.uid() 
+            OR public.get_user_role(auth.uid()) = 'admin'
+          )
       )
-  )
-);
+    );
 
--- INSERT: candidate can create only his own application
-create policy applications_insert_candidate
-on public.applications
-for insert
-with check (candidate_id = auth.uid());
+    -- INSERT: candidate can create only his own application
+    CREATE POLICY applications_insert_candidate
+    ON public.applications
+    FOR INSERT
+    WITH CHECK (candidate_id = auth.uid());
 
--- UPDATE: candidate, recruiter of the job, or admin can update
-create policy applications_update_candidate_or_recruiter_or_admin
-on public.applications
-for update
-using (
-  candidate_id = auth.uid()
-  or exists (
-    select 1
-    from public.job_offers j
-    where j.id = applications.job_offer_id
-      and (
-        j.recruiter_id = auth.uid() 
-        or public.get_user_role(auth.uid()) = 'admin'
+    -- UPDATE: candidate, recruiter of the job, or admin can update
+    CREATE POLICY applications_update_candidate_or_recruiter_or_admin
+    ON public.applications
+    FOR UPDATE
+    USING (
+      candidate_id = auth.uid()
+      OR EXISTS (
+        SELECT 1
+        FROM public.job_offers j
+        WHERE j.id = applications.job_offer_id
+          AND (
+            j.recruiter_id = auth.uid() 
+            OR public.get_user_role(auth.uid()) = 'admin'
+          )
       )
-  )
-)
-with check (
-  candidate_id = auth.uid()
-  or exists (
-    select 1
-    from public.job_offers j
-    where j.id = applications.job_offer_id
-      and (
-        j.recruiter_id = auth.uid() 
-        or public.get_user_role(auth.uid()) = 'admin'
+    )
+    WITH CHECK (
+      candidate_id = auth.uid()
+      OR EXISTS (
+        SELECT 1
+        FROM public.job_offers j
+        WHERE j.id = applications.job_offer_id
+          AND (
+            j.recruiter_id = auth.uid() 
+            OR public.get_user_role(auth.uid()) = 'admin'
+          )
       )
-  )
-);
+    );
 
     -- Grant necessary permissions
     GRANT USAGE ON SCHEMA public TO authenticated;
