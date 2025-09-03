@@ -1,0 +1,4 @@
+﻿id,application_id,evaluator_id,physical_visit,interview_completed,qcm_role_completed,qcm_codir_completed,job_sheet_created,skills_gap_assessed,interview_notes,visit_notes,qcm_role_score,qcm_codir_score,skills_gap_notes,overall_score,completed,created_at,updated_at
+64cfc047-9e26-47df-bef2-ddd5dec617db,73318a9e-5113-4fa5-9d3c-5046ae9229e7,6b35be8c-fe50-4618-8187-2de1d1c145fe,f,f,f,f,f,f,,,0,0,,0,f,2025-09-02 13:33:16.310811+00,2025-09-02 13:33:16.733358+00
+
+

@@ -1,4 +1,20 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+
+interface LinkedUserRecord {
+  first_name?: string;
+  last_name?: string;
+}
+
+interface LinkedJobOfferRecord {
+  title?: string;
+}
+
+interface ApplicationDetails {
+  candidate_id?: string | null;
+  job_offer_id?: string | null;
+  users?: LinkedUserRecord | LinkedUserRecord[];
+  job_offers?: LinkedJobOfferRecord | LinkedJobOfferRecord[];
+}
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -6,7 +22,7 @@ import { useAuth } from '@/hooks/useAuth';
 export interface InterviewSlot {
   id?: string;
   date: string; // Format YYYY-MM-DD
-  time: string; // Format HH:MM
+  time: string; // Format HH:MM:SS
   isAvailable: boolean;
   applicationId?: string;
   recruiterId?: string;
@@ -29,11 +45,24 @@ export const useInterviewScheduling = (applicationId?: string) => {
   const loadingTimeoutRef = useRef<NodeJS.Timeout>();
   const lastApplicationIdRef = useRef<string>();
 
-  // Créneaux horaires disponibles
-  const timeSlots = [
-    '09:00', '10:00', '11:00',
-    '14:00', '15:00', '16:00'
-  ];
+  // Normalisation de l'heure au format HH:MM:SS
+  const normalizeTimeToHms = useCallback((value: string): string => {
+    const trimmed = (value || '').trim();
+    const hms = /^([01]?\d|2[0-3]):([0-5]\d):([0-5]\d)$/; // HH:MM:SS
+    const hm = /^([01]?\d|2[0-3]):([0-5]\d)$/; // HH:MM
+    if (hms.test(trimmed)) return trimmed;
+    if (hm.test(trimmed)) return `${trimmed}:00`;
+    // Tentative de rattrapage 9:0 -> 09:00:00
+    const parts = trimmed.split(':').map(p => p.padStart(2, '0'));
+    if (parts.length === 2) return `${parts[0]}:${parts[1]}:00`;
+    if (parts.length === 3) return `${parts[0]}:${parts[1]}:${parts[2]}`;
+    return trimmed; // on laisse tel quel, la DB rejettera si invalide
+  }, []);
+
+  // Créneaux horaires disponibles (alignés sur HH:MM:SS)
+  const timeSlots = useMemo(() => (
+    ['09:00:00', '10:00:00', '11:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00']
+  ), []);
 
   // Charger les créneaux d'entretien
   const loadInterviewSlots = useCallback(async () => {
@@ -152,7 +181,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
         setIsLoading(false);
       }, 200);
     }
-  }, [applicationId, toast, schedules.length]);
+  }, [applicationId, toast, schedules.length, timeSlots]);
 
   // Programmer un entretien
   const scheduleInterview = useCallback(async (date: string, time: string) => {
@@ -160,7 +189,8 @@ export const useInterviewScheduling = (applicationId?: string) => {
 
     setIsSaving(true);
     try {
-      console.log('🔄 Programmation entretien pour:', { date, time, applicationId, userId: user.id });
+      const normalizedTime = normalizeTimeToHms(time);
+      console.log('🔄 Programmation entretien pour:', { date, time: normalizedTime, applicationId, userId: user.id });
 
       // Récupérer les informations du job et du candidat pour remplir les champs obligatoires
       const { data: applicationDetails, error: appDetailsError } = await supabase
@@ -168,8 +198,8 @@ export const useInterviewScheduling = (applicationId?: string) => {
         .select(`
           candidate_id,
           job_offer_id,
-          users!applications_candidate_id_fkey(first_name, last_name),
-          job_offers!applications_job_offer_id_fkey(title)
+          users:users!applications_candidate_id_fkey(first_name, last_name),
+          job_offers:job_offers!applications_job_offer_id_fkey(title)
         `)
         .eq('id', applicationId)
         .single();
@@ -179,8 +209,15 @@ export const useInterviewScheduling = (applicationId?: string) => {
         throw appDetailsError;
       }
 
-      const candidateName = `${applicationDetails.users?.first_name || ''} ${applicationDetails.users?.last_name || ''}`.trim();
-      const jobTitle = applicationDetails.job_offers?.title || 'Poste non spécifié';
+      // Certains retours de jointure peuvent être typés comme des tableaux
+      const appDet = applicationDetails as unknown as ApplicationDetails;
+      const usersField = appDet.users;
+      const jobOffersField = appDet.job_offers;
+      const userRecord: LinkedUserRecord | undefined = Array.isArray(usersField) ? usersField[0] : usersField;
+      const jobOfferRecord: LinkedJobOfferRecord | undefined = Array.isArray(jobOffersField) ? jobOffersField[0] : jobOffersField;
+
+      const candidateName = `${userRecord?.first_name || ''} ${userRecord?.last_name || ''}`.trim();
+      const jobTitle = jobOfferRecord?.title || 'Poste non spécifié';
 
       console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
 
@@ -189,7 +226,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
         .from('interview_slots')
         .select('id, application_id, is_available')
         .eq('date', date)
-        .eq('time', time)
+        .eq('time', normalizedTime)
         .single();
 
       if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
@@ -226,24 +263,75 @@ export const useInterviewScheduling = (applicationId?: string) => {
           .eq('id', existingSlot.id);
         insertError = error;
       } else {
-        // Créer un nouveau créneau
-        const { error } = await supabase
-          .from('interview_slots')
-          .insert({
-            date,
-            time,
-            application_id: applicationId,
-            candidate_name: candidateName,
-            job_title: jobTitle,
-            status: 'scheduled',
-            is_available: false,
-            recruiter_id: user.id,
-            candidate_id: applicationDetails.candidate_id,
-            notes: 'Entretien programmé',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-        insertError = error;
+        // Créer ou mettre à jour via upsert en cas de conflit (date,time).
+        // Si l'upsert renvoie 400 (contrainte unique manquante), fallback insert->update en cas de doublon.
+        let upsertError;
+        try {
+          const { error } = await supabase
+            .from('interview_slots')
+            .upsert({
+              date,
+              time: normalizedTime,
+              application_id: applicationId,
+              candidate_name: candidateName,
+              job_title: jobTitle,
+              status: 'scheduled',
+              is_available: false,
+              recruiter_id: user.id,
+              candidate_id: applicationDetails.candidate_id,
+              notes: 'Entretien programmé',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'date,time' });
+          upsertError = error;
+        } catch (e) {
+          // cas rare: throw réseau
+          upsertError = e as unknown as { code?: string; message?: string };
+        }
+
+        if (upsertError) {
+          // Fallback: tentative d'insert simple
+          const { error: insErr } = await supabase
+            .from('interview_slots')
+            .insert({
+              date,
+              time: normalizedTime,
+              application_id: applicationId,
+              candidate_name: candidateName,
+              job_title: jobTitle,
+              status: 'scheduled',
+              is_available: false,
+              recruiter_id: user.id,
+              candidate_id: applicationDetails.candidate_id,
+              notes: 'Entretien programmé',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+
+          if (insErr && (insErr as unknown as { code?: string }).code === '23505') {
+            // Doublon: Update du slot existant sur (date,time)
+            const { error: updErr } = await supabase
+              .from('interview_slots')
+              .update({
+                application_id: applicationId,
+                candidate_name: candidateName,
+                job_title: jobTitle,
+                status: 'scheduled',
+                is_available: false,
+                recruiter_id: user.id,
+                candidate_id: applicationDetails.candidate_id,
+                notes: 'Entretien programmé',
+                updated_at: new Date().toISOString()
+              })
+              .eq('date', date)
+              .eq('time', normalizedTime);
+            insertError = updErr;
+          } else {
+            insertError = insErr;
+          }
+        } else {
+          insertError = undefined;
+        }
       }
 
       if (insertError) {
@@ -255,9 +343,16 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const cacheKey = `slots_${applicationId}`;
       sessionStorage.removeItem(cacheKey);
       sessionStorage.removeItem(`${cacheKey}_time`);
+      
+      // Invalider aussi le cache global des créneaux
+      const globalCacheKeys = Object.keys(sessionStorage).filter(key => key.startsWith('slots_'));
+      globalCacheKeys.forEach(key => {
+        sessionStorage.removeItem(key);
+        sessionStorage.removeItem(`${key}_time`);
+      });
 
       // Mettre à jour l'application avec la date d'entretien
-      const interviewDateTime = new Date(`${date}T${time}`);
+      const interviewDateTime = new Date(`${date}T${normalizedTime}`);
       const { error: updateError } = await supabase
         .from('applications')
         .update({
@@ -274,7 +369,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
 
       toast({
         title: "Entretien programmé",
-        description: `Entretien programmé le ${new Date(date).toLocaleDateString('fr-FR')} à ${time}`,
+        description: `Félicitations, votre candidature a été retenue. Vous avez un entretien programmé pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${normalizedTime.slice(0,5)} suite à votre candidature pour le poste de ${jobTitle}`,
       });
 
       // Recharger les créneaux
@@ -292,7 +387,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, user, toast, loadInterviewSlots]);
+  }, [applicationId, user, toast, loadInterviewSlots, normalizeTimeToHms]);
 
   // Annuler un entretien
   const cancelInterview = useCallback(async (date: string, time: string) => {
@@ -301,6 +396,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     setIsSaving(true);
     try {
       // Marquer le créneau comme disponible
+      const normalizedTime = normalizeTimeToHms(time);
       const { error } = await supabase
         .from('interview_slots')
         .update({
@@ -312,7 +408,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
           updated_at: new Date().toISOString()
         })
         .eq('date', date)
-        .eq('time', time)
+        .eq('time', normalizedTime)
         .eq('application_id', applicationId);
 
       if (error) throw error;
@@ -349,7 +445,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, toast, loadInterviewSlots]);
+  }, [applicationId, toast, loadInterviewSlots, normalizeTimeToHms]);
 
   // Vérifier si un créneau est occupé
   const isSlotBusy = useCallback((date: string, time: string) => {

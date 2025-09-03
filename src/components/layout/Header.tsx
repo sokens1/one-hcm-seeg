@@ -10,11 +10,12 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { useEffect, useState } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
+import { diagnoseDatabaseAccess } from "@/utils/databaseDiagnostics";
 
 export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut, isRecruiter, isCandidate, isAdmin } = useAuth();
+  const { user, signOut, isRecruiter, isCandidate, isAdmin, refreshUserRole } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [notificationOpen, setNotificationOpen] = useState(false);
   const isAuthenticated = !!user;
@@ -46,6 +47,32 @@ export function Header() {
       }, 500);
     } catch (error) {
       toast.error("Erreur lors de la déconnexion");
+    }
+  };
+
+  const handleRefreshRole = async () => {
+    try {
+      await refreshUserRole();
+      toast.success("Rôle mis à jour !");
+    } catch (error) {
+      toast.error("Erreur lors de la mise à jour du rôle");
+    }
+  };
+
+  const handleDiagnoseDatabase = async () => {
+    try {
+      const results = await diagnoseDatabaseAccess();
+      console.log('Diagnostic results:', results);
+      
+      if (results.errors.length > 0) {
+        toast.error(`Diagnostic: ${results.errors.length} erreur(s) détectée(s)`);
+        console.error('Database diagnostic errors:', results.errors);
+      } else {
+        toast.success("Diagnostic: Base de données accessible");
+      }
+    } catch (error) {
+      toast.error("Erreur lors du diagnostic");
+      console.error('Diagnostic failed:', error);
     }
   };
 
@@ -186,6 +213,24 @@ export function Header() {
                     </div>
                   </PopoverContent>
                 </Popover>
+
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleRefreshRole} 
+                  className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
+                  title="Rafraîchir le rôle utilisateur"
+                >
+                  <Building2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Actualiser</span>
+                  <span className="sm:hidden">Actualiser</span>
+                </Button>
+
+                <Button variant="outline" size="sm" onClick={handleDiagnoseDatabase} className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+                  <Building2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Diagnostic</span>
+                  <span className="sm:hidden">Diag</span>
+                </Button>
 
                 <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
                   <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />

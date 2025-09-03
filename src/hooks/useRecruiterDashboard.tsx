@@ -182,6 +182,12 @@ export function useRecruiterDashboard() {
       console.log('[DASHBOARD DEBUG] Full candidate_details object:', JSON.stringify(allEntries?.[0]?.candidate_details, null, 2));
       console.log('[DASHBOARD DEBUG] Direct gender from candidate_details:', allEntries?.[0]?.candidate_details?.gender);
       console.log('[DASHBOARD DEBUG] Candidate genders map:', candidateGenders);
+      
+      // Extraire le genre depuis candidate_profiles si disponible
+      if (allEntries?.[0]?.candidate_details?.candidate_profiles?.gender) {
+        const profileGender = allEntries[0].candidate_details.candidate_profiles.gender;
+        console.log('[DASHBOARD DEBUG] Gender from candidate_profiles:', profileGender);
+      }
 
       // Normalize genders for unique candidates
       const normalized: Array<{ user_id: string; gender: 'Homme' | 'Femme' | null }> = 
@@ -302,9 +308,17 @@ export function useRecruiterDashboard() {
     // Calculate status evolution over the last 7 days
     const statusEvolution: StatusEvolutionData[] = [];
     
+    // Date limite de candidature : 01 septembre 2025
+    const applicationDeadline = new Date('2025-09-01T23:59:59');
+    const now = new Date();
+    
+    // Si on est après la date limite, on s'arrête au 31 août
+    const endDate = now > applicationDeadline ? applicationDeadline : now;
+    
     // Générer les 7 derniers jours en respectant le fuseau horaire local
+    // mais en s'arrêtant à la date limite de candidature
     const last7Days = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date();
+      const date = new Date(endDate);
       date.setDate(date.getDate() - i);
       // Utiliser toLocaleDateString pour éviter les problèmes de fuseau horaire
       return date.toLocaleDateString('fr-CA'); // Format YYYY-MM-DD
