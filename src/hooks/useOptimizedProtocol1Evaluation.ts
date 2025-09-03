@@ -136,7 +136,7 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
       let loadedData = defaultEvaluationData;
       let dbUpdatedAt: number | undefined;
       if (data) {
-        console.log('📥 [LOAD DEBUG] Données brutes de la DB:', data);
+        // console.log('📥 [LOAD DEBUG] Données brutes de la DB:', data);
         
         loadedData = {
           globalScore: data.overall_score || 0,
@@ -283,8 +283,8 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
   const saveEvaluation = useCallback(async (data: EvaluationData) => {
     if (!applicationId) return;
     
-    console.log('💾 [SAVE DEBUG] Début de la sauvegarde pour applicationId:', applicationId);
-    console.log('💾 [SAVE DEBUG] Données à sauvegarder:', data);
+    // console.log('💾 [SAVE DEBUG] Début de la sauvegarde pour applicationId:', applicationId);
+    // console.log('💾 [SAVE DEBUG] Données à sauvegarder:', data);
     
     setIsSaving(true);
     try {
@@ -316,7 +316,11 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
         paradigme_comments: data.protocol1.mtpAdherence.paradigme.comments,
         
         // Entretien
-        interview_date: data.protocol1.interview.interviewDate?.toISOString(),
+        interview_date: data.protocol1.interview.interviewDate ? 
+          (data.protocol1.interview.interviewDate instanceof Date ? 
+            data.protocol1.interview.interviewDate.toISOString() : 
+            new Date(data.protocol1.interview.interviewDate).toISOString()) : 
+          null,
         interview_metier_score: data.protocol1.interview.physicalMtpAdherence.metier.score,
         interview_metier_comments: data.protocol1.interview.physicalMtpAdherence.metier.comments,
         interview_talent_score: data.protocol1.interview.physicalMtpAdherence.talent.score,
@@ -341,7 +345,7 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
         updated_at: new Date().toISOString()
       };
       
-      console.log('💾 [SAVE DEBUG] Enregistrement à sauvegarder:', evaluationRecord);
+      // console.log('💾 [SAVE DEBUG] Enregistrement à sauvegarder:', evaluationRecord);
 
       // Protéger les données existantes: ne pas écraser des valeurs non nulles avec 0/''
       const { data: existingFull } = await supabase
@@ -497,7 +501,7 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
     setEvaluationData(prev => {
       const newData = updater(prev);
       
-      console.log('🔄 [UPDATE DEBUG] Données mises à jour:', newData);
+      // console.log('🔄 [UPDATE DEBUG] Données mises à jour:', newData);
       
       const sectionScores = calculateSectionScores(newData.protocol1);
       newData.protocol1.score = sectionScores.totalScore;
@@ -527,7 +531,7 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
 
       // Sauvegarder automatiquement après un délai plus court (1 seconde)
       saveTimeoutRef.current = setTimeout(() => {
-        console.log('💾 [SAVE DEBUG] Sauvegarde automatique déclenchée');
+        // console.log('💾 [SAVE DEBUG] Sauvegarde automatique déclenchée');
         saveEvaluation(newData);
         saveTimeoutRef.current = null;
       }, 1000);

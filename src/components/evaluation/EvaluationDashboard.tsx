@@ -231,12 +231,23 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   // Synchroniser l'état local avec les données chargées
   useEffect(() => {
     if (evaluationData.protocol1.interview.interviewDate) {
-      setInterviewDate(evaluationData.protocol1.interview.interviewDate);
-      // Extraire l'heure si elle existe dans la date
       const date = evaluationData.protocol1.interview.interviewDate;
-      if (date instanceof Date && !isNaN(date.getTime())) {
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
+      
+      // S'assurer que la date est un objet Date valide
+      let validDate: Date;
+      if (date instanceof Date) {
+        validDate = date;
+      } else if (typeof date === 'string') {
+        validDate = new Date(date);
+      } else {
+        return; // Ignorer les valeurs invalides
+      }
+      
+      if (!isNaN(validDate.getTime())) {
+        setInterviewDate(validDate);
+        // Extraire l'heure si elle existe dans la date
+        const hours = validDate.getHours();
+        const minutes = validDate.getMinutes();
         if (hours > 0 || minutes > 0) {
           const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
           setSelectedTimeSlot(timeString);
@@ -266,7 +277,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   
   // Fonction pour vérifier si une date est sélectionnée
   const isDateSelected = (date: Date) => {
-    return interviewDate && interviewDate.toDateString() === date.toDateString();
+    if (!interviewDate) return false;
+    
+    // S'assurer que interviewDate est un objet Date valide
+    const interviewDateObj = interviewDate instanceof Date ? interviewDate : new Date(interviewDate);
+    if (isNaN(interviewDateObj.getTime())) return false;
+    
+    return interviewDateObj.toDateString() === date.toDateString();
   };
   
   // Fonction pour obtenir la clé de date au format YYYY-MM-DD
