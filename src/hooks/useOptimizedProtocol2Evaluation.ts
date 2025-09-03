@@ -118,53 +118,62 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
 
       let loadedData = defaultEvaluationData;
       if (data) {
-        loadedData = {
-          status: data.completed ? 'completed' : 'in_progress',
-          mise_en_situation: {
-            jeu_de_role: {
-              score: data.qcm_role_score || 0,
-              comments: data.interview_notes || ''
+        // Si un JSON de détails existe, l'utiliser comme source de vérité
+        const details = (data as any).details as Partial<Protocol2EvaluationData> | null;
+        if (details && typeof details === 'object') {
+          loadedData = {
+            ...defaultEvaluationData,
+            ...details,
+            status: details.status || (data.completed ? 'completed' : 'in_progress')
+          } as Protocol2EvaluationData;
+        } else {
+          // Fallback sur l'ancien modèle de colonnes
+          loadedData = {
+            status: data.completed ? 'completed' : 'in_progress',
+            mise_en_situation: {
+              jeu_de_role: {
+                score: data.qcm_role_score || 0,
+                comments: data.interview_notes || ''
+              },
+              jeu_codir: {
+                score: data.qcm_codir_score || 0,
+                comments: data.visit_notes || ''
+              }
             },
-            jeu_codir: {
-              score: data.qcm_codir_score || 0,
-              comments: data.visit_notes || ''
+            validation_operationnelle: {
+              fiche_kpis: {
+                score: data.overall_score || 0,
+                comments: data.skills_gap_notes || ''
+              },
+              fiche_kris: {
+                score: 0,
+                comments: ''
+              },
+              fiche_kcis: {
+                score: 0,
+                comments: ''
+              }
+            },
+            analyse_competences: {
+              gap_competences: {
+                score: data.overall_score || 0,
+                comments: (() => {
+                  const notes = data.skills_gap_notes || '';
+                  return notes.replace(/Niveau: (faible|moyen|important|critique) - /, '');
+                })(),
+                gapLevel: (() => {
+                  const notes = data.skills_gap_notes || '';
+                  const match = notes.match(/Niveau: (faible|moyen|important|critique)/);
+                  return match ? match[1] : '';
+                })()
+              },
+              plan_formation: {
+                score: data.overall_score || 0,
+                comments: data.skills_gap_notes || ''
+              }
             }
-          },
-          validation_operationnelle: {
-            fiche_kpis: {
-              score: data.overall_score || 0,
-              comments: data.skills_gap_notes || ''
-            },
-            fiche_kris: {
-              score: 0,
-              comments: ''
-            },
-            fiche_kcis: {
-              score: 0,
-              comments: ''
-            }
-          },
-          analyse_competences: {
-            gap_competences: {
-              score: data.overall_score || 0,
-              comments: (() => {
-                // Extraire les commentaires sans le niveau
-                const notes = data.skills_gap_notes || '';
-                return notes.replace(/Niveau: (faible|moyen|important|critique) - /, '');
-              })(),
-              gapLevel: (() => {
-                // Extraire le niveau de gap des commentaires si présent
-                const notes = data.skills_gap_notes || '';
-                const match = notes.match(/Niveau: (faible|moyen|important|critique)/);
-                return match ? match[1] : '';
-              })()
-            },
-            plan_formation: {
-              score: data.overall_score || 0,
-              comments: data.skills_gap_notes || ''
-            }
-          }
-        };
+          };
+        }
       }
       // Fusionner avec les données locales détaillées (non stockées en DB)
       try {
@@ -264,11 +273,14 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
         throw result.error;
       }
 
-      // Sauvegarde locale des détails non persistés en DB
-      try {
-        localStorage.setItem(`protocol2_evaluation_details_${applicationId}` , JSON.stringify(data));
-      } catch (e) {
-        console.warn('Impossible d\'écrire les détails Protocol 2 en localStorage:', e);
+      // Persister l'intégralité des détails dans la colonne JSONB
+      const { error: detailsErr } = await supabase
+        .from('protocol2_evaluations')
+        .update({ details: data as unknown as Record<string, unknown> })
+        .eq('application_id', applicationId);
+
+      if (detailsErr) {
+        console.warn('Avertissement: échec de la mise à jour des details JSONB Protocol 2:', detailsErr);
       }
 
       // Invalider le cache après sauvegarde
@@ -340,7 +352,11 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
           clearTimeout(saveTimeoutRef.current);
           saveTimeoutRef.current = null;
         }
-        localStorage.setItem(`protocol2_evaluation_details_${applicationId}`, JSON.stringify(evaluationData));
+        // Sauvegarde rapide des détails dans la colonne JSONB
+        void supabase
+          .from('protocol2_evaluations')
+          .update({ details: evaluationData as unknown as Record<string, unknown> })
+          .eq('application_id', applicationId);
         saveEvaluation(evaluationData);
       } catch (e) {
         console.warn('Erreur lors de la persistance immédiate Protocol 2:', e);

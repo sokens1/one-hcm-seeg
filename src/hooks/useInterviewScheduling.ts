@@ -1,4 +1,20 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+
+interface LinkedUserRecord {
+  first_name?: string;
+  last_name?: string;
+}
+
+interface LinkedJobOfferRecord {
+  title?: string;
+}
+
+interface ApplicationDetails {
+  candidate_id?: string | null;
+  job_offer_id?: string | null;
+  users?: LinkedUserRecord | LinkedUserRecord[];
+  job_offers?: LinkedJobOfferRecord | LinkedJobOfferRecord[];
+}
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -44,10 +60,9 @@ export const useInterviewScheduling = (applicationId?: string) => {
   }, []);
 
   // Créneaux horaires disponibles (alignés sur HH:MM:SS)
-  const timeSlots = [
-    '09:00:00', '10:00:00', '11:00:00',
-    '14:00:00', '15:00:00', '16:00:00'
-  ];
+  const timeSlots = useMemo(() => (
+    ['09:00:00', '10:00:00', '11:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00']
+  ), []);
 
   // Charger les créneaux d'entretien
   const loadInterviewSlots = useCallback(async () => {
@@ -166,7 +181,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
         setIsLoading(false);
       }, 200);
     }
-  }, [applicationId, toast, schedules.length]);
+  }, [applicationId, toast, schedules.length, timeSlots]);
 
   // Programmer un entretien
   const scheduleInterview = useCallback(async (date: string, time: string) => {
@@ -183,8 +198,8 @@ export const useInterviewScheduling = (applicationId?: string) => {
         .select(`
           candidate_id,
           job_offer_id,
-          users!applications_candidate_id_fkey(first_name, last_name),
-          job_offers!applications_job_offer_id_fkey(title)
+          users:users!applications_candidate_id_fkey(first_name, last_name),
+          job_offers:job_offers!applications_job_offer_id_fkey(title)
         `)
         .eq('id', applicationId)
         .single();
@@ -194,8 +209,15 @@ export const useInterviewScheduling = (applicationId?: string) => {
         throw appDetailsError;
       }
 
-      const candidateName = `${applicationDetails.users?.first_name || ''} ${applicationDetails.users?.last_name || ''}`.trim();
-      const jobTitle = applicationDetails.job_offers?.title || 'Poste non spécifié';
+      // Certains retours de jointure peuvent être typés comme des tableaux
+      const appDet = applicationDetails as unknown as ApplicationDetails;
+      const usersField = appDet.users;
+      const jobOffersField = appDet.job_offers;
+      const userRecord: LinkedUserRecord | undefined = Array.isArray(usersField) ? usersField[0] : usersField;
+      const jobOfferRecord: LinkedJobOfferRecord | undefined = Array.isArray(jobOffersField) ? jobOffersField[0] : jobOffersField;
+
+      const candidateName = `${userRecord?.first_name || ''} ${userRecord?.last_name || ''}`.trim();
+      const jobTitle = jobOfferRecord?.title || 'Poste non spécifié';
 
       console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
 
@@ -340,7 +362,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
 
       toast({
         title: "Entretien programmé",
-        description: `Entretien programmé le ${new Date(date).toLocaleDateString('fr-FR')} à ${normalizedTime.slice(0,5)}`,
+        description: `Félicitations, votre candidature a été retenue. Vous avez un entretien programmé pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${normalizedTime.slice(0,5)} suite à votre candidature pour le poste de ${jobTitle}`,
       });
 
       // Recharger les créneaux

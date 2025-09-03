@@ -28,3 +28,4 @@ COMMENT ON COLUMN public.protocol1_evaluations.total_score IS 'Score global exac
 COMMENT ON COLUMN public.protocol2_evaluations.overall_score IS 'Score global en pourcentage avec deux décimales (pondéré 50/20/30)';
 
 
+
