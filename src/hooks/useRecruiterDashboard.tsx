@@ -302,9 +302,17 @@ export function useRecruiterDashboard() {
     // Calculate status evolution over the last 7 days
     const statusEvolution: StatusEvolutionData[] = [];
     
+    // Date limite de candidature : 01 septembre 2025
+    const applicationDeadline = new Date('2025-09-01T23:59:59');
+    const now = new Date();
+    
+    // Si on est après la date limite, on s'arrête au 31 août
+    const endDate = now > applicationDeadline ? applicationDeadline : now;
+    
     // Générer les 7 derniers jours en respectant le fuseau horaire local
+    // mais en s'arrêtant à la date limite de candidature
     const last7Days = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date();
+      const date = new Date(endDate);
       date.setDate(date.getDate() - i);
       // Utiliser toLocaleDateString pour éviter les problèmes de fuseau horaire
       return date.toLocaleDateString('fr-CA'); // Format YYYY-MM-DD
