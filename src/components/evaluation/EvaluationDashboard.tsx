@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { useOptimizedProtocol1Evaluation } from "@/hooks/useOptimizedProtocol1Evaluation";
 import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { InterviewCalendarModal } from './InterviewCalendarModal';
 
@@ -125,23 +126,99 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   };
   
   // Fonction pour gérer l'incubation
-  const handleIncubate = () => {
-    onStatusChange('incubation');
-    toast({
-      title: "Candidat incubé",
-      description: "Le candidat a été incubé et peut maintenant passer au protocole 2",
-      duration: 3000,
-    });
+  const handleIncubate = async () => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: 'incubation', updated_at: new Date().toISOString() })
+        .eq('id', applicationId);
+      if (error) throw error;
+      try {
+        const { data: app } = await supabase
+          .from('applications')
+          .select('users!applications_candidate_id_fkey(email, first_name)')
+          .eq('id', applicationId)
+          .maybeSingle();
+        const rel: any = (app as any)?.users;
+        const toEmail: string | undefined = Array.isArray(rel) ? (rel[0] as any)?.email : (rel as any)?.email;
+        const firstName: string = Array.isArray(rel) ? ((rel[0] as any)?.first_name || '') : ((rel as any)?.first_name || '');
+        if (toEmail) {
+          await supabase.functions.invoke('send_application_status_update', {
+            body: { to: toEmail, firstName, jobTitle, status: 'incubation' }
+          });
+        }
+      } catch { /* non bloquant */ }
+      onStatusChange('incubation');
+      toast({ title: "Candidat incubé", description: "Incubation activée.", duration: 3000 });
+    } catch (e) {
+      toast({ title: 'Erreur', description: "Échec de l'incubation", variant: 'destructive' });
+    }
   };
   
   // Fonction pour gérer le refus
-  const handleRefuse = () => {
-    onStatusChange('refuse');
-    toast({
-      title: "Candidat refusé",
-      description: "Le candidat a été refusé et sera redirigé vers la synthèse",
-      duration: 3000,
-    });
+  const handleRefuse = async () => {
+    try {
+      // Mise à jour du statut candidature en BD
+      const { error } = await supabase
+        .from('applications')
+        .update({
+          status: 'refuse',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', applicationId);
+
+      if (error) {
+        console.error('❌ Erreur BD lors du refus:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible d'enregistrer le refus. Réessayez.",
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Envoyer email statut (non bloquant)
+      try {
+        const toEmail = await (async () => {
+          const { data: app } = await supabase
+            .from('applications')
+            .select('candidate_id, job_offers!applications_job_offer_id_fkey(title), users!applications_candidate_id_fkey(email, first_name)')
+            .eq('id', applicationId)
+            .maybeSingle();
+          const rel: any = (app as any)?.users;
+          return Array.isArray(rel) ? (rel[0] as any)?.email as string | undefined : (rel as any)?.email as string | undefined;
+        })();
+        if (toEmail) {
+          await supabase.functions.invoke('send_application_status_update', {
+            body: {
+              to: toEmail,
+              firstName: candidateName?.split(' ')?.[0] || '',
+              jobTitle,
+              status: 'refuse'
+            }
+          });
+        }
+      } catch {
+        /* non bloquant */
+      }
+
+      // Propager au parent (pipeline, etc.)
+      onStatusChange('refuse');
+
+      // Notification dynamique et informative
+      toast({
+        title: "Candidature refusée",
+        description: "Merci pour votre intérêt. Contactez le recrutement pour plus d'infos.",
+        duration: 5000
+      });
+    } catch (e) {
+      console.error('❌ Exception lors du refus:', e);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'opération de refus.",
+        variant: 'destructive'
+      });
+    }
   };
 
 
