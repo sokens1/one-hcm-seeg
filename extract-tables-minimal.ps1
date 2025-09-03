@@ -31,7 +31,7 @@ $Tables = @(
 )
 
 # Fonction pour extraire les donnees d'une table
-function Extract-TableData {
+function Get-TableData {
     param(
         [string]$TableName,
         [string]$BackupFile,
@@ -100,7 +100,7 @@ function Extract-TableData {
 
 # Extraire les donnees de chaque table
 foreach ($Table in $Tables) {
-    Extract-TableData -TableName $Table -BackupFile $BackupFile -OutputDir $OutputDir
+    Get-TableData -TableName $Table -BackupFile $BackupFile -OutputDir $OutputDir
 }
 
 # Creer un fichier d'ordre de creation des tables
