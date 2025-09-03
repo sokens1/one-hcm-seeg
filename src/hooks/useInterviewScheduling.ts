@@ -343,6 +343,13 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const cacheKey = `slots_${applicationId}`;
       sessionStorage.removeItem(cacheKey);
       sessionStorage.removeItem(`${cacheKey}_time`);
+      
+      // Invalider aussi le cache global des créneaux
+      const globalCacheKeys = Object.keys(sessionStorage).filter(key => key.startsWith('slots_'));
+      globalCacheKeys.forEach(key => {
+        sessionStorage.removeItem(key);
+        sessionStorage.removeItem(`${key}_time`);
+      });
 
       // Mettre à jour l'application avec la date d'entretien
       const interviewDateTime = new Date(`${date}T${normalizedTime}`);

@@ -151,13 +151,13 @@ export function useSynthesisData(applicationId: string) {
           }
         };
 
-        console.log('🔍 [PROTOCOL 1 DEBUG] Données brutes:', {
-          overall_score: data.overall_score,
-          documentary_score: data.documentary_score,
-          mtp_score: data.mtp_score,
-          interview_score: data.interview_score,
-          total_score: data.total_score
-        });
+        // console.log('🔍 [PROTOCOL 1 DEBUG] Données brutes:', {
+        //   overall_score: data.overall_score,
+        //   documentary_score: data.documentary_score,
+        //   mtp_score: data.mtp_score,
+        //   interview_score: data.interview_score,
+        //   total_score: data.total_score
+        // });
 
         return {
           data: protocol1Data,
@@ -225,12 +225,12 @@ export function useSynthesisData(applicationId: string) {
           }
         };
 
-        console.log('🔍 [PROTOCOL 2 DEBUG] Données brutes:', {
-          overall_score: data.overall_score,
-          qcm_role_score: data.qcm_role_score,
-          qcm_codir_score: data.qcm_codir_score,
-          completed: data.completed
-        });
+        // console.log('🔍 [PROTOCOL 2 DEBUG] Données brutes:', {
+        //   overall_score: data.overall_score,
+        //   qcm_role_score: data.qcm_role_score,
+        //   qcm_codir_score: data.qcm_codir_score,
+        //   completed: data.completed
+        // });
 
         return {
           data: protocol2Data,
@@ -271,13 +271,13 @@ export function useSynthesisData(applicationId: string) {
       const protocol2Score = Math.min(protocol2Result?.score || 0, 100);
       const globalScore = calculateGlobalScore(protocol1Score, protocol2Score);
 
-      console.log('🔍 [SYNTHESIS DEBUG] Scores finaux:', {
-        protocol1Score,
-        protocol2Score,
-        globalScore,
-        protocol1Result: protocol1Result ? 'trouvé' : 'non trouvé',
-        protocol2Result: protocol2Result ? 'trouvé' : 'non trouvé'
-      });
+      // console.log('🔍 [SYNTHESIS DEBUG] Scores finaux:', {
+      //   protocol1Score,
+      //   protocol2Score,
+      //   globalScore,
+      //   protocol1Result: protocol1Result ? 'trouvé' : 'non trouvé',
+      //   protocol2Result: protocol2Result ? 'trouvé' : 'non trouvé'
+      // });
 
       setSynthesisData({
         protocol1: {

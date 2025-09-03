@@ -3,13 +3,7 @@ ALTER TABLE public.job_offers
 ADD COLUMN IF NOT EXISTS categorie_metier text CHECK (categorie_metier IN ('metier_eau', 'metier_electricite', 'metier_clientele', 'metier_support')),
 ADD COLUMN IF NOT EXISTS date_limite timestamptz;
 
--- Insérer les catégories métier par défaut si elles n'existent pas
-INSERT INTO public.job_categories (name, description) VALUES 
-('metier_eau', 'Métiers de l''eau et assainissement'),
-('metier_electricite', 'Métiers de l''électricité et énergie'),
-('metier_clientele', 'Métiers de la relation clientèle'),
-('metier_support', 'Métiers du support et maintenance')
-ON CONFLICT (name) DO NOTHING;
+-- Note: Les catégories métier seront insérées dans la migration suivante qui crée la table job_categories
 
 -- Créer un index sur la catégorie métier pour optimiser les requêtes
 CREATE INDEX IF NOT EXISTS idx_job_offers_categorie_metier ON public.job_offers(categorie_metier);

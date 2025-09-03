@@ -182,6 +182,12 @@ export function useRecruiterDashboard() {
       console.log('[DASHBOARD DEBUG] Full candidate_details object:', JSON.stringify(allEntries?.[0]?.candidate_details, null, 2));
       console.log('[DASHBOARD DEBUG] Direct gender from candidate_details:', allEntries?.[0]?.candidate_details?.gender);
       console.log('[DASHBOARD DEBUG] Candidate genders map:', candidateGenders);
+      
+      // Extraire le genre depuis candidate_profiles si disponible
+      if (allEntries?.[0]?.candidate_details?.candidate_profiles?.gender) {
+        const profileGender = allEntries[0].candidate_details.candidate_profiles.gender;
+        console.log('[DASHBOARD DEBUG] Gender from candidate_profiles:', profileGender);
+      }
 
       // Normalize genders for unique candidates
       const normalized: Array<{ user_id: string; gender: 'Homme' | 'Femme' | null }> = 

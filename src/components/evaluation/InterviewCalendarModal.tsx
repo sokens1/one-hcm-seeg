@@ -48,7 +48,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
   const loadInterviews = useCallback(async () => {
     setIsLoading(true);
     try {
-      console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
+      // console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
       
       // 1) Récupérer les créneaux sans jointures complexes (évite 400)
       // Déterminer la fenêtre du mois courant pour charger tous les jours visibles
@@ -72,7 +72,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         return;
       }
 
-      console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots);
+      // console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots);
 
       if (!slots || slots.length === 0) {
         setInterviews([]);
@@ -122,7 +122,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         } as Interview;
       });
 
-      console.log('📅 [CALENDAR DEBUG] Entretiens formatés:', formattedInterviews);
+      // console.log('📅 [CALENDAR DEBUG] Entretiens formatés:', formattedInterviews);
       setInterviews(formattedInterviews);
     } catch (error) {
       console.error('❌ [CALENDAR DEBUG] Erreur lors du chargement des entretiens:', error);
@@ -158,7 +158,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       console.error('❌ [CALENDAR DEBUG] Erreur mise à jour entretien:', updateError);
       return;
     }
-    console.log('✅ [CALENDAR DEBUG] Entretien mis à jour');
+    // console.log('✅ [CALENDAR DEBUG] Entretien mis à jour');
     setIsEditing(false);
     setEditingInterview(null);
     await loadInterviews();
@@ -206,9 +206,10 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
   };
 
   const getInterviewsForDate = (date: Date) => {
+    // Utiliser UTC pour éviter les problèmes de fuseau horaire
     const dateString = format(date, 'yyyy-MM-dd');
     const interviewsForDate = interviews.filter(interview => interview.date === dateString);
-    console.log(`📅 [CALENDAR DEBUG] Entretiens pour ${dateString}:`, interviewsForDate);
+    // console.log(`📅 [CALENDAR DEBUG] Entretiens pour ${dateString}:`, interviewsForDate);
     return interviewsForDate;
   };
 
@@ -287,7 +288,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
                       onClick={() => {
                         if (!isCurrentMonthDate) return;
                         const dayStr = format(date, 'yyyy-MM-dd');
-                        console.log(`📅 [CALENDAR DEBUG] Date sélectionnée: ${dayStr}`);
+                        // console.log(`📅 [CALENDAR DEBUG] Date sélectionnée: ${dayStr}`);
                         setSelectedDate(date);
                         if (isEditing) {
                           setDraftDate(dayStr);

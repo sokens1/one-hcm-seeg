@@ -1,0 +1,35 @@
+﻿ORDRE DE CREATION DES TABLES - TALENT FLOW GABON
+================================================
+
+Cet ordre respecte les dependances entre les tables (cles etrangeres).
+
+1. public.users (table de base pour tous les utilisateurs)
+2. public.seeg_agents (agents SEEG - peut referencer users)
+3. public.job_offers (offres d'emploi - peut referencer users pour recruiter_id)
+4. public.candidate_profiles (profils candidats - reference users)
+5. public.applications (candidatures - reference users et job_offers)
+6. public.application_drafts (brouillons - reference users et job_offers)
+7. public.application_documents (documents candidature - reference applications)
+8. public.application_history (historique - reference applications)
+9. public.documents (documents generaux - reference applications)
+10. public.interview_slots (creneaux entretien - reference applications et users)
+11. public.notifications (notifications - reference users et applications)
+12. public.protocol1_evaluations (evaluations protocole 1 - reference applications)
+13. public.protocol2_evaluations (evaluations protocole 2 - reference applications)
+
+NOTES IMPORTANTES:
+- Les tables auth.* sont gerees automatiquement par Supabase
+- Les tables storage.* sont gerees automatiquement par Supabase Storage
+- Les tables realtime.* sont gerees automatiquement par Supabase Realtime
+- Les tables supabase_migrations.* sont gerees automatiquement par Supabase
+
+DEPENDANCES PRINCIPALES:
+- applications vers users (candidate_id), job_offers (job_offer_id)
+- candidate_profiles vers users (user_id)
+- application_documents vers applications (application_id)
+- application_history vers applications (application_id)
+- documents vers applications (application_id)
+- interview_slots vers applications (application_id), users (candidate_id, recruiter_id)
+- notifications vers users (user_id), applications (related_application_id)
+- protocol1_evaluations vers applications (application_id)
+- protocol2_evaluations vers applications (application_id)

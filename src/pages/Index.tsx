@@ -70,17 +70,15 @@ const Index = () => {
       // Double check that user is still logged in after timeout
       if (!user) return;
     
-    // Use normalized role flags from useAuth to avoid FR/EN mismatch
-    if (isAdmin) {
-      navigate("/admin/dashboard", { replace: true });
-    } else if (isRecruiter) {
-      navigate("/recruiter/dashboard", { replace: true });
-    } else if (isObserver) {
-      // Observateurs: accès en lecture seule au dashboard recruteur
+      // Use normalized role flags from useAuth to avoid FR/EN mismatch
+      if (isAdmin) {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (isRecruiter || isObserver) {
+        // Recruteurs et observateurs: accès au dashboard recruteur
         navigate("/recruiter/dashboard", { replace: true });
-    } else if (isCandidate) {
-      navigate("/candidate/dashboard?view=dashboard", { replace: true });
-    }
+      } else if (isCandidate) {
+        navigate("/candidate/dashboard?view=dashboard", { replace: true });
+      }
     }, 100); // Small delay to ensure state is stable
     
     return () => clearTimeout(timeoutId);

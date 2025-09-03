@@ -1,5 +1,6 @@
 export const isApplicationClosed = (): boolean => {
-  const deadlineDate = new Date('2025-08-31T23:59:59');
+  // MODIFIED: Date de fermeture repoussée pour permettre l'inscription
+  const deadlineDate = new Date('2026-12-31T23:59:59'); // Date très éloignée
   const now = new Date();
   return now > deadlineDate;
 };

@@ -1,6 +1,7 @@
 -- Configuration de la base de données SEEG (Correction)
 
 -- 1. Table des utilisateurs (candidats et recruteurs)
+DROP TABLE IF EXISTS public.users CASCADE;
 CREATE TABLE public.users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
@@ -15,6 +16,7 @@ CREATE TABLE public.users (
 );
 
 -- 2. Table des profils candidats détaillés
+DROP TABLE IF EXISTS public.candidate_profiles CASCADE;
 CREATE TABLE public.candidate_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
@@ -33,6 +35,7 @@ CREATE TABLE public.candidate_profiles (
 );
 
 -- 3. Table des offres d'emploi
+DROP TABLE IF EXISTS public.job_offers CASCADE;
 CREATE TABLE public.job_offers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recruiter_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
@@ -52,6 +55,7 @@ CREATE TABLE public.job_offers (
 );
 
 -- 4. Table des candidatures
+DROP TABLE IF EXISTS public.applications CASCADE;
 CREATE TABLE public.applications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   candidate_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
@@ -67,6 +71,7 @@ CREATE TABLE public.applications (
 );
 
 -- 5. Table des documents joints aux candidatures
+DROP TABLE IF EXISTS public.application_documents CASCADE;
 CREATE TABLE public.application_documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID REFERENCES public.applications(id) ON DELETE CASCADE,
@@ -78,6 +83,7 @@ CREATE TABLE public.application_documents (
 );
 
 -- 6. Table des évaluations Protocol 1
+DROP TABLE IF EXISTS public.protocol1_evaluations CASCADE;
 CREATE TABLE public.protocol1_evaluations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID REFERENCES public.applications(id) ON DELETE CASCADE,
@@ -97,6 +103,7 @@ CREATE TABLE public.protocol1_evaluations (
 );
 
 -- 7. Table des évaluations Protocol 2
+DROP TABLE IF EXISTS public.protocol2_evaluations CASCADE;
 CREATE TABLE public.protocol2_evaluations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID REFERENCES public.applications(id) ON DELETE CASCADE,
@@ -120,6 +127,7 @@ CREATE TABLE public.protocol2_evaluations (
 );
 
 -- 8. Table de l'historique des candidatures
+DROP TABLE IF EXISTS public.application_history CASCADE;
 CREATE TABLE public.application_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id UUID REFERENCES public.applications(id) ON DELETE CASCADE,
@@ -131,6 +139,7 @@ CREATE TABLE public.application_history (
 );
 
 -- 9. Table des notifications
+DROP TABLE IF EXISTS public.notifications CASCADE;
 CREATE TABLE public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
