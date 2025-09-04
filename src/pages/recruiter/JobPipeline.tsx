@@ -8,6 +8,8 @@ import { ArrowLeft, Users, Eye, Loader2, Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRecruiterApplications } from "@/hooks/useApplications";
 import { useState } from "react";
+import { formatLocalDate } from "@/utils/dateUtils";
+import { useSynthesisData } from "@/hooks/useSynthesisData";
 
 // Types pour les candidats
 interface Candidate {
@@ -21,10 +23,25 @@ interface Candidate {
   applicationDate: string;
   email: string;
   interviewDate?: string; // Date de l'entretien programmé
+  globalScore?: number; // Score global de la synthèse
 
   gender?: string;
   birthDate?: string;
 }
+
+// Composant pour afficher le score global d'un candidat
+const CandidateScoreDisplay = ({ applicationId }: { applicationId: string }) => {
+  const { synthesisData } = useSynthesisData(applicationId);
+  
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-xs sm:text-sm text-muted-foreground">Score</span>
+      <Badge variant="outline" className="text-xs sm:text-sm">
+        {Math.round(synthesisData.globalScore)}%
+      </Badge>
+    </div>
+  );
+};
 
 const getStatusLabel = (status: string) => {
   switch (status) {
@@ -54,7 +71,9 @@ export default function JobPipeline() {
   // Transform applications to candidates format
   const candidates: Candidate[] = applications.map(app => {
     console.log('Application data received in JobPipeline:', app);
-    return {
+    console.log('Raw interview_date from DB:', app.interview_date);
+    
+    const candidate = {
       id: app.id,
       name: `${app.users?.first_name || ''} ${app.users?.last_name || ''}`.trim(),
       statusLabel: getStatusLabel(app.status),
@@ -69,6 +88,12 @@ export default function JobPipeline() {
       gender: (app.users as any)?.sexe,
       birthDate: app.users?.date_of_birth
     };
+    
+    if (app.interview_date) {
+      console.log('🔍 Interview date for', candidate.name, ':', app.interview_date);
+    }
+    
+    return candidate;
   });
 
   const jobTitle = applications[0]?.job_offers?.title || "Offre d'emploi";
@@ -179,19 +204,26 @@ export default function JobPipeline() {
                                 {candidate.status === 'entretien_programme' && candidate.interviewDate && (
                                   <div className="flex items-center gap-1 text-xs text-purple-600 whitespace-nowrap">
                                     <Calendar className="w-3 h-3 flex-shrink-0" />
-                                    <span className="truncate">Entretien : {new Date(candidate.interviewDate).toLocaleDateString('fr-FR')}</span>
+                                    <span className="truncate">
+                                      Entretien : {(() => {
+                                        // Utiliser formatage manuel pour éviter tout décalage
+                                        const date = new Date(candidate.interviewDate);
+                                        const day = date.getDate().toString().padStart(2, '0');
+                                        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                                        const year = date.getFullYear();
+                                        const hours = date.getHours().toString().padStart(2, '0');
+                                        const minutes = date.getMinutes().toString().padStart(2, '0');
+                                        
+                                        return `${day}/${month}/${year} à ${hours}:${minutes}`;
+                                      })()}
+                                    </span>
                                   </div>
                                 )}
                               </div>
                               
                               {/* Afficher le score uniquement pour les candidats évalués (incubés, embauchés, refusés) */}
-                              {candidate.status !== 'candidature' && (
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs sm:text-sm text-muted-foreground">Score</span>
-                                  <Badge variant="outline" className="text-xs sm:text-sm">
-                                    {candidate.score}/100
-                                  </Badge>
-                                </div>
+                              {candidate.status !== 'candidature' && candidate.status !== 'entretien_programme' && (
+                                <CandidateScoreDisplay applicationId={candidate.id} />
                               )}
                               
                               <Button 
