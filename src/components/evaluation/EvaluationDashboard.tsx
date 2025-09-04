@@ -286,9 +286,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     return interviewDateObj.toDateString() === date.toDateString();
   };
   
-  // Fonction pour obtenir la clé de date au format YYYY-MM-DD
+  // Fonction pour obtenir la clé de date au format YYYY-MM-DD (corrigée pour éviter le décalage de fuseau horaire)
   const getDateKey = (date: Date) => {
-    return date.toISOString().split('T')[0];
+    // Utiliser les méthodes locales pour éviter le décalage UTC
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
 
