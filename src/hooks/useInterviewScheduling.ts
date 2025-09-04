@@ -264,9 +264,19 @@ export const useInterviewScheduling = (applicationId?: string) => {
         insertError = error;
       } else {
         // Créer un nouveau créneau directement
+        // Générer un UUID pour l'ID
+        const generateUUID = () => {
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+        };
+        
         const { error } = await supabase
           .from('interview_slots')
           .insert({
+            id: generateUUID(), // Générer un UUID pour l'ID
             date,
             time: normalizedTime,
             application_id: applicationId,
