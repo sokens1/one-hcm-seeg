@@ -150,6 +150,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     if (!isValidDate || !isValidTime) {
       return;
     }
+    
+    // Mettre à jour le slot d'entretien
     const { error: updateError } = await supabase
       .from('interview_slots')
       .update({ date: draftDate, time: draftTime })
@@ -158,7 +160,41 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       console.error('❌ [CALENDAR DEBUG] Erreur mise à jour entretien:', updateError);
       return;
     }
-    // console.log('✅ [CALENDAR DEBUG] Entretien mis à jour');
+
+    // Mettre à jour aussi la table applications si l'entretien a un application_id
+    if (editingInterview.application_id) {
+      const interviewDateTime = new Date(`${draftDate}T${draftTime}`);
+      const { error: appUpdateError } = await supabase
+        .from('applications')
+        .update({
+          interview_date: interviewDateTime.toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', editingInterview.application_id);
+      
+      if (appUpdateError) {
+        console.error('❌ [CALENDAR DEBUG] Erreur mise à jour application:', appUpdateError);
+      } else {
+        console.log('✅ [CALENDAR DEBUG] Application mise à jour avec nouvelle date/heure');
+      }
+
+      // Mettre à jour aussi la table protocol1_evaluations si elle existe
+      const { error: protocolUpdateError } = await supabase
+        .from('protocol1_evaluations')
+        .update({
+          interview_date: interviewDateTime.toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('application_id', editingInterview.application_id);
+      
+      if (protocolUpdateError) {
+        console.log('ℹ️ [CALENDAR DEBUG] Pas de protocol1_evaluation à mettre à jour ou erreur:', protocolUpdateError);
+      } else {
+        console.log('✅ [CALENDAR DEBUG] Protocol1_evaluation mise à jour avec nouvelle date/heure');
+      }
+    }
+    
+    console.log('✅ [CALENDAR DEBUG] Entretien mis à jour');
     setIsEditing(false);
     setEditingInterview(null);
     await loadInterviews();
@@ -390,7 +426,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
                               </div>
                               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Clock className="w-3 h-3" />
-                                <span>{interview.time}</span>
+                                <span>{interview.time.slice(0, 5)}</span>
                               </div>
                               {interview.location && (
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">

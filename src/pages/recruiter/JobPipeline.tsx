@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useRecruiterApplications } from "@/hooks/useApplications";
 import { useState } from "react";
 import { formatLocalDate } from "@/utils/dateUtils";
+import { useSynthesisData } from "@/hooks/useSynthesisData";
 
 // Types pour les candidats
 interface Candidate {
@@ -22,10 +23,25 @@ interface Candidate {
   applicationDate: string;
   email: string;
   interviewDate?: string; // Date de l'entretien programmé
+  globalScore?: number; // Score global de la synthèse
 
   gender?: string;
   birthDate?: string;
 }
+
+// Composant pour afficher le score global d'un candidat
+const CandidateScoreDisplay = ({ applicationId }: { applicationId: string }) => {
+  const { synthesisData } = useSynthesisData(applicationId);
+  
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-xs sm:text-sm text-muted-foreground">Score</span>
+      <Badge variant="outline" className="text-xs sm:text-sm">
+        {Math.round(synthesisData.globalScore)}%
+      </Badge>
+    </div>
+  );
+};
 
 const getStatusLabel = (status: string) => {
   switch (status) {
@@ -190,20 +206,15 @@ export default function JobPipeline() {
                                     <Calendar className="w-3 h-3 flex-shrink-0" />
                                     <span className="truncate">
                                       Entretien : {(() => {
-                                        console.log('🔍 Rendering interview date for:', candidate.name);
-                                        console.log('🔍 Raw interviewDate:', candidate.interviewDate);
-                                        
                                         // Utiliser formatage manuel pour éviter tout décalage
                                         const date = new Date(candidate.interviewDate);
                                         const day = date.getDate().toString().padStart(2, '0');
                                         const month = (date.getMonth() + 1).toString().padStart(2, '0');
                                         const year = date.getFullYear();
-                                        const manualFormat = `${day}/${month}/${year}`;
+                                        const hours = date.getHours().toString().padStart(2, '0');
+                                        const minutes = date.getMinutes().toString().padStart(2, '0');
                                         
-                                        console.log('🔍 Manual format result:', manualFormat);
-                                        console.log('🔍 formatLocalDate result:', formatLocalDate(candidate.interviewDate));
-                                        
-                                        return manualFormat;
+                                        return `${day}/${month}/${year} à ${hours}:${minutes}`;
                                       })()}
                                     </span>
                                   </div>
@@ -211,13 +222,8 @@ export default function JobPipeline() {
                               </div>
                               
                               {/* Afficher le score uniquement pour les candidats évalués (incubés, embauchés, refusés) */}
-                              {candidate.status !== 'candidature' && (
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs sm:text-sm text-muted-foreground">Score</span>
-                                  <Badge variant="outline" className="text-xs sm:text-sm">
-                                    {candidate.score}/100
-                                  </Badge>
-                                </div>
+                              {candidate.status !== 'candidature' && candidate.status !== 'entretien_programme' && (
+                                <CandidateScoreDisplay applicationId={candidate.id} />
                               )}
                               
                               <Button 
