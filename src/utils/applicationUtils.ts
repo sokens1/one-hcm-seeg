@@ -1,4 +1,4 @@
 export const isApplicationClosed = (): boolean => {
-  // MODIFIED: Inscriptions désactivées - retourne true pour griser les boutons
-  return true;
+  // Candidatures activées - retourne false pour permettre les candidatures
+  return false;
 };
