@@ -48,7 +48,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
   const loadInterviews = useCallback(async () => {
     setIsLoading(true);
     try {
-      // console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
+      console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
       
       // 1) Récupérer les créneaux sans jointures complexes (évite 400)
       // Déterminer la fenêtre du mois courant pour charger tous les jours visibles
@@ -56,6 +56,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       const monthEnd = endOfMonth(currentMonth);
       const monthStartStr = format(monthStart, 'yyyy-MM-dd');
       const monthEndStr = format(monthEnd, 'yyyy-MM-dd');
+      
+      console.log('🔄 [CALENDAR DEBUG] Période de chargement:', { monthStartStr, monthEndStr });
 
       const { data: slots, error: slotsError } = await supabase
         .from('interview_slots')
@@ -72,7 +74,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         return;
       }
 
-      // console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots);
+      console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots?.length, 'créneaux');
+      console.log('✅ [CALENDAR DEBUG] Détail des créneaux:', slots);
 
       if (!slots || slots.length === 0) {
         setInterviews([]);
@@ -219,23 +222,32 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
   // Écouter les mises à jour des créneaux depuis useInterviewScheduling
   useEffect(() => {
     const handleSlotsUpdate = () => {
-      console.log('🔄 [CALENDAR DEBUG] Rechargement calendrier suite à programmation entretien');
-      if (isOpen) {
-        // Recharger les entretiens du calendrier
-        loadInterviews();
-        
-        // Forcer aussi le rechargement des créneaux dans useInterviewScheduling
-        // en émettant un événement spécifique pour forcer la mise à jour des créneaux disponibles
-        setTimeout(() => {
-          console.log('🔄 [CALENDAR DEBUG] Force rechargement créneaux disponibles');
-          window.dispatchEvent(new CustomEvent('forceReloadSlots'));
-        }, 100);
-      }
+      console.log('🔄 [CALENDAR DEBUG] Événement interviewSlotsUpdated reçu');
+      console.log('🔄 [CALENDAR DEBUG] État modal isOpen:', isOpen);
+      console.log('🔄 [CALENDAR DEBUG] Nombre d\'entretiens actuels:', interviews.length);
+      
+      // Toujours recharger les entretiens du calendrier, même si fermé
+      // Cela permet de synchroniser les données pour la prochaine ouverture
+      console.log('🔄 [CALENDAR DEBUG] Début rechargement loadInterviews...');
+      loadInterviews().then(() => {
+        console.log('🔄 [CALENDAR DEBUG] loadInterviews terminé');
+      });
+      
+      // Forcer aussi le rechargement des créneaux dans useInterviewScheduling
+      // en émettant un événement spécifique pour forcer la mise à jour des créneaux disponibles
+      setTimeout(() => {
+        console.log('🔄 [CALENDAR DEBUG] Force rechargement créneaux disponibles');
+        window.dispatchEvent(new CustomEvent('forceReloadSlots'));
+      }, 100);
     };
 
+    console.log('🔄 [CALENDAR DEBUG] Installation listener interviewSlotsUpdated');
     window.addEventListener('interviewSlotsUpdated', handleSlotsUpdate);
-    return () => window.removeEventListener('interviewSlotsUpdated', handleSlotsUpdate);
-  }, [isOpen, loadInterviews]);
+    return () => {
+      console.log('🔄 [CALENDAR DEBUG] Suppression listener interviewSlotsUpdated');
+      window.removeEventListener('interviewSlotsUpdated', handleSlotsUpdate);
+    };
+  }, [loadInterviews, isOpen, interviews.length]);
 
   const goToPreviousMonth = () => {
     setCurrentMonth(prev => subMonths(prev, 1));
