@@ -52,8 +52,23 @@ export default function JobPipeline() {
   const { applications, isLoading, error, updateApplicationStatus } = useRecruiterApplications(id);
 
   // Transform applications to candidates format
+  // Fonction helper pour valider et formater une date
+  const formatDate = (dateValue: any): string => {
+    if (!dateValue) return '';
+    const date = new Date(dateValue);
+    return isNaN(date.getTime()) ? '' : date.toISOString().split('T')[0];
+  };
+
+  // Fonction helper pour formater une date d'affichage
+  const formatDisplayDate = (dateValue: any): string => {
+    if (!dateValue) return 'Non définie';
+    const date = new Date(dateValue);
+    return isNaN(date.getTime()) ? 'Date invalide' : date.toLocaleDateString('fr-FR');
+  };
+
   const candidates: Candidate[] = applications.map(app => {
     console.log('Application data received in JobPipeline:', app);
+    
     return {
       id: app.id,
       name: `${app.users?.first_name || ''} ${app.users?.last_name || ''}`.trim(),
@@ -62,12 +77,12 @@ export default function JobPipeline() {
       experience: '', // Placeholder for future use
       status: app.status,
       score: 0, // TODO: Calculate from evaluations
-      applicationDate: new Date(app.created_at).toISOString().split('T')[0],
+      applicationDate: formatDate(app.created_at),
       email: app.users?.email || '',
       interviewDate: app.interview_date, // Assuming interview_date is available in the application data
 
       gender: (app.users as any)?.sexe,
-      birthDate: app.users?.date_of_birth
+      birthDate: formatDate(app.users?.date_of_birth)
     };
   });
 
@@ -173,13 +188,13 @@ export default function JobPipeline() {
                                   {candidate.phone}
                                 </p>
                                 <p className="text-xs sm:text-sm text-muted-foreground">
-                                  Candidature : {new Date(candidate.applicationDate).toLocaleDateString('fr-FR')}
+                                  Candidature : {formatDisplayDate(candidate.applicationDate)}
                                 </p>
                                 {/* Date de l'entretien si programmé */}
                                 {candidate.status === 'entretien_programme' && candidate.interviewDate && (
                                   <div className="flex items-center gap-1 text-xs text-purple-600 whitespace-nowrap">
                                     <Calendar className="w-3 h-3 flex-shrink-0" />
-                                    <span className="truncate">Entretien : {new Date(candidate.interviewDate).toLocaleDateString('fr-FR')}</span>
+                                    <span className="truncate">Entretien : {formatDisplayDate(candidate.interviewDate)}</span>
                                   </div>
                                 )}
                               </div>

@@ -269,8 +269,9 @@ export function useApplications() {
             .upsert(profilePayload, { onConflict: 'user_id' });
 
           if (profileError) {
-            console.warn('Erreur lors de la mise à jour du profil candidat:', profileError);
+            console.error('Erreur lors de la mise à jour du profil candidat:', profileError);
             // Ne pas faire échouer la candidature si le profil ne peut pas être sauvegardé
+            // mais log l'erreur pour le debugging
           }
         }
       }
@@ -342,9 +343,7 @@ export function useApplication(id: string | undefined) {
 
       // Étape 2: si on a un job_offer_id, on utilise la RPC 1-argument
       if (jobOfferId) {
-        const { data: rpcData, error: rpcError } = await supabase.rpc('get_recruiter_applications', {
-          p_job_offer_id: jobOfferId
-        });
+        const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
 
         if (rpcError) {
           console.error('Erreur RPC (par offre):', rpcError);
@@ -373,7 +372,7 @@ export function useApplication(id: string | undefined) {
 
       const offerIds = (offers || []).map(o => o.id);
       for (const oid of offerIds) {
-        const { data: rpcData } = await supabase.rpc('get_recruiter_applications', { p_job_offer_id: oid });
+        const { data: rpcData } = await supabase.rpc('get_all_recruiter_applications');
         const rpcResult = (rpcData || []).find((app: any) => app?.application_details?.id === id);
         if (rpcResult) {
           const application = {
@@ -454,21 +453,20 @@ export function useRecruiterApplications(jobOfferId?: string) {
       return [];
     }
 
-    let entries: any[] = [];
+    // Récupérer toutes les candidatures
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    if (rpcError) {
+      console.error('[useRecruiterApplications] Erreur RPC:', rpcError);
+      throw new Error(`Erreur lors de la récupération des candidatures: ${rpcError.message}`);
+    }
+    
+    let entries: any[] = rpcData || [];
+    
+    // Si un jobOfferId est spécifié, filtrer côté client
     if (jobOfferId) {
-      const { data: rpcData, error: rpcError } = await supabase.rpc('get_recruiter_applications', { p_job_offer_id: jobOfferId });
-      if (rpcError) {
-        console.error('[useRecruiterApplications] Erreur RPC (par offre):', rpcError);
-        throw new Error(`Erreur lors de la récupération des candidatures: ${rpcError.message}`);
-      }
-      entries = rpcData || [];
-    } else {
-      const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
-      if (rpcError) {
-        console.error('[useRecruiterApplications] Erreur RPC optimisée:', rpcError);
-        throw new Error(`Erreur lors de la récupération des candidatures: ${rpcError.message}`);
-      }
-      entries = rpcData || [];
+      entries = entries.filter((app: any) => 
+        app.application_details?.job_offer_id === jobOfferId
+      );
     }
 
     // Les données sont déjà enrichies par la fonction RPC

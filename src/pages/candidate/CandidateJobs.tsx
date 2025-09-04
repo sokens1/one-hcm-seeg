@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { JobCard } from "@/components/ui/job-card";
 import { Button } from "@/components/ui/button";
@@ -13,15 +14,19 @@ import { isApplicationClosed } from "@/utils/applicationUtils";
 
 export default function CandidateJobs() {
   useJobOfferNotifications();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const { data, isLoading, error } = useJobOffers();
   const jobOffers = data ?? [];
   const preLaunch = isPreLaunch();
 
+  // Helper to normalize location which can be string | string[] from the API
+  const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
+
   const filteredJobs = jobOffers.filter(job => 
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchTerm.toLowerCase())
+    normalizeLocation(job.location).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (error) {
@@ -159,13 +164,13 @@ export default function CandidateJobs() {
                 <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
                   <JobCard
                     title={job.title}
-                    location={job.location}
+                    location={normalizeLocation(job.location)}
                     contractType={job.contract_type}
                     description={job.description}
                     isPreview={true}
-                    onClick={() => toast.info("Créez votre compte pour voir l'offre et postuler.")}
+                    onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")}
+                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")}
                   />
                 </div>
               ))}
@@ -195,7 +200,7 @@ export default function CandidateJobs() {
                   style={{ animationDelay: `${300 + index * 50}ms` }}
                 >
                   <div className="font-medium">{job.title}</div>
-                  {!preLaunch && <div className="text-muted-foreground">{job.location}</div>}
+                  {!preLaunch && <div className="text-muted-foreground">{normalizeLocation(job.location)}</div>}
                   {!preLaunch && <div className="text-muted-foreground">{job.contract_type}</div>}
                   <div className="flex justify-center">
                     <Button 
@@ -203,8 +208,8 @@ export default function CandidateJobs() {
                       size="sm"
                       onClick={() =>
                         preLaunch
-                          ? toast.info("Les appels à candidature seront disponibles à partir du  lundi 25 août 2025.")
-                          : toast.info("Créez votre compte pour voir l'offre et postuler.")
+                          ? toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")
+                          : navigate(`/jobs/${job.id}`)
                       }
                       className={"w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"}
                     >

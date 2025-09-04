@@ -145,11 +145,11 @@ export default function CandidateSettings() {
           .upsert(profilePayload, { onConflict: 'user_id' });
 
         if (profileError) {
-          console.warn('Erreur lors de la mise à jour du profil candidat:', profileError);
+          console.error('Erreur lors de la mise à jour du profil candidat:', profileError);
           toast({ 
             variant: "destructive", 
-            title: "Avertissement", 
-            description: "Informations de base sauvegardées, mais erreur sur le profil détaillé." 
+            title: "Erreur", 
+            description: `Erreur lors de la sauvegarde du profil détaillé: ${profileError.message}` 
           });
           return;
         }

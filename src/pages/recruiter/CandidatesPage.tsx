@@ -106,8 +106,8 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
         </div>
         <div className="flex items-center gap-2">
           <Label className="text-sm text-muted-foreground">Statut:</Label>
-          <Badge variant="secondary" className={statusConfig[candidate.status].color}>
-            {statusConfig[candidate.status].label}
+          <Badge variant="secondary" className={statusConfig[candidate.status]?.color || "bg-gray-100 text-gray-800 border-gray-200"}>
+            {statusConfig[candidate.status]?.label || "Inconnu"}
           </Badge>
         </div>
         <div className="md:col-span-2">
@@ -201,8 +201,8 @@ function CandidateDetails({ candidate, isObserver }: { candidate: UICandidate, i
         </div>
         <div className="flex items-center gap-2">
           <Label className="text-sm text-muted-foreground">Statut:</Label>
-          <Badge variant="secondary" className={statusConfig[candidate.status].color}>
-            {statusConfig[candidate.status].label}
+          <Badge variant="secondary" className={statusConfig[candidate.status]?.color || "bg-gray-100 text-gray-800 border-gray-200"}>
+            {statusConfig[candidate.status]?.label || "Inconnu"}
           </Badge>
         </div>
         <div className="md:col-span-2">
@@ -297,6 +297,10 @@ export default function CandidatesPage() {
       const user = (app.users as any) || {};
       const profile = user?.candidate_profiles || {};
       
+      // Vérifier que le statut est valide, sinon utiliser 'candidature' par défaut
+      const validStatus = app.status && statusConfig[app.status as ApplicationStatus] 
+        ? app.status as ApplicationStatus 
+        : 'candidature';
       
       return {
         id: app.id,
@@ -309,7 +313,7 @@ export default function CandidatesPage() {
         currentPosition: profile.current_position || user.current_position || undefined,
         location: app.job_offers?.location || undefined,
         appliedDate: app.created_at,
-        status: app.status as ApplicationStatus,
+        status: validStatus,
         jobTitle: app.job_offers?.title || undefined,
         linkedin_url: profile.linkedin_url || user.linkedin_url || undefined,
         portfolio_url: profile.portfolio_url || user.portfolio_url || undefined,
