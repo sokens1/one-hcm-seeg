@@ -757,10 +757,14 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                         newDate.setHours(parseInt(hours), parseInt(minutes));
                                         setInterviewDate(newDate);
                                         updateProtocol1('interview', 'interviewDate', newDate);
+                                        
+                                        // Notifier la modal calendrier de la mise à jour
+                                        console.log('🔔 [EVALUATION DEBUG] Émission événement interviewSlotsUpdated après programmation');
+                                        window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
                                       }
                                     }
                                   }}
-                                  disabled={isBusy}
+                                  disabled={isBusy || isReadOnly}
                                   className={cn(
                                     "px-3 py-2 text-xs rounded-md border transition-all duration-200",
                                     {
@@ -936,6 +940,10 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                         newDate.setHours(parseInt(hours), parseInt(minutes));
                                         setInterviewDate(newDate);
                                         updateProtocol1('interview', 'interviewDate', newDate);
+                                        
+                                        // Notifier la modal calendrier de la mise à jour
+                                        console.log('🔔 [EVALUATION DEBUG] Émission événement interviewSlotsUpdated après programmation');
+                                        window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
                                       }
                                     }
                                   }}

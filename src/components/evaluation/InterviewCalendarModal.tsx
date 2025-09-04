@@ -198,6 +198,9 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     setIsEditing(false);
     setEditingInterview(null);
     await loadInterviews();
+    
+    // Forcer le rechargement des créneaux dans useInterviewScheduling
+    window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
   };
 
   const cancelEditingInterview = () => {
@@ -211,6 +214,27 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     if (isOpen) {
       loadInterviews();
     }
+  }, [isOpen, loadInterviews]);
+
+  // Écouter les mises à jour des créneaux depuis useInterviewScheduling
+  useEffect(() => {
+    const handleSlotsUpdate = () => {
+      console.log('🔄 [CALENDAR DEBUG] Rechargement calendrier suite à programmation entretien');
+      if (isOpen) {
+        // Recharger les entretiens du calendrier
+        loadInterviews();
+        
+        // Forcer aussi le rechargement des créneaux dans useInterviewScheduling
+        // en émettant un événement spécifique pour forcer la mise à jour des créneaux disponibles
+        setTimeout(() => {
+          console.log('🔄 [CALENDAR DEBUG] Force rechargement créneaux disponibles');
+          window.dispatchEvent(new CustomEvent('forceReloadSlots'));
+        }, 100);
+      }
+    };
+
+    window.addEventListener('interviewSlotsUpdated', handleSlotsUpdate);
+    return () => window.removeEventListener('interviewSlotsUpdated', handleSlotsUpdate);
   }, [isOpen, loadInterviews]);
 
   const goToPreviousMonth = () => {

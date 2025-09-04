@@ -107,7 +107,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const { data, error } = await supabase
         .from('interview_slots')
         .select('id, date, time, is_available, application_id, recruiter_id, candidate_id, created_at, updated_at')
-        .or(`is_available.eq.true,application_id.eq.${applicationId}`)
+        .or(`is_available.eq.true,and(application_id.eq.${applicationId},is_available.eq.false)`)
         .gte('date', new Date().toISOString().split('T')[0]) // Seulement les dates futures
         .order('date', { ascending: true })
         .limit(100); // Limiter le nombre de résultats
@@ -227,7 +227,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
         .select('id, application_id, is_available')
         .eq('date', date)
         .eq('time', normalizedTime)
-        .single();
+        .maybeSingle();
 
       if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
         console.error('❌ Erreur lors de la vérification du créneau:', checkError);
@@ -263,15 +263,29 @@ export const useInterviewScheduling = (applicationId?: string) => {
           .eq('id', existingSlot.id);
         insertError = error;
       } else {
-        // Créer ou mettre à jour via upsert en cas de conflit (date,time).
-        // Si l'upsert renvoie 400 (contrainte unique manquante), fallback insert->update en cas de doublon.
-        let upsertError;
-        try {
-          const { error } = await supabase
+        // Créer un nouveau créneau directement
+        const { error } = await supabase
+          .from('interview_slots')
+          .insert({
+            date,
+            time: normalizedTime,
+            application_id: applicationId,
+            candidate_name: candidateName,
+            job_title: jobTitle,
+            status: 'scheduled',
+            is_available: false,
+            recruiter_id: user.id,
+            candidate_id: applicationDetails.candidate_id,
+            notes: 'Entretien programmé',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+        
+        if (error && error.code === '23505') {
+          // Conflit de clé unique (date,time) - mettre à jour le créneau existant
+          const { error: updateError } = await supabase
             .from('interview_slots')
-            .upsert({
-              date,
-              time: normalizedTime,
+            .update({
               application_id: applicationId,
               candidate_name: candidateName,
               job_title: jobTitle,
@@ -280,57 +294,13 @@ export const useInterviewScheduling = (applicationId?: string) => {
               recruiter_id: user.id,
               candidate_id: applicationDetails.candidate_id,
               notes: 'Entretien programmé',
-              created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
-            }, { onConflict: 'date,time' });
-          upsertError = error;
-        } catch (e) {
-          // cas rare: throw réseau
-          upsertError = e as unknown as { code?: string; message?: string };
-        }
-
-        if (upsertError) {
-          // Fallback: tentative d'insert simple
-          const { error: insErr } = await supabase
-            .from('interview_slots')
-            .insert({
-              date,
-              time: normalizedTime,
-              application_id: applicationId,
-              candidate_name: candidateName,
-              job_title: jobTitle,
-              status: 'scheduled',
-              is_available: false,
-              recruiter_id: user.id,
-              candidate_id: applicationDetails.candidate_id,
-              notes: 'Entretien programmé',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
-
-          if (insErr && (insErr as unknown as { code?: string }).code === '23505') {
-            // Doublon: Update du slot existant sur (date,time)
-            const { error: updErr } = await supabase
-              .from('interview_slots')
-              .update({
-                application_id: applicationId,
-                candidate_name: candidateName,
-                job_title: jobTitle,
-                status: 'scheduled',
-                is_available: false,
-                recruiter_id: user.id,
-                candidate_id: applicationDetails.candidate_id,
-                notes: 'Entretien programmé',
-                updated_at: new Date().toISOString()
-              })
-              .eq('date', date)
-              .eq('time', normalizedTime);
-            insertError = updErr;
-          } else {
-            insertError = insErr;
-          }
+            })
+            .eq('date', date)
+            .eq('time', normalizedTime);
+          insertError = updateError;
         } else {
-          insertError = undefined;
+          insertError = error;
         }
       }
 
@@ -391,6 +361,11 @@ export const useInterviewScheduling = (applicationId?: string) => {
       // Recharger les créneaux
       lastApplicationIdRef.current = undefined; // Force le rechargement
       await loadInterviewSlots();
+      
+      // Notifier la modal calendrier de la mise à jour
+      console.log('🔔 [SCHEDULE DEBUG] Émission événement interviewSlotsUpdated après programmation');
+      window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
+      
       return true;
     } catch (error) {
       console.error('❌ Erreur lors de la programmation:', error);
@@ -449,6 +424,11 @@ export const useInterviewScheduling = (applicationId?: string) => {
       // Recharger les créneaux
       lastApplicationIdRef.current = undefined; // Force le rechargement
       await loadInterviewSlots();
+      
+      // Notifier la modal calendrier de la mise à jour
+      console.log('🔔 [SCHEDULE DEBUG] Émission événement interviewSlotsUpdated après programmation');
+      window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
+      
       return true;
     } catch (error) {
       console.error('❌ Erreur lors de l\'annulation:', error);
@@ -521,6 +501,18 @@ export const useInterviewScheduling = (applicationId?: string) => {
         clearTimeout(loadingTimeoutRef.current);
       }
     };
+  }, [loadInterviewSlots]);
+
+  // Écouter l'événement de force reload depuis InterviewCalendarModal
+  useEffect(() => {
+    const handleForceReload = () => {
+      console.log('🔄 [SCHEDULE DEBUG] Force reload créneaux depuis calendrier');
+      lastApplicationIdRef.current = undefined; // Force le rechargement
+      loadInterviewSlots();
+    };
+
+    window.addEventListener('forceReloadSlots', handleForceReload);
+    return () => window.removeEventListener('forceReloadSlots', handleForceReload);
   }, [loadInterviewSlots]);
 
   // Fonction pour forcer le rechargement
