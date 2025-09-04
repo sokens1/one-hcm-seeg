@@ -401,10 +401,40 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
         overall_score: preferExistingIfNewEmpty(evaluationRecord.overall_score as unknown as number, existingFull.overall_score),
       } : evaluationRecord;
 
-      // Upsert atomique pour éviter les duplications (409) en cas d'autosaves concurrentes
-      const result = await supabase
+      // Vérifier si un enregistrement existe déjà
+      const { data: existingRecord } = await supabase
         .from('protocol1_evaluations')
-        .upsert(mergedRecord, { onConflict: 'application_id' });
+        .select('id')
+        .eq('application_id', applicationId)
+        .maybeSingle();
+
+      let result;
+      if (existingRecord) {
+        // Mettre à jour l'enregistrement existant
+        result = await supabase
+          .from('protocol1_evaluations')
+          .update({
+            ...mergedRecord,
+            updated_at: new Date().toISOString()
+          })
+          .eq('application_id', applicationId);
+      } else {
+        // Créer un nouvel enregistrement avec un ID généré
+        const generateUUID = () => {
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+        };
+        
+        result = await supabase
+          .from('protocol1_evaluations')
+          .insert({
+            ...mergedRecord,
+            id: generateUUID() // Générer un UUID pour l'ID
+          });
+      }
 
       if (result.error) {
         throw result.error;
