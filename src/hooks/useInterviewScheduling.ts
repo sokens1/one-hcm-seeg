@@ -41,7 +41,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, isRecruiter, isAdmin } = useAuth();
   const loadingTimeoutRef = useRef<NodeJS.Timeout>();
   const lastApplicationIdRef = useRef<string>();
 
@@ -367,10 +367,26 @@ export const useInterviewScheduling = (applicationId?: string) => {
         throw updateError;
       }
 
-      toast({
-        title: "Entretien programmé",
-        description: `Félicitations, votre candidature a été retenue. Vous avez un entretien programmé pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${normalizedTime.slice(0,5)} suite à votre candidature pour le poste de ${jobTitle}`,
-      });
+      // Message différent selon le rôle de l'utilisateur
+      console.log('🔍 DEBUG: isRecruiter from useAuth:', isRecruiter);
+      console.log('🔍 DEBUG: isAdmin from useAuth:', isAdmin);
+      
+      const isRecruiterOrAdmin = isRecruiter || isAdmin;
+      console.log('🔍 DEBUG: isRecruiterOrAdmin:', isRecruiterOrAdmin);
+      
+      if (isRecruiterOrAdmin) {
+        console.log('🔍 DEBUG: Affichage message recruteur');
+        toast({
+          title: "Entretien programmé",
+          description: `Entretien programmé avec succès pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${normalizedTime.slice(0,5)}`,
+        });
+      } else {
+        console.log('🔍 DEBUG: Affichage message candidat');
+        toast({
+          title: "Entretien programmé",
+          description: `Félicitations, votre candidature a été retenue. Vous avez un entretien programmé pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${normalizedTime.slice(0,5)} suite à votre candidature pour le poste de ${jobTitle}`,
+        });
+      }
 
       // Recharger les créneaux
       lastApplicationIdRef.current = undefined; // Force le rechargement
@@ -387,7 +403,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, user, toast, loadInterviewSlots, normalizeTimeToHms]);
+  }, [applicationId, user, toast, loadInterviewSlots, normalizeTimeToHms, isRecruiter, isAdmin]);
 
   // Annuler un entretien
   const cancelInterview = useCallback(async (date: string, time: string) => {
