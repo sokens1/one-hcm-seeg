@@ -184,7 +184,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
   }, [applicationId, toast, schedules.length, timeSlots]);
 
   // Programmer un entretien
-  const scheduleInterview = useCallback(async (date: string, time: string) => {
+  const scheduleInterview = useCallback(async (date: string, time: string, options?: { sendEmail?: boolean }) => {
     if (!applicationId || !user) return false;
 
     setIsSaving(true);
@@ -365,6 +365,30 @@ export const useInterviewScheduling = (applicationId?: string) => {
       if (updateError) {
         console.error('❌ Erreur lors de la mise à jour de l\'application:', updateError);
         throw updateError;
+      }
+
+      // Envoi email si demandé
+      if (options?.sendEmail) {
+        try {
+          const toAddress = 'support@seeg-talentsource.com'; // email de test demandé
+          const resp = await fetch('/api/send-interview-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: toAddress,
+              candidateFullName: candidateName,
+              jobTitle,
+              date,
+              time: normalizedTime.slice(0,5),
+              applicationId,
+            })
+          });
+          if (!resp.ok) {
+            throw new Error('Echec envoi email');
+          }
+        } catch (e) {
+          console.error('✉️ Erreur envoi email:', e);
+        }
       }
 
       toast({

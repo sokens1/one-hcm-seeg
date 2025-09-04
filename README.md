@@ -1,3 +1,22 @@
+## Envoi d'emails d'entretien (SMTP Nodemailer)
+
+Une route serverless a été ajoutée: `/api/send-interview-email`.
+
+Variables d'environnement requises (placez-les dans `.env.local` et sur l'hébergement):
+
+```
+VITE_SMTP_HOST=smtp.gmail.com
+VITE_SMTP_PORT=587
+VITE_SMTP_SECURE=false
+VITE_SMTP_USER=support@seeg-talentsource.com
+VITE_SMTP_PASSWORD=njev urja zsbc spfn
+VITE_SMTP_FROM="One HCM - SEEG Talent Source <support@seeg-talentsource.com>"
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
+
+Le HTML de l'email utilise une police de type serif (style inline) comme demandé.
+
 # Welcome to your Lovable project
 
 ## Project info
