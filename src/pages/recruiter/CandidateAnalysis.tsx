@@ -22,6 +22,22 @@ import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+
+// Fonction helper pour formater les dates de manière sécurisée
+const formatDate = (dateValue: any, formatString: string = 'PPP'): string => {
+  if (!dateValue) return 'Non définie';
+  
+  try {
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) {
+      return 'Date invalide';
+    }
+    return format(date, formatString, { locale: fr });
+  } catch (error) {
+    console.warn('Erreur de formatage de date:', error);
+    return 'Date invalide';
+  }
+};
 import { downloadCandidateDocumentsAsZip } from "../../utils/downloadUtils";
 import { ErrorFallback } from "@/components/ui/ErrorFallback";
 
@@ -79,7 +95,7 @@ const ProfileTab = ({ application }: { application: Application }) => {
           </div>
           <div className="space-y-3 sm:space-y-4">
             <InfoRow icon={Phone} label="Téléphone" value={user?.phone as string | undefined} />
-            <InfoRow icon={Calendar} label="Date de naissance" value={profile?.birth_date ? format(new Date(profile.birth_date), 'PPP', { locale: fr }) : undefined} />
+            <InfoRow icon={Calendar} label="Date de naissance" value={formatDate(profile?.birth_date)} />
             <InfoRow icon={Info} label="Sexe" value={profile?.gender || (user as any)?.sexe || (user as any)?.gender} />
           </div>
           <div className="space-y-3 sm:space-y-4">
@@ -640,7 +656,7 @@ export default function CandidateAnalysis() {
         <header className="mb-4 sm:mb-6 lg:mb-8">
           <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-foreground leading-tight">{candidateName}</h1>
           <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">Candidature pour le poste de {application.job_offers?.title}</p>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Candidature reçue le {format(new Date(application.created_at), 'PPP', { locale: fr })}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Candidature reçue le {formatDate(application.created_at)}</p>
           <div className="flex items-center mt-2">
             <p className="text-xs sm:text-sm text-muted-foreground mr-2">Statut:</p>
             <Badge variant={getBadgeVariant(application.status)} className="text-xs sm:text-sm">{application.status}</Badge>
