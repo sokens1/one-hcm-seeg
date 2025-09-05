@@ -7,18 +7,91 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+bun.lockb
+
+# Build outputs
 dist
 dist-ssr
-*.local
+build
+out
+
+# Environment variables and sensitive configuration
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+*.env
+
+# Supabase sensitive files
+supabase/.env
+supabase/.env.local
+supabase/.env.*.local
+
+# Database dumps and sensitive data
+*.sql.backup
+*.db
+*.sqlite
+*.sqlite3
+import-results-*.json
+users-to-import-*.csv
+
+# API keys and secrets
+secrets.json
+config.json
+api-keys.json
+credentials.json
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Vite cache and temporary files
+.vite
+vite.config.ts.timestamp-*.mjs
+
+# Test files and debugging
+test-*.js
+test-*.html
+*.test.local
+debug-*.log
+
+# Scripts with sensitive data
+*-sensitive.ps1
+*-sensitive.sh
+verify-*.ps1
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Documentation with sensitive info
+FIX_*.md
+*_SENSITIVE.md
