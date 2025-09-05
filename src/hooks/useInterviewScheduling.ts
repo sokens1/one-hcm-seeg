@@ -198,7 +198,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
         .select(`
           candidate_id,
           job_offer_id,
-          users:users!applications_candidate_id_fkey(first_name, last_name),
+          users:users!applications_candidate_id_fkey(first_name, last_name, email),
           job_offers:job_offers!applications_job_offer_id_fkey(title)
         `)
         .eq('id', applicationId)
@@ -217,6 +217,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const jobOfferRecord: LinkedJobOfferRecord | undefined = Array.isArray(jobOffersField) ? jobOffersField[0] : jobOffersField;
 
       const candidateName = `${userRecord?.first_name || ''} ${userRecord?.last_name || ''}`.trim();
+      const candidateEmail = (userRecord as any)?.email || '';
       const jobTitle = jobOfferRecord?.title || 'Poste non spécifié';
 
       console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
@@ -358,6 +359,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
             body: JSON.stringify({
               to: toAddress,
               candidateFullName: candidateName,
+              candidateEmail: candidateEmail,
               jobTitle,
               date,
               time: normalizedTime.slice(0,5),
