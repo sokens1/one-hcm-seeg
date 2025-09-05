@@ -202,10 +202,10 @@ export default defineConfig(({ mode }) => ({
               <br/>
               <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
               <p style="margin:0 0 6px; font-size:16px;"><strong>Équipe Support</strong></p>
-              <p style="margin:0 0 6px; font-size:16px;">OneHCM | Talent source</p>
-              <p style="margin:0 0 6px; font-size:16px;"><a href="https://www.seeg-talentsource.com" style="color: #0066cc; text-decoration: underline;">https://www.seeg-talentsource.com</a></p>
+              <p style="margin:0 0 6px; font-size:16px;"><strong>OneHCM | Talent source</strong></p>
+              <p style="margin:0 0 6px; font-size:16px;"><strong><a href="https://www.seeg-talentsource.com" style="color: #0066cc; text-decoration: underline;">https://www.seeg-talentsource.com</a></strong></p>
               <br/>
-              <div style="display: flex; align-items: center; margin-top: 18px;">
+              <div style="display: flex; align-items: center; margin-top: 15px;">
                 <img src="https://www.seeg-talentsource.com/LOGO%20HCM4.png" alt="OneHCM Logo" style="height: 44px; margin-right: 10px;" />
               </div>
             </div>`;
