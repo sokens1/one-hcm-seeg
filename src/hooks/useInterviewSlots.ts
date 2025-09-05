@@ -132,7 +132,8 @@ export const useInterviewSlots = () => {
       if (options?.sendEmail) {
         try {
           const dateStrKeep = date.toISOString().split('T')[0];
-          await fetch('/api/send-interview-email', {
+          console.log('✉️ [EMAIL] Envoi interview ->', { to: 'support@seeg-talentsource.com', candidateName, jobTitle, date: dateStrKeep, time, applicationId });
+          const resp = await fetch('/api/send-interview-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -144,6 +145,12 @@ export const useInterviewSlots = () => {
               applicationId
             })
           });
+          const json = await (async () => { try { return await resp.json(); } catch { return undefined; } })();
+          if (!resp.ok) {
+            console.error('✉️ [EMAIL] échec:', resp.status, json);
+          } else {
+            console.log('✉️ [EMAIL] succès:', json);
+          }
         } catch (e) {
           console.error('✉️ Erreur envoi email:', e);
         }

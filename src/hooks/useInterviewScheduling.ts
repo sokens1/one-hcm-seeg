@@ -206,7 +206,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
         .select(`
           candidate_id,
           job_offer_id,
-          users:users!applications_candidate_id_fkey(first_name, last_name),
+          users:users!applications_candidate_id_fkey(first_name, last_name, email),
           job_offers:job_offers!applications_job_offer_id_fkey(title)
         `)
         .eq('id', applicationId)
@@ -225,6 +225,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const jobOfferRecord: LinkedJobOfferRecord | undefined = Array.isArray(jobOffersField) ? jobOffersField[0] : jobOffersField;
 
       const candidateName = `${userRecord?.first_name || ''} ${userRecord?.last_name || ''}`.trim();
+      const candidateEmail = (userRecord as any)?.email || '';
       const jobTitle = jobOfferRecord?.title || 'Poste non spécifié';
 
       console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
@@ -353,6 +354,43 @@ export const useInterviewScheduling = (applicationId?: string) => {
       if (updateError) {
         console.error('❌ Erreur lors de la mise à jour de l\'application:', updateError);
         throw updateError;
+      }
+
+      // Envoi email si demandé + toasts/logs
+      if (options?.sendEmail) {
+        try {
+          const toAddress = 'support@seeg-talentsource.com';
+          console.log('✉️ [EMAIL] Envoi interview ->', { to: toAddress, candidateName, jobTitle, date, time: normalizedTime.slice(0,5), applicationId });
+          const resp = await fetch('/api/send-interview-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: toAddress,
+              candidateFullName: candidateName,
+              candidateEmail: candidateEmail,
+              jobTitle,
+              date,
+              time: normalizedTime.slice(0,5),
+              applicationId,
+            })
+          });
+          const json = await (async () => { try { return await resp.json(); } catch { return undefined; } })();
+          if (!resp.ok) {
+            console.error('✉️ [EMAIL] échec:', resp.status, json);
+            toast({ title: 'Envoi email échoué', description: `Statut ${resp.status}`, variant: 'destructive' });
+          } else {
+            console.log('✉️ [EMAIL] succès:', json);
+            const { count } = await supabase
+              .from('email_logs')
+              .select('id', { count: 'exact', head: true })
+              .eq('application_id', applicationId)
+              .eq('category', 'interview_invitation');
+            toast({ title: 'Email envoyé', description: `Total emails pour cette candidature: ${count ?? 'n/d'}` });
+          }
+        } catch (e) {
+          console.error('✉️ [EMAIL] exception:', e);
+          toast({ title: 'Envoi email erreur', description: (e as Error).message, variant: 'destructive' });
+        }
       }
 
       // Message différent selon le rôle de l'utilisateur
