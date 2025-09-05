@@ -55,15 +55,15 @@ export default defineConfig(({ mode }) => ({
             const formattedTime = (time as string).slice(0, 5);
             const serif = ", Georgia, serif";
             const html = `
-            <div style="font-family: ui-serif${serif}; color:#000; max-width:760px; margin:0 auto;">
-              <p>Madame/Monsieur <strong>${candidateFullName}</strong>,</p>
-              <p>Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
-              <p>Nous vous invitons à un entretien de recrutement qui se tiendra le&nbsp;:</p>
-              <p><strong>Date :</strong> ${formattedDate}<br/>
+            <div style="font-family: ui-serif${serif}; color:#000; max-width:760px; margin:0 auto; font-size:16px; line-height:1.7;">
+              <p style="margin:0 0 10px; font-size:16px;">Madame/Monsieur <strong>${candidateFullName}</strong>,</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un entretien de recrutement qui se tiendra le&nbsp;:</p>
+              <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
               <strong>Heure :</strong> ${formattedTime}<br/>
               <strong>Lieu :</strong> ${location || 'Salle de réunion du Président du Conseil d’Administration au 9ᵉ étage du siège de la SEEG sis à Libreville.'}</p>
-              <p>Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, muni(e) de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
-              <p>Nous restons à votre disposition pour toutes informations complémentaires.</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, muni(e) de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
             </div>`;
 
             const transporter = nodemailer.createTransport({
@@ -189,24 +189,24 @@ export default defineConfig(({ mode }) => ({
               const formattedTime = String(time).slice(0, 5);
               const serif = ", Georgia, serif";
               const html = `
-            <div style="font-family: ui-serif${serif}; color:#000; max-width:760px; margin:0 auto;">
-              <p>${title} <strong>${candidateFullName}</strong>,</p>
-              <p>Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
-              <p>Nous vous invitons à un entretien de recrutement qui se tiendra le&nbsp;:</p>
-              <p><strong>Date :</strong> ${formattedDate}<br/>
+            <div style="font-family: ui-serif${serif}; color:#000; max-width:760px; margin:0 auto; font-size:16px; line-height:1.7;">
+              <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un entretien de recrutement qui se tiendra le&nbsp;:</p>
+              <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
               <strong>Heure :</strong> ${formattedTime}<br/>
               <strong>Lieu :</strong> ${location || "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville."}</p>
-              <p>Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
-              <p>Nous restons à votre disposition pour toutes informations complémentaires.</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
               
               <br/>
-              <p>Cordialement,</p>
-              <p><strong>Équipe Support</strong></p>
-              <p>OneHCM | Talent source</p>
-              <p><a href="https://www.seeg-talentsource.com" style="color: #0066cc; text-decoration: underline;">https://www.seeg-talentsource.com</a></p>
+              <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
+              <p style="margin:0 0 6px; font-size:16px;"><strong>Équipe Support</strong></p>
+              <p style="margin:0 0 6px; font-size:16px;">OneHCM | Talent source</p>
+              <p style="margin:0 0 6px; font-size:16px;"><a href="https://www.seeg-talentsource.com" style="color: #0066cc; text-decoration: underline;">https://www.seeg-talentsource.com</a></p>
               <br/>
               <div style="display: flex; align-items: center; margin-top: 18px;">
-                <img src="https://www.seeg-talentsource.com/LOGO%20HCM4.png" alt="OneHCM Logo" style="height: 40px; margin-right: 10px;" />
+                <img src="https://www.seeg-talentsource.com/LOGO%20HCM4.png" alt="OneHCM Logo" style="height: 44px; margin-right: 10px;" />
               </div>
             </div>`;
 
