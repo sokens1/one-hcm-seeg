@@ -54,3 +54,4 @@ FROM information_schema.columns
 WHERE table_name = 'protocol1_evaluations' 
 AND table_schema = 'public'
 ORDER BY ordinal_position;
+

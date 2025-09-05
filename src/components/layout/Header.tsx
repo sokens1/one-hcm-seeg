@@ -250,32 +250,30 @@ export function Header() {
                     <span className="sm:hidden">Connexion</span>
                   </Button>
                 </Link>
-                <Link
-                  to="/auth"
+                <div
                   onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     if (preLaunch) {
-                      e.preventDefault();
                       preLaunchToast();
                     } else if (applicationsClosed) {
-                      e.preventDefault();
                       toast.info("Les inscriptions sont désormais closes.");
                     }
                   }}
-                  aria-disabled={preLaunch || applicationsClosed}
-                  className={(preLaunch || applicationsClosed) ? "pointer-events-auto" : undefined}
+                  className="pointer-events-auto"
                   title={applicationsClosed ? "Les inscriptions sont closes" : preLaunch ? "Inscriptions indisponibles jusqu'au 25 août 2025" : undefined}
                 >
                   <Button
                     variant="default"
                     size="sm"
-                    className={`gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 ${(preLaunch || applicationsClosed) ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                    disabled={preLaunch || applicationsClosed}
+                    className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 opacity-50 cursor-not-allowed pointer-events-none"
+                    disabled={true}
                   >
                     <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">S'inscrire</span>
                     <span className="sm:hidden">Inscription</span>
                   </Button>
-                </Link>
+                </div>
               </>
             )}
           </nav>

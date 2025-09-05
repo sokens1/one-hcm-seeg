@@ -85,31 +85,25 @@ export default function CandidateJobs() {
               </div>
             </div>
             <div className="pt-6 animate-fade-in delay-400">
-              <Button 
-                variant="secondary" 
+                            <Button
+                variant="secondary"
                 size="lg"
-                className={`bg-white/20 hover:bg-white/30 text-white border-white/30 ${(preLaunch || applicationsClosed || isApplicationClosed()) ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={preLaunch || applicationsClosed || isApplicationClosed()}
+                className="bg-white/20 text-white border-white/30 opacity-50 cursor-not-allowed pointer-events-none"
+                disabled={true}
                 onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   if (preLaunch) {
-                    e.preventDefault();
                     preLaunchToast();
                   } else if (applicationsClosed) {
-                    e.preventDefault();
                     toast.info("Les candidatures sont désormais closes.");
                   } else if (isApplicationClosed()) {
-                    e.preventDefault();
                     toast.info("Les candidatures sont désormais closes.");
-                  } else {
-                    const element = document.getElementById('job-list');
-                    if (element && typeof element.scrollIntoView === 'function') {
-                      element.scrollIntoView({ behavior: 'smooth' });
-                    }
                   }
                 }}
                 title={applicationsClosed || isApplicationClosed() ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
               >
-                {applicationsClosed || isApplicationClosed() ? 'Candidatures closes' : 'Postuler maintenant'}
+                Candidatures closes
               </Button>
             </div>
           </div>

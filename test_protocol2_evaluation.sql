@@ -29,3 +29,4 @@ JOIN information_schema.key_column_usage kcu
     ON tc.constraint_name = kcu.constraint_name
 WHERE tc.table_name = 'protocol2_evaluations' 
 AND tc.table_schema = 'public';
+

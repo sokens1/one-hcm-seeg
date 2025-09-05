@@ -70,3 +70,4 @@ WHERE tablename = 'protocol2_evaluations';
 
 -- 8. Commentaire sur la correction
 COMMENT ON TABLE public.protocol2_evaluations IS 'Table des évaluations Protocol 2 avec RLS désactivé pour éviter les erreurs 403';
+
