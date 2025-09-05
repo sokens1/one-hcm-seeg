@@ -43,13 +43,34 @@ const CandidateScoreDisplay = ({ applicationId }: { applicationId: string }) => 
   );
 };
 
+// Fonction pour normaliser les statuts corrompus
+const normalizeStatus = (status: string): string => {
+  if (!status) return 'candidature';
+  
+  // Si le statut contient des noms ou des dates, considérer comme candidature
+  if (status.includes(' ') || status.includes('-') || status.includes('@') || status.includes(':')) {
+    return 'candidature';
+  }
+  
+  // Statuts valides
+  const validStatuses = ['candidature', 'incubation', 'embauche', 'refuse', 'entretien_programme'];
+  if (validStatuses.includes(status.toLowerCase())) {
+    return status.toLowerCase();
+  }
+  
+  // Par défaut, considérer comme candidature
+  return 'candidature';
+};
+
 const getStatusLabel = (status: string) => {
-  switch (status) {
+  const normalizedStatus = normalizeStatus(status);
+  switch (normalizedStatus) {
     case 'candidature': return 'Candidats';
     case 'incubation': return 'Incubés';
     case 'embauche': return 'Engagés';
     case 'refuse': return 'Refusés';
-    default: return status;
+    case 'entretien_programme': return 'Entretiens';
+    default: return 'Candidats';
   }
 };
 
@@ -69,9 +90,25 @@ export default function JobPipeline() {
   const { applications, isLoading, error, updateApplicationStatus } = useRecruiterApplications(id);
 
   // Transform applications to candidates format
+  // Fonction helper pour valider et formater une date
+  const formatDate = (dateValue: any): string => {
+    if (!dateValue) return '';
+    const date = new Date(dateValue);
+    return isNaN(date.getTime()) ? '' : date.toISOString().split('T')[0];
+  };
+
+  // Fonction helper pour formater une date d'affichage
+  const formatDisplayDate = (dateValue: any): string => {
+    if (!dateValue) return 'Non définie';
+    const date = new Date(dateValue);
+    return isNaN(date.getTime()) ? 'Date invalide' : date.toLocaleDateString('fr-FR');
+  };
+
   const candidates: Candidate[] = applications.map(app => {
     console.log('Application data received in JobPipeline:', app);
     console.log('Raw interview_date from DB:', app.interview_date);
+    
+    const normalizedStatus = normalizeStatus(app.status);
     
     const candidate = {
       id: app.id,
@@ -79,14 +116,14 @@ export default function JobPipeline() {
       statusLabel: getStatusLabel(app.status),
       phone: app.users?.phone || 'Non fourni',
       experience: '', // Placeholder for future use
-      status: app.status,
+      status: normalizedStatus, // Utiliser le statut normalisé
       score: 0, // TODO: Calculate from evaluations
-      applicationDate: new Date(app.created_at).toISOString().split('T')[0],
+      applicationDate: formatDate(app.created_at),
       email: app.users?.email || '',
       interviewDate: app.interview_date, // Assuming interview_date is available in the application data
 
       gender: (app.users as any)?.sexe,
-      birthDate: app.users?.date_of_birth
+      birthDate: formatDate(app.users?.date_of_birth)
     };
     
     if (app.interview_date) {
@@ -164,6 +201,19 @@ export default function JobPipeline() {
             <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
             <span className="text-sm sm:text-base">Chargement du pipeline...</span>
           </div>
+        ) : candidates.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Aucune candidature trouvée</h3>
+            <p className="text-muted-foreground mb-4">
+              Il n'y a actuellement aucune candidature pour cette offre d'emploi.
+            </p>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Actualiser
+            </Button>
+          </div>
         ) : (
           <>
 
@@ -198,7 +248,7 @@ export default function JobPipeline() {
                                   {candidate.phone}
                                 </p>
                                 <p className="text-xs sm:text-sm text-muted-foreground">
-                                  Candidature : {new Date(candidate.applicationDate).toLocaleDateString('fr-FR')}
+                                  Candidature : {formatDisplayDate(candidate.applicationDate)}
                                 </p>
                                 {/* Date de l'entretien si programmé */}
                                 {candidate.status === 'entretien_programme' && candidate.interviewDate && (

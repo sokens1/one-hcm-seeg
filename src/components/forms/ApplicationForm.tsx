@@ -743,7 +743,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             .upsert(profilePayload, { onConflict: 'user_id' });
 
           if (profileError) {
-            console.warn('Erreur lors de la mise à jour du profil candidat:', profileError);
+            console.error('Erreur lors de la mise à jour du profil candidat:', profileError);
           }
         }
 

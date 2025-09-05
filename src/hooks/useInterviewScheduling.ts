@@ -59,9 +59,17 @@ export const useInterviewScheduling = (applicationId?: string) => {
     return trimmed; // on laisse tel quel, la DB rejettera si invalide
   }, []);
 
+  // Fonction pour notifier les changements aux autres composants
+  const notifySlotsChange = useCallback((action: 'created' | 'updated' | 'deleted', details?: Record<string, unknown>) => {
+    console.log(`🔔 [SCHEDULE DEBUG] Notification changement créneaux: ${action}`, details);
+    window.dispatchEvent(new CustomEvent('interviewSlotsUpdated', { 
+      detail: { action, details, timestamp: Date.now() } 
+    }));
+  }, []);
+
   // Créneaux horaires disponibles (alignés sur HH:MM:SS)
   const timeSlots = useMemo(() => (
-    ['09:00:00', '10:00:00', '11:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00']
+    ['08:00:00', '09:00:00', '10:00:00', '11:00:00', '13:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00']
   ), []);
 
   // Charger les créneaux d'entretien
@@ -184,7 +192,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
   }, [applicationId, toast, schedules.length, timeSlots]);
 
   // Programmer un entretien
-  const scheduleInterview = useCallback(async (date: string, time: string) => {
+  const scheduleInterview = useCallback(async (date: string, time: string, options?: { sendEmail?: boolean }) => {
     if (!applicationId || !user) return false;
 
     setIsSaving(true);
@@ -198,7 +206,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
         .select(`
           candidate_id,
           job_offer_id,
-          users:users!applications_candidate_id_fkey(first_name, last_name),
+          users:users!applications_candidate_id_fkey(first_name, last_name, email),
           job_offers:job_offers!applications_job_offer_id_fkey(title)
         `)
         .eq('id', applicationId)
@@ -217,6 +225,8 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const jobOfferRecord: LinkedJobOfferRecord | undefined = Array.isArray(jobOffersField) ? jobOffersField[0] : jobOffersField;
 
       const candidateName = `${userRecord?.first_name || ''} ${userRecord?.last_name || ''}`.trim();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const candidateEmail = (userRecord as any)?.email || '';
       const jobTitle = jobOfferRecord?.title || 'Poste non spécifié';
 
       console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
@@ -264,9 +274,19 @@ export const useInterviewScheduling = (applicationId?: string) => {
         insertError = error;
       } else {
         // Créer un nouveau créneau directement
+        // Générer un UUID pour l'ID
+        const generateUUID = () => {
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+        };
+        
         const { error } = await supabase
           .from('interview_slots')
           .insert({
+            id: generateUUID(), // Générer un UUID pour l'ID
             date,
             time: normalizedTime,
             application_id: applicationId,
@@ -337,6 +357,43 @@ export const useInterviewScheduling = (applicationId?: string) => {
         throw updateError;
       }
 
+      // Envoi email si demandé + toasts/logs
+      if (options?.sendEmail) {
+        try {
+          const toAddress = 'support@seeg-talentsource.com';
+          console.log('✉️ [EMAIL] Envoi interview ->', { to: toAddress, candidateName, jobTitle, date, time: normalizedTime.slice(0,5), applicationId });
+          const resp = await fetch('/api/send-interview-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: toAddress,
+              candidateFullName: candidateName,
+              candidateEmail: candidateEmail,
+              jobTitle,
+              date,
+              time: normalizedTime.slice(0,5),
+              applicationId,
+            })
+          });
+          const json = await (async () => { try { return await resp.json(); } catch { return undefined; } })();
+          if (!resp.ok) {
+            console.error('✉️ [EMAIL] échec:', resp.status, json);
+            toast({ title: 'Envoi email échoué', description: `Statut ${resp.status}`, variant: 'destructive' });
+          } else {
+            console.log('✉️ [EMAIL] succès:', json);
+            const { count } = await supabase
+              .from('email_logs')
+              .select('id', { count: 'exact', head: true })
+              .eq('application_id', applicationId)
+              .eq('category', 'interview_invitation');
+            toast({ title: 'Email envoyé', description: `Total emails pour cette candidature: ${count ?? 'n/d'}` });
+          }
+        } catch (e) {
+          console.error('✉️ [EMAIL] exception:', e);
+          toast({ title: 'Envoi email erreur', description: (e as Error).message, variant: 'destructive' });
+        }
+      }
+
       // Message différent selon le rôle de l'utilisateur
       console.log('🔍 DEBUG: isRecruiter from useAuth:', isRecruiter);
       console.log('🔍 DEBUG: isAdmin from useAuth:', isAdmin);
@@ -363,8 +420,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       await loadInterviewSlots();
       
       // Notifier la modal calendrier de la mise à jour
-      console.log('🔔 [SCHEDULE DEBUG] Émission événement interviewSlotsUpdated après programmation');
-      window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
+      notifySlotsChange('created', { date, time: normalizedTime, applicationId });
       
       return true;
     } catch (error) {
@@ -378,7 +434,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, user, toast, loadInterviewSlots, normalizeTimeToHms, isRecruiter, isAdmin]);
+  }, [applicationId, user, toast, loadInterviewSlots, normalizeTimeToHms, isRecruiter, isAdmin, notifySlotsChange]);
 
   // Annuler un entretien
   const cancelInterview = useCallback(async (date: string, time: string) => {
@@ -426,8 +482,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       await loadInterviewSlots();
       
       // Notifier la modal calendrier de la mise à jour
-      console.log('🔔 [SCHEDULE DEBUG] Émission événement interviewSlotsUpdated après programmation');
-      window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
+      notifySlotsChange('deleted', { date, time: normalizedTime, applicationId });
       
       return true;
     } catch (error) {
@@ -441,7 +496,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, toast, loadInterviewSlots, normalizeTimeToHms]);
+  }, [applicationId, toast, loadInterviewSlots, normalizeTimeToHms, notifySlotsChange]);
 
   // Vérifier si un créneau est occupé
   const isSlotBusy = useCallback((date: string, time: string) => {
@@ -511,8 +566,18 @@ export const useInterviewScheduling = (applicationId?: string) => {
       loadInterviewSlots();
     };
 
+    const handleSlotsUpdated = () => {
+      console.log('🔄 [SCHEDULE DEBUG] Mise à jour des créneaux depuis calendrier');
+      lastApplicationIdRef.current = undefined; // Force le rechargement
+      loadInterviewSlots();
+    };
+
     window.addEventListener('forceReloadSlots', handleForceReload);
-    return () => window.removeEventListener('forceReloadSlots', handleForceReload);
+    window.addEventListener('interviewSlotsUpdated', handleSlotsUpdated);
+    return () => {
+      window.removeEventListener('forceReloadSlots', handleForceReload);
+      window.removeEventListener('interviewSlotsUpdated', handleSlotsUpdated);
+    };
   }, [loadInterviewSlots]);
 
   // Fonction pour forcer le rechargement
@@ -533,6 +598,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     isSlotBusy,
     isDateFullyBooked,
     getAvailableSlots,
-    generateCalendar
+    generateCalendar,
+    notifySlotsChange
   };
 };
