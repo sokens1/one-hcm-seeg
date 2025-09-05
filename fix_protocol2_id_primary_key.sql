@@ -100,3 +100,4 @@ FROM information_schema.columns
 WHERE table_name = 'protocol2_evaluations' 
 AND column_name = 'id'
 AND table_schema = 'public';
+

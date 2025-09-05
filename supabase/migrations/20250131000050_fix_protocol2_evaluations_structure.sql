@@ -62,3 +62,4 @@ ALTER TABLE public.protocol2_evaluations DISABLE ROW LEVEL SECURITY;
 -- 6. Donner tous les privilèges aux utilisateurs authentifiés
 GRANT ALL ON public.protocol2_evaluations TO authenticated;
 GRANT ALL ON public.protocol2_evaluations TO service_role;
+

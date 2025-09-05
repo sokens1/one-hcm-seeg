@@ -95,3 +95,4 @@ WHERE extname IN ('uuid-ossp', 'pgcrypto');
 SELECT 
     gen_random_uuid() as random_uuid,
     uuid_generate_v4() as uuid_v4;
+

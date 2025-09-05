@@ -718,7 +718,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       toast.info("Les candidatures sont désormais closes.");
       return;
     }
-    if (isSubmitting) return;
+    // Candidatures désactivées - aucune soumission possible
+    return;
     setIsSubmitting(true);
     try {
       const isCreateMode = mode === 'create';

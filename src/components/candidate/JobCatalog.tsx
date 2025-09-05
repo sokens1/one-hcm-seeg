@@ -74,16 +74,8 @@ export function JobCatalog() {
       preLaunchToast();
     } else if (applicationsClosed) {
       toast.info("Les candidatures sont désormais closes.");
-    } else {
-      setSelectedJobId(jobId);
-      setShowApplicationForm(true);
-      // Mettre à jour l'URL pour qu'un refresh revienne sur le formulaire
-      const params = new URLSearchParams(location.search);
-      params.set("view", "jobs");
-      params.set("jobId", jobId);
-      params.set("apply", "1");
-      navigate(`/candidate/dashboard?${params.toString()}`);
     }
+    // Candidatures désactivées - aucune action
   };
 
   const handleBackToCatalog = () => {

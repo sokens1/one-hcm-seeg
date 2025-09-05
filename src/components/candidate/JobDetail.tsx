@@ -222,28 +222,25 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                   </div>
                 </div>
                 
-                <Button 
+                                <Button
                   onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     if (preLaunch) {
-                      e.preventDefault();
                       preLaunchToast();
                     } else if (applicationsClosed) {
-                      e.preventDefault();
                       toast.info("Les candidatures sont désormais closes.");
                     } else if (isApplicationClosed()) {
-                      e.preventDefault();
                       toast.info("Les candidatures sont désormais closes.");
-                    } else {
-                      onApply();
                     }
-                  }} 
-                  className={`w-full text-sm sm:text-base ${(preLaunch || applicationsClosed || isApplicationClosed()) ? "opacity-50 cursor-not-allowed" : ""}`}
+                  }}
+                  className="w-full text-sm sm:text-base opacity-50 cursor-not-allowed pointer-events-none"
                   size="lg"
-                  disabled={preLaunch || applicationsClosed || isApplicationClosed()}
+                  disabled={true}
                   title={applicationsClosed || isApplicationClosed() ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  {applicationsClosed || isApplicationClosed() ? 'Candidatures closes' : 'Postuler à cette offre'}
+                  Candidatures closes
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">

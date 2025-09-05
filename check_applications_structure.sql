@@ -21,3 +21,4 @@ JOIN information_schema.key_column_usage kcu
 WHERE tc.table_name = 'applications' 
 AND tc.table_schema = 'public'
 AND tc.constraint_type = 'PRIMARY KEY';
+

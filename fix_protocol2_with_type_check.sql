@@ -131,3 +131,4 @@ WHERE application_id = '9966d355-e913-4411-9558-7b0341a35734';
 -- 12. Nettoyer l'enregistrement de test
 DELETE FROM public.protocol2_evaluations 
 WHERE application_id = '9966d355-e913-4411-9558-7b0341a35734';
+

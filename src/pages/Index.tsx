@@ -203,25 +203,23 @@ const Index = () => {
                 >
                   Contexte de recrutement
                 </Button>
-                <Button 
-                  size="lg"
-                  className={`bg-white text-blue-700 hover:bg-gray-200 font-semibold w-full sm:w-auto ${(preLaunch || applicationsClosed) ? "opacity-50 cursor-not-allowed" : ""}`}
-                  onClick={(e) => {
-                    if (preLaunch) {
-                      e.preventDefault();
-                      preLaunchToast();
-                    } else if (applicationsClosed) {
-                      e.preventDefault();
-                      toast.info("Les candidatures sont désormais closes.");
-                    } else {
-                      document.getElementById('job-list')?.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  disabled={preLaunch || applicationsClosed}
-                  title={applicationsClosed ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
-                >
-                  {applicationsClosed ? "Candidatures closes" : "Postuler"}
-                </Button>
+                            <Button
+              size="lg"
+              className="bg-white text-blue-700 font-semibold w-full sm:w-auto opacity-50 cursor-not-allowed pointer-events-none"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (preLaunch) {
+                  preLaunchToast();
+                } else if (applicationsClosed) {
+                  toast.info("Les candidatures sont désormais closes.");
+                }
+              }}
+              disabled={true}
+              title={applicationsClosed ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
+            >
+              Candidatures closes
+            </Button>
               </div>
             </div>
           </div>
