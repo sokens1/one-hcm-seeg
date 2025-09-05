@@ -50,7 +50,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
   const loadInterviews = useCallback(async () => {
     setIsLoading(true);
     try {
-      // console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
+      console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
       
       // 1) Récupérer les créneaux sans jointures complexes (évite 400)
       // Déterminer la fenêtre du mois courant pour charger tous les jours visibles
@@ -58,6 +58,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       const monthEnd = endOfMonth(currentMonth);
       const monthStartStr = format(monthStart, 'yyyy-MM-dd');
       const monthEndStr = format(monthEnd, 'yyyy-MM-dd');
+      
+      console.log('🔄 [CALENDAR DEBUG] Période de chargement:', { monthStartStr, monthEndStr });
 
       const { data: slots, error: slotsError } = await supabase
         .from('interview_slots')
@@ -74,7 +76,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         return;
       }
 
-      // console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots);
+      console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots?.length, 'créneaux');
+      console.log('✅ [CALENDAR DEBUG] Détail des créneaux:', slots);
 
       if (!slots || slots.length === 0) {
         setInterviews([]);
@@ -119,7 +122,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
           job_title: slot.job_title || jobTitle || 'Poste non spécifié',
           date: slot.date,
           time: slot.time,
-          status: (slot.status || 'scheduled') as const,
+          status: (slot.status || 'scheduled') as 'scheduled' | 'completed' | 'cancelled',
           location: 'Libreville',
           created_at: slot.created_at || new Date().toISOString(),
           updated_at: slot.updated_at || new Date().toISOString()
