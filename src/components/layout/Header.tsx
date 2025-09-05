@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { isPreLaunch } from "@/utils/launchGate";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
@@ -20,6 +21,8 @@ export function Header() {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const isAuthenticated = !!user;
   const preLaunch = isPreLaunch();
+  const applicationsClosed = isApplicationClosed();
+  const preLaunchToast = () => toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
   const [showMaintenanceBanner, setShowMaintenanceBanner] = useState(false);
   const [showClosedBanner, setShowClosedBanner] = useState(false);
 
@@ -252,17 +255,21 @@ export function Header() {
                   onClick={(e) => {
                     if (preLaunch) {
                       e.preventDefault();
-                      toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
+                      preLaunchToast();
+                    } else if (applicationsClosed) {
+                      e.preventDefault();
+                      toast.info("Les inscriptions sont désormais closes.");
                     }
                   }}
-                  aria-disabled={preLaunch}
-                  className={preLaunch ? "pointer-events-auto" : undefined}
-                  title={preLaunch ? "Inscriptions indisponibles jusqu'au 25 août 2025" : undefined}
+                  aria-disabled={preLaunch || applicationsClosed}
+                  className={(preLaunch || applicationsClosed) ? "pointer-events-auto" : undefined}
+                  title={applicationsClosed ? "Les inscriptions sont closes" : preLaunch ? "Inscriptions indisponibles jusqu'au 25 août 2025" : undefined}
                 >
                   <Button
                     variant="default"
                     size="sm"
-                    className={`gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 ${preLaunch ? "cursor-not-allowed" : "cursor-pointer"}`}
+                    className={`gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 ${(preLaunch || applicationsClosed) ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                    disabled={preLaunch || applicationsClosed}
                   >
                     <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">S'inscrire</span>
