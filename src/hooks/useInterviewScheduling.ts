@@ -347,6 +347,42 @@ export const useInterviewScheduling = (applicationId?: string) => {
         throw updateError;
       }
 
+      // Envoi email si demandé + toasts/logs
+      if (options?.sendEmail) {
+        try {
+          const toAddress = 'support@seeg-talentsource.com';
+          console.log('✉️ [EMAIL] Envoi interview ->', { to: toAddress, candidateName, jobTitle, date, time: normalizedTime.slice(0,5), applicationId });
+          const resp = await fetch('/api/send-interview-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: toAddress,
+              candidateFullName: candidateName,
+              jobTitle,
+              date,
+              time: normalizedTime.slice(0,5),
+              applicationId,
+            })
+          });
+          const json = await (async () => { try { return await resp.json(); } catch { return undefined; } })();
+          if (!resp.ok) {
+            console.error('✉️ [EMAIL] échec:', resp.status, json);
+            toast({ title: 'Envoi email échoué', description: `Statut ${resp.status}`, variant: 'destructive' });
+          } else {
+            console.log('✉️ [EMAIL] succès:', json);
+            const { count } = await supabase
+              .from('email_logs')
+              .select('id', { count: 'exact', head: true })
+              .eq('application_id', applicationId)
+              .eq('category', 'interview_invitation');
+            toast({ title: 'Email envoyé', description: `Total emails pour cette candidature: ${count ?? 'n/d'}` });
+          }
+        } catch (e) {
+          console.error('✉️ [EMAIL] exception:', e);
+          toast({ title: 'Envoi email erreur', description: (e as Error).message, variant: 'destructive' });
+        }
+      }
+
       // Message différent selon le rôle de l'utilisateur
       console.log('🔍 DEBUG: isRecruiter from useAuth:', isRecruiter);
       console.log('🔍 DEBUG: isAdmin from useAuth:', isAdmin);
