@@ -286,9 +286,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     return interviewDateObj.toDateString() === date.toDateString();
   };
   
-  // Fonction pour obtenir la clé de date au format YYYY-MM-DD
+  // Fonction pour obtenir la clé de date au format YYYY-MM-DD (corrigée pour éviter le décalage de fuseau horaire)
   const getDateKey = (date: Date) => {
-    return date.toISOString().split('T')[0];
+    // Utiliser les méthodes locales pour éviter le décalage UTC
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
 
@@ -743,12 +747,24 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                               return (
                                 <button
                                   key={time}
-                                  onClick={() => {
+                                  onClick={async () => {
                                     if (!isBusy && !isReadOnly) {
-                                      setSelectedTimeSlot(time);
+                                      const success = await scheduleInterview(getDateKey(interviewDate), time);
+                                      if (success) {
+                                        setSelectedTimeSlot(time);
+                                        const [hours, minutes] = time.split(':');
+                                        const newDate = new Date(interviewDate);
+                                        newDate.setHours(parseInt(hours), parseInt(minutes));
+                                        setInterviewDate(newDate);
+                                        updateProtocol1('interview', 'interviewDate', newDate);
+                                        
+                                        // Notifier la modal calendrier de la mise à jour
+                                        console.log('🔔 [EVALUATION DEBUG] Émission événement interviewSlotsUpdated après programmation');
+                                        window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
+                                      }
                                     }
                                   }}
-                                  disabled={isBusy}
+                                  disabled={isBusy || isReadOnly}
                                   className={cn(
                                     "px-3 py-2 text-xs rounded-md border transition-all duration-200",
                                     {
@@ -948,6 +964,10 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                         newDate.setHours(parseInt(hours), parseInt(minutes));
                                         setInterviewDate(newDate);
                                         updateProtocol1('interview', 'interviewDate', newDate);
+                                        
+                                        // Notifier la modal calendrier de la mise à jour
+                                        console.log('🔔 [EVALUATION DEBUG] Émission événement interviewSlotsUpdated après programmation');
+                                        window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
                                       }
                                     }
                                   }}
