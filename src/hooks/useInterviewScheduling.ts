@@ -61,7 +61,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
 
   // Créneaux horaires disponibles (alignés sur HH:MM:SS)
   const timeSlots = useMemo(() => (
-    ['09:00:00', '10:00:00', '11:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00']
+    ['09:00:00', '10:00:00', '11:00:00', '13:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00']
   ), []);
 
   // Charger les créneaux d'entretien
