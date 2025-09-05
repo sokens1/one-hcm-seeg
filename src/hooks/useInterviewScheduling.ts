@@ -59,9 +59,17 @@ export const useInterviewScheduling = (applicationId?: string) => {
     return trimmed; // on laisse tel quel, la DB rejettera si invalide
   }, []);
 
+  // Fonction pour notifier les changements aux autres composants
+  const notifySlotsChange = useCallback((action: 'created' | 'updated' | 'deleted', details?: Record<string, unknown>) => {
+    console.log(`🔔 [SCHEDULE DEBUG] Notification changement créneaux: ${action}`, details);
+    window.dispatchEvent(new CustomEvent('interviewSlotsUpdated', { 
+      detail: { action, details, timestamp: Date.now() } 
+    }));
+  }, []);
+
   // Créneaux horaires disponibles (alignés sur HH:MM:SS)
   const timeSlots = useMemo(() => (
-    ['09:00:00', '10:00:00', '11:00:00', '13:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00']
+    ['08:00:00', '09:00:00', '10:00:00', '11:00:00', '13:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00']
   ), []);
 
   // Charger les créneaux d'entretien
@@ -373,8 +381,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       await loadInterviewSlots();
       
       // Notifier la modal calendrier de la mise à jour
-      console.log('🔔 [SCHEDULE DEBUG] Émission événement interviewSlotsUpdated après programmation');
-      window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
+      notifySlotsChange('created', { date, time: normalizedTime, applicationId });
       
       return true;
     } catch (error) {
@@ -388,7 +395,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, user, toast, loadInterviewSlots, normalizeTimeToHms, isRecruiter, isAdmin]);
+  }, [applicationId, user, toast, loadInterviewSlots, normalizeTimeToHms, isRecruiter, isAdmin, notifySlotsChange]);
 
   // Annuler un entretien
   const cancelInterview = useCallback(async (date: string, time: string) => {
@@ -436,8 +443,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       await loadInterviewSlots();
       
       // Notifier la modal calendrier de la mise à jour
-      console.log('🔔 [SCHEDULE DEBUG] Émission événement interviewSlotsUpdated après programmation');
-      window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
+      notifySlotsChange('deleted', { date, time: normalizedTime, applicationId });
       
       return true;
     } catch (error) {
@@ -451,7 +457,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, toast, loadInterviewSlots, normalizeTimeToHms]);
+  }, [applicationId, toast, loadInterviewSlots, normalizeTimeToHms, notifySlotsChange]);
 
   // Vérifier si un créneau est occupé
   const isSlotBusy = useCallback((date: string, time: string) => {
@@ -521,8 +527,18 @@ export const useInterviewScheduling = (applicationId?: string) => {
       loadInterviewSlots();
     };
 
+    const handleSlotsUpdated = () => {
+      console.log('🔄 [SCHEDULE DEBUG] Mise à jour des créneaux depuis calendrier');
+      lastApplicationIdRef.current = undefined; // Force le rechargement
+      loadInterviewSlots();
+    };
+
     window.addEventListener('forceReloadSlots', handleForceReload);
-    return () => window.removeEventListener('forceReloadSlots', handleForceReload);
+    window.addEventListener('interviewSlotsUpdated', handleSlotsUpdated);
+    return () => {
+      window.removeEventListener('forceReloadSlots', handleForceReload);
+      window.removeEventListener('interviewSlotsUpdated', handleSlotsUpdated);
+    };
   }, [loadInterviewSlots]);
 
   // Fonction pour forcer le rechargement
@@ -543,6 +559,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     isSlotBusy,
     isDateFullyBooked,
     getAvailableSlots,
-    generateCalendar
+    generateCalendar,
+    notifySlotsChange
   };
 };
