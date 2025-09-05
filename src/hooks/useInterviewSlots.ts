@@ -84,13 +84,14 @@ export const useInterviewSlots = () => {
     });
   }, [bookedSlots, timeSlots]);
 
-  // Réserver un créneau
+  // Réserver un créneau (avec option d'envoi d'email)
   const bookSlot = useCallback(async (
     date: Date, 
     time: string, 
     applicationId: string, 
     candidateName: string, 
-    jobTitle: string
+    jobTitle: string,
+    options?: { sendEmail?: boolean }
   ): Promise<boolean> => {
     try {
       const dateStr = date.toISOString().split('T')[0];
@@ -125,6 +126,27 @@ export const useInterviewSlots = () => {
 
       if (insertError) {
         throw insertError;
+      }
+
+      // Envoi email si demandé
+      if (options?.sendEmail) {
+        try {
+          const dateStrKeep = date.toISOString().split('T')[0];
+          await fetch('/api/send-interview-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: 'support@seeg-talentsource.com',
+              candidateFullName: candidateName,
+              jobTitle,
+              date: dateStrKeep,
+              time,
+              applicationId
+            })
+          });
+        } catch (e) {
+          console.error('✉️ Erreur envoi email:', e);
+        }
       }
 
       // Recharger les créneaux

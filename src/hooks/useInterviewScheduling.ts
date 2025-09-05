@@ -184,7 +184,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
   }, [applicationId, toast, schedules.length, timeSlots]);
 
   // Programmer un entretien
-  const scheduleInterview = useCallback(async (date: string, time: string) => {
+  const scheduleInterview = useCallback(async (date: string, time: string, options?: { sendEmail?: boolean }) => {
     if (!applicationId || !user) return false;
 
     setIsSaving(true);
