@@ -225,6 +225,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const jobOfferRecord: LinkedJobOfferRecord | undefined = Array.isArray(jobOffersField) ? jobOffersField[0] : jobOffersField;
 
       const candidateName = `${userRecord?.first_name || ''} ${userRecord?.last_name || ''}`.trim();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const candidateEmail = (userRecord as any)?.email || '';
       const jobTitle = jobOfferRecord?.title || 'Poste non spécifié';
 
