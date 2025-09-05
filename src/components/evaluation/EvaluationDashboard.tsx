@@ -770,13 +770,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                           )}
                           
                           {selectedTimeSlot && (
-                            <div className="flex items-center justify-between gap-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                              <p className="text-sm text-blue-900">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                              <p className="text-sm text-blue-900 leading-6">
                                 Créneau sélectionné: {format(interviewDate, "EEEE dd MMMM yyyy", { locale: fr })} à {selectedTimeSlot}
                               </p>
-                              <div className="flex gap-2">
+                              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                                 <Button
-                                  className="bg-blue-600 hover:bg-blue-700"
+                                  className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
                                   onClick={async () => {
                                     const success = await scheduleInterview(getDateKey(interviewDate), selectedTimeSlot, { sendEmail: true });
                                     if (success) {
@@ -792,6 +792,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                                 </Button>
                                 <Button
                                   variant="outline"
+                                  className="w-full sm:w-auto"
                                   onClick={() => setSelectedTimeSlot('')}
                                 >
                                   Annuler
