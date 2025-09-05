@@ -20,6 +20,8 @@ export default function CandidateJobs() {
   const { data, isLoading, error } = useJobOffers();
   const jobOffers = data ?? [];
   const preLaunch = isPreLaunch();
+  const applicationsClosed = isApplicationClosed();
+  const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
 
   // Helper to normalize location which can be string | string[] from the API
   const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
@@ -86,16 +88,28 @@ export default function CandidateJobs() {
               <Button 
                 variant="secondary" 
                 size="lg"
-                className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                disabled={isApplicationClosed()}
-                onClick={() => {
-                  const element = document.getElementById('job-list');
-                  if (element && typeof element.scrollIntoView === 'function') {
-                    element.scrollIntoView({ behavior: 'smooth' });
+                className={`bg-white/20 hover:bg-white/30 text-white border-white/30 ${(preLaunch || applicationsClosed || isApplicationClosed()) ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={preLaunch || applicationsClosed || isApplicationClosed()}
+                onClick={(e) => {
+                  if (preLaunch) {
+                    e.preventDefault();
+                    preLaunchToast();
+                  } else if (applicationsClosed) {
+                    e.preventDefault();
+                    toast.info("Les candidatures sont désormais closes.");
+                  } else if (isApplicationClosed()) {
+                    e.preventDefault();
+                    toast.info("Les candidatures sont désormais closes.");
+                  } else {
+                    const element = document.getElementById('job-list');
+                    if (element && typeof element.scrollIntoView === 'function') {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
                   }
                 }}
+                title={applicationsClosed || isApplicationClosed() ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
               >
-                {isApplicationClosed() ? 'Candidatures closes' : 'Postuler maintenant'}
+                {applicationsClosed || isApplicationClosed() ? 'Candidatures closes' : 'Postuler maintenant'}
               </Button>
             </div>
           </div>

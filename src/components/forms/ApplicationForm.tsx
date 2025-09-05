@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { isApplicationClosed } from "@/utils/applicationUtils";
+import { isPreLaunch } from "@/utils/launchGate";
 import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
@@ -83,6 +84,9 @@ interface FormData {
 
 export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
   const navigate = useNavigate();
+  const preLaunch = isPreLaunch();
+  const applicationsClosed = isApplicationClosed();
+  const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
   
   // Hook pour gérer les brouillons (seulement en mode création)
   const {
@@ -707,6 +711,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const handleSubmit = async () => {
+    if (preLaunch) {
+      preLaunchToast();
+      return;
+    } else if (applicationsClosed) {
+      toast.info("Les candidatures sont désormais closes.");
+      return;
+    }
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {

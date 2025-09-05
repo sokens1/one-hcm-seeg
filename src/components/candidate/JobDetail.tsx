@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send, Building2, Banknote, Clock } from "lucide-react";
 import { isApplicationClosed } from "@/utils/applicationUtils";
+import { isPreLaunch } from "@/utils/launchGate";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { ContentSpinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 interface JobDetailProps {
   jobId: string;
@@ -15,6 +17,9 @@ interface JobDetailProps {
 
 export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   const { data: jobOffer, isLoading, error } = useJobOffer(jobId);
+  const preLaunch = isPreLaunch();
+  const applicationsClosed = isApplicationClosed();
+  const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
 
   if (isLoading) {
     return <ContentSpinner text="Chargement de l'offre d'emploi..." />;
@@ -218,13 +223,27 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 </div>
                 
                 <Button 
-                  onClick={onApply} 
-                  className="w-full text-sm sm:text-base"
+                  onClick={(e) => {
+                    if (preLaunch) {
+                      e.preventDefault();
+                      preLaunchToast();
+                    } else if (applicationsClosed) {
+                      e.preventDefault();
+                      toast.info("Les candidatures sont désormais closes.");
+                    } else if (isApplicationClosed()) {
+                      e.preventDefault();
+                      toast.info("Les candidatures sont désormais closes.");
+                    } else {
+                      onApply();
+                    }
+                  }} 
+                  className={`w-full text-sm sm:text-base ${(preLaunch || applicationsClosed || isApplicationClosed()) ? "opacity-50 cursor-not-allowed" : ""}`}
                   size="lg"
-                  disabled={isApplicationClosed()}
+                  disabled={preLaunch || applicationsClosed || isApplicationClosed()}
+                  title={applicationsClosed || isApplicationClosed() ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  {isApplicationClosed() ? 'Candidatures closes' : 'Postuler à cette offre'}
+                  {applicationsClosed || isApplicationClosed() ? 'Candidatures closes' : 'Postuler à cette offre'}
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
