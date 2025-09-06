@@ -58,6 +58,13 @@ const CandidatesPage = lazy(() => import("./pages/recruiter/CandidatesPage"));
 const RecruiterJobs = lazy(() => import("./pages/recruiter/RecruiterJobs"));
 const RecruiterProfile = lazy(() => import("./pages/recruiter/RecruiterProfile"));
 const CandidateAnalysis = lazy(() => import("./pages/recruiter/CandidateAnalysis"));
+const Traitements_IA = lazy(() => import("./pages/recruiter/Traitements_IA"));
+
+// Observer pages
+const ObserverDashboard = lazy(() => import("./pages/observer/ObserverDashboard"));
+const ObserverCandidatesPage = lazy(() => import("./pages/observer/ObserverCandidatesPage"));
+const ObserverCandidateAnalysis = lazy(() => import("./pages/observer/ObserverCandidateAnalysis"));
+const ObserverTraitements_IA = lazy(() => import("./pages/observer/Traitements_IA"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -108,6 +115,13 @@ const router = createBrowserRouter(
       <Route path="recruiter/candidates" element={<ProtectedRecruiterReadRoute><CandidatesPage /></ProtectedRecruiterReadRoute>} />
       <Route path="recruiter/jobs" element={<ProtectedRecruiterReadRoute><RecruiterJobs /></ProtectedRecruiterReadRoute>} />
       <Route path="recruiter/candidates/:id/analysis" element={<ProtectedRecruiterReadRoute><CandidateAnalysis /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/traitements-ia" element={<ProtectedRecruiterReadRoute><Traitements_IA /></ProtectedRecruiterReadRoute>} />
+      
+      {/* Observer Routes */}
+      <Route path="observer/dashboard" element={<ProtectedRecruiterReadRoute><ObserverDashboard /></ProtectedRecruiterReadRoute>} />
+      <Route path="observer/candidates" element={<ProtectedRecruiterReadRoute><ObserverCandidatesPage /></ProtectedRecruiterReadRoute>} />
+      <Route path="observer/candidates/:id/analysis" element={<ProtectedRecruiterReadRoute><ObserverCandidateAnalysis /></ProtectedRecruiterReadRoute>} />
+      <Route path="observer/traitements-ia" element={<ProtectedRecruiterReadRoute><ObserverTraitements_IA /></ProtectedRecruiterReadRoute>} />
       
       {/* Admin Routes */}
       <Route path="admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />

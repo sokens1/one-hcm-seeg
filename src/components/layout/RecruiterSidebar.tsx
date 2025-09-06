@@ -1,4 +1,4 @@
-import { LayoutDashboard, Briefcase, Users, Settings } from "lucide-react";
+import { LayoutDashboard, Briefcase, Users, Settings, Brain } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -24,6 +24,11 @@ const menuItems = [
     title: "Liste des candidatures",
     url: "/recruiter/candidates",
     icon: Users,
+  },
+  {
+    title: "Traitements IA",
+    url: "/recruiter/traitements-ia",
+    icon: Brain,
   },
   {
     title: "Postes à pourvoir",
