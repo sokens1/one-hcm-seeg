@@ -81,7 +81,7 @@ export function useAIData() {
 
         // Configuration des départements - facilement extensible
         const departments = [
-          { name: 'Chef de Département Eau', file: '/chef_departement_eau.json' },
+          { name: 'Chef de Département Eau', file: '/eau_complet.json' },
           // {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
           // {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
           // {name: 'Directeur Exploitation Eau', file: '/directeur_exploitation_eau.json'},

@@ -72,11 +72,11 @@ interface JobOffer {
 
 // Mapping des postes vers les fichiers JSON (gestion de la casse)
 const JOB_TO_FILE_MAPPING: Record<string, string> = {
-  "Directeur Technique Eau": "chef_departement_eau.json",
-  "Chef de Département Eau": "chef_departement_eau.json",
-  "Chef de Département Electricité": "chef_departement_electricite.json",
-  "Directeur Exploitation Electricité": "chef_departement_electricite.json",
-  "Directeur Technique Electricité": "chef_departement_electricite.json",
+  "Directeur Technique Eau": "eau_complet.json",
+  "Chef de Département Eau": "eau_complet.json",
+  "Chef de Département Sable": "sable_complet.json",
+  "Directeur Exploitation Sable": "sable_complet.json",
+  "Directeur Technique Sable": "sable_complet.json",
   // Ajouter d'autres mappings selon les fichiers disponibles
 };
 
@@ -155,7 +155,7 @@ export default function AIAnalysisPage() {
       console.log(`📁 Chargement des données pour: ${jobTitle} -> ${fileName}`);
       
       // Charger les vraies données depuis le fichier JSON
-      const response = await fetch(`/data/${fileName}`);
+      const response = await fetch(`/${fileName}`);
       if (response.ok) {
         const data = await response.json();
         console.log(`✅ Données chargées:`, data);
