@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,13 +44,13 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
   const [editingInterview, setEditingInterview] = useState<Interview | null>(null);
   const [draftDate, setDraftDate] = useState<string | null>(null); // yyyy-MM-dd
   const [draftTime, setDraftTime] = useState<string | null>(null); // HH:mm:ss
-  const timeSlots = ['09:00:00','10:00:00','11:00:00','13:00:00','14:00:00','15:00:00','16:00:00','17:00:00'];
+  const timeSlots = ['08:00:00','09:00:00','10:00:00','11:00:00','13:00:00','14:00:00','15:00:00','16:00:00','17:00:00'];
 
   // Charger tous les entretiens
   const loadInterviews = useCallback(async () => {
     setIsLoading(true);
     try {
-      // console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
+      console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
       
       // 1) Récupérer les créneaux sans jointures complexes (évite 400)
       // Déterminer la fenêtre du mois courant pour charger tous les jours visibles
@@ -58,6 +58,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       const monthEnd = endOfMonth(currentMonth);
       const monthStartStr = format(monthStart, 'yyyy-MM-dd');
       const monthEndStr = format(monthEnd, 'yyyy-MM-dd');
+      
+      console.log('🔄 [CALENDAR DEBUG] Période de chargement:', { monthStartStr, monthEndStr });
 
       const { data: slots, error: slotsError } = await supabase
         .from('interview_slots')
@@ -74,7 +76,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         return;
       }
 
-      // console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots);
+      console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots?.length, 'créneaux');
+      console.log('✅ [CALENDAR DEBUG] Détail des créneaux:', slots);
 
       if (!slots || slots.length === 0) {
         setInterviews([]);
@@ -119,7 +122,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
           job_title: slot.job_title || jobTitle || 'Poste non spécifié',
           date: slot.date,
           time: slot.time,
-          status: (slot.status || 'scheduled') as const,
+          status: (slot.status || 'scheduled') as 'scheduled' | 'completed' | 'cancelled',
           location: 'Libreville',
           created_at: slot.created_at || new Date().toISOString(),
           updated_at: slot.updated_at || new Date().toISOString()
@@ -350,8 +353,10 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     setDraftTime(null);
     await loadInterviews();
     
-    // Forcer le rechargement des créneaux dans useInterviewScheduling
-    window.dispatchEvent(new CustomEvent('interviewSlotsUpdated'));
+    // Notifier les changements aux autres composants
+    window.dispatchEvent(new CustomEvent('interviewSlotsUpdated', {
+      detail: { action: 'updated', details: { oldDate: editingInterview.date, oldTime: editingInterview.time, newDate: draftDate, newTime: draftTime }, timestamp: Date.now() }
+    }));
     
     console.log('✅ [CALENDAR DEBUG] Fonction saveEditingInterview terminée avec succès');
   };
@@ -371,23 +376,38 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
 
   // Écouter les mises à jour des créneaux depuis useInterviewScheduling
   useEffect(() => {
-    const handleSlotsUpdate = () => {
-      console.log('🔄 [CALENDAR DEBUG] Rechargement calendrier suite à programmation entretien');
+    const handleSlotsUpdate = (event: CustomEvent) => {
+      const action = event.detail?.action || 'updated';
+      const details = event.detail?.details;
+      console.log('🔄 [CALENDAR DEBUG] Rechargement calendrier suite à programmation entretien', { action, details });
+      
       if (isOpen) {
         // Recharger les entretiens du calendrier
         loadInterviews();
         
-        // Forcer aussi le rechargement des créneaux dans useInterviewScheduling
-        // en émettant un événement spécifique pour forcer la mise à jour des créneaux disponibles
-        setTimeout(() => {
-          console.log('🔄 [CALENDAR DEBUG] Force rechargement créneaux disponibles');
-          window.dispatchEvent(new CustomEvent('forceReloadSlots'));
-        }, 100);
+        // Si c'est une création ou suppression, forcer le rechargement des créneaux
+        if (action === 'created' || action === 'deleted') {
+          setTimeout(() => {
+            console.log('🔄 [CALENDAR DEBUG] Force rechargement créneaux disponibles');
+            window.dispatchEvent(new CustomEvent('forceReloadSlots'));
+          }, 100);
+        }
       }
     };
 
-    window.addEventListener('interviewSlotsUpdated', handleSlotsUpdate);
-    return () => window.removeEventListener('interviewSlotsUpdated', handleSlotsUpdate);
+    const handleForceReload = () => {
+      console.log('🔄 [CALENDAR DEBUG] Force reload depuis programmation entretien');
+      if (isOpen) {
+        loadInterviews();
+      }
+    };
+
+    window.addEventListener('interviewSlotsUpdated', handleSlotsUpdate as EventListener);
+    window.addEventListener('forceReloadSlots', handleForceReload);
+    return () => {
+      window.removeEventListener('interviewSlotsUpdated', handleSlotsUpdate as EventListener);
+      window.removeEventListener('forceReloadSlots', handleForceReload);
+    };
   }, [isOpen, loadInterviews]);
 
   const goToPreviousMonth = () => {
@@ -458,6 +478,9 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
               Calendrier des Entretiens
             </DialogTitle>
           </div>
+          <DialogDescription>
+            Planifiez et gérez les entretiens avec les candidats. Sélectionnez une date pour voir les créneaux disponibles.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col h-full gap-4 p-4 pt-2 overflow-hidden">

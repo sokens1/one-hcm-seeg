@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useOptimizedProtocol2Evaluation } from "@/hooks/useOptimizedProtocol2Evaluation";
@@ -16,24 +17,40 @@ interface StarRatingProps {
 }
 
 const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disabled = false }) => {
-  // S'assurer que la valeur ne dépasse jamais 5
-  const safeValue = Math.min(Math.max(value, 0), 5);
-  
+  const handleStarClick = (starValue: number) => {
+    if (disabled) return;
+    
+    // Empêcher les clics involontaires en vérifiant si c'est un clic intentionnel
+    // console.log('⭐ [STAR DEBUG] Clic sur étoile:', starValue, 'pour', label);
+    
+    onChange(starValue);
+  };
+
   return (
     <div className="space-y-2">
-      <h5 className="font-medium text-sm">{label}</h5>
+      <Label className="text-sm font-medium">{label}</Label>
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
             type="button"
-            onClick={() => onChange(star)}
-            className="transition-colors hover:scale-110"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleStarClick(star);
+            }}
+            onMouseDown={(e) => e.preventDefault()} // Empêcher le focus involontaire
+            className={cn(
+              "transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-sm p-1",
+              disabled && "cursor-not-allowed"
+            )}
+            disabled={disabled}
+            aria-label={`Noter ${star} étoile${star > 1 ? 's' : ''} pour ${label}`}
           >
             <Star
               className={cn(
                 "w-5 h-5",
-                star <= safeValue
+                star <= value
                   ? disabled ? "fill-yellow-200 text-yellow-200" : "fill-yellow-400 text-yellow-400"
                   : disabled ? "text-gray-200" : "text-gray-300 hover:text-yellow-300"
               )}
@@ -41,7 +58,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
           </button>
         ))}
       </div>
-      <span className="text-xs text-muted-foreground">{Math.round(safeValue)}/5</span>
+      <span className="text-xs text-muted-foreground">{value}/5</span>
     </div>
   );
 };
@@ -102,46 +119,63 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
     calculateSectionScores,
     isLoading,
     isSaving,
+    reload
   } = useOptimizedProtocol2Evaluation(applicationId);
+  // Pas de gestion de scroll comme le protocole 1 - plus simple et plus stable
 
   const handleDecision = (decision: 'embauche' | 'refuse') => {
     onStatusChange(decision);
   };
 
-  const updateSection = (section: string, field: string, value: string | number) => {
+  // Fonction de mise à jour simplifiée comme dans le protocole 1
+  const updateProtocol2 = (section: string, field: string, value: string | number) => {
+    // console.log('🎯 updateProtocol2 appelé:', { section, field, value });
+    
     updateEvaluation(prev => {
       const newData = { ...prev };
       const [category, subCategory] = field.split('.');
 
       if (section === 'mise_en_situation') {
-        newData.mise_en_situation = {
-          ...newData.mise_en_situation,
-          [category]: {
-            ...newData.mise_en_situation[category as keyof typeof newData.mise_en_situation],
-            [subCategory]: value
-          }
-        };
+        if (!newData.mise_en_situation[category as keyof typeof newData.mise_en_situation]) {
+          newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] = { score: 0, comments: '' } as any;
+        }
+        newData.mise_en_situation[category as keyof typeof newData.mise_en_situation][subCategory] = value;
       } else if (section === 'validation_operationnelle') {
-        newData.validation_operationnelle = {
-          ...newData.validation_operationnelle,
-          [category]: {
-            ...newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle],
-            [subCategory]: value
-          }
-        };
+        if (!newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle]) {
+          newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] = { score: 0, comments: '' } as any;
+        }
+        newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle][subCategory] = value;
       } else if (section === 'analyse_competences') {
-        newData.analyse_competences = {
-          ...newData.analyse_competences,
-          [category]: {
-            ...newData.analyse_competences[category as keyof typeof newData.analyse_competences],
-            [subCategory]: value
-          }
-        };
+        if (!newData.analyse_competences[category as keyof typeof newData.analyse_competences]) {
+          newData.analyse_competences[category as keyof typeof newData.analyse_competences] = { score: 0, comments: '', gapLevel: '' } as any;
+        }
+        newData.analyse_competences[category as keyof typeof newData.analyse_competences][subCategory] = value;
       }
+
+      // Mettre à jour le statut basé sur les scores
+      const hasScores = newData.mise_en_situation.jeu_de_role.score > 0 || 
+                       newData.mise_en_situation.jeu_codir.score > 0 ||
+                       newData.validation_operationnelle.fiche_kpis.score > 0 ||
+                       newData.analyse_competences.gap_competences.score > 0 ||
+                       newData.analyse_competences.plan_formation.score > 0;
+      
+      if (hasScores && newData.status === 'pending') {
+        newData.status = 'in_progress';
+      }
+
+      // console.log('📈 Données après mise à jour:', {
+      //   jeu_de_role: newData.mise_en_situation.jeu_de_role.score,
+      //   jeu_codir: newData.mise_en_situation.jeu_codir.score,
+      //   status: newData.status
+      // });
 
       return newData;
     });
   };
+
+
+  // Calculer les scores directement comme dans le protocole 1
+  const scores = calculateSectionScores(evaluationData);
 
   if (isLoading) {
     return (
@@ -154,10 +188,16 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
     );
   }
 
-  const scores = calculateSectionScores();
-
   return (
     <div className="space-y-6">
+      {/* Indicateur de sauvegarde (copié du protocole 1) */}
+      {isSaving && (
+        <div className="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 z-50">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          <span>Sauvegarde...</span>
+        </div>
+      )}
+
       {/* En-tête du Protocole 2 */}
       <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50">
         <CardHeader className="pb-3 sm:pb-4">
@@ -239,14 +279,14 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_de_role.score}
-                onChange={(value) => !isReadOnly && updateSection('mise_en_situation', 'jeu_de_role.score', value)}
+                onChange={(value) => !isReadOnly && updateProtocol2('mise_en_situation', 'jeu_de_role.score', value)}
                 label="Jeu de rôle fonctionnel"
                 disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur le jeu de rôle..."
                 value={evaluationData.mise_en_situation.jeu_de_role.comments}
-                onChange={(e) => !isReadOnly && updateSection('mise_en_situation', 'jeu_de_role.comments', e.target.value)}
+                onChange={(e) => !isReadOnly && updateProtocol2('mise_en_situation', 'jeu_de_role.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
@@ -255,14 +295,14 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.mise_en_situation.jeu_codir.score}
-                onChange={(value) => !isReadOnly && updateSection('mise_en_situation', 'jeu_codir.score', value)}
+                onChange={(value) => !isReadOnly && updateProtocol2('mise_en_situation', 'jeu_codir.score', value)}
                 label="Jeu de rôle CODIR"
                 disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur le jeu de rôle CODIR..."
                 value={evaluationData.mise_en_situation.jeu_codir.comments}
-                onChange={(e) => !isReadOnly && updateSection('mise_en_situation', 'jeu_codir.comments', e.target.value)}
+                onChange={(e) => !isReadOnly && updateProtocol2('mise_en_situation', 'jeu_codir.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
@@ -289,14 +329,14 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.validation_operationnelle.fiche_kpis.score}
-                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.score', value)}
+                onChange={(value) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kpis.score', value)}
                 label="Key Performance Indicators (KPI's)"
                 disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur les KPI's..."
                 value={evaluationData.validation_operationnelle.fiche_kpis.comments}
-                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
+                onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
@@ -305,14 +345,14 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.validation_operationnelle.fiche_kris?.score || 0}
-                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kris.score', value)}
+                onChange={(value) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kris.score', value)}
                 label="Key Risque Indicators (KRI's)"
                 disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur les KRI's..."
                 value={evaluationData.validation_operationnelle.fiche_kris?.comments || ''}
-                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kris.comments', e.target.value)}
+                onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kris.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
@@ -321,14 +361,14 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.validation_operationnelle.fiche_kcis?.score || 0}
-                onChange={(value) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kcis.score', value)}
+                onChange={(value) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kcis.score', value)}
                 label="Key Control Indicators (KCI's)"
                 disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur les KCI's..."
                 value={evaluationData.validation_operationnelle.fiche_kcis?.comments || ''}
-                onChange={(e) => !isReadOnly && updateSection('validation_operationnelle', 'fiche_kcis.comments', e.target.value)}
+                onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kcis.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
@@ -355,14 +395,14 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <StarRating
                 value={evaluationData.analyse_competences.gap_competences.score}
-                onChange={(value) => !isReadOnly && updateSection('analyse_competences', 'gap_competences.score', value)}
+                onChange={(value) => !isReadOnly && updateProtocol2('analyse_competences', 'gap_competences.score', value)}
                 label="Gap de compétences"
                 disabled={isReadOnly}
               />
               <Textarea
                 placeholder="Commentaires sur l'analyse des compétences..."
                 value={evaluationData.analyse_competences.gap_competences.comments}
-                onChange={(e) => !isReadOnly && updateSection('analyse_competences', 'gap_competences.comments', e.target.value)}
+                onChange={(e) => !isReadOnly && updateProtocol2('analyse_competences', 'gap_competences.comments', e.target.value)}
                 className={cn("min-h-[60px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                 readOnly={isReadOnly}
               />
@@ -374,7 +414,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 <Textarea
                   placeholder="Commentaires sur la formation requise et justification..."
                   value={evaluationData.analyse_competences.plan_formation.comments}
-                  onChange={(e) => !isReadOnly && updateSection('analyse_competences', 'plan_formation.comments', e.target.value)}
+                  onChange={(e) => !isReadOnly && updateProtocol2('analyse_competences', 'plan_formation.comments', e.target.value)}
                   className={cn("min-h-[120px]", isReadOnly && "bg-gray-100 cursor-not-allowed")}
                   readOnly={isReadOnly}
                 />
@@ -415,14 +455,6 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
         </CardContent>
       </Card>
 
-      {/* Indicateur de sauvegarde */}
-      {isSaving && (
-        <div className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 bg-blue-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md shadow-lg flex items-center gap-2 z-50 text-sm">
-          <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-white"></div>
-          <span className="hidden sm:inline">Sauvegarde en cours...</span>
-          <span className="sm:hidden">Sauvegarde...</span>
-        </div>
-      )}
     </div>
   );
 }

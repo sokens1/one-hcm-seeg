@@ -10,6 +10,8 @@ import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { JobDetail } from "./JobDetail";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { useJobOffers } from "@/hooks/useJobOffers";
+import { isPreLaunch } from "@/utils/launchGate";
+import { isApplicationClosed } from "@/utils/applicationUtils";
 
 export function JobCatalog() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,6 +26,9 @@ export function JobCatalog() {
   const navigate = useNavigate();
 
   const { data: jobs, isLoading, error } = useJobOffers();
+  const preLaunch = isPreLaunch();
+  const applicationsClosed = isApplicationClosed();
+  const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
 
   // Helper to normalize fields that can be string or string[]
   const toText = (val?: string | string[] | null) =>
@@ -65,14 +70,12 @@ export function JobCatalog() {
   };
 
   const handleApplyClick = (jobId: string) => {
-    setSelectedJobId(jobId);
-    setShowApplicationForm(true);
-    // Mettre à jour l'URL pour qu'un refresh revienne sur le formulaire
-    const params = new URLSearchParams(location.search);
-    params.set("view", "jobs");
-    params.set("jobId", jobId);
-    params.set("apply", "1");
-    navigate(`/candidate/dashboard?${params.toString()}`);
+    if (preLaunch) {
+      preLaunchToast();
+    } else if (applicationsClosed) {
+      toast.info("Les candidatures sont désormais closes.");
+    }
+    // Candidatures désactivées - aucune action
   };
 
   const handleBackToCatalog = () => {
