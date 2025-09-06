@@ -16,6 +16,7 @@ import { useState } from "react";
 import { isPreLaunch } from "@/utils/launchGate";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { toast } from "sonner";
+import { useMaintenance } from "@/hooks/useMaintenance";
 import { supabase } from "@/integrations/supabase/client";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
@@ -23,6 +24,9 @@ import { supabase } from "@/integrations/supabase/client";
 const Index = () => {
   const navigate = useNavigate();
   const { user, isCandidate, isRecruiter, isAdmin, isObserver, isLoading: isAuthLoading, isRoleLoading } = useAuth();
+  const preLaunch = isPreLaunch();
+  const applicationsClosed = isApplicationClosed();
+  const preLaunchToast = () => toast.info("Les inscriptions seront disponibles à partir du lundi 25 août 2025.");
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [locationFilter, setLocationFilter] = useState("all");
@@ -42,7 +46,6 @@ const Index = () => {
   
   const { data, isLoading, error } = useJobOffers();
   const jobOffers: JobOffer[] = Array.isArray(data) ? data : [];
-  const preLaunch = isPreLaunch();
 
   // Helper to normalize location which can be string | string[] from the API
   const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
@@ -200,13 +203,23 @@ const Index = () => {
                 >
                   Contexte de recrutement
                 </Button>
-                <Button 
-                  size="lg"
-                  className="bg-white text-blue-700 hover:bg-gray-200 font-semibold w-full sm:w-auto"
-                  onClick={() => document.getElementById('job-list')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  Postuler
-                </Button>
+                            <Button
+              size="lg"
+              className="bg-white text-blue-700 font-semibold w-full sm:w-auto opacity-50 cursor-not-allowed pointer-events-none"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (preLaunch) {
+                  preLaunchToast();
+                } else if (applicationsClosed) {
+                  toast.info("Les candidatures sont désormais closes.");
+                }
+              }}
+              disabled={true}
+              title={applicationsClosed ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
+            >
+              Candidatures closes
+            </Button>
               </div>
             </div>
           </div>

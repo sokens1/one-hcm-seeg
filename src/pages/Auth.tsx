@@ -399,8 +399,12 @@ export default function Auth() {
                 <Tabs
                   value={activeTab}
                   onValueChange={(val) => {
-                    if (val === "signup" && preLaunch) {
-                      preLaunchToast();
+                    if (val === "signup") {
+                      if (preLaunch) {
+                        preLaunchToast();
+                      } else if (applicationsClosed) {
+                        toast.info("Les inscriptions sont désormais closes.");
+                      }
                       return;
                     }
                     setActiveTab(val);
@@ -411,13 +415,18 @@ export default function Auth() {
                     <TabsTrigger value="signin">Connexion</TabsTrigger>
                     <TabsTrigger 
                       value="signup" 
-                      onClick={() => {
-                        if (applicationsClosed) {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (preLaunch) {
+                          preLaunchToast();
+                        } else if (applicationsClosed) {
                           toast.info("Les inscriptions sont désormais closes.");
                         }
                       }} 
-                      disabled={preLaunch || applicationsClosed}
-                      title={applicationsClosed ? "Les inscriptions sont closes" : ""}
+                      disabled={true}
+                      className="opacity-50 cursor-not-allowed pointer-events-auto"
+                      title={applicationsClosed ? "Les inscriptions sont closes" : preLaunch ? "Inscriptions indisponibles jusqu'au 25 août 2025" : ""}
                     >
                       Inscription
                     </TabsTrigger>
@@ -636,9 +645,11 @@ export default function Auth() {
 
                     <Button 
                       type="submit" 
-                      className="w-full" 
-                      disabled={preLaunch || applicationsClosed || isSubmitting || cooldown > 0 || !isMatriculeValid}
-                      onClick={() => {
+                      className="w-full opacity-50 cursor-not-allowed pointer-events-none" 
+                      disabled={true}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         if (preLaunch) {
                           preLaunchToast();
                         } else if (applicationsClosed) {
@@ -646,13 +657,7 @@ export default function Auth() {
                         }
                       }}
                     >
-                      {applicationsClosed 
-                        ? "Inscriptions closes" 
-                        : isSubmitting
-                          ? "Inscription..."
-                          : cooldown > 0
-                            ? `Réessayez dans ${cooldown}s`
-                            : "S'inscrire"}
+                      Inscriptions closes
                     </Button>
                   </form>
                 </div>

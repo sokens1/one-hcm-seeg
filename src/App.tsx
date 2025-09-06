@@ -70,6 +70,9 @@ const ObserverTraitements_IA = lazy(() => import("./pages/observer/Traitements_I
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 
+// AI Analysis page
+const AIAnalysisPage = lazy(() => import("./pages/ai-analysis/AIAnalysisPage"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -124,6 +127,9 @@ const router = createBrowserRouter(
       <Route path="admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
       <Route path="admin/dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
       <Route path="admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
+      
+      {/* AI Analysis Route */}
+      <Route path="ai-analysis" element={<ProtectedRecruiterReadRoute><AIAnalysisPage /></ProtectedRecruiterReadRoute>} />
       
       {/* Fallback routes */}
       {/* Error handling routes */}

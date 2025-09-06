@@ -56,35 +56,67 @@ const getVerdictIcon = (verdict: string) => {
 };
 
 const getVerdictLabel = (verdict: string) => {
-  switch (verdict.toLowerCase()) {
-    case 'retenu':
-    case 'favorable':
-      return 'Favorable';
-    case 'mitigé':
-      return 'Mitigé';
-    case 'défavorable':
-    case 'non retenu':
-    case 'rejeté':
-      return 'Non retenu';
-    default:
-      return verdict;
+  const verdictLower = verdict.toLowerCase();
+  
+  // Vérifier d'abord les verdicts courts exacts
+  if (verdictLower === 'retenu' || verdictLower === 'favorable') {
+    return 'Favorable';
   }
+  if (verdictLower === 'mitigé') {
+    return 'Mitigé';
+  }
+  if (verdictLower === 'défavorable' || verdictLower === 'non retenu' || verdictLower === 'rejeté') {
+    return 'Non retenu';
+  }
+  
+  // Pour les verdicts longs, extraire le verdict principal
+  if (verdictLower.includes('non retenu') || verdictLower.includes('ne remplit aucune') || verdictLower.includes('recommandé de ne pas retenir')) {
+    return 'Non retenu';
+  }
+  if (verdictLower.includes('rejeté') || verdictLower.includes('n\'est actuellement pas adapté') || verdictLower.includes('ne répond à aucun')) {
+    return 'Non retenu';
+  }
+  if (verdictLower.includes('mitigé') || verdictLower.includes('inadéquation partielle') || verdictLower.includes('nécessite des améliorations')) {
+    return 'Mitigé';
+  }
+  if (verdictLower.includes('favorable') || verdictLower.includes('candidat optimal') || verdictLower.includes('qualifié pour le poste')) {
+    return 'Favorable';
+  }
+  
+  // Si aucun pattern ne correspond, retourner le verdict original
+  return verdict;
 };
 
 const getVerdictVariant = (verdict: string) => {
-  switch (verdict.toLowerCase()) {
-    case 'retenu':
-    case 'favorable':
-      return 'success';
-    case 'mitigé':
-      return 'secondary';
-    case 'défavorable':
-    case 'non retenu':
-    case 'rejeté':
-      return 'destructive';
-    default:
-      return 'default';
+  const verdictLower = verdict.toLowerCase();
+  
+  // Vérifier d'abord les verdicts courts exacts
+  if (verdictLower === 'retenu' || verdictLower === 'favorable') {
+    return 'success';
   }
+  if (verdictLower === 'mitigé') {
+    return 'secondary';
+  }
+  if (verdictLower === 'défavorable' || verdictLower === 'non retenu' || verdictLower === 'rejeté') {
+    return 'destructive';
+  }
+  
+  // Pour les verdicts longs, déterminer la couleur basée sur le contenu
+  if (verdictLower.includes('non retenu') || verdictLower.includes('ne remplit aucune') || verdictLower.includes('recommandé de ne pas retenir')) {
+    return 'destructive';
+  }
+  if (verdictLower.includes('rejeté') || verdictLower.includes('n\'est actuellement pas adapté') || verdictLower.includes('ne répond à aucun')) {
+    return 'destructive';
+  }
+  if (verdictLower.includes('mitigé') || verdictLower.includes('inadéquation partielle') || verdictLower.includes('nécessite des améliorations')) {
+    return 'secondary';
+  }
+  if (verdictLower.includes('favorable') || verdictLower.includes('candidat optimal') || verdictLower.includes('qualifié pour le poste')) {
+    return 'success';
+  }
+  
+  // Par défaut
+  return 'default';
 };
 
 export default function Traitements_IA() {
@@ -100,27 +132,20 @@ export default function Traitements_IA() {
 
     const allCandidates: CandidateApplication[] = [];
 
-    // Ajouter les candidats du département Eau
-    aiData.eau.forEach((candidate, index) => {
-      allCandidates.push({
-        id: `eau-${index}`,
-        firstName: candidate.prenom,
-        lastName: candidate.nom,
-        poste: candidate.poste,
-        department: 'Eau',
-        aiData: candidate
-      });
-    });
-
-    // Ajouter les candidats du département Sable
-    aiData.sable.forEach((candidate, index) => {
-      allCandidates.push({
-        id: `sable-${index}`,
-        firstName: candidate.prenom,
-        lastName: candidate.nom,
-        poste: candidate.poste,
-        department: 'Sable',
-        aiData: candidate
+    // Parcourir dynamiquement tous les départements
+    Object.entries(aiData).forEach(([departmentKey, candidates]) => {
+      candidates.forEach((candidate, index) => {
+        // Capitaliser la première lettre du département pour l'affichage
+        const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
+        
+        allCandidates.push({
+          id: `${departmentKey}-${index}`,
+          firstName: candidate.prenom,
+          lastName: candidate.nom,
+          poste: candidate.poste,
+          department: departmentName,
+          aiData: candidate
+        });
       });
     });
 
@@ -215,33 +240,26 @@ export default function Traitements_IA() {
               </CardContent>
             </Card>
             
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-8 w-8 text-cyan-500" />
-                  <div>
-                    <p className="text-2xl font-bold">
-                      {candidatesData.filter(c => c.department === 'Eau').length}
-                    </p>
-                    <p className="text-sm text-muted-foreground">Département Eau</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-8 w-8 text-amber-500" />
-                  <div>
-                    <p className="text-2xl font-bold">
-                      {candidatesData.filter(c => c.department === 'Sable').length}
-                    </p>
-                    <p className="text-sm text-muted-foreground">Département Sable</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Générer dynamiquement les cartes pour chaque département */}
+            {aiData && Object.entries(aiData).map(([departmentKey, candidates], index) => {
+              const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
+              const colors = ['text-cyan-500', 'text-amber-500', 'text-green-500', 'text-purple-500', 'text-red-500', 'text-indigo-500'];
+              const color = colors[index % colors.length];
+              
+              return (
+                <Card key={departmentKey}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <MapPin className={`h-8 w-8 ${color}`} />
+                      <div>
+                        <p className="text-2xl font-bold">{candidates.length}</p>
+                        <p className="text-sm text-muted-foreground">Département {departmentName}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
             
             <Card>
               <CardContent className="p-4">
@@ -318,8 +336,14 @@ export default function Traitements_IA() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tous les départements</SelectItem>
-                    <SelectItem value="Eau">Département Eau</SelectItem>
-                    <SelectItem value="Sable">Département Sable</SelectItem>
+                    {aiData && Object.keys(aiData).map((departmentKey) => {
+                      const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
+                      return (
+                        <SelectItem key={departmentKey} value={departmentName}>
+                          Département {departmentName}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 <Button variant="outline" size="sm">
@@ -458,7 +482,7 @@ export default function Traitements_IA() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="text-center">
                         <div className="text-3xl font-bold text-primary">
-                          {selectedCandidate.aiData.resume_global.score_global > 0 
+                          {selectedCandidate.aiData.resume_global.score_global >= 0 
                             ? `${(selectedCandidate.aiData.resume_global.score_global * 100).toFixed(1)}%`
                             : 'N/A'
                           }
@@ -576,7 +600,10 @@ export default function Traitements_IA() {
                       <div className="space-y-4">
                         <div className="text-center">
                           <div className="text-3xl font-bold text-primary">
-                            {(selectedCandidate.aiData.similarite_offre.score * 100).toFixed(1)}%
+                            {selectedCandidate.aiData.similarite_offre.score > 1 
+                              ? `${selectedCandidate.aiData.similarite_offre.score * 10}%`
+                              : `${(selectedCandidate.aiData.similarite_offre.score * 100).toFixed(1)}%`
+                            }
                           </div>
                           <p className="text-sm text-muted-foreground">Score de similarité</p>
                         </div>
