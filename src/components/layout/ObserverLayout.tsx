@@ -7,7 +7,8 @@ import {
   BarChart3, 
   Eye,
   LogOut,
-  User
+  User,
+  Brain
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,12 @@ const navigation = [
     href: "/observer/candidates",
     icon: Users,
     description: "Liste des candidats"
+  },
+  {
+    name: "Traitements IA",
+    href: "/observer/traitements-ia",
+    icon: Brain,
+    description: "Gestion IA des candidatures"
   },
   {
     name: "Espace Candidature",
