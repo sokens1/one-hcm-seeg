@@ -382,25 +382,25 @@ export default function Traitements_IA() {
       <div className="container mx-auto px-4 py-6">
         {/* En-tête de la page */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
-              <Brain className="h-6 w-6 text-white" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+              <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Traitements IA</h1>
-              <p className="text-muted-foreground">Gestion intelligente des candidatures</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
+              <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
             </div>
           </div>
           
           {/* Statistiques rapides */}
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6"></div>
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Users className="h-8 w-8 text-blue-500" />
-                  <div>
-                    <p className="text-2xl font-bold">{candidatesData.length}</p>
-                    <p className="text-sm text-muted-foreground">Total candidats</p>
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-lg sm:text-2xl font-bold">{candidatesData.length}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Total candidats</p>
                   </div>
                 </div>
               </CardContent>
@@ -414,12 +414,12 @@ export default function Traitements_IA() {
               
               return (
                 <Card key={departmentKey}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <MapPin className={`h-8 w-8 ${color}`} />
-                      <div>
-                        <p className="text-2xl font-bold">{candidates.length}</p>
-                        <p className="text-sm text-muted-foreground">Département {departmentName}</p>
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <MapPin className={`h-6 w-6 sm:h-8 sm:w-8 ${color} flex-shrink-0`} />
+                      <div className="min-w-0">
+                        <p className="text-lg sm:text-2xl font-bold">{candidates.length}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">Département {departmentName}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -527,7 +527,7 @@ export default function Traitements_IA() {
 
               {/* Filtres avancés */}
               {showAdvancedFilters && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-4 border-t">
                   {/* Filtre par verdict */}
                   <div>
                     <label className="text-sm font-medium text-muted-foreground mb-2 block">
@@ -683,7 +683,7 @@ export default function Traitements_IA() {
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 sm:p-6">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -698,43 +698,44 @@ export default function Traitements_IA() {
                 <TableBody>
                   {paginatedCandidates.map((candidate) => (
                     <TableRow key={candidate.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                      <TableCell className="min-w-[200px]">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs sm:text-sm flex-shrink-0">
                             {candidate.firstName[0]}{candidate.lastName[0]}
                           </div>
-                          <div>
-                            <p className="font-medium">{candidate.firstName} {candidate.lastName}</p>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-sm sm:text-base truncate">{candidate.firstName} {candidate.lastName}</p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell">
                         <div className="flex items-center gap-2">
                           <Briefcase className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">{candidate.poste}</span>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="min-w-[120px]">
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <Badge variant="outline">{candidate.department}</Badge>
+                          <Badge variant="outline" className="text-xs">{candidate.department}</Badge>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           <Award className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">#{candidate.aiData.resume_global.rang_global}</span>
+                          <span className="font-medium text-sm sm:text-base">#{candidate.aiData.resume_global.rang_global}</span>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="min-w-[120px]">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleViewResults(candidate)}
-                          className="gap-2"
+                          className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm w-full sm:w-auto"
                         >
-                          <Eye className="h-4 w-4" />
-                          Voir Résultats
+                          <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                          <span className="hidden sm:inline">Voir Résultats</span>
+                          <span className="sm:hidden">Voir</span>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -755,19 +756,20 @@ export default function Traitements_IA() {
 
             {/* Pagination */}
             {filteredCandidates.length > itemsPerPage && (
-              <div className="flex items-center justify-between px-6 py-4 border-t">
-                <div className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-6 py-4 border-t">
+                <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
                   Affichage de {startIndex + 1} à {Math.min(endIndex, filteredCandidates.length)} sur {filteredCandidates.length} candidats
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handlePreviousPage}
                     disabled={currentPage === 1}
+                    className="text-xs sm:text-sm"
                   >
-                    <ChevronLeft className="h-4 w-4" />
-                    Précédent
+                    <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline ml-1">Précédent</span>
                   </Button>
                   
                   <div className="flex items-center gap-1">
@@ -808,9 +810,10 @@ export default function Traitements_IA() {
                     size="sm"
                     onClick={handleNextPage}
                     disabled={currentPage === totalPages}
+                    className="text-xs sm:text-sm"
                   >
-                    Suivant
-                    <ChevronRight className="h-4 w-4" />
+                    <span className="hidden sm:inline mr-1">Suivant</span>
+                    <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               </div>
@@ -820,11 +823,11 @@ export default function Traitements_IA() {
 
         {/* Modal de détails des évaluations IA */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-[95vw] sm:max-w-4xl lg:max-w-6xl max-h-[90vh] overflow-y-auto mx-4 sm:mx-0">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-purple-500" />
-                Évaluation IA - {selectedCandidate?.firstName} {selectedCandidate?.lastName}
+              <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+                <span className="truncate">Évaluation IA - {selectedCandidate?.firstName} {selectedCandidate?.lastName}</span>
               </DialogTitle>
             </DialogHeader>
             
@@ -833,10 +836,10 @@ export default function Traitements_IA() {
                 {/* Informations du candidat */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Informations du candidat</CardTitle>
+                    <CardTitle className="text-base sm:text-lg">Informations du candidat</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Nom complet</p>
                         <p className="text-lg">{selectedCandidate.firstName} {selectedCandidate.lastName}</p>
@@ -879,9 +882,15 @@ export default function Traitements_IA() {
                         <p className="text-sm text-muted-foreground">Rang</p>
                       </div>
                       <div className="text-center">
-                        <Badge variant={getVerdictVariant(selectedCandidate.aiData.resume_global.verdict)} className="text-lg px-4 py-2">
+                        <div className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                          getVerdictVariant(selectedCandidate.aiData.resume_global.verdict) === 'success' 
+                            ? 'bg-green-100 text-green-800' 
+                            : getVerdictVariant(selectedCandidate.aiData.resume_global.verdict) === 'secondary'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
                           {getVerdictLabel(selectedCandidate.aiData.resume_global.verdict)}
-                        </Badge>
+                        </div>
                         <p className="text-sm text-muted-foreground mt-2">Verdict</p>
                       </div>
                     </div>
