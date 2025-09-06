@@ -1,0 +1,301 @@
+{
+  "Calvin NDONG EYEGUE": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Calvin",
+        "nom": "NDONG EYEGUE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {
+      "score MTP": {
+        "nom": "NDONG EYEGUE",
+        "prenom": "Calvin",
+        "poste": "Chef de Département Sable",
+        "scores": {
+          "Métier": 0.48,
+          "Talent": 0.36,
+          "Paradigme": 0.47,
+          "Moyen": 0.44
+        },
+        "niveau": "Le candidat présente des compétences en matière de gestion des ressources en eau, mais ses scores indiquent une lacune en termes de talent créatif et d'innovation. Sa compréhension des enjeux organisationnels est moyenne, ce qui pourrait poser des défis dans un contexte de transformation comme celui visé par l'entreprise.",
+        "verdict": "mitigé",
+        "points_forts": [
+          "Compréhension des enjeux liés à la gestion des ressources en eau",
+          "Expérience dans le secteur de l'eau",
+          "Capacité à travailler sous pression"
+        ],
+        "points_a_travailler": [
+          "Niveau de l'innovation et de la créativité",
+          "Compétences en leadership et gestion d'équipe",
+          "Adaptation aux nouvelles technologies et pratiques industrielles"
+        ],
+        "rang": 3
+      }
+    },
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "NDONG EYEGUE",
+        "prenom": "Calvin",
+        "poste": "Chef de Département Sable",
+        "resume_experience": "27 ans dans la gestion de la production et distribution d'eau",
+        "score": 0.326,
+        "commentaire_score": "Le score de similarité est relativement bas, ce qui peut indiquer que le candidat n'a pas aligné ses expériences et qualifications avec les exigences spécifiques du poste à pourvoir. Cependant, son expérience en gestion de la production et distribution d'eau est un atout significatif.",
+        "forces": [
+          "Expérience extensive dans l'industrie de l'eau",
+          "Solide expérience en gestion de région",
+          "Connaissance approfondie des processus internes de la SEEG"
+        ],
+        "faiblesses": [
+          "Score de similarité (0.326) suggérant un potentiel manque d'alignement avec le nouveau poste",
+          "Expériences limités détaillées sur les missions spécifiques du département"
+        ],
+        "verdict": "Calvin NDONG EYEGUE a une expérience significative dans le domaine de l'eau avec une compréhension approfondie des processus de la SEEG. Cependant, le score de similarité indique qu'il pourrait avoir besoin d'approfondir son alignement avec les responsabilités spécifiques du poste de Chef de Département Sable pour être considéré comme un candidat optimal.",
+        "rang": 8
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Calvin NDONG EYEGUE ne semble pas répondre aux critères de sélection pour le poste de Chef de Département Sable à la SEEG. Avec des scores de 0% dans les domaines clés tels que la similarité CV/LM, la conformité documentaire, et le score global, il y a une inadéquation significative entre le profil du candidat et les exigences du poste.",
+      "forces": "Aucune force notable ne peut être identifiée à partir des scores actuels. Le candidat nécessite une réévaluation substantielle des documents soumis.",
+      "points_a_ameliorer": "Le candidat doit améliorer la présentation de son CV et sa lettre de motivation pour les aligner sur les exigences du poste. Il en va de même pour la conformité documentaire qui est essentielle pour progresser dans le processus de recrutement.",
+      "verdict": "Non retenu",
+      "rang_global": 1
+    }
+  },
+  "Inconnu Inconnu": {
+    "conformite": {},
+    "mtp": {},
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "Inconnu",
+        "prenom": "Inconnu",
+        "poste": "Chef de Département Sable",
+        "resume_experience": "Aucune information sur l'expérience",
+        "score": 1.0,
+        "commentaire_score": "Le candidat a obtenu un score de similarité parfaite, mais aucune information détaillée n'est disponible dans le CV ou la lettre pour évaluer ses compétences et expériences. Cela empêche une évaluation approfondie de ses capacités à assumer le rôle.",
+        "forces": "Aucune force identifiable du candidat en raison de l'absence d'informations.",
+        "faiblesses": "Manque de détails sur l'expérience et les compétences spécifiques requises pour le poste.",
+        "verdict": "Il est impossible de rendre un verdict définitif sans informations sur le parcours et les compétences du candidat.",
+        "rang": 1
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat n'a fourni aucune information pertinente liée au poste de Chef de Département Sable chez SEEG, rendant impossible une évaluation appropriée.",
+      "forces": "Aucune force identifiable en raison de l'absence totale de données soumises.",
+      "points_a_ameliorer": "Le candidat doit soumettre un CV et une lettre de motivation qui démontrent des compétences et expériences pertinentes pour le poste. Une attention particulière doit être accordée à la présentation de qualifications alignées sur le contexte et la vision stratégique de SEEG.",
+      "verdict": "Rejeté - Le dossier ne contient aucune information permettant d'évaluer l'adéquation du candidat avec le poste.",
+      "rang_global": 2
+    }
+  },
+  "Luc Thomas TSIOBA": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Luc",
+        "nom": "Thomas TSIOBA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {},
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "TSIOBA",
+        "prenom": "Luc Thomas",
+        "poste": "Chef de Département Sable",
+        "resume_experience": "27 années d'expérience en Génie Civil avec une spécialisation dans les infrastructures hydriques.",
+        "score": 0.304,
+        "commentaire_score": "Le candidat semble avoir une expérience solide en Génie Civil, mais le score de similarité indique une correspondance faible avec les exigences du poste. Les compétences en management et en stratégie requises pour le poste pourraient ne pas être pleinement représentées.",
+        "forces": [
+          "Longue expérience dans le secteur des infrastructures hydriques",
+          "Bonne connaissance des techniques de maintenance et exploitation des systèmes d'eau"
+        ],
+        "faiblesses": [
+          "Absence de lettre de motivation pour évaluer l'engagement personnel",
+          "Score de correspondance relativement faible avec le poste, possiblement à cause d'un manque d'expérience en gestion de département ou stratégie d'entreprise"
+        ],
+        "verdict": "Luc Thomas Tsíoba présente une expérience substantielle dans le domaine de l'eau et du Génie Civil, qui peut être utile pour le poste. Cependant, pour le poste de Chef de Département nécessitant des compétences élevées en leadership et en gestion stratégique, il serait nécessaire de vérifier s'il possède ces aptitudes.",
+        "rang": 9
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat Luc Thomas Tsioba semble avoir obtenu des scores extrêmement bas concernant l'adéquation de son profil au poste de Chef de Département Sable à la SEEG. Les critères d'adéquation et de conformité sont tous à 0%, ce qui indique une incompatibilité totale avec les exigences du poste et les attentes stratégiques de l'entreprise.",
+      "forces": [],
+      "points_a_ameliorer": [
+        "Le candidat doit travailler sur l'amélioration de la pertinence de son expérience et de ses compétences par rapport aux exigences du poste.",
+        "Il est essentiel d'augmenter la conformité documentaire pour répondre aux standards de présentation des candidatures.",
+        "Le manque de similarité entre le contenu du CV et de la lettre de motivation doit aussi être adressé afin que son profil soit mieux aligné avec les besoins de l'entreprise."
+      ],
+      "verdict": "En l'état actuel, le candidat ne remplit aucune des conditions nécessaires pour être considéré pour le poste de Chef de Département Sable à la SEEG. Il est recommandé de ne pas retenir sa candidature pour un entretien.",
+      "rang_global": 3
+    }
+  },
+  "Roland Mavoungou": {
+    "conformite": {},
+    "mtp": {
+      "score MTP": {
+        "nom": "Mavoungou",
+        "prenom": "Roland",
+        "poste": "Chef de Département Sable",
+        "scores": {
+          "Metier": 0.45,
+          "Talent": 0.38,
+          "Paradigme": 0.46,
+          "Moyen": 0.43
+        },
+        "niveau": "Le candidat présente un score moyen qui se situe en dessous des attentes pour le poste de Chef de Département. Bien qu'il ait un certain niveau de compétence technique, son talent et sa compréhension des enjeux de gouvernance semblent insuffisants pour répondre aux défis de la SEEG.",
+        "verdict": "mitigé",
+        "points_forts": [
+          "Compétences techniques dans le domaine de l'eau",
+          "Connaissance des enjeux opérationnels",
+          "Motivation à contribuer à la transformation de l'entreprise"
+        ],
+        "points_a_travailler": [
+          "Développement des compétences managériales et de leadership",
+          "Amélioration des capacités d'analyse stratégique et de gouvernance",
+          "Renforcement des capacités d'innovation et de mise en œuvre de nouvelles technologies"
+        ],
+        "rang": 6
+      }
+    },
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "Mavoungou",
+        "prenom": "Roland",
+        "poste": "Chef de Département Sable",
+        "resume_experience": "16 années dans le secteur de l'eau et des travaux publics",
+        "score": 0.375,
+        "commentaire_score": "Le score de similarité est assez faible, ce qui suggère une inadéquation entre les exigences du poste et les qualifications du candidat. Cependant, son expérience étendue dans le domaine de l'eau et la gestion de projets sont un atout important.",
+        "forces": [
+          "Expérience significative dans la gestion de projets hydrauliques",
+          "Compétences managériales prouvées",
+          "Vision stratégique et capacité à mobiliser les équipes"
+        ],
+        "faiblesses": [
+          "Nécessité de démontrer une adéquation entre l'expérience et les exigences spécifiques du poste"
+        ],
+        "verdict": "Malgré une expérience significative dans le secteur de l'eau, l'inadéquation partielle aux exigences spécifiques du poste mérite une attention particulière. Roland a le potentiel pour le poste mais devra clarifier comment ses compétences peuvent directement bénéficier aux attentes de la SEEG.",
+        "rang": 2
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat Roland Mavoungou, sur la base des scores fournis, ne semble pas avoir démontré de compatibilité adéquate avec les exigences du poste de Chef de Département Sable. Les scores de correspondance par rapport au poste et à la conformité documentaire sont extrêmement bas, ce qui suggère une inadéquation entre ses qualifications, son expérience et les besoins du poste.",
+      "forces": "Aucune force notable n'a été identifiée étant donné l'absence de correspondance avec les critères évalués.",
+      "points_a_ameliorer": "Roland Mavoungou pourrait considérablement améliorer son adéquation au poste en alignant mieux son CV et sa lettre de motivation avec les exigences spécifiques de la SEEG, améliorer la conformité documentaire, et démontrer une meilleure compréhension des enjeux stratégiques et opérationnels pour un poste de leadership dans le secteur de l'eau.",
+      "verdict": "Rejeté. Le candidat n'est actuellement pas adapté au poste de Chef de Département Sable, nécessitant de réévaluer ou de développer ses compétences pour répondre aux critères essentiels du poste.",
+      "rang_global": 4
+    }
+  },
+  "Wilfrid ANDJAYI": {
+    "conformite": {},
+    "mtp": {
+      "score MTP": {
+        "nom": "ANDJAYI",
+        "prenom": "Wilfrid",
+        "poste": "Chef de Département Sable",
+        "scores": {
+          "Metier": 0.46,
+          "Talent": 0.39,
+          "Paradigme": 0.48,
+          "Moyen": 0.44
+        },
+        "niveau": "Pascal Andjayi présente des compétences mitigées pour le poste de Chef de Département Sable avec un score moyen de 0.44, ce qui indique un potentiel sous-utilisé. La vision de l'entreprise nécessite un leadership fort et une expertise technique pour relever des défis significatifs dans le secteur de l'eau.",
+        "verdict": "mitigé",
+        "points_forts": [
+          "Une connaissance des enjeux du secteur de l'eau et de l'électricité au Gabon",
+          "Capacité à travailler dans un environnement complexe et en évolution",
+          "Expérience antérieure potentielle en gestion d'équipes techniques"
+        ],
+        "points_a_travailler": [
+          "Développement de compétences en leadership et en gestion de projet",
+          "Renforcement des capacités techniques spécifiques liées à la modernisation des infrastructures",
+          "Amélioration des compétences en communication et en transparence vis-à-vis des parties prenantes"
+        ],
+        "rang": 5
+      }
+    },
+    "similarite_offre": {},
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat, Wilfrid ANDJAYI, semble malheureusement inadapté pour le poste de Chef de Département Sable chez SEEG. Évalué à travers plusieurs critères, son profil n'affiche aucune correspondance significative avec les exigences du poste, telles que les qualifications requises, l'expérience pertinente ou les compétences spécifiques nécessaires.",
+      "forces": "Aucune force notable n'a été identifiée à partir des documents soumis par le candidat.",
+      "points_a_ameliorer": "Le candidat doit améliorer la qualité de son CV et sa lettre de motivation pour mieux refléter son adéquation avec le poste visé. Il devra également veiller à se conformer davantage aux exigences documentaires de l'entreprise.",
+      "verdict": "Rejeté. Le candidat ne répond à aucun des critères de base pour être considéré pour le poste de Chef de Département Sable chez SEEG.",
+      "rang_global": 5
+    }
+  },
+  "Aimée NTCHANDI TEVENET": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Aimée",
+        "nom": "NTCHANDI TEVENET",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {
+      "score MTP": {
+        "nom": "NTCHANDI TEVENET",
+        "prenom": "Aimée",
+        "poste": "Chef de Département Sable",
+        "scores": {
+          "Métier": 0.43,
+          "Talent": 0.39,
+          "Paradigme": 0.5,
+          "Moyen": 0.44
+        },
+        "niveau": "Le candidat présente des scores en dessous de la moyenne requise pour le poste visé, ce qui peut poser des questions sur sa capacité à répondre aux exigences stratégiques de la SEEG. Sa compréhension des enjeux liés à la réhabilitation et à l'innovation pourrait être insuffisante pour contribuer significativement à la vision de l'entreprise.",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Bonne connaissance théorique des enjeux de gestion des ressources en eau",
+          "Capacité à travailler en équipe et à dialoguer avec les parties prenantes"
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques en gestion des infrastructures",
+          "Développer une vision stratégique alignée sur les objectifs de la SEEG",
+          "Améliorer les capacités de leadership et de gestion de projet"
+        ],
+        "rang": 2
+      }
+    },
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "NTCHANDI TEVENET",
+        "prenom": "Aimée",
+        "poste": "Chef de Département Sable",
+        "resume_experience": "13 ans d'expérience en gestion de projets dans le génie civil et l'hydraulique.",
+        "score": 0.343,
+        "commentaire_score": "Le candidat possède une expérience significative et pertinente avec des compétences en management de projets hydrauliques. Cependant, le score de similarité indique qu'il y a des écarts par rapport aux exigences spécifiques du poste.",
+        "forces": [
+          "Solide expérience en gestion et optimisation des ressources hydrauliques",
+          "Compétences probantes en élaboration d'indicateurs de performance et gestion des équipes techniques",
+          "Expérience confirmée dans la coordination de projets majeurs avec divers partenaires financiers"
+        ],
+        "faiblesses": [
+          "Score de similarité relativement bas par rapport aux exigences spécifiques du poste",
+          "Des lacunes potentielles dans la mise en place de tableaux de bord et la stratégie de réduction des incidents spécifiques au rôle de chef de département"
+        ],
+        "verdict": "Bien que Aimée NTCHANDI TEVENET possède une solide expérience en génie civil et gestion hydraulique, les compétences spécifiques au poste de Chef de Département Sable pourraient nécessiter des améliorations ciblées pour répondre pleinement aux exigences du rôle. Il est recommandé de l'envisager comme un candidat qualifié pour le poste en tenant compte des étapes d'adaptation nécessaires.",
+        "rang": 4
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Aimée NTCHANDI TEVENET a présenté un dossier complet pour le poste de Chef de Département Sable chez SEEG, mais les scores indiquent une conformité insuffisante en termes de correspondance entre le CV et la lettre de motivation, ainsi qu'en termes de conformité documentaire. Cela suggère potentiellement un manque d'alignement entre les qualifications du candidat et le profil recherché par l'entreprise.",
+      "forces": [
+        "Présentation complète des documents."
+      ],
+      "points_a_ameliorer": [
+        "Améliorer la correspondance entre les qualifications et le profil recherché.",
+        "Fournir des documents plus conformes aux attentes de l'entreprise.",
+        "Augmenter la pertinence et la similarité entre le CV et la lettre de motivation pour mieux répondre aux exigences du poste."
+      ],
+      "verdict": "Le dossier de candidature a besoin d'améliorations significatives pour respecter les exigences du poste. Une révision approfondie est nécessaire pour envisager un avancement du processus de sélection.",
+      "rang_global": 6
+    }
+  }
+}
