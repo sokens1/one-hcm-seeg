@@ -361,7 +361,6 @@ export default function Traitements_IA() {
                           </div>
                           <div>
                             <p className="font-medium">{candidate.firstName} {candidate.lastName}</p>
-                            <p className="text-sm text-muted-foreground">ID: {candidate.id}</p>
                           </div>
                         </div>
                       </TableCell>

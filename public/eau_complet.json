@@ -40,7 +40,7 @@
         "prenom": "Calvin",
         "poste": "Chef de Département Eau",
         "resume_experience": "27 ans dans la gestion de la production et distribution d'eau",
-        "score": 0.326,
+        "score": 8,
         "commentaire_score": "Le score de similarité est relativement bas, ce qui peut indiquer que le candidat n'a pas aligné ses expériences et qualifications avec les exigences spécifiques du poste à pourvoir. Cependant, son expérience en gestion de la production et distribution d'eau est un atout significatif.",
         "forces": [
           "Expérience extensive dans l'industrie de l'eau",
@@ -296,6 +296,387 @@
       ],
       "verdict": "Le dossier de candidature a besoin d'améliorations significatives pour respecter les exigences du poste. Une révision approfondie est nécessaire pour envisager un avancement du processus de sélection.",
       "rang_global": 6
+    }
+  },
+  "Lucie OLLOMO": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Lucie",
+        "nom": "OLLOMO",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {
+      "score MTP": {
+        "nom": "OLLOMO",
+        "prenom": "Lucie",
+        "poste": "Chef de Département Eau",
+        "scores": {
+          "Métier": 0.43,
+          "Talent": 0.37,
+          "Paradigme": 0.51,
+          "Moyen": 0.44
+        },
+        "niveau": "Le candidat montre des compétences médianes dans le domaine métier avec un score de 0.43, ce qui pourrait indiquer une expérience modérée. Cependant, son score talent est relativement faible, suggérant un potentiel limité pour l'innovation et l'adaptabilité dans un environnement en pleine transformation.",
+        "verdict": "mitigé",
+        "points_forts": [
+          "Connaissance du secteur de l'eau",
+          "Capacité d'adaptation aux nouvelles entrepises"
+        ],
+        "points_a_travailler": [
+          "Renforcer ses compétences en management stratégique",
+          "Améliorer son potentiel en innovation et résolution de problèmes"
+        ],
+        "rang": 4
+      }
+    },
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "OLLOMO",
+        "prenom": "Lucie",
+        "poste": "Chef de Département Eau",
+        "resume_experience": "Plus de 20 ans en ingénierie de construction et hydraulique",
+        "score": 0.333,
+        "commentaire_score": "Le score de similarité est relativement bas, suggérant une correspondance partielle avec le poste. Le candidat apporte néanmoins une expérience vaste en modélisation et gestion de ressources hydriques.",
+        "forces": [
+          "Expérience extensive en génie civil et hydraulique",
+          "Compétences en modélisation numérique",
+          "Connaissance approfondie du secteur eau au Gabon"
+        ],
+        "faiblesses": [
+          "Récente orientation vers des fonctions moins directement opérationnelles",
+          "Manque d'indicateurs d'améliorations ou réalisations spécifiques dans la lettre de motivation"
+        ],
+        "verdict": "Lucie OLLOMO possède une expérience riche et diversifiée dans le secteur de l'eau. Cependant, la lettre de motivation ne met pas suffisamment en évidence des réussites chiffrées ou des projets spécifiques alignés directement avec la réduction du stress hydrique ou l'amélioration des installations, comme attendu pour ce rôle. Une clarification lors d'un entretien pourrait ajouter de la valeur à sa candidature.",
+        "rang": 6
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Lucie OLLOMO ne semble pas avoir fourni de documents pertinents ou en conformité avec les attentes du poste de Chef de Département Eau, ce qui est évident par ses scores. Aucun élément solide n'est présent pour évaluer ses compétences ou son adéquation avec la vision et les objectifs stratégiques de l'entreprise.",
+      "forces": [],
+      "points_a_ameliorer": [
+        "Absence totale de documents pertinents pour évaluer l'adéquation avec le poste.",
+        "Aucun score positif dans les critères de sélection, indiquant une insuffisance dans la préparation ou la compréhension des exigences du poste."
+      ],
+      "verdict": "Rejet : Le dossier de candidature de Lucie OLLOMO est incomplet et inexploitable pour le rôle de Chef de Département Eau. Elle est invitée à soumettre à nouveau sa candidature avec les documents appropriés et une meilleure préparation aux exigences spécifiques de la SEEG.",
+      "rang_global": 7
+    }
+  },
+  "Luc TSIOBA": {
+    "conformite": {},
+    "mtp": {
+      "score MTP": {
+        "nom": "TSIOBA",
+        "prenom": "Luc",
+        "poste": "Chef de Département Eau",
+        "scores": {
+          "Metier": 0.37,
+          "Talent": 0.33,
+          "Paradigme": 0.42,
+          "Moyen": 0.37
+        },
+        "niveau": "Le candidat présente un score moyen qui indique une connaissance approximative des exigences du poste de Chef de Département Eau. Toutefois, ses scores en Talent et Métier restent en dessous des attentes pour un poste aussi stratégique dans un contexte aussi critique.",
+        "verdict": "mitigé",
+        "points_forts": [
+          "Connaissance des enjeux liés à la gestion de l'eau et de l'électricité",
+          "Capacité à comprendre les besoins de modernisation et d'innovation dans le secteur",
+          "Volonté d'améliorer les performances organisationnelles"
+        ],
+        "points_a_travailler": [
+          "Améliorer ses compétences spécifiques liées à la gestion des infrastructures en eau",
+          "Développer son talent en leadership et en gestion d'équipe",
+          "Approfondir sa compréhension des enjeux de gouvernance et de transparence dans le secteur"
+        ],
+        "rang": 9
+      }
+    },
+    "similarite_offre": {},
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Luc Tsioba semble avoir des difficultés à aligner son profil avec les exigences spécifiques du poste de Chef de Département Eau chez SEEG. Les résultats suggèrent un manque d'adéquation entre son CV/lettre de motivation et les attentes de l'entreprise, ainsi que des problèmes de conformité avec les critères documentaires requis.",
+      "forces": "Le candidat pourrait posséder un potentiel non identifié lié à ses expériences ou compétences non mentionnées explicitement, mais aucune force apparente n'a pu être déterminée à partir des informations fournies.",
+      "points_a_ameliorer": [
+        "Améliorer la présentation et la pertinence de son CV et de sa lettre de motivation en les alignant davantage sur les besoins spécifiques du poste de Chef de Département Eau.",
+        "Assurer la conformité documentaire avec les exigences de l'entreprise pour augmenter sa crédibilité en tant que candidat.",
+        "Renforcer son profil en mettant en avant des compétences et expériences pertinentes pour la vision stratégique de la SEEG, notamment dans la gestion des infrastructures et l'innovation énergétique."
+      ],
+      "verdict": "Non retenu pour le poste. Le candidat ne parvient pas à démontrer un alignement clair et adéquat avec les critères et objectifs de la SEEG dans le contexte de leur vision à long terme.",
+      "rang_global": 8
+    }
+  },
+  "Jean Christian IBOUILY": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Jean",
+        "nom": "Christian IBOUILY",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {},
+    "similarite_offre": {},
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat Jean Christian IBOUILY n'a pas obtenu de score dans les évaluations initiales, notamment le match avec le poste (MTP), la similarité entre le CV et la lettre de motivation, et la conformité documentaire. Cela pourrait indiquer un manque d'adéquation du profil par rapport aux exigences du poste de Chef de Département Eau ou une absence de dépôt de documents pertinents.",
+      "forces": "Non déterminées en raison de scores de compatibilité absents.",
+      "points_a_ameliorer": "Améliorer la préparation et la soumission des documents requis pour mieux refléter l'adéquation au poste cible. Renforcer l'alignement entre l'expérience professionnelle et les exigences stratégiques de l'entreprise, et réévaluer la présentation des compétences et expériences dans le CV et la lettre de motivation.",
+      "verdict": "Candidature non retenue en l'état actuel; le candidat devrait envisager de revoir ses documents de candidature pour améliorer l'alignement avec le poste et l'entreprise.",
+      "rang_global": 9
+    }
+  },
+  "Armel OKOUAGHE": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Armel",
+        "nom": "OKOUAGHE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {
+      "score MTP": {
+        "nom": "OKOUAGHE",
+        "prenom": "Armel",
+        "poste": "Chef de Département Eau",
+        "scores": {
+          "Metier": 0.46,
+          "Talent": 0.39,
+          "Paradigme": 0.49,
+          "Moyen": 0.45
+        },
+        "niveau": "Le candidat présente un niveau de compétence et d'aptitude légèrement en dessous des attentes pour le poste de Chef de Département Eau. Ses scores indiquent des lacunes à la fois en terme de talent et de paradigme, ce qui pourrait représenter un défi dans l'atteinte des objectifs de l'entreprise.",
+        "verdict": "mitigé",
+        "points_forts": [
+          "Expérience dans le domaine de l'eau et de l'énergie",
+          "Connaissance des enjeux liés aux infrastructures",
+          "Capacité à comprendre les dynamiques de gouvernance"
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences managériales et de leadership",
+          "Améliorer l'adaptabilité à des paradigmes innovants",
+          "Développer des compétences techniques spécifiques aux nouvelles technologies de gestion des ressources"
+        ],
+        "rang": 1
+      }
+    },
+    "similarite_offre": {},
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat, Armel OKOUAGHE, ne démontre pas de compétences ou d'adéquation initiale pour le poste de Chef de Département Eau, selon les critères de sélection établis par l'entreprise. Les scores de 0.0% dans différents critères d'évaluation, y compris la conformité documentaire et la similarité entre le CV et la lettre de motivation, suggèrent une inadéquation totale avec les attentes du poste.",
+      "forces": "Aucune force notable n'a été identifiée chez le candidat en relation avec l'offre actuelle, compte tenu des scores très faibles.",
+      "points_a_ameliorer": "Le candidat doit améliorer la qualité et la pertinence de son CV et de sa lettre de motivation afin de mieux refléter une expérience ou une compétence qui serait pertinente pour le poste. De plus, la conformité documentaire semble également poser problème, ce qui doit être rectifié.",
+      "verdict": "Le candidat n'est pas retenu pour le poste de Chef de Département Eau en raison de l'alignement quasi inexistant avec les exigences du poste et des critères d'évaluation de l'entreprise.",
+      "rang_global": 10
+    }
+  },
+  "Jean IBOUILY": {
+    "conformite": {},
+    "mtp": {
+      "score MTP": {
+        "nom": "IBOUILY",
+        "prenom": "Jean",
+        "poste": "Chef de Département Eau",
+        "scores": {
+          "Metier": 0.43,
+          "Talent": 0.37,
+          "Paradigme": 0.42,
+          "Moyen": 0.41
+        },
+        "niveau": "Le candidat possède des compétences métier dans le domaine de l'eau, bien qu'il soit en dessous de la moyenne requise. Toutefois, son score faible en talent indique un besoin d'amélioration pour répondre aux exigences du poste visé.",
+        "verdict": "mitigé",
+        "points_forts": [
+          "Expérience dans le secteur de l'eau",
+          "Compréhension des enjeux de gouvernance",
+          "Capacité à s'adapter aux changements"
+        ],
+        "points_a_travailler": [
+          "Développement des compétences managériales",
+          "Renforcement de l'innovation et de l'intégration des nouvelles technologies",
+          "Amélioration de la gestion des ressources humaines et des relations interpersonnelles"
+        ],
+        "rang": 8
+      }
+    },
+    "similarite_offre": {},
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat Jean IBOUILY ne semble pas cocher les critères d'évaluation attendus pour le poste de Chef de Département Eau, selon l'analyse des scores fournis. Le score global et la similarité entre le CV et la lettre de motivation sont extrêmement bas, ce qui indique un manque d'alignement avec le poste ou une possible inadéquation des documents soumis. En outre, la conformité documentaire est également faible, suggérant des insuffisances dans la présentation ou l'exhaustivité des documents requis.",
+      "forces": "-",
+      "points_a_ameliorer": "L'amélioration immédiate serait la révision des documents soumis pour garantir une meilleure adéquation avec les attentes du poste annoncé. Le candidat doit également s'assurer que ses compétences et expériences soient clairement mises en relation avec les exigences du poste et de l'entreprise.",
+      "verdict": "Non retenu",
+      "rang_global": 11
+    }
+  },
+  "Wilfrid Pascal ANDJAYI": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Wilfrid",
+        "nom": "Pascal ANDJAYI",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {},
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "ANDJAYI",
+        "prenom": "Wilfrid Pascal",
+        "poste": "Chef de Département Eau",
+        "resume_experience": {
+          "nombre_d_annees": 20,
+          "specialite": "gestion des réseaux de distribution d'eau"
+        },
+        "score": 0.33,
+        "commentaire_score": "Le candidat possède une vaste expérience dans le secteur de l'eau. Cependant, le score de similarité pourrait être amélioré en accentuant davantage les compétences spécifiques requises pour le poste visé.",
+        "forces": [
+          "Expérience étendue dans la gestion de projets hydrauliques",
+          "Connaissance approfondie de la distribution et gestion des réseaux d'eau",
+          "Compétence en supervision et en gestion des pertes d'eau"
+        ],
+        "faiblesses": [
+          "Manque de mise en avant des KPI et indicateurs de performance dans le CV",
+          "Descriptif de réalisation budgétaire et d'analyse de risque peu détaillé"
+        ],
+        "verdict": "Wilfrid Pascal ANDJAYI est un candidat crédible pour le poste de Chef de Département Eau avec une solide expérience dans la gestion des réseaux d'eau. Cependant, il serait bénéfique qu'il mette davantage en avant ses compétences spécifiques liées aux indicateurs de performance et à l'élaboration budgétaire dans ce contexte.",
+        "rang": 7
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat Wilfrid Pascal ANDJAYI présente des scores extrêmement bas sur tous les indicateurs mesurés, notamment dans les secteurs de l'adéquation de son profil avec le poste, la similitude entre son CV et sa lettre de motivation, ainsi que la conformité documentaire. Ces résultats suggèrent qu'il y a peu de correspondance entre son parcours et les exigences du poste de Chef de Département Eau, ainsi que les attentes globales de l'entreprise selon la vision stratégique de la SEEG.",
+      "forces": "Aucune force significative n'a été identifiée en raison des scores très bas sur tous les critères d'évaluation.",
+      "points_a_ameliorer": "Wilfrid devrait travailler sur l'amélioration de son CV et de sa lettre de motivation pour qu'ils soient mieux alignés avec les compétences requises pour le poste. Il est également crucial qu'il s'assure de la conformité documentaire pour de futures candidatures.",
+      "verdict": "Compte tenu des scores de Wilfrid Pascal ANDJAYI qui sont de 0% sur tous les critères, il n'est pas retenu pour avancer dans le processus de sélection pour le poste de Chef de Département Eau.",
+      "rang_global": 12
+    }
+  },
+  "Philippe Nlome-Nze": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Philippe",
+        "nom": "Nlome-Nze",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {
+      "score MTP": {
+        "nom": "Nlome-Nze",
+        "prenom": "Philippe",
+        "poste": "Chef de Département Eau",
+        "scores": {
+          "Metier": 0.39,
+          "Talent": 0.36,
+          "Paradigme": 0.5,
+          "Moyen": 0.42
+        },
+        "niveau": "Le candidat montre des compétences limitées dans les aspects techniques et humains du poste. Sa compréhension des enjeux stratégiques est notable, mais reste insuffisante pour répondre aux besoins immédiats de la SEEG.",
+        "verdict": "mitigé",
+        "points_forts": [
+          "Compréhension des enjeux stratégiques liés à la réhabilitation et modernisation des infrastructures",
+          "Capacité à cerner les problèmes de gouvernance et à envisager des solutions"
+        ],
+        "points_a_travailler": [
+          "Renforcer ses compétences techniques spécifiques au secteur de l'eau et de l'électricité",
+          "Développer des stratégies de gestion des ressources humaines et de leadership adaptées au nouveau modèle économique"
+        ],
+        "rang": 7
+      }
+    },
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "Nlome-Nze",
+        "prenom": "Philippe",
+        "poste": "Chef de Département Eau",
+        "resume_experience": "25 ans dans l'industrie de l'eau, incluant l'exploitation, support technique, surveillance qualité et gestion de projet",
+        "score": 0.346,
+        "commentaire_score": "Le score de similarité est moyen, ce qui indique que le candidat a des compétences pertinentes mais qu'il pourrait y avoir des ajustements ou des manques par rapport aux attentes du poste. Le rang attribué met en avant qu'il y a des candidats potentiellement plus adaptés à cette position.",
+        "forces": [
+          "25 ans d'expérience diversifiée dans l'industrie de l'eau",
+          "Vision stratégique et capacité à mobiliser les équipes",
+          "Expertise en gestion de projet et gestion budgétaire",
+          "Connaissance des normes ISO",
+          "Leadership reconnu"
+        ],
+        "faiblesses": [
+          "Un score de similarité un peu faible",
+          "Peut-être moins d'adaptation à certains aspects spécifiques du poste"
+        ],
+        "verdict": "Philippe Nlome-Nze a une solide expérience et une bonne compréhension des enjeux stratégiques liés à la gestion de l'eau. Cependant, le score de similarité laisse penser qu'il pourrait ne pas répondre parfaitement à tous les aspects spécifiques du poste proposé. Il est néanmoins un candidat fort avec une expérience prolifique dans le domaine.",
+        "rang": 3
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat Philippe Nlome-Nze n'a pas réussi à aligner ses qualifications et son expérience avec les exigences du poste de Chef de Département Eau chez SEEG. Les scores en matière de similitude entre le CV et la lettre de motivation, ainsi que la conformité documentaire sont de 0%, ce qui indique une inadéquation totale avec l'annonce.",
+      "forces": "Aucune force notable indentifiée en raison de la non-conformité documentaire.",
+      "points_a_ameliorer": "Le candidat doit travailler sur la présentation et la conformité de ses documents, ainsi que sur l'adéquation de son parcours professionnel et de ses compétences avec les exigences de l'offre d'emploi.",
+      "verdict": "Candidature non retenue en raison d'une inadéquation totale avec le poste et un manque de préparation documentaire.",
+      "rang_global": 13
+    }
+  },
+  "Armel Gérard Davy OKOUAGHE": {
+    "conformite": {},
+    "mtp": {},
+    "similarite_offre": {
+      "score de complétude": {
+        "nom": "OKOUAGHE",
+        "prenom": "Armel Gérard Davy",
+        "poste": "Chef de Département Eau",
+        "resume_experience": "20 ans d'expérience dans le domaine de l'eau et de l'assainissement",
+        "score": 0.338,
+        "commentaire_score": "Le score de similarité est modérément bas, ce qui montre que certaines compétences clés pour le poste pourraient ne pas être pleinement alignées avec celles du candidat. Cependant, l'expérience et l'expertise en gestion aquatique demeurent impressionnantes.",
+        "forces": [
+          "Vaste expérience de 20 ans dans le domaine de l'eau",
+          "Solides compétences en gestion de projets et en leadership d'équipes pluridisciplinaires",
+          "Expérience notable en gestion budgétaire et en performance opérationnelle"
+        ],
+        "faiblesses": [
+          "Score de similarité inférieur à la moyenne pour le poste spécifié",
+          "Potentielle divergence entre l'expérience actuelle et les exigences précises du nouveau poste"
+        ],
+        "verdict": "Armel OKOUAGHE dispose d'une solide expérience et de compétences vastes et variées dans le domaine de l'eau, ce qui pourrait être très bénéfique pour le poste de Chef de Département Eau. Cependant, le score de similarité indique qu'une attention particulière doit être portée à l'adéquation des détails du poste visé avec son expérience spécifique.",
+        "rang": 5
+      }
+    },
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat Armel Gérard Davy OKOUAGHE a un score global de 0.0% dans les différentes évaluations. Cela indique qu'il y a un souci marqué concernant ses qualifications par rapport au poste de Chef de Département Eau. Aucun des éléments attendus, tels que le respect des obligations documentaires, la correspondance entre le curriculum vitae et la lettre de motivation, n'a été atteint. Il semble que le candidat ne satisfait pas aux exigences de base définies pour cette position.",
+      "forces": "Nous n'avons pas assez d'informations fournies à partir des scores pour identifier des forces spécifiques chez le candidat Armel Gérard Davy OKOUAGHE.",
+      "points_a_ameliorer": [
+        "Présenter un curriculum vitae et une lettre de motivation qui correspondent mieux aux compétences et aux missions du poste.",
+        "Améliorer la conformité documentaire pour respecter les exigences requises.",
+        "S'assurer que les expériences et compétences sont liées directement aux tâches et responsabilités du poste.",
+        "Poser un regard critique pour s'aligner avec la vision transformative de l'entreprise SEEG."
+      ],
+      "verdict": "Sur la base des informations disponibles et des scores obtenus, le candidat Armel Gérard Davy OKOUAGHE ne répond pas aux critères requis pour le poste de Chef de Département Eau à la SEEG. Il est recommandé qu'il procède à une réévaluation complète de sa candidature pour mieux l'adapter aux exigences spécifiques du poste.",
+      "rang_global": 14
+    }
+  },
+  "Roland mavoungou": {
+    "conformite": {
+      "score de conformité": {
+        "prenom": "Roland",
+        "nom": "mavoungou",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      }
+    },
+    "mtp": {},
+    "similarite_offre": {},
+    "resume_global": {
+      "score_global": 0.0,
+      "commentaire_global": "Le candidat, Roland Mavoungou, n'a malheureusement pas réussi à démontrer sa correspondance avec le poste de Chef de Département Eau au sein de la SEEG. Les scores pertinents pour évaluer son adéquation avec le poste, notamment en termes de similarité entre le CV et la lettre de motivation, de conformité documentaire et de performance multiple critères, sont tous à 0.0%. Cela indique une absence de preuves suffisantes pour appuyer sa candidature par rapport aux exigences et compétences recherchées par l'entreprise.",
+      "forces": [],
+      "points_a_ameliorer": [
+        "Augmenter la similarité entre le CV et la lettre de motivation pour mieux aligner les expériences et compétences avec le poste visé.",
+        "Assurer une conformité documentaire complète pour garantir que tous les éléments requis par l'entreprise sont bien fournis.",
+        "Améliorer la performance globale sur les critères d'évaluation exigés pour ce type de poste."
+      ],
+      "verdict": "La candidature de Roland Mavoungou pour le poste de Chef de Département Eau n'est pas retenue en l'état actuel. Il est recommandé d'améliorer la qualité et la pertinence du dossier de candidature avant de reposter à un poste similaire.",
+      "rang_global": 15
     }
   }
 }
