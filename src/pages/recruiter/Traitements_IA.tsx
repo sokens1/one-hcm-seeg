@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,9 @@ import {
   TrendingUp,
   Target,
   Award,
-  BarChart3
+  BarChart3,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useAIData, AICandidateData } from "@/hooks/useAIData";
 
@@ -70,16 +72,44 @@ const getVerdictLabel = (verdict: string) => {
   }
   
   // Pour les verdicts longs, extraire le verdict principal
-  if (verdictLower.includes('non retenu') || verdictLower.includes('ne remplit aucune') || verdictLower.includes('recommandé de ne pas retenir')) {
+  // Patterns pour "Non retenu"
+  if (verdictLower.includes('non retenu') || 
+      verdictLower.includes('ne remplit aucune') || 
+      verdictLower.includes('recommandé de ne pas retenir') ||
+      verdictLower.includes('n\'est pas retenu') ||
+      verdictLower.includes('il n\'est pas retenu') ||
+      verdictLower.includes('non retenu pour le poste') ||
+      verdictLower.includes('ne répond à aucun') ||
+      verdictLower.includes('n\'est actuellement pas adapté') ||
+      verdictLower.includes('alignement quasi inexistant')) {
     return 'Non retenu';
   }
-  if (verdictLower.includes('rejeté') || verdictLower.includes('n\'est actuellement pas adapté') || verdictLower.includes('ne répond à aucun')) {
+  
+  // Patterns pour "Rejeté"
+  if (verdictLower.includes('rejeté') || 
+      verdictLower.includes('rejet') ||
+      verdictLower.includes('dossier ne contient aucune information') ||
+      verdictLower.includes('impossible de rendre un verdict définitif')) {
     return 'Non retenu';
   }
-  if (verdictLower.includes('mitigé') || verdictLower.includes('inadéquation partielle') || verdictLower.includes('nécessite des améliorations')) {
+  
+  // Patterns pour "Mitigé"
+  if (verdictLower.includes('mitigé') || 
+      verdictLower.includes('inadéquation partielle') || 
+      verdictLower.includes('nécessite des améliorations') ||
+      verdictLower.includes('dossier de candidature a besoin d\'améliorations') ||
+      verdictLower.includes('améliorations ciblées') ||
+      verdictLower.includes('candidat crédible') ||
+      verdictLower.includes('expérience substantielle') ||
+      verdictLower.includes('expérience significative')) {
     return 'Mitigé';
   }
-  if (verdictLower.includes('favorable') || verdictLower.includes('candidat optimal') || verdictLower.includes('qualifié pour le poste')) {
+  
+  // Patterns pour "Favorable"
+  if (verdictLower.includes('favorable') || 
+      verdictLower.includes('candidat optimal') || 
+      verdictLower.includes('qualifié pour le poste') ||
+      verdictLower.includes('candidat qualifié')) {
     return 'Favorable';
   }
   
@@ -102,16 +132,44 @@ const getVerdictVariant = (verdict: string) => {
   }
   
   // Pour les verdicts longs, déterminer la couleur basée sur le contenu
-  if (verdictLower.includes('non retenu') || verdictLower.includes('ne remplit aucune') || verdictLower.includes('recommandé de ne pas retenir')) {
+  // Patterns pour "Non retenu" (rouge)
+  if (verdictLower.includes('non retenu') || 
+      verdictLower.includes('ne remplit aucune') || 
+      verdictLower.includes('recommandé de ne pas retenir') ||
+      verdictLower.includes('n\'est pas retenu') ||
+      verdictLower.includes('il n\'est pas retenu') ||
+      verdictLower.includes('non retenu pour le poste') ||
+      verdictLower.includes('ne répond à aucun') ||
+      verdictLower.includes('n\'est actuellement pas adapté') ||
+      verdictLower.includes('alignement quasi inexistant')) {
     return 'destructive';
   }
-  if (verdictLower.includes('rejeté') || verdictLower.includes('n\'est actuellement pas adapté') || verdictLower.includes('ne répond à aucun')) {
+  
+  // Patterns pour "Rejeté" (rouge)
+  if (verdictLower.includes('rejeté') || 
+      verdictLower.includes('rejet') ||
+      verdictLower.includes('dossier ne contient aucune information') ||
+      verdictLower.includes('impossible de rendre un verdict définitif')) {
     return 'destructive';
   }
-  if (verdictLower.includes('mitigé') || verdictLower.includes('inadéquation partielle') || verdictLower.includes('nécessite des améliorations')) {
+  
+  // Patterns pour "Mitigé" (jaune)
+  if (verdictLower.includes('mitigé') || 
+      verdictLower.includes('inadéquation partielle') || 
+      verdictLower.includes('nécessite des améliorations') ||
+      verdictLower.includes('dossier de candidature a besoin d\'améliorations') ||
+      verdictLower.includes('améliorations ciblées') ||
+      verdictLower.includes('candidat crédible') ||
+      verdictLower.includes('expérience substantielle') ||
+      verdictLower.includes('expérience significative')) {
     return 'secondary';
   }
-  if (verdictLower.includes('favorable') || verdictLower.includes('candidat optimal') || verdictLower.includes('qualifié pour le poste')) {
+  
+  // Patterns pour "Favorable" (vert)
+  if (verdictLower.includes('favorable') || 
+      verdictLower.includes('candidat optimal') || 
+      verdictLower.includes('qualifié pour le poste') ||
+      verdictLower.includes('candidat qualifié')) {
     return 'success';
   }
   
@@ -123,6 +181,13 @@ export default function Traitements_IA() {
   const { data: aiData, isLoading, error } = useAIData();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const [selectedVerdict, setSelectedVerdict] = useState<string>("all");
+  const [selectedScoreRange, setSelectedScoreRange] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("rang");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -152,31 +217,132 @@ export default function Traitements_IA() {
     return allCandidates;
   }, [aiData]);
 
-  // Filtrer les candidats selon le terme de recherche et le département
+  // Filtrer et trier les candidats
   const filteredCandidates = useMemo(() => {
     let filtered = candidatesData;
+
+    // Filtrer par terme de recherche (recherche avancée)
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(candidate => {
+        // Recherche dans les informations de base
+        const basicMatch = 
+          candidate.firstName.toLowerCase().includes(searchLower) ||
+          candidate.lastName.toLowerCase().includes(searchLower) ||
+          candidate.department.toLowerCase().includes(searchLower) ||
+          candidate.poste.toLowerCase().includes(searchLower);
+        
+        // Recherche dans les données IA
+        const aiMatch = 
+          candidate.aiData.resume_global.commentaire_global.toLowerCase().includes(searchLower) ||
+          (candidate.aiData.mtp?.niveau && candidate.aiData.mtp.niveau.toLowerCase().includes(searchLower)) ||
+          (candidate.aiData.similarite_offre?.commentaire_score && candidate.aiData.similarite_offre.commentaire_score.toLowerCase().includes(searchLower)) ||
+          (candidate.aiData.conformite?.commentaire && candidate.aiData.conformite.commentaire.toLowerCase().includes(searchLower));
+        
+        return basicMatch || aiMatch;
+      });
+    }
 
     // Filtrer par département
     if (selectedDepartment !== "all") {
       filtered = filtered.filter(candidate => candidate.department === selectedDepartment);
     }
 
-    // Filtrer par terme de recherche
-    if (searchTerm) {
-      filtered = filtered.filter(candidate => 
-        candidate.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.poste.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    // Filtrer par verdict
+    if (selectedVerdict !== "all") {
+      filtered = filtered.filter(candidate => {
+        const verdictLabel = getVerdictLabel(candidate.aiData.resume_global.verdict);
+        return verdictLabel === selectedVerdict;
+      });
     }
 
+    // Filtrer par plage de score
+    if (selectedScoreRange !== "all") {
+      filtered = filtered.filter(candidate => {
+        const score = candidate.aiData.resume_global.score_global * 100;
+        switch (selectedScoreRange) {
+          case "0-20": return score >= 0 && score <= 20;
+          case "21-40": return score >= 21 && score <= 40;
+          case "41-60": return score >= 41 && score <= 60;
+          case "61-80": return score >= 61 && score <= 80;
+          case "81-100": return score >= 81 && score <= 100;
+          default: return true;
+        }
+      });
+    }
+
+    // Trier les candidats
+    filtered.sort((a, b) => {
+      let aValue: string | number, bValue: string | number;
+      
+      switch (sortBy) {
+        case "nom":
+          aValue = `${a.firstName} ${a.lastName}`;
+          bValue = `${b.firstName} ${b.lastName}`;
+          break;
+        case "score":
+          aValue = a.aiData.resume_global.score_global;
+          bValue = b.aiData.resume_global.score_global;
+          break;
+        case "rang":
+          aValue = a.aiData.resume_global.rang_global;
+          bValue = b.aiData.resume_global.rang_global;
+          break;
+        case "verdict":
+          aValue = getVerdictLabel(a.aiData.resume_global.verdict);
+          bValue = getVerdictLabel(b.aiData.resume_global.verdict);
+          break;
+        case "departement":
+          aValue = a.department;
+          bValue = b.department;
+          break;
+        default:
+          aValue = a.aiData.resume_global.rang_global;
+          bValue = b.aiData.resume_global.rang_global;
+      }
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+      } else {
+        return 0;
+      }
+    });
+
     return filtered;
-  }, [candidatesData, searchTerm, selectedDepartment]);
+  }, [candidatesData, searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange, sortBy, sortOrder]);
+
+  // Calculer la pagination
+  const totalPages = Math.ceil(filteredCandidates.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCandidates = filteredCandidates.slice(startIndex, endIndex);
+
+  // Réinitialiser la page quand les filtres changent
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange]);
 
   const handleViewResults = (candidate: CandidateApplication) => {
     setSelectedCandidate(candidate);
     setIsModalOpen(true);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   if (isLoading) {
@@ -317,40 +483,189 @@ export default function Traitements_IA() {
         {/* Barre de recherche et filtres */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Rechercher par nom, prénom, département ou poste..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+            <div className="space-y-4">
+              {/* Recherche principale */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Rechercher par nom, prénom, département, poste ou contenu IA..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Département" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous les départements</SelectItem>
+                      {aiData && Object.keys(aiData).map((departmentKey) => {
+                        const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
+                        return (
+                          <SelectItem key={departmentKey} value={departmentName}>
+                            Département {departmentName}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                  >
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filtres avancés
+                  </Button>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Département" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tous les départements</SelectItem>
-                    {aiData && Object.keys(aiData).map((departmentKey) => {
-                      const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
-                      return (
-                        <SelectItem key={departmentKey} value={departmentName}>
-                          Département {departmentName}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" size="sm">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filtres
-                </Button>
-              </div>
+
+              {/* Filtres avancés */}
+              {showAdvancedFilters && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
+                  {/* Filtre par verdict */}
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                      Verdict
+                    </label>
+                    <Select value={selectedVerdict} onValueChange={setSelectedVerdict}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Tous les verdicts" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les verdicts</SelectItem>
+                        <SelectItem value="Favorable">Favorable</SelectItem>
+                        <SelectItem value="Mitigé">Mitigé</SelectItem>
+                        <SelectItem value="Non retenu">Non retenu</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Filtre par plage de score */}
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                      Score global
+                    </label>
+                    <Select value={selectedScoreRange} onValueChange={setSelectedScoreRange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Toutes les plages" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Toutes les plages</SelectItem>
+                        <SelectItem value="0-20">0% - 20%</SelectItem>
+                        <SelectItem value="21-40">21% - 40%</SelectItem>
+                        <SelectItem value="41-60">41% - 60%</SelectItem>
+                        <SelectItem value="61-80">61% - 80%</SelectItem>
+                        <SelectItem value="81-100">81% - 100%</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Tri par */}
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                      Trier par
+                    </label>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Critère de tri" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="rang">Rang</SelectItem>
+                        <SelectItem value="score">Score global</SelectItem>
+                        <SelectItem value="nom">Nom</SelectItem>
+                        <SelectItem value="verdict">Verdict</SelectItem>
+                        <SelectItem value="departement">Département</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Ordre de tri */}
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                      Ordre
+                    </label>
+                    <Select value={sortOrder} onValueChange={(value: "asc" | "desc") => setSortOrder(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Ordre" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="asc">Croissant</SelectItem>
+                        <SelectItem value="desc">Décroissant</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {/* Résumé des filtres actifs */}
+              {(selectedDepartment !== "all" || selectedVerdict !== "all" || selectedScoreRange !== "all" || searchTerm) && (
+                <div className="flex flex-wrap gap-2 pt-2 border-t">
+                  <span className="text-sm text-muted-foreground">Filtres actifs:</span>
+                  {searchTerm && (
+                    <Badge variant="secondary" className="gap-1">
+                      Recherche: "{searchTerm}"
+                      <button 
+                        onClick={() => setSearchTerm("")}
+                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                      >
+                        <XCircle className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  )}
+                  {selectedDepartment !== "all" && (
+                    <Badge variant="secondary" className="gap-1">
+                      Département: {selectedDepartment}
+                      <button 
+                        onClick={() => setSelectedDepartment("all")}
+                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                      >
+                        <XCircle className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  )}
+                  {selectedVerdict !== "all" && (
+                    <Badge variant="secondary" className="gap-1">
+                      Verdict: {selectedVerdict}
+                      <button 
+                        onClick={() => setSelectedVerdict("all")}
+                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                      >
+                        <XCircle className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  )}
+                  {selectedScoreRange !== "all" && (
+                    <Badge variant="secondary" className="gap-1">
+                      Score: {selectedScoreRange}%
+                      <button 
+                        onClick={() => setSelectedScoreRange("all")}
+                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                      >
+                        <XCircle className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedDepartment("all");
+                      setSelectedVerdict("all");
+                      setSelectedScoreRange("all");
+                    }}
+                    className="text-xs"
+                  >
+                    Effacer tout
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -361,6 +676,11 @@ export default function Traitements_IA() {
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
               Évaluations IA des Candidats ({filteredCandidates.length})
+              {filteredCandidates.length > itemsPerPage && (
+                <span className="text-sm font-normal text-muted-foreground">
+                  - Page {currentPage} sur {totalPages}
+                </span>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -376,7 +696,7 @@ export default function Traitements_IA() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredCandidates.map((candidate) => (
+                  {paginatedCandidates.map((candidate) => (
                     <TableRow key={candidate.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -430,6 +750,69 @@ export default function Traitements_IA() {
                 <p className="text-muted-foreground">
                   {searchTerm ? "Essayez de modifier vos critères de recherche." : "Aucune candidature disponible pour le moment."}
                 </p>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {filteredCandidates.length > itemsPerPage && (
+              <div className="flex items-center justify-between px-6 py-4 border-t">
+                <div className="text-sm text-muted-foreground">
+                  Affichage de {startIndex + 1} à {Math.min(endIndex, filteredCandidates.length)} sur {filteredCandidates.length} candidats
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Précédent
+                  </Button>
+                  
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                      // Afficher seulement quelques pages autour de la page actuelle
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handlePageChange(page)}
+                            className="w-8 h-8 p-0"
+                          >
+                            {page}
+                          </Button>
+                        );
+                      } else if (
+                        page === currentPage - 2 ||
+                        page === currentPage + 2
+                      ) {
+                        return (
+                          <span key={page} className="text-muted-foreground">
+                            ...
+                          </span>
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Suivant
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
