@@ -532,23 +532,29 @@ export default function Traitements_IA() {
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points forts :</p>
                             <ul className="text-sm space-y-1">
-                              {selectedCandidate.aiData.mtp.points_forts.map((point, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                  {point}
-                                </li>
-                              ))}
+                              {Array.isArray(selectedCandidate.aiData.mtp.points_forts) 
+                                ? selectedCandidate.aiData.mtp.points_forts.map((point, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                      {point}
+                                    </li>
+                                  ))
+                                : <li className="text-muted-foreground">Aucun point fort identifié</li>
+                              }
                             </ul>
                           </div>
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points à travailler :</p>
                             <ul className="text-sm space-y-1">
-                              {selectedCandidate.aiData.mtp.points_a_travailler.map((point, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
-                                  {point}
-                                </li>
-                              ))}
+                              {Array.isArray(selectedCandidate.aiData.mtp.points_a_travailler) 
+                                ? selectedCandidate.aiData.mtp.points_a_travailler.map((point, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                      <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                                      {point}
+                                    </li>
+                                  ))
+                                : <li className="text-muted-foreground">Aucun point à travailler identifié</li>
+                              }
                             </ul>
                           </div>
                         </div>
@@ -593,23 +599,29 @@ export default function Traitements_IA() {
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Forces :</p>
                             <ul className="text-sm space-y-1">
-                              {selectedCandidate.aiData.similarite_offre.forces.map((force, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                  {force}
-                                </li>
-                              ))}
+                              {Array.isArray(selectedCandidate.aiData.similarite_offre.forces) 
+                                ? selectedCandidate.aiData.similarite_offre.forces.map((force, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                      {force}
+                                    </li>
+                                  ))
+                                : <li className="text-muted-foreground">Aucune force identifiée</li>
+                              }
                             </ul>
                           </div>
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Faiblesses :</p>
                             <ul className="text-sm space-y-1">
-                              {selectedCandidate.aiData.similarite_offre.faiblesses.map((faiblesse, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                                  {faiblesse}
-                                </li>
-                              ))}
+                              {Array.isArray(selectedCandidate.aiData.similarite_offre.faiblesses) 
+                                ? selectedCandidate.aiData.similarite_offre.faiblesses.map((faiblesse, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                      <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                                      {faiblesse}
+                                    </li>
+                                  ))
+                                : <li className="text-muted-foreground">Aucune faiblesse identifiée</li>
+                              }
                             </ul>
                           </div>
                         </div>
