@@ -21,6 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { InterviewCalendarModal } from './InterviewCalendarModal';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -115,14 +116,12 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   } = useInterviewScheduling(applicationId);
   
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Fonction pour gérer le clic sur le bouton "Traitement IA"
   const handleAITreatment = () => {
-    toast({
-      title: "Traitement IA",
-      description: "Cette fonctionnalité sera disponible à partir du 01/09/2025",
-      duration: 3000,
-    });
+    // Rediriger vers la page d'analyse IA avec le poste pré-sélectionné
+    navigate(`/ai-analysis?job=${encodeURIComponent(jobTitle)}`);
   };
   
   // Fonction pour gérer l'incubation
