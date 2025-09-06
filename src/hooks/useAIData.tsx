@@ -44,6 +44,30 @@ export interface AIDataResponse {
   [departmentName: string]: AICandidateData[];
 }
 
+// Fonction utilitaire pour valider la structure des données JSON
+const validateJsonStructure = (jsonData: Record<string, unknown>, fileName: string): boolean => {
+  const entries = Object.entries(jsonData);
+  if (entries.length === 0) {
+    console.warn(`Fichier ${fileName} est vide`);
+    return false;
+  }
+
+  // Vérifier que chaque candidat a au moins une structure de base
+  const invalidEntries = entries.filter(([key, value]) => {
+    if (typeof value !== 'object' || value === null) {
+      console.warn(`Candidat ${key} dans ${fileName} a des données invalides`);
+      return true;
+    }
+    return false;
+  });
+
+  if (invalidEntries.length > 0) {
+    console.warn(`${invalidEntries.length} candidat(s) invalide(s) dans ${fileName}`);
+  }
+
+  return true;
+};
+
 export function useAIData() {
   const [data, setData] = useState<AIDataResponse>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +107,31 @@ export function useAIData() {
         // Vérifier que tous les fichiers ont été chargés avec succès
         const failedResponses = responses.filter(response => !response.ok);
         if (failedResponses.length > 0) {
-          throw new Error(`Erreur lors du chargement de ${failedResponses.length} fichier(s) de données IA`);
+          const failedFiles = departments.filter((_, index) => !responses[index].ok);
+          console.warn(`Fichiers non trouvés: ${failedFiles.map(f => f.file).join(', ')}`);
+          
+          // Continuer avec les fichiers disponibles au lieu de tout échouer
+          const validResponses = responses.filter(response => response.ok);
+          const validJsonData = await Promise.all(
+            validResponses.map(response => response.json())
+          );
+          
+          // Organiser les données valides
+          const transformedData: AIDataResponse = {};
+          let validIndex = 0;
+          departments.forEach((dept, index) => {
+            if (responses[index].ok) {
+              transformedData[dept.name] = transformData(validJsonData[validIndex]);
+              validIndex++;
+            } else {
+              // Ajouter un département vide pour les fichiers manquants
+              transformedData[dept.name] = [];
+              console.warn(`Département ${dept.name} ignoré (fichier ${dept.file} non trouvé)`);
+            }
+          });
+          
+          setData(transformedData);
+          return;
         }
 
         // Parser tous les fichiers JSON
@@ -94,12 +142,14 @@ export function useAIData() {
         // Transformer les données pour uniformiser le format
         const transformData = (jsonData: Record<string, unknown>): AICandidateData[] => {
           return Object.entries(jsonData).map(([key, value]: [string, unknown]) => {
-            const nameParts = key.split(' ');
-            const prenom = nameParts[0] || '';
-            const nom = nameParts.slice(1).join(' ') || '';
+            // Gestion robuste des noms (supporte différents formats)
+            const nameParts = key.split(' ').filter(part => part.trim() !== '');
+            const prenom = nameParts[0] || 'Inconnu';
+            const nom = nameParts.slice(1).join(' ') || 'Inconnu';
 
             // Vérifier que value est un objet
             if (typeof value !== 'object' || value === null) {
+              console.warn(`Données invalides pour le candidat: ${key}`);
               return {
                 nom,
                 prenom,
@@ -117,63 +167,79 @@ export function useAIData() {
 
             const candidateData = value as Record<string, unknown>;
 
-            // Gérer les scores MTP avec différentes clés possibles
+            // Gestion robuste des scores MTP avec différentes clés possibles
             const mtpData = candidateData.mtp as Record<string, unknown> | undefined;
             const mtpScoreData = mtpData?.['score MTP'] as Record<string, unknown> | undefined;
             const mtpScores = mtpScoreData?.scores as Record<string, number> | undefined || {};
             
+            // Normalisation des scores MTP (gère différentes variantes de clés)
             const normalizedMtpScores = {
-              Métier: mtpScores.Métier || mtpScores.Metier || 0,
-              Talent: mtpScores.Talent || 0,
-              Paradigme: mtpScores.Paradigme || 0,
-              Moyen: mtpScores.Moyen || 0
+              Métier: mtpScores.Métier || mtpScores.Metier || mtpScores.metier || 0,
+              Talent: mtpScores.Talent || mtpScores.talent || 0,
+              Paradigme: mtpScores.Paradigme || mtpScores.paradigme || 0,
+              Moyen: mtpScores.Moyen || mtpScores.moyen || 0
             };
 
-            // Gérer la conformité
+            // Gestion robuste de la conformité
             const conformiteData = candidateData.conformite as Record<string, unknown> | undefined;
             const conformiteScoreData = conformiteData?.['score de conformité'] as Record<string, unknown> | undefined;
 
-            // Gérer la similarité
+            // Gestion robuste de la similarité
             const similariteData = candidateData.similarite_offre as Record<string, unknown> | undefined;
             const similariteScoreData = similariteData?.['score de complétude'] as Record<string, unknown> | undefined;
 
-            // Gérer le résumé global
+            // Gestion robuste du résumé global
             const resumeGlobalData = candidateData.resume_global as Record<string, unknown> | undefined;
+
+            // Extraction du poste (gère différentes sources)
+            const poste = (mtpScoreData?.poste as string) || 
+                         (similariteScoreData?.poste as string) || 
+                         (resumeGlobalData?.poste as string) ||
+                         'Chef de Département';
+
+            // Gestion robuste des scores de similarité
+            let similarityScore = 0;
+            if (similariteScoreData?.score !== undefined) {
+              if (typeof similariteScoreData.score === 'number') {
+                similarityScore = similariteScoreData.score;
+              } else {
+                const parsedScore = parseFloat(similariteScoreData.score as string);
+                similarityScore = isNaN(parsedScore) ? 0 : parsedScore;
+              }
+            }
 
             return {
               nom,
               prenom,
-              poste: (mtpScoreData?.poste as string) || 
-                     (similariteScoreData?.poste as string) || 
-                     'Chef de Département',
+              poste,
               conformite: conformiteScoreData ? {
-                score_conformité: conformiteScoreData.score_conformité as number,
-                commentaire: conformiteScoreData.commentaire as string
+                score_conformité: (conformiteScoreData.score_conformité as number) || 0,
+                commentaire: (conformiteScoreData.commentaire as string) || 'Aucun commentaire'
               } : undefined,
               mtp: mtpScoreData ? {
                 scores: normalizedMtpScores,
-                niveau: mtpScoreData.niveau as string,
-                verdict: mtpScoreData.verdict as string,
-                points_forts: (mtpScoreData.points_forts as string[]) || [],
-                points_a_travailler: (mtpScoreData.points_a_travailler as string[]) || [],
-                rang: mtpScoreData.rang as number
+                niveau: (mtpScoreData.niveau as string) || 'Non évalué',
+                verdict: (mtpScoreData.verdict as string) || 'Non évalué',
+                points_forts: Array.isArray(mtpScoreData.points_forts) ? mtpScoreData.points_forts as string[] : [],
+                points_a_travailler: Array.isArray(mtpScoreData.points_a_travailler) ? mtpScoreData.points_a_travailler as string[] : [],
+                rang: (mtpScoreData.rang as number) || 0
               } : undefined,
               similarite_offre: similariteScoreData ? {
                 resume_experience: similariteScoreData.resume_experience as string | { nombre_d_annees: number; specialite: string },
-                score: typeof similariteScoreData.score === 'number' 
-                  ? similariteScoreData.score 
-                  : parseFloat(similariteScoreData.score as string) || 0,
-                commentaire_score: similariteScoreData.commentaire_score as string,
-                forces: (similariteScoreData.forces as string[]) || [],
-                faiblesses: (similariteScoreData.faiblesses as string[]) || [],
-                verdict: similariteScoreData.verdict as string,
-                rang: similariteScoreData.rang as number
+                score: similarityScore,
+                commentaire_score: (similariteScoreData.commentaire_score as string) || 'Aucun commentaire',
+                forces: Array.isArray(similariteScoreData.forces) ? similariteScoreData.forces as string[] : [],
+                faiblesses: Array.isArray(similariteScoreData.faiblesses) ? similariteScoreData.faiblesses as string[] : [],
+                verdict: (similariteScoreData.verdict as string) || 'Non évalué',
+                rang: (similariteScoreData.rang as number) || 0
               } : undefined,
               resume_global: {
                 score_global: (resumeGlobalData?.score_global as number) || 0,
-                commentaire_global: (resumeGlobalData?.commentaire_global as string) || '',
-                forces: (resumeGlobalData?.forces as string | string[]) || [],
-                points_a_ameliorer: (resumeGlobalData?.points_a_ameliorer as string | string[]) || [],
+                commentaire_global: (resumeGlobalData?.commentaire_global as string) || 'Aucun commentaire',
+                forces: Array.isArray(resumeGlobalData?.forces) ? resumeGlobalData.forces as string[] : 
+                       typeof resumeGlobalData?.forces === 'string' ? [resumeGlobalData.forces] : [],
+                points_a_ameliorer: Array.isArray(resumeGlobalData?.points_a_ameliorer) ? resumeGlobalData.points_a_ameliorer as string[] : 
+                                   typeof resumeGlobalData?.points_a_ameliorer === 'string' ? [resumeGlobalData.points_a_ameliorer] : [],
                 verdict: (resumeGlobalData?.verdict as string) || 'Non évalué',
                 rang_global: (resumeGlobalData?.rang_global as number) || 0
               }
@@ -184,7 +250,14 @@ export function useAIData() {
         // Transformer et organiser les données par département
         const transformedData: AIDataResponse = {};
         departments.forEach((dept, index) => {
-          transformedData[dept.name] = transformData(jsonData[index]);
+          // Valider la structure avant transformation
+          if (validateJsonStructure(jsonData[index], dept.file)) {
+            transformedData[dept.name] = transformData(jsonData[index]);
+            console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s)`);
+          } else {
+            transformedData[dept.name] = [];
+            console.warn(`⚠️ Département ${dept.name}: Structure invalide, ignoré`);
+          }
         });
 
         setData(transformedData);
