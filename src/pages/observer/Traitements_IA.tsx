@@ -1075,7 +1075,6 @@ export default function Traitements_IA() {
             )}
           </DialogContent>
         </Dialog>
-      </div>
     </ObserverLayout>
   );
 }
