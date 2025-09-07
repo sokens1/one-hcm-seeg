@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +29,8 @@ import {
   Award,
   BarChart3,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ArrowLeft
 } from "lucide-react";
 import { useAIData, AICandidateData } from "@/hooks/useAIData";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -180,6 +182,8 @@ const getVerdictVariant = (verdict: string) => {
 
 export default function Traitements_IA() {
   const { data: aiData, isLoading, error } = useAIData();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [selectedVerdict, setSelectedVerdict] = useState<string>("all");
@@ -189,6 +193,23 @@ export default function Traitements_IA() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+
+  // Récupérer l'URL de retour
+  const returnUrl = searchParams.get('returnUrl');
+
+  // Appliquer les filtres depuis les paramètres URL
+  useEffect(() => {
+    const departmentParam = searchParams.get('department');
+    const candidateParam = searchParams.get('candidate');
+    
+    if (departmentParam) {
+      setSelectedDepartment(decodeURIComponent(departmentParam));
+    }
+    
+    if (candidateParam) {
+      setSearchTerm(decodeURIComponent(candidateParam));
+    }
+  }, [searchParams]);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -385,6 +406,21 @@ export default function Traitements_IA() {
         <div className="container mx-auto px-4 py-6">
         {/* En-tête de la page */}
         <div className="mb-8">
+          {/* Bouton retour */}
+          {returnUrl && (
+            <div className="mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(decodeURIComponent(returnUrl))}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Retour au protocole
+              </Button>
+            </div>
+          )}
+          
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4">
             <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center flex-shrink-0">
               <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -399,10 +435,10 @@ export default function Traitements_IA() {
 
         {/* Barre de recherche et filtres */}
         <Card className="mb-6">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="space-y-4">
               {/* Recherche principale */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col gap-4">
                 <div className="flex-1">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -410,34 +446,41 @@ export default function Traitements_IA() {
                       placeholder="Rechercher par nom, prénom, département, poste ou contenu IA..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 w-full"
                     />
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Département" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tous les départements</SelectItem>
-                      {aiData && Object.keys(aiData).map((departmentKey) => {
-                        const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
-                        return (
-                          <SelectItem key={departmentKey} value={departmentName}>
-                            Département {departmentName}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
+                
+                {/* Filtres de base */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex-1 sm:max-w-[200px]">
+                    <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Département" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les départements</SelectItem>
+                        {aiData && Object.keys(aiData).map((departmentKey) => {
+                          const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
+                          return (
+                            <SelectItem key={departmentKey} value={departmentName}>
+                              Département {departmentName}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                    className="flex items-center justify-center gap-2"
                   >
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filtres avancés
+                    <Filter className="h-4 w-4" />
+                    <span className="hidden xs:inline">Filtres avancés</span>
+                    <span className="xs:hidden">Filtres</span>
                   </Button>
                 </div>
               </div>
@@ -601,7 +644,8 @@ export default function Traitements_IA() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+            {/* Version desktop - Tableau */}
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -659,6 +703,45 @@ export default function Traitements_IA() {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Version mobile - Cartes */}
+            <div className="md:hidden space-y-4">
+              {paginatedCandidates.map((candidate) => (
+                <Card key={candidate.id} className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                        {candidate.firstName[0]}{candidate.lastName[0]}
+                      </div>
+                      <div>
+                        <div className="font-medium">{candidate.firstName} {candidate.lastName}</div>
+                        <div className="text-sm text-muted-foreground">#{candidate.aiData.resume_global.rang_global}</div>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleViewResults(candidate)}
+                      className="gap-2"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span className="hidden xs:inline">Voir</span>
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{candidate.poste}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <Badge variant="outline">{candidate.department}</Badge>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
             
             {filteredCandidates.length === 0 && (
               <div className="text-center py-8">
@@ -672,63 +755,76 @@ export default function Traitements_IA() {
 
             {/* Pagination */}
             {filteredCandidates.length > itemsPerPage && (
-              <div className="flex items-center justify-between px-6 py-4 border-t">
-                <div className="text-sm text-muted-foreground">
-                  Affichage de {startIndex + 1} à {Math.min(endIndex, filteredCandidates.length)} sur {filteredCandidates.length} candidats
+              <div className="px-4 sm:px-6 py-4 border-t">
+                {/* Informations sur mobile */}
+                <div className="text-sm text-muted-foreground mb-4 sm:hidden text-center">
+                  {startIndex + 1}-{Math.min(endIndex, filteredCandidates.length)} sur {filteredCandidates.length}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Précédent
-                  </Button>
-                  
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                      // Afficher seulement quelques pages autour de la page actuelle
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={currentPage === page ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handlePageChange(page)}
-                            className="w-8 h-8 p-0"
-                          >
-                            {page}
-                          </Button>
-                        );
-                      } else if (
-                        page === currentPage - 2 ||
-                        page === currentPage + 2
-                      ) {
-                        return (
-                          <span key={page} className="text-muted-foreground">
-                            ...
-                          </span>
-                        );
-                      }
-                      return null;
-                    })}
+                
+                {/* Pagination responsive */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  {/* Informations sur desktop */}
+                  <div className="hidden sm:block text-sm text-muted-foreground">
+                    Affichage de {startIndex + 1} à {Math.min(endIndex, filteredCandidates.length)} sur {filteredCandidates.length} candidats
                   </div>
+                  
+                  {/* Contrôles de pagination */}
+                  <div className="flex items-center justify-center sm:justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePreviousPage}
+                      disabled={currentPage === 1}
+                      className="flex items-center gap-1"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      <span className="hidden xs:inline">Précédent</span>
+                    </Button>
+                    
+                    <div className="flex items-center gap-1 overflow-x-auto">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        // Afficher seulement quelques pages autour de la page actuelle
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => handlePageChange(page)}
+                              className="w-8 h-8 p-0 min-w-[32px] flex-shrink-0"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <span key={page} className="text-muted-foreground px-1 flex-shrink-0">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    Suivant
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                      className="flex items-center gap-1"
+                    >
+                      <span className="hidden xs:inline">Suivant</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
@@ -968,16 +1064,19 @@ export default function Traitements_IA() {
                         <div>
                           <p className="text-sm font-medium text-muted-foreground mb-2">Expérience :</p>
                           <p className="text-sm bg-muted p-2 rounded">
-                            {typeof selectedCandidate.aiData.similarite_offre.resume_experience === 'string' 
-                              ? selectedCandidate.aiData.similarite_offre.resume_experience
-                              : `${selectedCandidate.aiData.similarite_offre.resume_experience.nombre_d_annees} ans - ${selectedCandidate.aiData.similarite_offre.resume_experience.specialite}`
-                            }
+                            {selectedCandidate.aiData.similarite_offre?.resume_experience ? (
+                              typeof selectedCandidate.aiData.similarite_offre.resume_experience === 'string' 
+                                ? selectedCandidate.aiData.similarite_offre.resume_experience
+                                : selectedCandidate.aiData.similarite_offre.resume_experience?.nombre_d_annees && selectedCandidate.aiData.similarite_offre.resume_experience?.specialite
+                                  ? `${selectedCandidate.aiData.similarite_offre.resume_experience.nombre_d_annees} ans - ${selectedCandidate.aiData.similarite_offre.resume_experience.specialite}`
+                                  : 'Informations non disponibles'
+                            ) : 'Aucune information d\'expérience disponible'}
                           </p>
                         </div>
                         <div>
                           <p className="text-sm font-medium text-muted-foreground mb-2">Commentaire :</p>
                           <p className="text-sm bg-muted p-2 rounded">
-                            {selectedCandidate.aiData.similarite_offre.commentaire_score}
+                            {selectedCandidate.aiData.similarite_offre?.commentaire_score || 'Aucun commentaire disponible'}
                           </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1055,30 +1154,30 @@ export default function Traitements_IA() {
                         <div>
                           <p className="text-sm font-medium text-muted-foreground mb-2">Raisons :</p>
                           <p className="text-sm bg-muted p-2 rounded">
-                            {selectedCandidate.aiData.feedback.raisons}
+                            {selectedCandidate.aiData.feedback?.raisons || 'Aucune raison spécifiée'}
                           </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points forts :</p>
                             <ul className="text-sm space-y-1">
-                              {selectedCandidate.aiData.feedback.points_forts.map((point, index) => (
+                              {Array.isArray(selectedCandidate.aiData.feedback?.points_forts) && selectedCandidate.aiData.feedback.points_forts.length > 0 ? selectedCandidate.aiData.feedback.points_forts.map((point, index) => (
                                 <li key={index} className="flex items-start gap-2">
                                   <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                                   {point}
                                 </li>
-                              ))}
+                              )) : <li className="text-muted-foreground">Aucun point fort spécifié</li>}
                             </ul>
                           </div>
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points à travailler :</p>
                             <ul className="text-sm space-y-1">
-                              {selectedCandidate.aiData.feedback.points_a_travailler.map((point, index) => (
+                              {Array.isArray(selectedCandidate.aiData.feedback?.points_a_travailler) && selectedCandidate.aiData.feedback.points_a_travailler.length > 0 ? selectedCandidate.aiData.feedback.points_a_travailler.map((point, index) => (
                                 <li key={index} className="flex items-start gap-2">
                                   <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                                   {point}
                                 </li>
-                              ))}
+                              )) : <li className="text-muted-foreground">Aucun point à travailler spécifié</li>}
                             </ul>
                           </div>
                         </div>
