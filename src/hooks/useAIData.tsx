@@ -93,11 +93,8 @@ export function useAIData() {
           { name: 'Chef de Département Eau', file: '/chef_departement_eau.json' },
           {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
           {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
-          // {name: 'Directeur Exploitation Eau', file: '/directeur_exploitation_eau.json'},
-          // {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
-          // {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
-          // {name: 'Directeur Exploitation Eau', file: '/directeur_exploitation_eau.json'},
-          // {name: 'Chef de Département Electricite', file: '/chef_departement_electricite.json'},
+          {name: 'Directeur Exploitation Eau', file: '/directeur_exploitation_eau.json'},
+          {name: 'Chef de Département Electricite', file: '/chef_departement_electricite.json'},
           // {name: 'Coordonnateur des Régions', file: '/coordonnateur_des_regions.json'},
           // {name: 'Directeur Audit & Contrôle interne', file: '/directeur_audit_et_controle_interne.json'},
           // {name: 'Directeur Qualité, Hygiène, Sécurité & Environnement', file: '/directeur_qualite_hygiene_securite_environnement.json'},
@@ -136,7 +133,8 @@ export function useAIData() {
                 const directorData = nestedData['Directeur Moyens Généraux'];
                 
                 if (directorData && typeof directorData === 'object') {
-                  transformedData[dept.name] = transformData(directorData, true);
+                  const rawData = transformData(directorData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -146,13 +144,37 @@ export function useAIData() {
                 const directorData = nestedData['Directeur Technique Eau'];
                 
                 if (directorData && typeof directorData === 'object') {
-                  transformedData[dept.name] = transformData(directorData, true);
+                  const rawData = transformData(directorData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Chef de Département Electricite') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const directorData = nestedData['Chef de Département Electricité'];
+                
+                if (directorData && typeof directorData === 'object') {
+                  const rawData = transformData(directorData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur Exploitation Eau') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const directorData = nestedData['Directeur Exploitation Eau'];
+                
+                if (directorData && typeof directorData === 'object') {
+                  const rawData = transformData(directorData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
                 }
               } else {
-                transformedData[dept.name] = transformData(validJsonData[validIndex], false);
+                const rawData = transformData(validJsonData[validIndex], false);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
               }
               validIndex++;
             } else {
@@ -170,6 +192,36 @@ export function useAIData() {
         const jsonData = await Promise.all(
           responses.map(response => response.json())
         );
+
+        // Fonction pour dédupliquer les candidats basée sur le nom complet
+        const deduplicateCandidates = (candidates: AICandidateData[]): AICandidateData[] => {
+          const seen = new Map<string, AICandidateData>();
+          
+          candidates.forEach(candidate => {
+            // Créer une clé basée sur le prénom et les premiers mots du nom
+            const prenom = candidate.prenom.toLowerCase().trim();
+            const nomWords = candidate.nom.toLowerCase().trim().split(' ').filter(w => w.length > 0);
+            
+            // Utiliser le prénom + le premier mot du nom comme clé de déduplication
+            const key = `${prenom} ${nomWords[0] || ''}`.trim();
+            
+            // Si on a déjà vu cette clé, garder celui avec le nom le plus complet
+            if (seen.has(key)) {
+              const existing = seen.get(key)!;
+              const existingFullName = `${existing.prenom} ${existing.nom}`;
+              const currentFullName = `${candidate.prenom} ${candidate.nom}`;
+              
+              // Garder celui avec le nom le plus long (plus complet)
+              if (currentFullName.length > existingFullName.length) {
+                seen.set(key, candidate);
+              }
+            } else {
+              seen.set(key, candidate);
+            }
+          });
+          
+          return Array.from(seen.values());
+        };
 
         // Transformer les données pour uniformiser le format
         const transformData = (jsonData: Record<string, unknown>, isMoyensGeneraux: boolean = false): AICandidateData[] => {
@@ -211,7 +263,7 @@ export function useAIData() {
               Object.keys(mtpScoreData).length > 0 &&
               (mtpScoreData.scores || mtpScoreData.Score_moyen || mtpScoreData.verdict);
             
-            const mtpScores = hasValidMtpData ? (mtpScoreData.scores as Record<string, number> | undefined || {}) : {};
+            const mtpScores = mtpScoreData ? (mtpScoreData.scores as Record<string, number> | undefined || {}) : {};
             
             // Normalisation des scores MTP (gère différentes variantes de clés)
             const normalizedMtpScores = {
@@ -278,7 +330,7 @@ export function useAIData() {
                 score_conformité: (conformiteScoreData.score_conformité as number) || 0,
                 commentaire: (conformiteScoreData.commentaire as string) || 'Aucun commentaire'
               } : undefined,
-              mtp: hasValidMtpData ? {
+              mtp: mtpScoreData ? {
                 scores: normalizedMtpScores,
                 score_moyen: (mtpScoreData.Score_moyen as number) || undefined,
                 niveau: (mtpScoreData.niveau as string) || 'Non évalué',
@@ -298,7 +350,7 @@ export function useAIData() {
                 verdict: (similariteScoreData.verdict as string) || 'Non évalué',
                 rang: (similariteScoreData.rang as number) || 0
               } : undefined,
-              feedback: hasValidFeedbackData ? {
+              feedback: feedbackData ? {
                 score: (feedbackData.score as number) || 0,
                 verdict: (feedbackData.verdict as string) || 'Non évalué',
                 raisons: (feedbackData.raisons as string) || 'Aucun commentaire',
@@ -335,8 +387,9 @@ export function useAIData() {
               const directorData = nestedData['Directeur Moyens Généraux'];
               
               if (directorData && typeof directorData === 'object') {
-                transformedData[dept.name] = transformData(directorData, true);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s)`);
+                const rawData = transformData(directorData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -348,16 +401,46 @@ export function useAIData() {
               const directorData = nestedData['Directeur Technique Eau'];
               
               if (directorData && typeof directorData === 'object') {
-                transformedData[dept.name] = transformData(directorData, true);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s)`);
+                const rawData = transformData(directorData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Chef de Département Electricite') {
+              // Le fichier chef_departement_electricite.json a une structure imbriquée
+              // avec "Chef de Département Electricité" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const directorData = nestedData['Chef de Département Electricité'];
+              
+              if (directorData && typeof directorData === 'object') {
+                const rawData = transformData(directorData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Exploitation Eau') {
+              // Le fichier directeur_exploitation_eau.json a une structure imbriquée
+              // avec "Directeur Exploitation Eau" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const directorData = nestedData['Directeur Exploitation Eau'];
+              
+              if (directorData && typeof directorData === 'object') {
+                const rawData = transformData(directorData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
               }
             } else {
               // Structure normale pour les autres départements
-              transformedData[dept.name] = transformData(jsonData[index], false);
-              console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s)`);
+              const rawData = transformData(jsonData[index], false);
+              transformedData[dept.name] = deduplicateCandidates(rawData);
+              console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
             }
           } else {
             transformedData[dept.name] = [];
