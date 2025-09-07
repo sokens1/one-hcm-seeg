@@ -31,6 +31,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useAIData, AICandidateData } from "@/hooks/useAIData";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface CandidateApplication {
   id: string;
@@ -190,6 +191,7 @@ export default function Traitements_IA() {
   const [itemsPerPage] = useState(5);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   // Transformer les données IA pour l'affichage
   const candidatesData = useMemo(() => {
@@ -379,7 +381,8 @@ export default function Traitements_IA() {
 
   return (
     <RecruiterLayout>
-      <div className="container mx-auto px-4 py-6">
+      <ErrorBoundary>
+        <div className="container mx-auto px-4 py-6">
         {/* En-tête de la page */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4">
@@ -827,16 +830,16 @@ export default function Traitements_IA() {
                     </CardHeader>
                     <CardContent>
                       <div className={`grid gap-4 mb-4 ${
-                        selectedCandidate.aiData.mtp.scores.Moyen > 0 
+                        (selectedCandidate.aiData.mtp.scores?.Moyen || 0) > 0 
                           ? 'grid-cols-2 md:grid-cols-4' 
                           : 'grid-cols-1 md:grid-cols-3'
                       }`}>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-blue-500">
-                            {selectedCandidate.aiData.mtp.scores.Métier > 0 
-                              ? selectedCandidate.aiData.mtp.scores.Métier > 1
-                                ? `${selectedCandidate.aiData.mtp.scores.Métier.toFixed(1)}%`
-                                : `${(selectedCandidate.aiData.mtp.scores.Métier * 100).toFixed(1)}%`
+                            {(selectedCandidate.aiData.mtp.scores?.Métier || 0) > 0 
+                              ? (selectedCandidate.aiData.mtp.scores.Métier || 0) > 1
+                                ? `${(selectedCandidate.aiData.mtp.scores.Métier || 0).toFixed(1)}%`
+                                : `${((selectedCandidate.aiData.mtp.scores.Métier || 0) * 100).toFixed(1)}%`
                               : 'N/A'
                             }
                           </div>
@@ -844,10 +847,10 @@ export default function Traitements_IA() {
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-green-500">
-                            {selectedCandidate.aiData.mtp.scores.Talent > 0 
-                              ? selectedCandidate.aiData.mtp.scores.Talent > 1
-                                ? `${selectedCandidate.aiData.mtp.scores.Talent.toFixed(1)}%`
-                                : `${(selectedCandidate.aiData.mtp.scores.Talent * 100).toFixed(1)}%`
+                            {(selectedCandidate.aiData.mtp.scores?.Talent || 0) > 0 
+                              ? (selectedCandidate.aiData.mtp.scores.Talent || 0) > 1
+                                ? `${(selectedCandidate.aiData.mtp.scores.Talent || 0).toFixed(1)}%`
+                                : `${((selectedCandidate.aiData.mtp.scores.Talent || 0) * 100).toFixed(1)}%`
                               : 'N/A'
                             }
                           </div>
@@ -855,21 +858,21 @@ export default function Traitements_IA() {
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-purple-500">
-                            {selectedCandidate.aiData.mtp.scores.Paradigme > 0 
-                              ? selectedCandidate.aiData.mtp.scores.Paradigme > 1
-                                ? `${selectedCandidate.aiData.mtp.scores.Paradigme.toFixed(1)}%`
-                                : `${(selectedCandidate.aiData.mtp.scores.Paradigme * 100).toFixed(1)}%`
+                            {(selectedCandidate.aiData.mtp.scores?.Paradigme || 0) > 0 
+                              ? (selectedCandidate.aiData.mtp.scores.Paradigme || 0) > 1
+                                ? `${(selectedCandidate.aiData.mtp.scores.Paradigme || 0).toFixed(1)}%`
+                                : `${((selectedCandidate.aiData.mtp.scores.Paradigme || 0) * 100).toFixed(1)}%`
                               : 'N/A'
                             }
                           </div>
                           <p className="text-sm text-muted-foreground">Paradigme</p>
                         </div>
-                        {selectedCandidate.aiData.mtp.scores.Moyen > 0 && (
+                        {(selectedCandidate.aiData.mtp.scores?.Moyen || 0) > 0 && (
                           <div className="text-center">
                             <div className="text-2xl font-bold text-orange-500">
-                              {selectedCandidate.aiData.mtp.scores.Moyen > 1
-                                ? `${selectedCandidate.aiData.mtp.scores.Moyen.toFixed(1)}%`
-                                : `${(selectedCandidate.aiData.mtp.scores.Moyen * 100).toFixed(1)}%`
+                              {(selectedCandidate.aiData.mtp.scores.Moyen || 0) > 1
+                                ? `${(selectedCandidate.aiData.mtp.scores.Moyen || 0).toFixed(1)}%`
+                                : `${((selectedCandidate.aiData.mtp.scores.Moyen || 0) * 100).toFixed(1)}%`
                               }
                             </div>
                             <p className="text-sm text-muted-foreground">Moyen</p>
@@ -879,9 +882,9 @@ export default function Traitements_IA() {
                       {selectedCandidate.aiData.mtp.score_moyen && (
                         <div className="text-center mb-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl shadow-sm">
                           <div className="text-3xl font-extrabold text-indigo-600 mb-1">
-                            {selectedCandidate.aiData.mtp.score_moyen > 1
-                              ? `${selectedCandidate.aiData.mtp.score_moyen.toFixed(1)}%`
-                              : `${(selectedCandidate.aiData.mtp.score_moyen * 100).toFixed(1)}%`
+                            {(selectedCandidate.aiData.mtp.score_moyen || 0) > 1
+                              ? `${(selectedCandidate.aiData.mtp.score_moyen || 0).toFixed(1)}%`
+                              : `${((selectedCandidate.aiData.mtp.score_moyen || 0) * 100).toFixed(1)}%`
                             }
                           </div>
                           <p className="text-sm font-medium text-indigo-700">Score Moyen MTP</p>
@@ -890,13 +893,13 @@ export default function Traitements_IA() {
                       <div className="space-y-3">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground mb-1">Niveau :</p>
-                          <p className="text-sm bg-muted p-2 rounded">{selectedCandidate.aiData.mtp.niveau}</p>
+                          <p className="text-sm bg-muted p-2 rounded">{selectedCandidate.aiData.mtp.niveau || 'Non spécifié'}</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points forts :</p>
                             <ul className="text-sm space-y-1">
-                              {Array.isArray(selectedCandidate.aiData.mtp.points_forts) 
+                              {Array.isArray(selectedCandidate.aiData.mtp.points_forts) && selectedCandidate.aiData.mtp.points_forts.length > 0
                                 ? selectedCandidate.aiData.mtp.points_forts.map((point, index) => (
                                     <li key={index} className="flex items-start gap-2">
                                       <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
@@ -910,7 +913,7 @@ export default function Traitements_IA() {
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points à travailler :</p>
                             <ul className="text-sm space-y-1">
-                              {Array.isArray(selectedCandidate.aiData.mtp.points_a_travailler) 
+                              {Array.isArray(selectedCandidate.aiData.mtp.points_a_travailler) && selectedCandidate.aiData.mtp.points_a_travailler.length > 0
                                 ? selectedCandidate.aiData.mtp.points_a_travailler.map((point, index) => (
                                     <li key={index} className="flex items-start gap-2">
                                       <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
@@ -1140,7 +1143,8 @@ export default function Traitements_IA() {
             )}
           </DialogContent>
         </Dialog>
-      </div>
+        </div>
+      </ErrorBoundary>
     </RecruiterLayout>
   );
 }

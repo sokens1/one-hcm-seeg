@@ -31,6 +31,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useAIData, AICandidateData } from "@/hooks/useAIData";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface CandidateApplication {
   id: string;
@@ -190,6 +191,7 @@ export default function Traitements_IA() {
   const [itemsPerPage] = useState(5);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   // Transformer les données IA pour l'affichage
   const candidatesData = useMemo(() => {
@@ -379,7 +381,8 @@ export default function Traitements_IA() {
 
   return (
     <ObserverLayout>
-      <div className="container mx-auto px-4 py-6">
+      <ErrorBoundary>
+        <div className="container mx-auto px-4 py-6">
         {/* En-tête de la page */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4">
@@ -989,7 +992,8 @@ export default function Traitements_IA() {
             )}
           </DialogContent>
         </Dialog>
-      </div>
+        </div>
+      </ErrorBoundary>
     </ObserverLayout>
   );
 }

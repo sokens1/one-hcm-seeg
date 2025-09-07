@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
+import ErrorBoundary from './components/ErrorBoundary.tsx';
 import './index.css';
 
 // Gestion globale des erreurs DOM non-critiques
@@ -63,4 +64,8 @@ const container = document.getElementById("root");
 if (!container) throw new Error('Failed to find the root element');
 
 const root = createRoot(container);
-root.render(<App />);
+root.render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);

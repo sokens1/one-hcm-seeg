@@ -81,8 +81,12 @@ export function useAIData() {
   const [data, setData] = useState<AIDataResponse>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    // Éviter les re-chargements multiples
+    if (isInitialized) return;
+    
     const loadAIData = async () => {
       try {
         setIsLoading(true);
@@ -91,7 +95,7 @@ export function useAIData() {
         // Configuration des départements - facilement extensible
         const departments = [
           { name: 'Chef de Département Eau', file: '/chef_departement_eau.json' },
-          {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
+           {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
           {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
           {name: 'Directeur Exploitation Eau', file: '/directeur_exploitation_eau.json'},
           {name: 'Chef de Département Electricite', file: '/chef_departement_electricite.json'},
@@ -106,7 +110,7 @@ export function useAIData() {
            {name: 'Directeur Technique Electricite', file: '/directeur_technique_electricité.json'},        // {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
            {name: 'Directeur Exploitation Electricite', file: '/directeur_exploitation_electricite.json'},
            {name: 'Chef de Departement Support', file: '/chef_de_departement_support.json'},
-      ];
+        ];
 
         // Charger dynamiquement tous les fichiers JSON
         const responses = await Promise.all(
@@ -347,30 +351,192 @@ export function useAIData() {
         const deduplicateCandidates = (candidates: AICandidateData[]): AICandidateData[] => {
           const seen = new Map<string, AICandidateData>();
           
+          // Liste complète des doublons connus (nom complet -> nom abrégé)
+          const knownDuplicates: Record<string, string> = {
+            // Directeur Moyens Généraux
+            "Diane Mauricette Ollomo": "Diane Ollomo",
+            "Raissa Aimee Nse Obiang": "Raissa Obiang",
+            "Jean Vava Alain Moucke Nzoumba": "Jean Moucke Nzoumba",
+            "Pascal Alain Noumba": "Pascal Noumba",
+            "Emilienne Debra Frederique Ndong Essono": "Emilienne Ndong Essono",
+            "Pulcherie Nicole Assame Née Nigouegouni": "Pulcherie Assame Née Nigouegouni",
+            "Olivia Anna Igoho Otiga": "Olivia Igoho Otiga",
+            "Marie Claude Bissi Rekangalt": "Marie Claude",
+            "Emery Patrick Nkouele Mve": "Emery Nkouele Mve",
+            "Paul Terence Okoumba": "Paul Okoumba",
+            "André Derek Mbongo": "André Mbongo",
+            "Emilienne Debra Frédérique Ndong Essono": "Emilienne Ndong Essono",
+            "Raïssa Aimée Nse Obiang": "Raissa Obiang",
+            "Pulcherie Assame Née Nigouegouni": "Pulcherie Assame Née Nigouegouni",
+            // Chef de Département Eau
+            "Wilfrid Pascal Andjayi": "Wilfrid Andjayi",
+            "Jean Christian Ibouily": "Jean Ibouily",
+            "Luc Thomas Tsioba": "Luc Tsioba",
+            "Armel Gérard Davy Okouaghe": "Armel Okouaghe",
+            // Directeur Technique Eau
+            "Sylvain A Boussoungou": "Sylvain Boussoungou",
+            "Jeanne Marie Agathe Ondo": "Jeanne Ondo",
+            "Murielle Rose Missie": "Murielle Missie",
+            "Aude Murielle Akoe Mba": "Aude Akoe Mba",
+            "Hermann Tanda Nkombe": "Hermann Tanda",
+            "Eric Serge Obounou": "Eric Obounou",
+            // Chef de Département Electricité
+            "Pépin Jonas Ozela Nguema": "Pépin Ozela Nguema",
+            // Directeur Exploitation Eau
+            "Victor Ghislain Ogoula": "Victor Ogoula",
+            // Coordonnateur des Régions
+            "Remus Arnold Mbouogho": "Remus Mbouogho",
+            "Maria Evans Ze Ebe": "Maria Ze Ebe",
+            "Jean Fabrice Ondo Mayi": "Jean Ondo Mayi",
+            "Louis De Gonzague Mboulou Assoumou": "Louis Mboulou Assoumou",
+            "Steve Olivier N'Nang": "Steve N'Nang",
+            // Directeur Audit & Contrôle interne
+            "Marie Ange Nambo Wezet Née Mbourou Lamasse": "Marie Ange Nambo Wezet",
+            "Aude Tania Akoure Eyang": "Aude Akoure Eyang",
+            "Marie Nambo Wezet Née Mbourou Lamasse": "Marie Ange Nambo Wezet",
+            "Anouchka Claude Émilie Ekome Mbeng Née Ntsame Nzoghe": "Anouchka Ekome Mbeng Née Ntsame Nzoghe",
+            "Hans Dimitri Owele": "Hans Owele",
+            // Directeur des Systèmes d'Information
+            "Steeve Ydrice Malouki Mouyapou": "Steeve Malouki Mouyapou",
+            "Guy Armel Koumba": "Guy Koumba",
+            "Alain Roger Koumba Vi": "Alain Koumba Vi",
+            "Derille Ovono Ename": "Dérille Ovono Ename",
+            // Directeur Qualité, Hygiène, Sécurité & Environnement
+            "Amandine Rolande Obone Mba": "Amandine Obone Mba",
+            "Ian Yelnick Ndjongue Tanda": "Ian Ndjongue Tanda",
+            "Yves Davy Ndimina Mokaghat": "Yves Ndimina Mokaghat",
+            "Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam": "Augusta Ziza Ép. Elisee Ndam",
+            // Directeur Commercial et Recouvrement
+            "Marie Florence Eyamame": "Marie Eyamame",
+            "Georges Jacques S Tigoue": "Georges Tigoue",
+            "Karl Alex Jean Youyatte": "Karl Youyatte",
+            "Marlyne Armelle Ziza": "Marlyne Ziza",
+            "Franck Armel Mendome": "Franck Mendome",
+            // Directeur du Capital Humain
+            "Nadine Léa Ghediba Mavanga": "Nadine Mavanga",
+            "Katia Sandrine Ondo": "Katia Ondo",
+            // Directeur Finances et Comptabilité
+            // Directeur Juridique, Communication & RSE
+            "Sonia Matty Boussoughou": "Sonia Boussoughou",
+            "Boris Armel Zue Meye": "Boris Zue Meye",
+            // Directeur Technique Electricité
+            "Guy Lucien Mayombo": "Guy Mayombo",
+            // Directeur Exploitation Electricité
+            "Stell Emeraude Zeng": "Stell Zeng",
+            // Chef de Département Support
+            "Wilfried Jimmy Moukoumi": "Wilfried Moukoumi",
+            "Esther - Rodrigue Olanga": "Esther Olanga",
+            "Georges Jacques S Tigaoue": "Georges Jacques S Tigoue"
+          };
+          
           candidates.forEach(candidate => {
-            // Créer une clé basée sur le prénom et les premiers mots du nom
-            const prenom = candidate.prenom.toLowerCase().trim();
-            const nomWords = candidate.nom.toLowerCase().trim().split(' ').filter(w => w.length > 0);
+            const fullName = `${candidate.prenom} ${candidate.nom}`;
             
-            // Utiliser le prénom + le premier mot du nom comme clé de déduplication
-            const key = `${prenom} ${nomWords[0] || ''}`.trim();
-            
-            // Si on a déjà vu cette clé, garder celui avec le nom le plus complet
-            if (seen.has(key)) {
-              const existing = seen.get(key)!;
-              const existingFullName = `${existing.prenom} ${existing.nom}`;
-              const currentFullName = `${candidate.prenom} ${candidate.nom}`;
+            // Vérifier si c'est un doublon connu
+            if (knownDuplicates[fullName]) {
+              const shortName = knownDuplicates[fullName];
+              const shortKey = shortName.toLowerCase()
+                .replace(/[éèêë]/g, 'e')
+                .replace(/[àâä]/g, 'a')
+                .replace(/[ùûü]/g, 'u')
+                .replace(/[îï]/g, 'i')
+                .replace(/[ôö]/g, 'o')
+                .replace(/[ç]/g, 'c');
               
-              // Garder celui avec le nom le plus long (plus complet)
-              if (currentFullName.length > existingFullName.length) {
-                seen.set(key, candidate);
+              if (seen.has(shortKey)) {
+                // C'est un doublon, garder celui avec le nom le plus long
+                const existing = seen.get(shortKey)!;
+                const existingFullName = `${existing.prenom} ${existing.nom}`;
+                
+                if (fullName.length > existingFullName.length) {
+                  seen.set(shortKey, candidate);
+                }
+              } else {
+                // Premier candidat de ce groupe, l'ajouter
+                seen.set(shortKey, candidate);
               }
             } else {
-              seen.set(key, candidate);
+              // Candidat normal, utiliser la déduplication standard
+              const keys = generateDeduplicationKeys(candidate.prenom, candidate.nom);
+              
+              let isDuplicate = false;
+              let bestKey = keys[0];
+              
+              // Vérifier si ce candidat est un doublon avec une clé existante
+              for (const key of keys) {
+                if (seen.has(key)) {
+                  isDuplicate = true;
+                  bestKey = key;
+                  break;
+                }
+              }
+              
+              if (isDuplicate) {
+                const existing = seen.get(bestKey)!;
+                const existingFullName = `${existing.prenom} ${existing.nom}`;
+                const currentFullName = `${candidate.prenom} ${candidate.nom}`;
+                
+                // Garder celui avec le nom le plus long (plus complet)
+                if (currentFullName.length > existingFullName.length) {
+                  seen.set(bestKey, candidate);
+                }
+              } else {
+                // Nouveau candidat, utiliser la première clé
+                seen.set(bestKey, candidate);
+              }
             }
           });
           
           return Array.from(seen.values());
+        };
+
+        // Générer plusieurs clés de déduplication pour capturer différents types de doublons
+        const generateDeduplicationKeys = (prenom: string, nom: string): string[] => {
+          const normalized = normalizeCandidateName(prenom, nom);
+          const words = normalized.split(' ');
+          
+          const keys = [normalized]; // Clé complète
+          
+          // Clé avec prénom + premier mot du nom
+          if (words.length >= 2) {
+            keys.push(`${words[0]} ${words[1]}`);
+          }
+          
+          // Clé avec prénom + dernier mot du nom (pour les cas comme "Jean Moucke Nzoumba" vs "Jean Vava Alain Moucke Nzoumba")
+          if (words.length >= 2) {
+            keys.push(`${words[0]} ${words[words.length - 1]}`);
+          }
+          
+          // Clé avec prénom + mots du milieu (pour capturer les variations)
+          if (words.length >= 3) {
+            keys.push(`${words[0]} ${words[1]} ${words[2]}`);
+          }
+          
+          return [...new Set(keys)]; // Supprimer les doublons
+        };
+
+        // Fonction pour normaliser les noms de candidats (gère les doublons)
+        const normalizeCandidateName = (prenom: string, nom: string): string => {
+          const fullName = `${prenom.toLowerCase().trim()} ${nom.toLowerCase().trim()}`
+            .replace(/[éèêë]/g, 'e')
+            .replace(/[àâä]/g, 'a')
+            .replace(/[ùûü]/g, 'u')
+            .replace(/[îï]/g, 'i')
+            .replace(/[ôö]/g, 'o')
+            .replace(/[ç]/g, 'c')
+            .replace(/\s+/g, ' ')
+            .trim();
+          
+          // Extraire les mots clés du nom (prénom + premiers mots significatifs)
+          const words = fullName.split(' ').filter(w => w.length > 2);
+          
+          // Pour une déduplication plus agressive, utiliser prénom + 2 premiers mots du nom
+          if (words.length >= 3) {
+            return `${words[0]} ${words[1]} ${words[2]}`;
+          } else if (words.length >= 2) {
+            return `${words[0]} ${words[1]}`;
+          }
+          return fullName;
         };
 
         // Transformer les données pour uniformiser le format
@@ -401,6 +567,31 @@ export function useAIData() {
 
             const candidateData = value as Record<string, unknown>;
 
+            // Fonction utilitaire pour extraire des données de manière sécurisée
+            const safeExtract = (obj: Record<string, unknown>, path: string[], defaultValue: any = null) => {
+              let current = obj;
+              for (const key of path) {
+                if (current && typeof current === 'object' && key in current) {
+                  current = current[key] as Record<string, unknown>;
+                } else {
+                  return defaultValue;
+                }
+              }
+              return current;
+            };
+
+            // Fonction pour normaliser les scores (gère les pourcentages et décimales)
+            const normalizeScore = (score: unknown): number => {
+              if (typeof score === 'number') {
+                return score > 1 ? score / 100 : score; // Convertit les pourcentages en décimales
+              }
+              if (typeof score === 'string') {
+                const parsed = parseFloat(score);
+                return isNaN(parsed) ? 0 : (parsed > 1 ? parsed / 100 : parsed);
+              }
+              return 0;
+            };
+
             // Gestion robuste des scores MTP avec différentes clés possibles
             const mtpData = candidateData.mtp as Record<string, unknown> | undefined;
             const mtpScoreData = isMoyensGeneraux
@@ -417,10 +608,10 @@ export function useAIData() {
             
             // Normalisation des scores MTP (gère différentes variantes de clés)
             const normalizedMtpScores = {
-              Métier: mtpScores.Métier || mtpScores.Metier || mtpScores.metier || 0,
-              Talent: mtpScores.Talent || mtpScores.talent || 0,
-              Paradigme: mtpScores.Paradigme || mtpScores.paradigme || 0,
-              Moyen: mtpScores.Moyen || mtpScores.moyen || 0
+              Métier: normalizeScore(mtpScores.Métier || mtpScores.Metier || mtpScores.metier || 0),
+              Talent: normalizeScore(mtpScores.Talent || mtpScores.talent || 0),
+              Paradigme: normalizeScore(mtpScores.Paradigme || mtpScores.paradigme || 0),
+              Moyen: normalizeScore(mtpScores.Moyen || mtpScores.moyen || 0)
             };
 
             // Gestion robuste de la conformité (structure différente selon le fichier)
@@ -460,67 +651,99 @@ export function useAIData() {
                          (isMoyensGeneraux ? 'Directeur Moyens Généraux' : 'Chef de Département');
 
             // Gestion robuste des scores de similarité
-            let similarityScore = 0;
-            if (similariteScoreData?.score !== undefined) {
-              if (typeof similariteScoreData.score === 'number') {
-                // Pour les moyens généraux, le score est déjà en pourcentage
-                // Pour les autres fichiers, il peut être en décimal
-                similarityScore = isMoyensGeneraux ? similariteScoreData.score : similariteScoreData.score;
-              } else {
-                const parsedScore = parseFloat(similariteScoreData.score as string);
-                similarityScore = isNaN(parsedScore) ? 0 : parsedScore;
-              }
-            }
+            const similarityScore = normalizeScore(similariteScoreData?.score);
 
+            // Fonction pour valider et nettoyer les données candidat
+            const validateCandidateData = (): AICandidateData => {
+              try {
             return {
               nom,
               prenom,
               poste,
               conformite: conformiteScoreData ? {
-                score_conformité: (conformiteScoreData.score_conformité as number) || 0,
+                    score_conformité: Math.max(0, Math.min(100, (conformiteScoreData.score_conformité as number) || 0)),
                 commentaire: (conformiteScoreData.commentaire as string) || 'Aucun commentaire'
               } : undefined,
-              mtp: mtpScoreData ? {
+                  mtp: hasValidMtpData ? {
                 scores: normalizedMtpScores,
-                score_moyen: (mtpScoreData.Score_moyen as number) || undefined,
-                niveau: (mtpScoreData.niveau as string) || 'Non évalué',
-                verdict: (mtpScoreData.verdict as string) || 'Non évalué',
-                points_forts: Array.isArray(mtpScoreData.points_forts) ? mtpScoreData.points_forts as string[] : [],
-                points_a_travailler: Array.isArray(mtpScoreData.points_a_travailler) ? mtpScoreData.points_a_travailler as string[] : [],
-                rang: (mtpScoreData.rang as number) || 0
+                    score_moyen: normalizeScore(mtpScoreData?.Score_moyen),
+                    niveau: (mtpScoreData?.niveau as string) || 'Non évalué',
+                    verdict: (mtpScoreData?.verdict as string) || 'Non évalué',
+                    points_forts: Array.isArray(mtpScoreData?.points_forts) ? 
+                      (mtpScoreData.points_forts as string[]).filter(p => p && p.trim()) : [],
+                    points_a_travailler: Array.isArray(mtpScoreData?.points_a_travailler) ? 
+                      (mtpScoreData.points_a_travailler as string[]).filter(p => p && p.trim()) : [],
+                    rang: Math.max(0, (mtpScoreData?.rang as number) || 0)
               } : undefined,
               similarite_offre: similariteScoreData ? {
                 resume_experience: similariteScoreData.resume_experience as string | { nombre_d_annees: number; specialite: string },
                 score: similarityScore,
-                commentaire_score: (similariteScoreData.commentaire_score as string) || (similariteScoreData.raison_verdict as string) || (similariteScoreData.raison as string) || 'Aucun commentaire',
-                forces: Array.isArray(similariteScoreData.points_forts) ? similariteScoreData.points_forts as string[] : 
-                       Array.isArray(similariteScoreData.forces) ? similariteScoreData.forces as string[] : [],
-                faiblesses: Array.isArray(similariteScoreData.points_a_travailler) ? similariteScoreData.points_a_travailler as string[] : 
-                           Array.isArray(similariteScoreData.faiblesses) ? similariteScoreData.faiblesses as string[] : [],
+                    commentaire_score: (similariteScoreData.commentaire_score as string) || 
+                                     (similariteScoreData.raison_verdict as string) || 
+                                     (similariteScoreData.raison as string) || 
+                                     'Aucun commentaire',
+                    forces: Array.isArray(similariteScoreData.points_forts) ? 
+                           (similariteScoreData.points_forts as string[]).filter(f => f && f.trim()) : 
+                           Array.isArray(similariteScoreData.forces) ? 
+                           (similariteScoreData.forces as string[]).filter(f => f && f.trim()) : [],
+                    faiblesses: Array.isArray(similariteScoreData.points_a_travailler) ? 
+                               (similariteScoreData.points_a_travailler as string[]).filter(f => f && f.trim()) : 
+                               Array.isArray(similariteScoreData.faiblesses) ? 
+                               (similariteScoreData.faiblesses as string[]).filter(f => f && f.trim()) : [],
                 verdict: (similariteScoreData.verdict as string) || 'Non évalué',
-                rang: (similariteScoreData.rang as number) || 0
-              } : undefined,
-              feedback: feedbackData ? {
-                score: (feedbackData.score as number) || 0,
-                verdict: (feedbackData.verdict as string) || 'Non évalué',
-                raisons: (feedbackData.raisons as string) || 'Aucun commentaire',
-                points_forts: Array.isArray(feedbackData['Points forces']) ? feedbackData['Points forces'] as string[] : [],
-                points_a_travailler: Array.isArray(feedbackData['Points à travailler']) ? feedbackData['Points à travailler'] as string[] : [],
-                rang: (feedbackData.rang as number) || 0
+                    rang: Math.max(0, (similariteScoreData.rang as number) || 0)
+                  } : undefined,
+                  feedback: hasValidFeedbackData ? {
+                    score: normalizeScore(feedbackData?.score),
+                    verdict: (feedbackData?.verdict as string) || 'Non évalué',
+                    raisons: (feedbackData?.raisons as string) || 'Aucun commentaire',
+                    points_forts: Array.isArray(feedbackData?.['Points forces']) ? 
+                                 (feedbackData['Points forces'] as string[]).filter(p => p && p.trim()) : [],
+                    points_a_travailler: Array.isArray(feedbackData?.['Points à travailler']) ? 
+                                        (feedbackData['Points à travailler'] as string[]).filter(p => p && p.trim()) : [],
+                    rang: Math.max(0, (feedbackData?.rang as number) || 0)
               } : undefined,
               resume_global: {
-                score_global: (resumeGlobalData?.score_global as number) || 0,
-                commentaire_global: (resumeGlobalData?.commentaire_global as string) || (resumeGlobalData?.resume as string) || 'Aucun commentaire',
-                forces: Array.isArray(resumeGlobalData?.points_forts) ? resumeGlobalData.points_forts as string[] : 
-                       Array.isArray(resumeGlobalData?.forces) ? resumeGlobalData.forces as string[] :
-                       typeof resumeGlobalData?.forces === 'string' ? [resumeGlobalData.forces] : [],
-                points_a_ameliorer: Array.isArray(resumeGlobalData?.points_a_ameliorer) ? resumeGlobalData.points_a_ameliorer as string[] : 
-                                   Array.isArray(resumeGlobalData?.points_a_travailler) ? resumeGlobalData.points_a_travailler as string[] :
-                                   typeof resumeGlobalData?.points_a_ameliorer === 'string' ? [resumeGlobalData.points_a_ameliorer] : [],
+                    score_global: normalizeScore(resumeGlobalData?.score_global),
+                    commentaire_global: (resumeGlobalData?.commentaire_global as string) || 
+                                       (resumeGlobalData?.resume as string) || 
+                                       'Aucun commentaire',
+                    forces: Array.isArray(resumeGlobalData?.points_forts) ? 
+                           (resumeGlobalData.points_forts as string[]).filter(f => f && f.trim()) : 
+                           Array.isArray(resumeGlobalData?.forces) ? 
+                           (resumeGlobalData.forces as string[]).filter(f => f && f.trim()) :
+                           typeof resumeGlobalData?.forces === 'string' ? 
+                           [resumeGlobalData.forces].filter(f => f && f.trim()) : [],
+                    points_a_ameliorer: Array.isArray(resumeGlobalData?.points_a_ameliorer) ? 
+                                       (resumeGlobalData.points_a_ameliorer as string[]).filter(p => p && p.trim()) : 
+                                       Array.isArray(resumeGlobalData?.points_a_travailler) ? 
+                                       (resumeGlobalData.points_a_travailler as string[]).filter(p => p && p.trim()) :
+                                       typeof resumeGlobalData?.points_a_ameliorer === 'string' ? 
+                                       [resumeGlobalData.points_a_ameliorer].filter(p => p && p.trim()) : [],
                 verdict: (resumeGlobalData?.verdict as string) || 'Non évalué',
-                rang_global: (resumeGlobalData?.rang_global as number) || (resumeGlobalData?.rang as number) || 0
+                    rang_global: Math.max(0, (resumeGlobalData?.rang_global as number) || (resumeGlobalData?.rang as number) || 0)
+                  }
+                };
+              } catch (error) {
+                console.error(`Erreur lors de la validation des données pour ${key}:`, error);
+                // Retourner des données par défaut en cas d'erreur
+                return {
+                  nom,
+                  prenom,
+                  poste: isMoyensGeneraux ? 'Directeur Moyens Généraux' : 'Chef de Département',
+                  resume_global: {
+                    score_global: 0,
+                    commentaire_global: 'Erreur lors du chargement des données',
+                    forces: [],
+                    points_a_ameliorer: [],
+                    verdict: 'Non évalué',
+                    rang_global: 0
+                  }
+                };
               }
             };
+
+            return validateCandidateData();
           });
         };
 
@@ -770,6 +993,7 @@ export function useAIData() {
         });
 
         setData(transformedData);
+        setIsInitialized(true);
 
       } catch (err) {
         console.error('Erreur lors du chargement des données IA:', err);
@@ -780,7 +1004,7 @@ export function useAIData() {
     };
 
     loadAIData();
-  }, []);
+  }, [isInitialized]);
 
   return { data, isLoading, error };
 }
