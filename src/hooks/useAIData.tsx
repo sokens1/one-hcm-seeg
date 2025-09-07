@@ -201,14 +201,10 @@ export function useAIData() {
                 }
                } else if (dept.name === 'Directeur des Systèmes d\'Information') {
                  const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
-                 console.log('🔍 Debug DSI (failed) - Clés disponibles:', Object.keys(nestedData));
                  
                  // Utiliser la première clé disponible (plus robuste)
                  const availableKeys = Object.keys(nestedData);
                  const dsiData = availableKeys.length > 0 ? nestedData[availableKeys[0]] : null;
-                 console.log(`🔍 Debug DSI (failed) - Clé utilisée: "${availableKeys[0]}"`);
-                 
-                 console.log('🔍 Debug DSI (failed) - Données trouvées:', dsiData ? 'OUI' : 'NON');
                  
                  if (dsiData && typeof dsiData === 'object') {
                    const rawData = transformData(dsiData, true);
@@ -622,14 +618,10 @@ export function useAIData() {
               // Le fichier directeur_des_systemes_d_information.json a une structure imbriquée
               // avec "Directeur des Systèmes d'Information" comme clé parent
               const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
-              console.log('🔍 Debug DSI - Clés disponibles:', Object.keys(nestedData));
               
               // Utiliser la première clé disponible (plus robuste)
               const availableKeys = Object.keys(nestedData);
               const dsiData = availableKeys.length > 0 ? nestedData[availableKeys[0]] : null;
-              console.log(`🔍 Debug DSI - Clé utilisée: "${availableKeys[0]}"`);
-              
-              console.log('🔍 Debug DSI - Données trouvées:', dsiData ? 'OUI' : 'NON');
               
               if (dsiData && typeof dsiData === 'object') {
                 const rawData = transformData(dsiData, true);
