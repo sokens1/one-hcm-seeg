@@ -1,0 +1,1341 @@
+{
+    "Directeur Technique Eau": {
+      "Pascal Dende": {
+        "prenom": "Pascal",
+        "nom": "Dende",
+        "conformite": {
+          "prenom": "Pascal",
+          "nom": "DENDE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "DENDE",
+          "prenom": "Pascal",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.45,
+            "Talent": 0.41,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 43.67,
+          "niveau": "Le candidat présente des compétences techniques acceptables, mais semble manquer de talents stratégiques et d'innovation. Son score moyen suggère une adéquation partielle à la vision de l'entreprise.",
+          "verdict": "moyen",
+          "raison_du_verdict": "Le candidat est en dessous du seuil favorable, reflétant une adéquation limitée aux exigences stratégiques de l'entreprise.",
+          "points_forts": [
+            "Connaissance solide des aspects techniques liés à l'eau et à l'électricité.",
+            "Capacité à analyser les pratiques existantes au sein de l'organisation.",
+            "Aptitude à travailler sur des projets d'amélioration des infrastructures."
+          ],
+          "points_a_travailler": [
+            "Développer des compétences en gestion de projet pour une réorganisation efficace.",
+            "Renforcer la créativité et l'innovation dans les solutions proposées.",
+            "Acquérir une compréhension plus profonde des enjeux de gouvernance et de transparence."
+          ],
+          "rang": 11
+        },
+        "completude": {
+          "nom": "DENDE",
+          "prenom": "Pascal",
+          "poste": "Directeur Technique Eau",
+          "score": 44.2,
+          "resume_experience": "Plus de 10 ans en hydraulique urbaine",
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide expérience en gestion et pilotage de projets d'eau potable",
+            "Compétences avérées en management d'équipe et encadrement",
+            "Expertise technique dans la modélisation hydraulique et conception de réseaux"
+          ],
+          "points_a_travailler": [
+            "Innovations technologiques et intégrations de nouvelles régulations",
+            "Amélioration continue des performances budgétaires spécifiques",
+            "Maîtrise des projets d'optimisation des coûts et des ressources techniques"
+          ],
+          "rang": 2
+        },
+        "feedback": {
+          "prenom": "Pascal",
+          "nom": "DENDE",
+          "score": 52.3,
+          "verdict": "Moyen",
+          "raisons": "Le candidat présente un potentiel satisfaisant, mais son statut de manager junior et son besoin de prouver ses capacités limitent sa capacité à répondre aux exigences élevées du poste.",
+          "Points forces": [
+            "Bon comportement managérial",
+            "Volonté d'apprendre et de progresser"
+          ],
+          "Points à travailler": [
+            "Expérience technique et stratégique",
+            "Capacité à gérer des projets complexes"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 50.91,
+          "verdict": "moyen",
+          "resume": "Pascal Dende possède un potentiel managérial prometteur et une volonté d'apprendre, mais son expérience actuelle et son statut de manager junior limitent sa capacité à gérer les exigences techniques et stratégiques importantes du poste. Il devra développer davantage son expertise pour piloter des projets complexes alignés sur la réorganisation ambitieuse de la SEEG.",
+          "points_forts": [
+            "Bon comportement managérial",
+            "Volonté d'apprendre et de progresser"
+          ],
+          "points_a_ameliorer": [
+            "Expérience technique et stratégique",
+            "Capacité à gérer des projets complexes"
+          ],
+          "rang": 1
+        }
+      },
+      "Ulrich Moundounga": {
+        "prenom": "Ulrich",
+        "nom": "Moundounga",
+        "conformite": {
+          "prenom": "Ulrich",
+          "nom": "MOUNDOUNGA",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MOUNDOUNGA",
+          "prenom": "Ulrich",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.43,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 44.67,
+          "niveau": "Le score moyen du candidat est inférieur à 43.5, ce qui le classe dans une catégorie défavorable. Cela indique une inadéquation avec les exigences et la vision de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_du_verdict": "Le score moyen de 44.67 indique que le candidat ne répond pas aux standards requis pour le poste visé.",
+          "points_forts": [
+            "Bonne compréhension des enjeux liés à la gestion des ressources en eau.",
+            "Capacité à analyser et évaluer les besoins de restructuration des opérations.",
+            "Sensibilité aux enjeux de gouvernance et de transparence."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences techniques et de gestion des infrastructures modernes.",
+            "Améliorer les capacités de leadership et de management des équipes.",
+            "Développer une approche proactive en matière d'innovation technologique."
+          ],
+          "rang": 9
+        },
+        "completude": {
+          "nom": "MOUNDOUNGA",
+          "prenom": "Ulrich",
+          "poste": "Directeur Technique Eau",
+          "score": 41.4,
+          "resume_experience": "15 années, spécialité en gestion des projets techniques, hydraulique et exploitation des ressources en eau",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expérience significative en gestion de projets techniques et élaboration de budgets",
+            "Compétences managériales éprouvées avec une expérience de gestion d'équipes importantes",
+            "Connaissances techniques solides en hydraulique et infrastructures"
+          ],
+          "points_a_travailler": [
+            "Meilleure intégration des évolutions technologiques et réglementaires dans les stratégies",
+            "Amélioration des compétences en anglais pour faciliter des partenariats internationaux",
+            "Une réflexion plus approfondie sur les innovations technologiques pour les services d’eau"
+          ],
+          "rang": 5
+        },
+        "feedback": {
+          "prenom": "Ulrich",
+          "nom": "MOUNDOUNGA",
+          "score": 49.7,
+          "verdict": "Moyen",
+          "raisons": "Bien que le candidat possède des compétences techniques, son expérience managériale semble problématique, avec des résultats insatisfaisants dans ses précédents postes. Cela soulève des inquiétudes quant à sa capacité à gérer efficacement une transition organisationnelle au sein de SEEG.",
+          "Points forces": [
+            "Connaissances techniques solides dans le domaine de l'eau et de l'électricité.",
+            "Capacité à identifier les besoins d'investissement et de modernisation des infrastructures."
+          ],
+          "Points à travailler": [
+            "Améliorer ses compétences en gestion et leadership face aux défis rencontrés dans ses postes précédents.",
+            "Développer une approche plus proactive et collaborative pour travailler avec diverses parties prenantes."
+          ],
+          "rang": 6
+        },
+        "global": {
+          "score_global": 49.3,
+          "verdict": "moyen",
+          "resume": "Ulrich Moundounga dispose de connaissances techniques solides dans le domaine de l'eau et de l'électricité, mais son expérience managériale soulève des inquiétudes quant à sa capacité à diriger efficacement une transition organisationnelle au sein de SEEG. Il devra améliorer ses compétences en gestion et leadership pour répondre aux attentes élevées de l'entreprise.",
+          "points_forts": [
+            "Connaissances techniques solides dans le domaine de l'eau et de l'électricité",
+            "Capacité à identifier les besoins d'investissement et de modernisation des infrastructures"
+          ],
+          "points_a_ameliorer": [
+            "Améliorer ses compétences en gestion et leadership face aux défis rencontrés dans ses postes précédents",
+            "Développer une approche plus proactive et collaborative pour travailler avec diverses parties prenantes"
+          ],
+          "rang": 2
+        }
+      },
+      "Aude Murielle Akoe Mba": {
+        "prenom": "Aude",
+        "nom": "Murielle Akoe Mba",
+        "conformite": {
+          "prenom": "Aude",
+          "nom": "Murielle AKOE MBA",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "AKOE MBA",
+          "prenom": "Aude Murielle",
+          "poste": "Directeur Technique Eau",
+          "score": 40.0,
+          "resume_experience": "Près de 20 ans dans la gestion de la qualité de l'eau, la normalisation et la biochimie",
+          "verdict": "favorable",
+          "raison_verdict": "Malgré un score moyen, l'expérience extensive et pertinente de Aude Murielle AKOE MBA dans le domaine de l'eau, couplée à ses compétences managériales et techniques, en font une candidate solide pour le poste.",
+          "points_forts": [
+            "Expérience avérée dans la gestion de la qualité de l'eau et des normes ISO",
+            "Compétence dans la gestion de projets d'infrastructure en eau et d'extensions de réseau",
+            "Leadership et gestion d'équipes multisites à l'échelle nationale"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en gestion financière et budgétaire",
+            "Amélioration des connaissances en innovations technologiques et réglementaires spécifiques aux évolutions actuelles",
+            "Approfondissement des compétences en suivi de performance des installations techniques"
+          ],
+          "rang": 9
+        },
+        "feedback": {
+          "prenom": "Aude",
+          "nom": "MURIELLE AKOE MBA",
+          "score": 72.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre un bon leadership, apprécié des équipes, et possède une approche respectueuse, ce qui est essentiel pour le poste. Cependant, des aspects stratégiques doivent encore être affinés.",
+          "Points forces": [
+            "Capacité à fédérer les équipes et à susciter l'adhésion",
+            "Comportement respectueux et positif envers les collègues"
+          ],
+          "Points à travailler": [
+            "Développer une vision stratégique plus claire pour l'avenir",
+            "Acquérir des compétences en gestion de crise et en transformation organisationnelle"
+          ],
+          "rang": 1
+        },
+        "global": {
+          "score_global": 49.25,
+          "verdict": "moyen",
+          "resume": "Aude Murielle Akoe Mba possède un bon leadership et est très appréciée par ses équipes, ce qui est crucial pour le poste de Directeur Technique Eau. Toutefois, pour bien s’aligner avec la vision transformatrice de la SEEG, des compétences supplémentaires en stratégie et gestion de crise seraient bénéfiques.",
+          "points_forts": [
+            "Capacité à fédérer les équipes et à susciter l'adhésion",
+            "Comportement respectueux et positif envers les collègues"
+          ],
+          "points_a_ameliorer": [
+            "Développer une vision stratégique plus claire pour l'avenir",
+            "Acquérir des compétences en gestion de crise et en transformation organisationnelle"
+          ],
+          "rang": 3
+        }
+      },
+      "Claudia Andeme Ondo": {
+        "prenom": "Claudia",
+        "nom": "Andeme Ondo",
+        "conformite": {
+          "prenom": "claudia",
+          "nom": "ANDEME ONDO",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "ANDEME ONDO",
+          "prenom": "claudia",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.47,
+            "Talent": 0.44,
+            "Paradigme": 0.5
+          },
+          "Score_moyen": 47.0,
+          "niveau": "Le score moyen de 47.0 indique une adéquation moyenne avec la vision de l'entreprise. Le candidat montre un potentiel mais nécessite des améliorations pour s'aligner davantage avec les attentes stratégiques de la SEEG.",
+          "verdict": "moyen",
+          "raison_du_verdict": "Le score moyen se situe entre 43.5 et 60, suggérant que bien qu'il y ait des points positifs, il existe d'importantes zones d'amélioration.",
+          "points_forts": [
+            "Compétences techniques dans le domaine de l'eau qui sont conformes aux enjeux d'infrastructures de la SEEG.",
+            "Capacité à travailler avec des partenaires techniques, essentielle pour la modernisation des infrastructures.",
+            "Expérience potentielle dans la gestion de projets, ce qui est pertinent pour la mise en œuvre des investissements."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences managériales pour s'assurer que les objectifs de réduction des coûts et de restructuration soient atteints.",
+            "Améliorer la connaissance des processus de gouvernance et de transparence pour répondre aux exigences essentielles de la SEEG.",
+            "Développer une vision stratégique à long terme en matière de transition énergétique et d'innovation."
+          ],
+          "rang": 3
+        },
+        "completude": {
+          "nom": "ANDEME ONDO",
+          "prenom": "Claudia",
+          "poste": "Directeur Technique Eau",
+          "score": 40.4,
+          "resume_experience": "13 ans d'expérience en gestion et optimisation du système d’alimentation en eau potable",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expérience solide en production, transport et distribution d’eau",
+            "Expertise en exploitation, maintenance et amélioration des réseaux d'eau",
+            "Compétences en management et en développement des équipes"
+          ],
+          "points_a_travailler": [
+            "Adaptation aux dernières innovations technologiques",
+            "Renforcement des compétences réglementaires spécifiques au poste de Directeur Technique",
+            "Optimisation des compétences en gestion financière et budgétaire"
+          ],
+          "rang": 8
+        },
+        "feedback": {
+          "prenom": "Claudia",
+          "nom": "ANDEME ONDO",
+          "score": 48.7,
+          "verdict": "Moyen",
+          "raisons": "Le candidat montre des compétences techniques, mais son leadership et sa capacité à travailler avec les collaborateurs sont remis en question. Des projets précédents ont échoué, et il existe des préoccupations sur sa capacité à inspirer et motiver les équipes.",
+          "Points forces": [
+            "Expérience dans la gestion d'infrastructure",
+            "Connaissance des défis du secteur de l'eau"
+          ],
+          "Points à travailler": [
+            "Améliorer le leadership et la communication avec les collaborateurs",
+            "Développer des compétences en gestion de projet pour éviter les échecs passés"
+          ],
+          "rang": 7
+        },
+        "global": {
+          "score_global": 49.18,
+          "verdict": "moyen",
+          "resume": "Claudia Andeme Ondo possède une solide expérience dans la gestion des infrastructures et une bonne connaissance des défis du secteur de l'eau. Toutefois, des préoccupations subsistent concernant son leadership et sa capacité de motiver les équipes, appuyées par des incidents d'échecs de projets précédents.",
+          "points_forts": [
+            "Expérience dans la gestion d'infrastructure",
+            "Connaissance des défis du secteur de l'eau"
+          ],
+          "points_a_ameliorer": [
+            "Améliorer le leadership et la communication avec les collaborateurs",
+            "Développer des compétences en gestion de projet pour éviter les échecs passés"
+          ],
+          "rang": 4
+        }
+      },
+      "Aimée Ntchandi Tevenet": {
+        "prenom": "Aimée",
+        "nom": "Ntchandi Tevenet",
+        "conformite": {
+          "prenom": "Aimée",
+          "nom": "NTCHANDI TEVENET",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "NTCHANDI TEVENET",
+          "prenom": "Aimée",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.44,
+            "Talent": 0.41,
+            "Paradigme": 0.49
+          },
+          "Score_moyen": 44.67,
+          "niveau": "Le score moyen de 44.67 indique que le candidat se situe dans une zone jugée moyenne. Bien qu'il présente un certain potentiel, des améliorations sont nécessaires pour répondre pleinement aux attentes de l'entreprise.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score est situé entre 43.5 et 60, ce qui indique une adéquation partielle avec la vision de l'entreprise.",
+          "points_forts": [
+            "Bonne compréhension des enjeux techniques liés à la distribution d'eau et d'électricité.",
+            "Capacité à identifier les retards infrastructurels et propos de réhabilitation.",
+            "Une approche proactive quant aux partenariats techniques pour le développement."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion de projets pour mieux conduire les investissements.",
+            "Améliorer la connaissance des réglementations et des procédures de gouvernance.",
+            "Développer des initiatives de leadership pour motiver et mobiliser les équipes."
+          ],
+          "rang": 7
+        },
+        "completude": {
+          "nom": "NTCHANDI TEVENET",
+          "prenom": "Aimée",
+          "poste": "Directeur Technique Eau",
+          "score": 42.6,
+          "resume_experience": "13 années d'expérience en pilotage de projets génie civil et hydraulique",
+          "verdict": "moyen",
+          "points_forts": [
+            "Expérience solide en supervision et optimisation des réseaux hydrauliques",
+            "Compétences en planification stratégique et budgétaire",
+            "Capacité à coordonner et gérer des équipes multidisciplinaires"
+          ],
+          "points_a_travailler": [
+            "Intégration des évolutions technologiques et réglementaires dans les stratégies techniques",
+            "Amélioration des indicateurs de performance spécifiques au secteur de l'eau potable",
+            "Renforcement de l'expérience en audit de conformité aux normes environnementales"
+          ],
+          "rang": 3
+        },
+        "feedback": {
+          "prenom": "Aimée",
+          "nom": "NTCHANDI TEVENET",
+          "score": 42.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des problèmes de collaboration et de comportement, ainsi qu'un style de leadership clivant, ce qui est incompatible avec les valeurs et les besoins de la SEEG en termes de transformation et de gouvernance.",
+          "Points forces": [
+            "Expérience technique dans le secteur de l'eau",
+            "Compréhension des enjeux de modernisation des infrastructures"
+          ],
+          "Points à travailler": [
+            "Problèmes de comportement et de collaboration avec les équipes",
+            "Manque de capacité à rassembler et à motiver les collaborateurs"
+          ],
+          "rang": 9
+        },
+        "global": {
+          "score_global": 46.04,
+          "verdict": "moyen",
+          "resume": "Aimée possède une solide expérience technique dans le secteur de l'eau ainsi qu'une bonne compréhension des enjeux liés à la modernisation des infrastructures. Cependant, des problèmes de comportement et de collaboration, associés à un style de leadership clivant, rendent son profil incompatible avec les exigences de transformation et de gouvernance de la SEEG.",
+          "points_forts": [
+            "Expérience technique dans le secteur de l'eau",
+            "Compréhension des enjeux de modernisation des infrastructures"
+          ],
+          "points_a_ameliorer": [
+            "Problèmes de comportement et de collaboration avec les équipes",
+            "Manque de capacité à rassembler et à motiver les collaborateurs"
+          ],
+          "rang": 5
+        }
+      },
+      "Hermann Tanda Nkombe": {
+        "prenom": "Hermann",
+        "nom": "Tanda Nkombe",
+        "conformite": {
+          "prenom": "Hermann",
+          "nom": "TANDA  NKOMBE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "TANDA NKOMBE",
+          "prenom": "Hermann",
+          "poste": "Directeur Technique Eau",
+          "score": 41.0,
+          "resume_experience": "15 années d'expérience en hydraulique et gestion des systèmes d'adduction d'eau potable",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expérience étendue et solide en hydraulique",
+            "Compétences en planification et gestion de projets",
+            "Polyvalence technique et capacité d'adaptation"
+          ],
+          "points_a_travailler": [
+            "Approfondissement des compétences en gestion budgétaire",
+            "Renforcement des compétences en management et encadrement d'équipes",
+            "Intégration et adoption des nouvelles technologies et innovations"
+          ],
+          "rang": 7
+        },
+        "feedback": {
+          "prenom": "Hermann",
+          "nom": "TANDA NKOMBE",
+          "score": 62.75,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente des qualités de gestionnaire et un bon comportement, malgré un besoin d'affirmer davantage son leadership. Sa compréhension des enjeux du poste est un atout.",
+          "Points forces": [
+            "Calme et posé, ce qui pourrait faciliter la gestion de conflits et le leadership à long terme.",
+            "Expérience technique dans les études, ce qui est essentiel pour un Directeur Technique."
+          ],
+          "Points à travailler": [
+            "Affirmer son leadership pour guider les équipes dans un contexte de transformation.",
+            "Continuer à maturer dans son rôle pour prendre des décisions stratégiques efficaces."
+          ],
+          "rang": 3
+        },
+        "global": {
+          "score_global": 44.58,
+          "verdict": "défavorable",
+          "resume": "Hermann Tanda Nkombe possède des compétences techniques et un bon comportement pour le poste, avec une compréhension pertinente des enjeux. Cependant, pour être pleinement efficace dans un contexte de transformation, il doit renforcer son leadership. Son score global est néanmoins défavorable.",
+          "points_forts": [
+            "Calme et posé, facilitant la gestion de conflits et le leadership à long terme.",
+            "Expérience technique dans les études, essentielle pour le rôle.",
+            "Bonne compréhension des enjeux du poste."
+          ],
+          "points_a_ameliorer": [
+            "Affirmer son leadership pour guider les équipes.",
+            "Continuer à maturer dans son rôle pour prendre des décisions stratégiques efficaces."
+          ],
+          "rang": 6
+        }
+      },
+      "Lucie Ollomo": {
+        "prenom": "Lucie",
+        "nom": "Ollomo",
+        "conformite": {
+          "prenom": "Lucie",
+          "nom": "OLLOMO",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OLLOMO",
+          "prenom": "Lucie",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.41,
+            "Talent": 0.38,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 42.33,
+          "niveau": "Le candidat présente un score moyen déficient, signalant une inadéquation avec les exigences de la vision de l'entreprise. Cette position pourrait indiquer des lacunes dans la compréhension des enjeux techniques et stratégiques en matière d'eau et d'électricité au Gabon.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen strictement inférieur à 43.5 indique une incompatibilité avec les attentes de l'entreprise.",
+          "points_forts": [
+            "Connaissance des infrastructures et enjeux liés à l'eau et l'électricité au Gabon.",
+            "Capacité à travailler dans des environnements sous pression, en raison des défis associés aux infrastructures vieillissantes.",
+            "Volonté d’intégration des parties prenantes, essentielle pour une réorganisation efficace."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion des ressources humaines, en vue d'une organisation plus efficiente.",
+            "Renforcer les capacités d'innovation et d'intégration des nouvelles technologies dans les opérations.",
+            "Développer une approche analytique pour mieux répondre aux problématiques de gouvernance et de transparence."
+          ],
+          "rang": 14
+        },
+        "completude": {
+          "nom": "OLLOMO",
+          "prenom": "Lucie",
+          "poste": "Directeur Technique Eau",
+          "score": 37.4,
+          "resume_experience": "Plus de 20 ans d'expérience dans le domaine de l'hydraulique et de l'énergie au Gabon.",
+          "verdict": "moyen",
+          "raison_du_verdict": "Le score de 37.4 suggère que la candidate présente certaines caractéristiques favorables pour le poste mais peut nécessiter des renforcements dans certaines compétences spécifiques.",
+          "points_forts": [
+            "Solide expérience dans l'hydraulique et la gestion des ressources en eau.",
+            "Compétences avérées en modélisation numérique et gestion des risques.",
+            "Expérience en supervision des installations de production et de traitement d'eau."
+          ],
+          "points_a_travailler": [
+            "Approfondir l'expertise en gestion budgétaire et optimisation des coûts.",
+            "Renforcer les compétences en conduite de projets techniques de grande envergure.",
+            "Améliorer la capacité d'intégration des innovations technologiques et réglementaires."
+          ],
+          "rang": 12
+        },
+        "feedback": {
+          "prenom": "Lucie",
+          "nom": "OLLOMO",
+          "score": 42.75,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat montre des lacunes en leadership et en maturité managériale, essentielles pour le poste. Ses ambitions ne coïncident pas avec les attentes stratégiques de la SEEG.",
+          "Points forces": [
+            "Bon comportement détecté",
+            "Ouverture à des rôles évolutifs"
+          ],
+          "Points à travailler": [
+            "Manque de leadership",
+            "Maturité à développer"
+          ],
+          "rang": 8
+        },
+        "global": {
+          "score_global": 44.44,
+          "verdict": "défavorable",
+          "resume": "Lucie Ollomo présente certaines qualités comme un bon comportement et une ouverture à des rôles évolutifs, cependant, des lacunes en leadership et en maturité managériale posent problème. Ces carences sont critiques pour le poste en raison des ambitions stratégiques élevées de la SEEG pour ses projets de transformation.",
+          "points_forts": [
+            "Bon comportement détecté",
+            "Ouverture à des rôles évolutifs"
+          ],
+          "points_a_ameliorer": [
+            "Manque de leadership",
+            "Maturité à développer"
+          ],
+          "rang": 7
+        }
+      },
+      "Sylvain A Boussoungou": {
+        "prenom": "Sylvain",
+        "nom": "A Boussoungou",
+        "conformite": {
+          "prenom": "Sylvain",
+          "nom": "A BOUSSOUNGOU",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {},
+        "feedback": {
+          "prenom": "Sylvain",
+          "nom": "A BOUSSOUNGOU",
+          "score": 68.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente un potentiel managérial satisfaisant, même si le leadership doit être confirmé. Ses compétences semblent alignées avec les défis futurs de la SEEG.",
+          "Points forces": [
+            "Expérience dans la gestion technique dans le secteur de l'eau",
+            "Capacité à s'adapter à des contextes de crise et à proposer des solutions durables"
+          ],
+          "Points à travailler": [
+            "Confirmer et développer ses compétences en leadership",
+            "Améliorer la compréhension des processus de gouvernance et de conformité"
+          ],
+          "rang": 2
+        },
+        "global": {
+          "score_global": 39.25,
+          "verdict": "défavorable",
+          "resume": "Sylvain A. Boussoungou démontre un potentiel managérial satisfaisant et dispose d'une expérience notable dans la gestion technique du secteur de l'eau. Cependant, ses compétences en leadership doivent être confirmées et il doit améliorer sa compréhension des processus de gouvernance.",
+          "points_forts": [
+            "Expérience dans la gestion technique dans le secteur de l'eau",
+            "Capacité à s'adapter à des contextes de crise",
+            "Proposition de solutions durables"
+          ],
+          "points_a_ameliorer": [
+            "Confirmer et développer ses compétences en leadership",
+            "Améliorer la compréhension des processus de gouvernance et de conformité"
+          ],
+          "rang": 8
+        }
+      },
+      "Armel Okouaghe": {
+        "prenom": "Armel",
+        "nom": "Okouaghe",
+        "conformite": {
+          "prenom": "Armel",
+          "nom": "OKOUAGHE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OKOUAGHE",
+          "prenom": "Armel",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.42,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 45.33,
+          "niveau": "Le candidat présente un score moyen faible et ne semble pas aligné avec les exigences stratégiques de transformation de la SEEG. Sa capacité à contribuer de manière significative au changement nécessaire est remise en question.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 45.33 indique que le candidat n'atteint pas le seuil requis pour un alignement positif avec la vision de l'entreprise.",
+          "points_forts": [
+            "Connaissance des enjeux de gestion des ressources en eau et électricité.",
+            "Capacité à comprendre les dynamiques de transformation organisationnelle.",
+            "Une approche structurée pour résoudre les défis opérationnels."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion des talents et en leadership.",
+            "Améliorer les connaissances en matière de gouvernance et de transparence.",
+            "Acquérir des compétences dans la mise en œuvre de nouvelles technologies et d'innovations."
+          ],
+          "rang": 4
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Armel",
+          "nom": "OKOUAGHE",
+          "score": 42.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des tensions avec les collaborateurs et des projets non aboutis, ce qui n'est pas en accord avec la vision de transformation de la SEEG.",
+          "Points forces": [
+            "Expertise métier dans le secteur de l'eau",
+            "Compréhension des enjeux stratégiques"
+          ],
+          "Points à travailler": [
+            "Leadership et gestion des relations interpersonnelles",
+            "Capacité à mener à bien des projets avec l'équipe"
+          ],
+          "rang": 11
+        },
+        "global": {
+          "score_global": 37.58,
+          "verdict": "défavorable",
+          "resume": "Armel Okouaghe possède une expertise notable dans le secteur de l'eau et une compréhension des enjeux stratégiques. Cependant, son score de feedback RH est défavorable en raison de tensions avec les collaborateurs et de sa difficulté à mener à bien les projets, ce qui va à l'encontre de la vision de transformation de la SEEG.",
+          "points_forts": [
+            "Expertise métier dans le secteur de l'eau",
+            "Compréhension des enjeux stratégiques"
+          ],
+          "points_a_ameliorer": [
+            "Leadership et gestion des relations interpersonnelles",
+            "Capacité à mener à bien des projets avec l'équipe"
+          ],
+          "rang": 9
+        }
+      },
+      "Jean Christian Ibouily": {
+        "prenom": "Jean",
+        "nom": "Christian Ibouily",
+        "conformite": {
+          "prenom": "Jean",
+          "nom": "Christian IBOUILY",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {},
+        "feedback": {
+          "prenom": "Jean",
+          "nom": "CHRISTIAN IBOUILY",
+          "score": 62.75,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente des qualités managériales solides et une bonne attitude, mais doit encore démontrer son leadership et son expérience dans des fonctions de responsabilité. Son potentiel d'adaptation à la vision stratégique de la SEEG est prometteur.",
+          "Points forces": [
+            "Bon comportement et attitude positive",
+            "Management efficace"
+          ],
+          "Points à travailler": [
+            "Affirmer son leadership",
+            "Acquérir plus d'expérience dans des rôles de responsabilité"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 36.38,
+          "verdict": "défavorable",
+          "resume": "Jean Christian Ibouily possède un bon potentiel d'adaptation à la vision stratégique de la SEEG grâce à ses solides compétences managériales et son attitude positive. Cependant, le candidat doit encore affirmer son leadership et acquérir plus d'expérience à des postes de responsabilité pour pleinement s'intégrer à la dynamique transformationnelle de l'entreprise.",
+          "points_forts": [
+            "Bon comportement et attitude positive",
+            "Management efficace"
+          ],
+          "points_a_ameliorer": [
+            "Affirmer son leadership",
+            "Acquérir plus d'expérience dans des rôles de responsabilité"
+          ],
+          "rang": 10
+        }
+      },
+      "Jeanne Marie Agathe Ondo": {
+        "prenom": "Jeanne",
+        "nom": "Marie Agathe Ondo",
+        "conformite": {
+          "prenom": "Jeanne",
+          "nom": "Marie Agathe ONDO",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "ONDO",
+          "prenom": "Jeanne Marie Agathe",
+          "poste": "Directeur Technique Eau",
+          "score": 44.3,
+          "resume_experience": "Plus de 25 ans dans le secteur de l’eau, spécialisée en production, distribution, traitement et innovation.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expertise en traitement et distribution d'eau avec supervision d'installations de grande capacité.",
+            "Expérience confirmée en gestion de projets d'envergure et en amélioration continue (ISO 9001 & 17025).",
+            "Capacité à encadrer et faire monter en compétence les équipes dans le domaine de l'eau."
+          ],
+          "points_a_travailler": [
+            "Approfondir les compétences sur les innovations technologiques en matière de traitement de l'eau.",
+            "Renforcement des compétences en gestion budgétaire globale incluant la planification stratégique.",
+            "Augmenter l'utilisation d'outils numériques avancés pour l'analyse des performances du réseau."
+          ],
+          "rang": 1
+        },
+        "feedback": {
+          "prenom": "Jeanne",
+          "nom": "MARIE AGATHE ONDO",
+          "score": 42.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des tensions avec ses équipes, ce qui est incompatible avec le besoin d'un leadership fort et d'une bonne gouvernance pour transformer la SEEG. De plus, son orientation en tant qu'expert métier sans expérience managériale limite sa capacité à diriger l'organisation dans son contexte de restructuration.",
+          "Points forces": [
+            "Compétences techniques solides dans le domaine de l'eau",
+            "Capacité à analyser les besoins métiers"
+          ],
+          "Points à travailler": [
+            "Manque de compétences managériales",
+            "Difficultés à gérer les relations avec les équipes"
+          ],
+          "rang": 12
+        },
+        "global": {
+          "score_global": 35.11,
+          "verdict": "défavorable",
+          "resume": "Bien que Jeanne Marie Agathe Ondo possède des compétences techniques solides et une capacité d'analyse des besoins métiers dans le domaine de l'eau, son profil est jugé défavorable en raison de tensions avec ses équipes et d'un manque d'expérience managériale, ce qui est crucial pour la transformation de la SEEG.",
+          "points_forts": [
+            "Compétences techniques solides dans le domaine de l'eau",
+            "Capacité à analyser les besoins métiers"
+          ],
+          "points_a_ameliorer": [
+            "Manque de compétences managériales",
+            "Difficultés à gérer les relations avec les équipes"
+          ],
+          "rang": 11
+        }
+      },
+      "Eric Serge Obounou": {
+        "prenom": "Eric",
+        "nom": "Serge Obounou",
+        "conformite": {
+          "prenom": "Eric",
+          "nom": "Serge OBOUNOU",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "OBOUNOU",
+          "prenom": "Eric Serge",
+          "poste": "Directeur Technique Eau",
+          "score": 41.1,
+          "resume_experience": {
+            "nombre_annees": 24,
+            "specialite": "hydraulicien et expert en métiers d'eau"
+          },
+          "verdict": "favorable",
+          "raison": "Eric Serge OBOUNOU présente un profil solide avec une expérience significative de 24 ans, particulièrement adaptée au poste de Directeur Technique Eau. Son score de 41.100, bien qu'au-dessus de la moyenne, est dû à son expertise technique et managériale renforcée par de nombreuses réalisations pertinentes dans le domaine de l'eau.",
+          "points_forts": [
+            "Expérience approfondie en gestion de projets et maîtrise d'œuvre",
+            "Solides compétences en management et leadership",
+            "Capacité prouvée à gérer des équipes pluridisciplinaires et des infrastructures de distribution d'eau"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en intégration de systèmes technologiques avancés",
+            "Amélioration de la stratégie de suivi des performances par rapport aux évolutions technologiques",
+            "Approfondissement des méthodes pour une gestion plus efficace des risques et des audits"
+          ],
+          "rang": 6
+        },
+        "feedback": {
+          "prenom": "Eric",
+          "nom": "SERGE OBOUNOU",
+          "score": 42.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente un manque de leadership et d'assise dans le métier, ce qui est crucial pour le rôle de Directeur Technique. Son parcours peu structuré ne correspond pas à la vision de transformation requise pour la SEEG.",
+          "Points forces": [
+            "Bon pédagogue, capable de former des équipes",
+            "Expérience variée dans plusieurs domaines liés à la direction technique"
+          ],
+          "Points à travailler": [
+            "Leadership et prise de décision",
+            "Stabilité et expertise dans le métier spécifique"
+          ],
+          "rang": 10
+        },
+        "global": {
+          "score_global": 34.57,
+          "verdict": "défavorable",
+          "resume": "Eric Serge Obounou présente une expérience variée et des compétences pédagogiques permettant de former des équipes. Cependant, son manque de leadership et d'expertise spécifique ne correspond pas aux besoins de transformation stratégique de la SEEG.",
+          "points_forts": [
+            "Bon pédagogue, capable de former des équipes",
+            "Expérience variée dans plusieurs domaines liés à la direction technique"
+          ],
+          "points_a_ameliorer": [
+            "Leadership et prise de décision",
+            "Stabilité et expertise dans le métier spécifique"
+          ],
+          "rang": 12
+        }
+      },
+      "Murielle Rose Missie": {
+        "prenom": "Murielle",
+        "nom": "Rose Missie",
+        "conformite": {
+          "prenom": "Murielle",
+          "nom": "Rose MISSIE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "MISSIE",
+          "prenom": "Murielle Rose",
+          "poste": "Directeur Technique Eau",
+          "score": 29.5,
+          "resume_experience": "Plus de 20 ans d'expérience dans la production et la distribution de l'eau potable",
+          "verdict": "défavorable",
+          "points_forts": [
+            "Expérience significative en qualité et production d'eau potable",
+            "Connaissances solides en conformité sanitaire et environnementales",
+            "Habileté à superviser des installations complexes"
+          ],
+          "points_a_travailler": [
+            "Amélioration des compétences en gestion organisationnelle et financière",
+            "Renforcement des capacités en management des équipes",
+            "Développement de compétences en intégration des évolutions technologiques"
+          ],
+          "rang": 13
+        },
+        "feedback": {
+          "prenom": "Murielle",
+          "nom": "ROSE MISSIE",
+          "score": 42.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente de faibles compétences managériales et ne semble pas aligné avec les valeurs de leadership requises pour transformer la SEEG, un aspect essentiel dans le contexte de réorganisation et de modernisation des infrastructures.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Renforcer ses compétences en leadership",
+            "Élaborer une vision stratégique alignée avec les objectifs organisationnels"
+          ],
+          "rang": 13
+        },
+        "global": {
+          "score_global": 32.15,
+          "verdict": "défavorable",
+          "resume": "Murielle Rose Missie ne semble pas actuellement disposer des compétences managériales nécessaires pour accompagner la SEEG dans sa transformation stratégique. Son profil ne s'aligne pas avec les valeurs de leadership et de vision stratégique essentielles pour relever les défis de réorganisation et de modernisation que l'entreprise doit affronter.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Renforcer ses compétences en leadership",
+            "Élaborer une vision stratégique alignée avec les objectifs organisationnels"
+          ],
+          "rang": 13
+        }
+      },
+      "Wilfrid Pascal Andjayi": {
+        "prenom": "Wilfrid",
+        "nom": "Pascal Andjayi",
+        "conformite": {
+          "prenom": "Wilfrid",
+          "nom": "Pascal ANDJAYI",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "ANDJAYI",
+          "prenom": "Wilfrid Pascal",
+          "poste": "Directeur Technique Eau",
+          "score": 39.4,
+          "resume_experience": "16 ans d'expérience dans le secteur de l'eau et de l'énergie",
+          "verdict": "moyen",
+          "points_forts": [
+            "Solide expérience dans la gestion des réseaux de distribution d'eau",
+            "Compétences éprouvées en supervision de projets et gestion des pertes d'eau",
+            "Connaissances approfondies en analyse de la qualité de l'eau et gestion des ressources hydriques"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en gestion organisationnelle et financière",
+            "Développement du suivi des innovations technologiques et réglementaires",
+            "Amélioration du management des équipes pour favoriser la montée en compétence"
+          ],
+          "rang": 10
+        },
+        "feedback": {
+          "prenom": "Wilfrid",
+          "nom": "PASCAL ANDJAYI",
+          "score": 38.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des lacunes importantes en leadership et en management, ce qui est nécessaire pour transformer la SEEG. Son rendement actuel n'est pas satisfaisant, et il a été contesté dans son rôle précédent.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Leadership et management",
+            "Rigueur dans l'exécution des tâches"
+          ],
+          "rang": 14
+        },
+        "global": {
+          "score_global": 32.13,
+          "verdict": "défavorable",
+          "resume": "Le profil de Wilfrid Pascal Andjayi présente des insuffisances importantes en leadership et en management, éléments critiques pour accompagner la transformation de la SEEG. Ses performances antérieures n'ont pas convaincu, et son rôle précédent a été sujet à contestation.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Leadership et management",
+            "Rigueur dans l'exécution des tâches"
+          ],
+          "rang": 14
+        }
+      },
+      "Sylvain Boussoungou": {
+        "prenom": "Sylvain",
+        "nom": "Boussoungou",
+        "conformite": {},
+        "mtp": {
+          "nom": "BOUSSOUNGOU",
+          "prenom": "Sylvain",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.47,
+            "Talent": 0.44,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 47.33,
+          "niveau": "Le candidat a obtenu un score moyen de 47.33, ce qui indique une performance moyenne. Il semble avoir un potentiel qui pourrait être exploité avec des développements appropriés dans certains domaines.",
+          "verdict": "moyen",
+          "explication_verdict": "Le score moyen de 47.33 se situe dans la fourchette moyenne, suggérant que le candidat a des compétences acceptables, mais qu'il peut avoir besoin de développement pour atteindre les objectifs de l'entreprise.",
+          "points_forts": [
+            "Connaissance des techniques en matière d'eau et d'électricité.",
+            "Capacité à travailler en équipe et à collaborer avec divers acteurs.",
+            "Compréhension des défis liés à la gestion des infrastructures vieillissantes."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences managériales pour mieux diriger des équipes.",
+            "Renforcer la capacité d'adaptation aux nouvelles technologies et méthodes de travail.",
+            "Développer une vision stratégique plus alignée avec les objectifs de transformation de l'entreprise."
+          ],
+          "rang": 2
+        },
+        "completude": {
+          "nom": "BOUSSOUNGOU",
+          "prenom": "Sylvain",
+          "poste": "Directeur Technique Eau",
+          "score": 37.7,
+          "resume_experience": "Plusieurs années d'expérience dans le domaine technique, coordonné le projet PIAEPAL",
+          "verdict": "moyen",
+          "raison": "Le candidat a un bon score de similarité et démontre une expérience significative dans la coordination de projets techniques d'envergure, ce qui peut contribuer positivement aux missions du poste.",
+          "points_forts": [
+            "Expérience dans la coordination de projets d'envergure",
+            "Capacité à travailler en synergie avec des partenaires variés",
+            "Compétences en management d'équipe et développement des compétences"
+          ],
+          "points_a_travailler": [
+            "Démontrer une expertise spécifique en conformité aux normes sanitaires et environnementales",
+            "Approfondir la compréhension des aspects financiers et budgétaires spécifiques au secteur",
+            "Renforcer les compétences en intégration de technologies et innovations dans le secteur de l'eau"
+          ],
+          "rang": 11
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 19.37,
+          "verdict": "défavorable",
+          "resume": "Sylvain Boussoungou présente une candidature intégrant des aspects validés par le retour d'expérience de la société, mais le manque de retour RH et les scores faibles compromettent sa compatibilité avec les exigences du poste. Son score de 'Feedback RH' nul, associé aux autres scores faibles, reflète un manque d'alignement significatif avec la vision transformatrice de l'entreprise.",
+          "points_forts": [
+            "Expérience potentiellement pertinente dans le secteur de l'eau",
+            "Compréhension possible des défis techniques actuels"
+          ],
+          "points_a_ameliorer": [
+            "Score de feedback RH nul, indiquant des préoccupations sur l'adéquation culturelle",
+            "Complétude de la candidature en dessous des attentes"
+          ],
+          "rang": 15
+        }
+      },
+      "Jeanne Ondo": {
+        "prenom": "Jeanne",
+        "nom": "Ondo",
+        "conformite": {},
+        "mtp": {
+          "nom": "ONDO",
+          "prenom": "Jeanne",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.47,
+            "Talent": 0.44,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 47.33,
+          "niveau": "Le score moyen du candidat indique une adéquation moyenne avec la vision de l'entreprise. Cela suggère qu'il y a des aspects positifs, mais également des domaines nécessitant une amélioration significative.",
+          "verdict": "moyen",
+          "raison_du_verdict": "Le score moyen de 47.33 se situe dans la tranche des scores moyens, indiquant que le candidat n'est pas encore tout à fait en phase avec les exigences élevées de la vision SEEG.",
+          "points_forts": [
+            "Compréhension des enjeux techniques liés à la gestion de l'eau.",
+            "Capacité à travailler en équipe pour améliorer les performances.",
+            "Sensibilité à l'importance d'une gouvernance transparente."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion de projets d'infrastructures.",
+            "Améliorer la connaissance des nouvelles technologies et de l'innovation dans le secteur.",
+            "Développer des compétences en leadership pour diriger des équipes vers une transformation."
+          ],
+          "rang": 1
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.83,
+          "verdict": "défavorable",
+          "resume": "Le profil de Jeanne Ondo ne répond pas aux attentes pour le poste de Directeur Technique Eau, en considérant le faible score global et l'absence de retours positifs provenant de l'évaluation RH. La candidature nécessite d'être améliorée, surtout en termes de complétude de documents et de compétences techniques appropriées.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Non-conformité documentaire",
+            "Absence de feedback RH positif"
+          ],
+          "rang": 16
+        }
+      },
+      "Murielle Missie": {
+        "prenom": "Murielle",
+        "nom": "Missie",
+        "conformite": {},
+        "mtp": {
+          "nom": "MISSIE",
+          "prenom": "Murielle",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.45,
+            "Talent": 0.43,
+            "Paradigme": 0.47
+          },
+          "Score_moyen": 45.0,
+          "niveau": "Le score moyen de 45.0 indique une adéquation limitée avec la vision de l'entreprise. Cette performance place le candidat dans une position nécessitant des améliorations significatives pour répondre aux enjeux stratégiques de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen inférieur à 43.5 montre que le candidat ne répond pas suffisamment aux exigences du poste ni aux attentes de la vision de l'entreprise.",
+          "points_forts": [
+            "Bonne compréhension des enjeux techniques liés à l'eau.",
+            "Capacité à travailler dans des environnements complexes.",
+            "Volonté de s'adapter aux exigences de transformation."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences managériales pour une gouvernance renforcée.",
+            "Renforcer l'expertise en gestion des infrastructures.",
+            "Développer une approche proactive en matière de transparence et d'audit."
+          ],
+          "rang": 5
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.25,
+          "verdict": "défavorable",
+          "resume": "Murielle Missie n'a pas satisfait aux critères clés du poste en raison de la non-conformité documentaire et d'une inadéquation CV-lettre de motivation avec l'offre. De plus, l'absence de feedback RH rend difficile une évaluation complète et positive du profil.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Pertinence du CV et de la lettre de motivation par rapport à l'offre"
+          ],
+          "rang": 17
+        }
+      },
+      "Wilfrid Andjayi": {
+        "prenom": "Wilfrid",
+        "nom": "Andjayi",
+        "conformite": {},
+        "mtp": {
+          "nom": "ANDJAYI",
+          "prenom": "Wilfrid",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.41,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 45.0,
+          "niveau": "Le score moyen de ce candidat indique une performance qui se situe en dessous des attentes de la vision stratégique de la SEEG. Il serait nécessaire pour lui d'améliorer sa compréhension des enjeux techniques et organisationnels pour répondre aux défis actuels de l'entreprise.",
+          "verdict": "défavorables",
+          "raison_verdict": "Le score moyen de 45.0 est en dessous du seuil critique de 43.5, indiquant une adéquation modérée avec la vision de l'entreprise.",
+          "points_forts": [
+            "Une bonne connaissance des défis de gestion des infrastructures dans le secteur de l'eau.",
+            "Un intérêt apparent pour la réorganisation et la réduction des charges salariales.",
+            "Capacité à travailler sur des partenariats techniques, ce qui est crucial pour la modernisation."
+          ],
+          "points_a_travailler": [
+            "Améliorer sa gestion des talents et son approche de leadership.",
+            "Renforcer sa capacité à mener des projets de modernisation d'infrastructures.",
+            "Développer une compréhension de la gouvernance d'entreprise et de la transparence dans les processus."
+          ],
+          "rang": 6
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.25,
+          "verdict": "défavorable",
+          "resume": "Le candidat ne semble pas répondre aux attentes du poste en raison de scores très faibles sur plusieurs critères clés, y compris la conformité documentaire et la complétude du dossier. De plus, le feedback RH est absent, indiquant un manque de complément d'informations cruciales pour l'évaluation.",
+          "points_forts": [
+            "Aucun point fort discernable en l'absence de feedback RH positif ou de conformités documentaires."
+          ],
+          "points_a_ameliorer": [
+            "Améliorer la conformité documentaire pour mieux répondre aux exigences formelles des candidatures.",
+            "Assurer la complétude des dossiers de candidature (CV et lettre de motivation) en relation avec l'offre."
+          ],
+          "rang": 18
+        }
+      },
+      "Aude Akoe Mba": {
+        "prenom": "Aude",
+        "nom": "Akoe Mba",
+        "conformite": {},
+        "mtp": {
+          "nom": "AKOE MBA",
+          "prenom": "Aude",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.45,
+            "Talent": 0.41,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 44.67,
+          "niveau": "Le candidat présente un score moyen en dessous du seuil favorable, indiquant qu'il pourrait avoir des difficultés à s'aligner sur la vision de l'entreprise. Son profil montre des capacités techniques, mais nécessite des améliorations pour renforcer sa pertinence dans un environnement en mutation rapide.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui indique un alignement insuffisant avec les exigences de l’entreprise.",
+          "points_forts": [
+            "Connaissance des enjeux liés à la gestion des infrastructures.",
+            "Capacités techniques en matière d'eau et d'électricité.",
+            "Orientation vers l'amélioration des processus."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion de projets complexes.",
+            "Développer des aptitudes en communication et leadership.",
+            "Améliorer ses compétences en innovation et technologie."
+          ],
+          "rang": 8
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.17,
+          "verdict": "défavorable",
+          "resume": "Le candidat Aude Akoe Mba ne répond pas aux attentes du poste de Directeur Technique Eau. La candidature présente des lacunes significatives en termes de conformité documentaire et de complétude, et ne correspond pas aux exigences et à la vision stratégique de l'entreprise.",
+          "points_forts": [
+            "Aucune information disponible"
+          ],
+          "points_a_ameliorer": [
+            "Manque de conformité documentaire",
+            "Incomplétude du dossier de candidature"
+          ],
+          "rang": 19
+        }
+      },
+      "Jean Ibouily": {
+        "prenom": "Jean",
+        "nom": "Ibouily",
+        "conformite": {},
+        "mtp": {
+          "nom": "IBOUILY",
+          "prenom": "Jean",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.42,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 44.33,
+          "niveau": "Le candidat présente un score moyen décevant, indiquant des axes d'amélioration importants. Son profil ne semble pas totalement aligné avec les exigences stratégiques de la SEEG dans le contexte actuel.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 44.33 est en dessous du seuil requis, ce qui suggère un besoin crucial de développement des compétences.",
+          "points_forts": [
+            "Une bonne connaissance des métiers liés à l'eau, indiquée par un score relativement élevé dans le domaine métier.",
+            "Une sensibilité aux paradigmes de l'industrie qui pourrait être développée avec une formation supplémentaire.",
+            "Un potentiel pour le travail en équipe, acquis grâce à ses expériences antérieures."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en leadership et en gestion d'équipe pour répondre aux enjeux de gouvernance.",
+            "Améliorer les capacités en gestion de projet pour s'assurer que les infrastructures sont maintenues et développées selon les standards attendus.",
+            "Développer une compréhension plus approfondie des opérations techniques et des nouvelles technologies dans le domaine de l'énergie et de l'eau."
+          ],
+          "rang": 10
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.08,
+          "verdict": "défavorable",
+          "resume": "Le candidat présente un score global défavorable, notamment dû à une non-conformité documentaire et une faible complétude par rapport à l'offre. Le manque de détails dans le feedback RH complique l'évaluation de ses compétences spécifiques pour diriger la transformation technique de SEEG selon sa vision stratégique.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude par rapport à l'offre",
+            "Feedback RH inexistant"
+          ],
+          "rang": 20
+        }
+      },
+      "Hermann Tanda": {
+        "prenom": "Hermann",
+        "nom": "Tanda",
+        "conformite": {},
+        "mtp": {
+          "nom": "TANDA",
+          "prenom": "Hermann",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.43,
+            "Talent": 0.41,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 43.0,
+          "niveau": "Le score moyen de ce candidat est inférieur à la moyenne requise, ce qui indique une adéquation limitée avec les attentes de l'entreprise. Sa contribution potentielle à la vision de la SEEG pourrait être remise en question, compte tenu de ses scores faibles.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 43.0 est inférieur à 43.5, ce qui démontre un manque d'alignement avec les exigences et la vision de l'entreprise.",
+          "points_forts": [
+            "Connaissances techniques dans le domaine de l'eau et de l'électricité.",
+            "Capacité à travailler en équipe et à motiver les autres.",
+            "Compréhension des enjeux de la transition énergétique."
+          ],
+          "points_a_travailler": [
+            "Amélioration des compétences managériales pour une gouvernance effective.",
+            "Développement de compétences en gestion de projets pour la mise en œuvre d'infrastructures.",
+            "Accroissement de la capacité d'analyses stratégiques pour répondre aux défis organisationnels."
+          ],
+          "rang": 12
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 10.75,
+          "verdict": "défavorable",
+          "resume": "Le candidat, Hermann Tanda, présente un score global défavorable pour le poste de Directeur Technique Eau. Le manque de conformité documentaire, complétude des documents et feedback RH souligne des lacunes significatives par rapport aux attentes stratégiques et opérationnelles de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Manque de conformité documentaire",
+            "Absence de complétude entre le CV, la lettre de motivation et les exigences du poste",
+            "Feedback RH non fourni"
+          ],
+          "rang": 21
+        }
+      },
+      "Eric Obounou": {
+        "prenom": "Eric",
+        "nom": "Obounou",
+        "conformite": {},
+        "mtp": {
+          "nom": "OBOUNOU",
+          "prenom": "Eric",
+          "poste": "Direction Technique Eau",
+          "scores": {
+            "Metier": 0.42,
+            "Talent": 0.4,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 42.33,
+          "niveau": "Le candidat présente un score moyen défavorable, indiquant que ses compétences et sa vision ne s'alignent pas totalement avec les attentes de l'entreprise. Une réévaluation est nécessaire pour comprendre comment il pourrait s'intégrer dans un environnement complexe et dynamique tel que celui de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen étant strictement inférieur à 43.5 démontre un manque de compatibilité avec les exigences et les aspirations de l'entreprise.",
+          "points_forts": [
+            "Compétences techniques dans le domaine de l'eau",
+            "Esprit analytique pouvant être utile pour des investissements à long terme",
+            "Capacité à intégrer des retours d'expérience dans ses méthodes de travail"
+          ],
+          "points_a_travailler": [
+            "Améliorer la gestion des ressources et la conformité aux procédures",
+            "Renforcer la gouvernance et la transparence dans la gestion des projets",
+            "Développer une approche proactive pour l'intégration des nouvelles technologies"
+          ],
+          "rang": 13
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 10.58,
+          "verdict": "défavorable",
+          "resume": "Le candidat Eric Obounou ne semble pas répondre aux attentes cruciales pour le poste de Directeur Technique Eau chez SEEG, compte tenu de sa faible conformité documentaire et de l'absence de feedback RH positif. L'entreprise cherche un leader capable d'orchestrer des réformes majeures et de surmonter les défis actuels.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Feedback RH",
+            "Complétude du dossier (CV + LM)"
+          ],
+          "rang": 22
+        }
+      },
+      "Armel Gérard Davy Okouaghe": {
+        "prenom": "Armel",
+        "nom": "Gérard Davy Okouaghe",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "OKOUAGHE",
+          "prenom": "Armel Gérard Davy",
+          "poste": "Directeur Technique Eau",
+          "score": 42.6,
+          "resume_experience": "20 ans d'expérience dans le domaine de l'eau, ingénieur hydraulicien.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expertise technique approfondie dans la gestion des équipements de production, transport et distribution d'eau potable",
+            "Expérience en management d'équipes pluridisciplinaires et en animation de la performance opérationnelle",
+            "Connaissances en gestion organisationnelle et financière, incluant la gestion de budgets importants"
+          ],
+          "points_a_travailler": [
+            "Perfectionner la maîtrise de l'anglais pour une meilleure communication internationale",
+            "Renforcer la stratégie d'intégration des innovations technologiques et réglementaires",
+            "Développer davantage la résilience des équipements en gestion des risques"
+          ],
+          "rang": 4
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.52,
+          "verdict": "défavorable",
+          "resume": "Le candidat Armel Gérard Davy Okouaghe présente un faible score global en raison d'une faible correspondance entre son profil et les exigences du poste, ainsi qu'un manque notable de feedback positif. Ses compétences documentaires et techniques ne semblent pas alignées avec la vision stratégique de transformation de la SEEG, notamment en ce qui concerne la modernisation des infrastructures et la gouvernance.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Manque de conformité documentaire",
+            "Absence de feedback RH positif",
+            "Faible complétude du dossier par rapport à l'offre"
+          ],
+          "rang": 23
+        }
+      }
+    }
+  }
