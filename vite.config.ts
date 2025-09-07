@@ -66,6 +66,7 @@ export default defineConfig(({ mode }) => ({
               <strong>Lieu :</strong> ${location || 'Salle de réunion du Président du Conseil d’Administration au 9ᵉ étage du siège de la SEEG sis à Libreville.'}</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, muni(e) de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
+              <p style="margin:0 0 10px; font-size:16px;"><strong>PS: Presenter-vous avec tous les documents fournis sur la plateforme, badge professionnel ainsi que votre acte de naissance</strong></p>
             </div>`;
 
             const transporter = nodemailer.createTransport({
@@ -104,10 +105,10 @@ export default defineConfig(({ mode }) => ({
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
 
-             
+
             res.end(JSON.stringify({ ok: true, messageId: (info as any)?.messageId }));
             return;
-             
+
           } catch (e: any) {
             //console.error('[DEV API] Erreur /api/send-interview-email:', e);
             res.statusCode = 500;
@@ -205,6 +206,7 @@ export default defineConfig(({ mode }) => ({
               <strong>Lieu :</strong> ${location || "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville."}</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
+              <p style="margin:0 0 10px; font-size:16px;"><strong>PS: Presenter-vous avec tous les documents fournis sur la plateforme, badge professionnel ainsi que votre acte de naissance</strong></p>
               
               <br/>
               <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>

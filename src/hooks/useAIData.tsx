@@ -15,6 +15,7 @@ export interface AICandidateData {
       Paradigme: number;
       Moyen: number;
     };
+    score_moyen?: number;
     niveau: string;
     verdict: string;
     points_forts: string[];
@@ -28,6 +29,14 @@ export interface AICandidateData {
     forces: string[];
     faiblesses: string[];
     verdict: string;
+    rang: number;
+  };
+  feedback?: {
+    score: number;
+    verdict: string;
+    raisons: string;
+    points_forts: string[];
+    points_a_travailler: string[];
     rang: number;
   };
   resume_global: {
@@ -81,8 +90,8 @@ export function useAIData() {
 
         // Configuration des départements - facilement extensible
         const departments = [
-          { name: 'Chef de Département Eau', file: '/eau_complet.json' },
-          // {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
+          { name: 'Chef de Département Eau', file: '/chef_departement_eau.json' },
+           {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
           // {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
           // {name: 'Directeur Exploitation Eau', file: '/directeur_exploitation_eau.json'},
           // {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
@@ -121,7 +130,20 @@ export function useAIData() {
           let validIndex = 0;
           departments.forEach((dept, index) => {
             if (responses[index].ok) {
-              transformedData[dept.name] = transformData(validJsonData[validIndex]);
+              // Gestion spéciale pour les moyens généraux qui ont une structure imbriquée
+              if (dept.name === 'Moyens généraux') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const directorData = nestedData['Directeur Moyens Généraux'];
+                
+                if (directorData && typeof directorData === 'object') {
+                  transformedData[dept.name] = transformData(directorData, true);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else {
+                transformedData[dept.name] = transformData(validJsonData[validIndex], false);
+              }
               validIndex++;
             } else {
               // Ajouter un département vide pour les fichiers manquants
@@ -140,7 +162,7 @@ export function useAIData() {
         );
 
         // Transformer les données pour uniformiser le format
-        const transformData = (jsonData: Record<string, unknown>): AICandidateData[] => {
+        const transformData = (jsonData: Record<string, unknown>, isMoyensGeneraux: boolean = false): AICandidateData[] => {
           return Object.entries(jsonData).map(([key, value]: [string, unknown]) => {
             // Gestion robuste des noms (supporte différents formats)
             const nameParts = key.split(' ').filter(part => part.trim() !== '');
@@ -153,7 +175,7 @@ export function useAIData() {
               return {
                 nom,
                 prenom,
-                poste: 'Chef de Département',
+                poste: isMoyensGeneraux ? 'Directeur Moyens Généraux' : 'Chef de Département',
                 resume_global: {
                   score_global: 0,
                   commentaire_global: 'Données invalides',
@@ -169,7 +191,9 @@ export function useAIData() {
 
             // Gestion robuste des scores MTP avec différentes clés possibles
             const mtpData = candidateData.mtp as Record<string, unknown> | undefined;
-            const mtpScoreData = mtpData?.['score MTP'] as Record<string, unknown> | undefined;
+            const mtpScoreData = isMoyensGeneraux
+              ? mtpData // Pour moyens généraux, les données sont directement dans mtp
+              : mtpData?.['score MTP'] as Record<string, unknown> | undefined;
             const mtpScores = mtpScoreData?.scores as Record<string, number> | undefined || {};
             
             // Normalisation des scores MTP (gère différentes variantes de clés)
@@ -180,28 +204,43 @@ export function useAIData() {
               Moyen: mtpScores.Moyen || mtpScores.moyen || 0
             };
 
-            // Gestion robuste de la conformité
+            // Gestion robuste de la conformité (structure différente selon le fichier)
             const conformiteData = candidateData.conformite as Record<string, unknown> | undefined;
-            const conformiteScoreData = conformiteData?.['score de conformité'] as Record<string, unknown> | undefined;
+            const conformiteScoreData = isMoyensGeneraux
+              ? conformiteData // Pour moyens généraux, les données sont directement dans conformite
+              : conformiteData?.['score de conformité'] as Record<string, unknown> | undefined;
 
-            // Gestion robuste de la similarité
-            const similariteData = candidateData.similarite_offre as Record<string, unknown> | undefined;
-            const similariteScoreData = similariteData?.['score de complétude'] as Record<string, unknown> | undefined;
+            // Gestion robuste de la similarité (clés différentes selon le fichier)
+            const similariteData = isMoyensGeneraux 
+              ? candidateData.completude as Record<string, unknown> | undefined
+              : candidateData.similarite_offre as Record<string, unknown> | undefined;
+            const similariteScoreData = isMoyensGeneraux
+              ? similariteData // Pour moyens généraux, les données sont directement dans completude
+              : similariteData?.['score de complétude'] as Record<string, unknown> | undefined;
 
-            // Gestion robuste du résumé global
-            const resumeGlobalData = candidateData.resume_global as Record<string, unknown> | undefined;
+            // Gestion robuste du résumé global (clés différentes selon le fichier)
+            const resumeGlobalData = isMoyensGeneraux
+              ? candidateData.global as Record<string, unknown> | undefined
+              : candidateData.resume_global as Record<string, unknown> | undefined;
+
+            // Gestion robuste des feedbacks (structure différente selon le fichier)
+            const feedbackData = isMoyensGeneraux
+              ? candidateData.feedback as Record<string, unknown> | undefined
+              : undefined; // Les feedbacks ne sont pas dans le fichier chef_departement_eau
 
             // Extraction du poste (gère différentes sources)
             const poste = (mtpScoreData?.poste as string) || 
                          (similariteScoreData?.poste as string) || 
                          (resumeGlobalData?.poste as string) ||
-                         'Chef de Département';
+                         (isMoyensGeneraux ? 'Directeur Moyens Généraux' : 'Chef de Département');
 
             // Gestion robuste des scores de similarité
             let similarityScore = 0;
             if (similariteScoreData?.score !== undefined) {
               if (typeof similariteScoreData.score === 'number') {
-                similarityScore = similariteScoreData.score;
+                // Pour les moyens généraux, le score est déjà en pourcentage
+                // Pour les autres fichiers, il peut être en décimal
+                similarityScore = isMoyensGeneraux ? similariteScoreData.score : similariteScoreData.score;
               } else {
                 const parsedScore = parseFloat(similariteScoreData.score as string);
                 similarityScore = isNaN(parsedScore) ? 0 : parsedScore;
@@ -218,6 +257,7 @@ export function useAIData() {
               } : undefined,
               mtp: mtpScoreData ? {
                 scores: normalizedMtpScores,
+                score_moyen: (mtpScoreData.Score_moyen as number) || undefined,
                 niveau: (mtpScoreData.niveau as string) || 'Non évalué',
                 verdict: (mtpScoreData.verdict as string) || 'Non évalué',
                 points_forts: Array.isArray(mtpScoreData.points_forts) ? mtpScoreData.points_forts as string[] : [],
@@ -227,21 +267,33 @@ export function useAIData() {
               similarite_offre: similariteScoreData ? {
                 resume_experience: similariteScoreData.resume_experience as string | { nombre_d_annees: number; specialite: string },
                 score: similarityScore,
-                commentaire_score: (similariteScoreData.commentaire_score as string) || 'Aucun commentaire',
-                forces: Array.isArray(similariteScoreData.forces) ? similariteScoreData.forces as string[] : [],
-                faiblesses: Array.isArray(similariteScoreData.faiblesses) ? similariteScoreData.faiblesses as string[] : [],
+                commentaire_score: (similariteScoreData.commentaire_score as string) || (similariteScoreData.raison_verdict as string) || 'Aucun commentaire',
+                forces: Array.isArray(similariteScoreData.points_forts) ? similariteScoreData.points_forts as string[] : 
+                       Array.isArray(similariteScoreData.forces) ? similariteScoreData.forces as string[] : [],
+                faiblesses: Array.isArray(similariteScoreData.points_a_travailler) ? similariteScoreData.points_a_travailler as string[] : 
+                           Array.isArray(similariteScoreData.faiblesses) ? similariteScoreData.faiblesses as string[] : [],
                 verdict: (similariteScoreData.verdict as string) || 'Non évalué',
                 rang: (similariteScoreData.rang as number) || 0
               } : undefined,
+              feedback: feedbackData ? {
+                score: (feedbackData.score as number) || 0,
+                verdict: (feedbackData.verdict as string) || 'Non évalué',
+                raisons: (feedbackData.raisons as string) || 'Aucun commentaire',
+                points_forts: Array.isArray(feedbackData['Points forces']) ? feedbackData['Points forces'] as string[] : [],
+                points_a_travailler: Array.isArray(feedbackData['Points à travailler']) ? feedbackData['Points à travailler'] as string[] : [],
+                rang: (feedbackData.rang as number) || 0
+              } : undefined,
               resume_global: {
                 score_global: (resumeGlobalData?.score_global as number) || 0,
-                commentaire_global: (resumeGlobalData?.commentaire_global as string) || 'Aucun commentaire',
-                forces: Array.isArray(resumeGlobalData?.forces) ? resumeGlobalData.forces as string[] : 
+                commentaire_global: (resumeGlobalData?.commentaire_global as string) || (resumeGlobalData?.resume as string) || 'Aucun commentaire',
+                forces: Array.isArray(resumeGlobalData?.points_forts) ? resumeGlobalData.points_forts as string[] : 
+                       Array.isArray(resumeGlobalData?.forces) ? resumeGlobalData.forces as string[] :
                        typeof resumeGlobalData?.forces === 'string' ? [resumeGlobalData.forces] : [],
                 points_a_ameliorer: Array.isArray(resumeGlobalData?.points_a_ameliorer) ? resumeGlobalData.points_a_ameliorer as string[] : 
+                                   Array.isArray(resumeGlobalData?.points_a_travailler) ? resumeGlobalData.points_a_travailler as string[] :
                                    typeof resumeGlobalData?.points_a_ameliorer === 'string' ? [resumeGlobalData.points_a_ameliorer] : [],
                 verdict: (resumeGlobalData?.verdict as string) || 'Non évalué',
-                rang_global: (resumeGlobalData?.rang_global as number) || 0
+                rang_global: (resumeGlobalData?.rang_global as number) || (resumeGlobalData?.rang as number) || 0
               }
             };
           });
@@ -252,8 +304,25 @@ export function useAIData() {
         departments.forEach((dept, index) => {
           // Valider la structure avant transformation
           if (validateJsonStructure(jsonData[index], dept.file)) {
-            transformedData[dept.name] = transformData(jsonData[index]);
-            console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s)`);
+            // Gestion spéciale pour les moyens généraux qui ont une structure imbriquée
+            if (dept.name === 'Moyens généraux') {
+              // Le fichier moyens_generaux_complet.json a une structure imbriquée
+              // avec "Directeur Moyens Généraux" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const directorData = nestedData['Directeur Moyens Généraux'];
+              
+              if (directorData && typeof directorData === 'object') {
+                transformedData[dept.name] = transformData(directorData, true);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else {
+              // Structure normale pour les autres départements
+              transformedData[dept.name] = transformData(jsonData[index], false);
+              console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s)`);
+            }
           } else {
             transformedData[dept.name] = [];
             console.warn(`⚠️ Département ${dept.name}: Structure invalide, ignoré`);
