@@ -15,8 +15,14 @@ export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps)
   const navigate = useNavigate();
 
   const handleAdvancedClick = () => {
-    // Rediriger vers la page d'analyse IA
-    navigate('/ai-analysis');
+    // Rediriger vers la page Traitement IA
+    // Déterminer le rôle de l'utilisateur basé sur l'URL actuelle
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/observer/')) {
+      navigate('/observer/traitements-ia');
+    } else {
+      navigate('/recruiter/traitements-ia');
+    }
   };
 
   return (
