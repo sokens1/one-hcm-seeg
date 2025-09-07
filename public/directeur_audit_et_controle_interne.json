@@ -1,0 +1,808 @@
+{
+    "Directeur Audit & Contrôle interne": {
+      "Hans Dimitri Owele": {
+        "prenom": "Hans",
+        "nom": "Dimitri Owele",
+        "conformite": {
+          "prenom": "Hans",
+          "nom": "Dimitri OWELE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "OWELE",
+          "prenom": "Hans Dimitri",
+          "poste": "Directeur Audit & Contrôle interne",
+          "score": 32.2,
+          "resume_experience": "12 ans, principalement en administration, finances publiques et management financier",
+          "verdict": "défavorable",
+          "raison": "Le candidat n'a pas suffisamment d'expérience directe en audit et contrôle interne pour le poste visé.",
+          "points_forts": [
+            "Gestion financière et budgétaire",
+            "Communication et relations avec les organismes externes",
+            "Management d'équipe"
+          ],
+          "points_a_travailler": [
+            "Expérience directe en audit interne",
+            "Expertise en dispositifs de contrôle interne",
+            "Connaissance approfondie des meilleures pratiques d'audit"
+          ],
+          "rang": 5
+        },
+        "feedback": {
+          "prenom": "Hans",
+          "nom": "DIMITRI OWELE",
+          "score": 72.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat a démontré de bonnes compétences managériales et une capacité d'adaptation au feedback. Sa capacité à affirmer son leadership est un point à renforcer, mais son comportement satisfaisant est un atout.",
+          "Points forces": [
+            "Gestion managériale solide",
+            "Comportement positif et adaptable"
+          ],
+          "Points à travailler": [
+            "Affirmation du leadership",
+            "Développement de la vision stratégique"
+          ],
+          "rang": 1
+        },
+        "global": {
+          "score_global": 47.69,
+          "verdict": "moyen",
+          "resume": "Hans Dimitri Owele a démontré de solides compétences managériales, étant adaptable et d'un comportement positif. Toutefois, il doit renforcer son leadership et développer davantage une vision stratégique alignée avec les objectifs de transformation de la SEEG.",
+          "points_forts": [
+            "Gestion managériale solide",
+            "Comportement positif",
+            "Capacité d'adaptation"
+          ],
+          "points_a_ameliorer": [
+            "Affirmation du leadership",
+            "Développement de la vision stratégique"
+          ],
+          "rang": 1
+        }
+      },
+      "Natacha Okomo Assoumou Epse Ongone": {
+        "prenom": "Natacha",
+        "nom": "Okomo Assoumou Epse Ongone",
+        "conformite": {
+          "prenom": "Natacha",
+          "nom": "OKOMO ASSOUMOU Epse ONGONE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OKOMO ASSOUMOU Epse ONGONE",
+          "prenom": "Natacha",
+          "poste": "Direction de l'Audit & Contrôle Interne",
+          "scores": {
+            "Métier": 0.34,
+            "Talent": 0.0,
+            "Paradigme": 0.44
+          },
+          "Score_moyen": 26.0,
+          "niveau": "Le candidat présente un score moyen très en dessous des attentes de l'entreprise, indiquant des lacunes significatives dans ses compétences et son adéquation à la vision de la SEEG. Cela soulève des interrogations quant à sa capacité à contribuer efficacement à la transformation requise au sein de l'organisation.",
+          "verdict": "défavorable",
+          "raison_verdit": "Le score moyen de 26.0 est largement en deçà du seuil minimum requis pour être considéré comme favorable.",
+          "points_forts": [
+            "Certaines expériences précédentes peuvent permettre une compréhension des enjeux organisationnels.",
+            "Une connaissance des structures de gouvernance pourrait être bénéfique pour renforcer la transparence."
+          ],
+          "points_a_travailler": [
+            "Développer des compétences spécifiques en audit et contrôle interne.",
+            "Augmenter la maîtrise des talents interpersonnels et de gestion d'équipe.",
+            "Renforcer la compréhension des paradigmes de transformation organisationnelle."
+          ],
+          "rang": 7
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Natacha",
+          "nom": "OKOMO ASSOUMOU EPSE ONGONE",
+          "score": 58.7,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente une expérience de gestion et un comportement satisfaisant, mais nécessite encore une certaine évolution pour assumer pleinement le poste dans un contexte complexe.",
+          "Points forces": [
+            "Capacité à travailler avec les équipes et à les motiver.",
+            "Bon comportement professionnel reconnu par ses pairs."
+          ],
+          "Points à travailler": [
+            "Nécessité d'un accompagnement pour consolider ses compétences managériales.",
+            "Doit acquérir une vision stratégique plus précise pour répondre aux exigences de transformation de la SEEG."
+          ],
+          "rang": 2
+        },
+        "global": {
+          "score_global": 40.85,
+          "verdict": "défavorable",
+          "resume": "Natacha présente une expérience de gestion et un bon comportement professionnel, mais son score global défavorable suggère un besoin d'amélioration. Elle doit renforcer ses compétences managériales et développer une vision stratégique claire pour s'aligner avec les exigences de transformation de la SEEG.",
+          "points_forts": [
+            "Capacité à travailler avec les équipes et à les motiver",
+            "Bon comportement professionnel reconnu par ses pairs"
+          ],
+          "points_a_ameliorer": [
+            "Nécessité d'un accompagnement pour consolider ses compétences managériales",
+            "Doit acquérir une vision stratégique plus précise pour répondre aux exigences de transformation de la SEEG"
+          ],
+          "rang": 2
+        }
+      },
+      "Olivia Duboze": {
+        "prenom": "Olivia",
+        "nom": "Duboze",
+        "conformite": {
+          "prenom": "Olivia",
+          "nom": "Duboze",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "Duboze",
+          "prenom": "Olivia",
+          "poste": "Direction de l'Audit & Contrôle Interne",
+          "scores": {
+            "Metier": 0.37,
+            "Talent": 0.0,
+            "Paradigme": 0.52
+          },
+          "Score_moyen": 29.67,
+          "niveau": "Le score moyen de la candidate est relativement faible, indiquant une inadéquation avec les attentes stratégiques de l'entreprise. Olivia devra améliorer ses compétences pour répondre aux exigences du poste visé.",
+          "verdict": "défavorable",
+          "raison_verdit": "Le score moyen de 29.67 est nettement en dessous du seuil critique de 43.5.",
+          "points_forts": [
+            "Bonne compréhension du Paradigme qui pourrait être utilisée pour aborder les défis organisationnels.",
+            "Capacité à analyser les processus internes, ce qui est crucial pour le rôle ciblé.",
+            "Un sens de l'engagement envers les missions sociales de l'entreprise."
+          ],
+          "points_a_travailler": [
+            "Développer des compétences techniques spécifiques en audit et contrôle interne.",
+            "Améliorer les talents interpersonnels pour mieux travailler avec différents acteurs et parties prenantes.",
+            "Renforcer les capacités d'analyse financière pour une meilleure évaluation des infrastructures."
+          ],
+          "rang": 3
+        },
+        "completude": {
+          "nom": "Duboze",
+          "prenom": "Olivia",
+          "poste": "Directeur Audit & Contrôle interne",
+          "score": 33.5,
+          "resume_experience": "14 années d'expérience en Audit et Contrôle Interne, principalement au sein de la SEEG",
+          "verdict": "défavorable",
+          "raison": "Le score de similarité est en-dessous du seuil favorable, indiquant un manque de correspondance par rapport aux exigences du poste.",
+          "points_forts": [
+            "Solide connaissance de la société SEEG",
+            "Expérience significative en contrôle interne",
+            "Compétences démontrées en audit"
+          ],
+          "points_a_travailler": [
+            "Alignement stratégique avec le rôle de Directeur",
+            "Vision globale du secteur en dehors de l'expérience au SEEG",
+            "Renforcement des compétences en gestion de projets multidimensionnels"
+          ],
+          "rang": 3
+        },
+        "feedback": {
+          "prenom": "Olivia",
+          "nom": "DUBOZE",
+          "score": 42.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente un potentiel satisfaisant mais manque d'expérience et de vision stratégique nécessaire pour le poste de Directeur Audit & Contrôle interne dans un contexte complexe tel que celui de la SEEG.",
+          "Points forces": [
+            "bon comportement",
+            "capacité à travailler en équipe"
+          ],
+          "Points à travailler": [
+            "manque d'expérience en management stratégique",
+            "nécessité de démontrer des réussites probantes dans des rôles de leadership"
+          ],
+          "rang": 6
+        },
+        "global": {
+          "score_global": 40.47,
+          "verdict": "défavorable",
+          "resume": "Olivia Duboze possède un bon potentiel et des compétences interpersonnelles efficaces comme sa capacité à travailler en équipe. Cependant, elle manque d'expérience et de vision stratégique nécessaires pour un rôle d'audit et de contrôle interne dans un environnement aussi complexe et exigeant que celui de la SEEG.",
+          "points_forts": [
+            "bon comportement",
+            "capacité à travailler en équipe"
+          ],
+          "points_a_ameliorer": [
+            "manque d'expérience en management stratégique",
+            "nécessité de démontrer des réussites probantes dans des rôles de leadership"
+          ],
+          "rang": 3
+        }
+      },
+      "Jean Fabrice Ondo Mayi": {
+        "prenom": "Jean",
+        "nom": "Fabrice Ondo Mayi",
+        "conformite": {
+          "prenom": "Jean",
+          "nom": "Fabrice ONDO MAYI",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "ONDO MAYI",
+          "prenom": "Jean Fabrice",
+          "poste": "Directeur Audit & Contrôle interne",
+          "score": 31.6,
+          "resume_experience": "15+ ans d'expérience en audit interne et contrôle",
+          "verdict": "défavorable",
+          "raison_du_verdict": "Le score de similarité est en dessous du seuil requis. Malgré l'expérience significative, le candidat vise un autre poste qui réduit la pertinence pour le poste proposé.",
+          "points_forts": [
+            "Grande expérience en audit interne et planification",
+            "Compétences avérées en supervision et pilotage d'équipe",
+            "Maîtrise des normes ISO et audit de qualité"
+          ],
+          "points_a_travailler": [
+            "Focalisation souhaitée sur le processus de gouvernance",
+            "Approfondir les compétences spécifiques au contrôle interne",
+            "Développer une vision plus stratégique au-delà de l'opérationnel"
+          ],
+          "rang": 6
+        },
+        "feedback": {
+          "prenom": "Jean",
+          "nom": "FABRICE ONDO MAYI",
+          "score": 52.3,
+          "verdict": "Moyen",
+          "raisons": "Le candidat démontre un bon comportement et des compétences managériales, mais son leadership nécessite encore des validations et des améliorations. Il n'a pas présenté une vision claire ou des axes stratégiques qui s'alignent avec la vision transformatrice de la SEEG.",
+          "Points forces": [
+            "Bon manager",
+            "Compétences comportementales positives"
+          ],
+          "Points à travailler": [
+            "Leadership à confirmer",
+            "Vision stratégique insuffisante"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 37.47,
+          "verdict": "défavorable",
+          "resume": "Jean Fabrice Ondo Mayi possède des compétences managériales et comportementales positives, mais son leadership doit être renforcé. Il n'a pas présenté une vision claire alignée avec la transformation stratégique nécessaire à la SEEG.",
+          "points_forts": [
+            "Bon manager",
+            "Compétences comportementales positives"
+          ],
+          "points_a_ameliorer": [
+            "Leadership à confirmer",
+            "Vision stratégique insuffisante"
+          ],
+          "rang": 4
+        }
+      },
+      "Mengue Bénédicte": {
+        "prenom": "Mengue",
+        "nom": "Bénédicte",
+        "conformite": {
+          "prenom": "MENGUE",
+          "nom": "Bénédicte",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {},
+        "feedback": {
+          "prenom": "Mengue",
+          "nom": "BÉNÉDICTE",
+          "score": 58.3,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente des qualités de calme et de comportement positif propices à un management efficace, mais son leadership reste à confirmer, ce qui peut être un point critique dans un environnement de transformation majeure.",
+          "Points forces": [
+            "Manager calme et posé",
+            "Bon comportement et potentiel dans le secteur commercial"
+          ],
+          "Points à travailler": [
+            "Leadership à renforcer pour inspirer les équipes",
+            "Expérience en audit et contrôle interne à approfondir"
+          ],
+          "rang": 3
+        },
+        "global": {
+          "score_global": 34.15,
+          "verdict": "défavorable",
+          "resume": "Le candidat présente un calme et un comportement positif favorables à un management efficace. Toutefois, la nécessité de renforcer son leadership et d'approfondir son expérience en audit et contrôle interne peuvent poser des défis dans un environnement de transformation tel que celui de la SEEG.",
+          "points_forts": [
+            "Manager calme et posé",
+            "Bon comportement",
+            "Potentiel dans le secteur commercial"
+          ],
+          "points_a_ameliorer": [
+            "Leadership à renforcer pour inspirer les équipes",
+            "Expérience en audit et contrôle interne à approfondir"
+          ],
+          "rang": 5
+        }
+      },
+      "Aude Tania Akoure Eyang": {
+        "prenom": "Aude",
+        "nom": "Tania Akoure Eyang",
+        "conformite": {
+          "prenom": "AUDE",
+          "nom": "TANIA AKOURE EYANG",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "AKOURE EYANG",
+          "prenom": "Aude Tania",
+          "poste": "Directrice de l’Audit et du Contrôle",
+          "score": 36.9,
+          "resume_experience": "17 ans d'expérience en audit, 10 ans comme Chef de mission de l’Audit Interne à la SEEG et 2 ans en Contrôle Interne et Conformité chez ECOBANK Gabon",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expérience significative de 17 ans en audit avec des compétences spécifiques en contrôle interne et gestion des risques.",
+            "Connaissances approfondies des normes et procédures de contrôle interne dans des environnements diversifiés.",
+            "Expérience confirmée dans la rédaction de rapports d’audit et mise en place de procédures opérationnelles."
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en matière de gouvernance d'entreprise pour une meilleure approche stratégique.",
+            "Amélioration continue de la veille sur les meilleures pratiques d’audit international.",
+            "Optimisation des approches multiculturelles pour la gestion des équipes internationales."
+          ],
+          "rang": 2
+        },
+        "feedback": {
+          "prenom": "Aude",
+          "nom": "TANIA AKOURE EYANG",
+          "score": 42.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des faiblesses importantes en matière d'empathie et de protection de l'entreprise, ce qui est crucial dans un rôle de direction. Son comportement dans la gestion des audits internes soulève des préoccupations sérieuses.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Manque d'empathie",
+            "Retours d'expérience inappropriés",
+            "Protection insuffisante de l'entreprise"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 33.73,
+          "verdict": "défavorable",
+          "resume": "Le profil d'Aude Tania Akoure Eyang n'est pas aligné avec les exigences de la SEEG pour le poste de Directeur Audit & Contrôle interne. Des faiblesses notables en empathie et en protection de l'entreprise, essentielles pour ce rôle stratégique, ont été identifiées.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Manque d'empathie",
+            "Retours d'expérience inappropriés",
+            "Protection insuffisante de l'entreprise"
+          ],
+          "rang": 6
+        }
+      },
+      "Anouchka Claude Émilie Ekome Mbeng Née Ntsame Nzoghe": {
+        "prenom": "Anouchka",
+        "nom": "Claude Émilie Ekome Mbeng Née Ntsame Nzoghe",
+        "conformite": {
+          "prenom": "Anouchka",
+          "nom": "Claude Émilie  EKOME MBENG née NTSAME NZOGHE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {},
+        "feedback": {
+          "prenom": "Anouchka",
+          "nom": "CLAUDE ÉMILIE EKOME MBENG NÉE NTSAME NZOGHE",
+          "score": 42.5,
+          "verdict": "Défavorable",
+          "raisons": "Le feedback souligne une absence de perspective et un leadership perçu comme excessif, ce qui compromet sa capacité à engager et à inspirer son équipe dans le contexte de transformation requis par la vision SEEG.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Leadership inclusif",
+            "Capacité à délivrer des résultats concrets"
+          ],
+          "rang": 7
+        },
+        "global": {
+          "score_global": 26.25,
+          "verdict": "défavorable",
+          "resume": "Anouchka a été évaluée défavorablement pour le poste en raison de son absence de perspective et d'un style de leadership perçu comme excessif, ce qui pourrait limiter son efficacité à conduire l'équipe dans le cadre de la transformation stratégique de la SEEG. Bien que le feedback RH soit crucial, son influence négative sur la capacité d'inspirer et d'engager dans un environnement en transformation est préoccupante.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Leadership inclusif",
+            "Capacité à délivrer des résultats concrets"
+          ],
+          "rang": 7
+        }
+      },
+      "Marie Ange Nambo Wezet Née Mbourou Lamasse": {
+        "prenom": "Marie",
+        "nom": "Ange Nambo Wezet Née Mbourou Lamasse",
+        "conformite": {
+          "prenom": "Marie",
+          "nom": "Ange NAMBO WEZET Née MBOUROU LAMASSE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {},
+        "feedback": {
+          "prenom": "Marie",
+          "nom": "ANGE NAMBO WEZET NÉE MBOUROU LAMASSE",
+          "score": 30.25,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des problèmes de comportement avec ses collaborateurs et manque de leadership, ce qui est critique pour un poste de direction dans un contexte de transformation et de gouvernance renforcée.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Problèmes de comportement avec les collaborateurs",
+            "Manque de compétences en management et leadership",
+            "Absence de vision stratégique et d'anticipation"
+          ],
+          "rang": 8
+        },
+        "global": {
+          "score_global": 20.12,
+          "verdict": "défavorable",
+          "resume": "La candidature de Marie Ange Nambo Wezet présente un score global défavorable en raison de problèmes de comportement et d'un manque de compétences en leadership, essentiels pour le poste de directeur dans un contexte de transformation. Elle ne semble pas posséder la vision stratégique requise pour aligner ses actions avec la vision de la SEEG.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Problèmes de comportement avec les collaborateurs",
+            "Manque de compétences en management et leadership"
+          ],
+          "rang": 8
+        }
+      },
+      "Bénédicte Mengue": {
+        "prenom": "Bénédicte",
+        "nom": "Mengue",
+        "conformite": {},
+        "mtp": {
+          "nom": "MENGUE",
+          "prenom": "Bénédicte",
+          "poste": "Direction de l'Audit & Contrôle Interne",
+          "scores": {
+            "Métier": 0.38,
+            "Talent": 0.0,
+            "Paradigme": 0.49
+          },
+          "Score_moyen": 29.0,
+          "niveau": "Le score moyen de Bénédicte indique un alignement faible avec les compétences et les talents requis pour le poste. Les compétences techniques et les aptitudes personnelles n'atteignent pas le niveau nécessaire à la réalisation des objectifs de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 29.0 est en dessous du seuil minimum requis pour la vision de l'entreprise.",
+          "points_forts": [
+            "Capacité à identifier des dysfonctionnements dans les processus internes",
+            "Sensible aux enjeux de gouvernance et de transparence",
+            "Compréhension des problématiques liées à la modernisation des infrastructures"
+          ],
+          "points_a_travailler": [
+            "Développer des compétences analytiques pour une meilleure évaluation des performances",
+            "Renforcer les aptitudes en leadership et gestion des équipes",
+            "Acquérir une vision stratégique pour la mise en œuvre des projets d'audit"
+          ],
+          "rang": 5
+        },
+        "completude": {
+          "nom": "MENGUE",
+          "prenom": "Bénédicte",
+          "poste": "Directeur Audit & Contrôle interne",
+          "score": 30.4,
+          "resume_experience": "31 années d'expérience avec plusieurs postes de gestion au sein de SEEG et autres entreprises, principalement dans les domaines de la communication, gestion clientèle et audit interne.",
+          "verdict": "défavorable",
+          "raison": "Le score de similarité est en dessous du seuil requis pour le poste, indiquant un manque d'adéquation entre l'expérience du candidat et les exigences spécifiques du rôle de Directeur Audit & Contrôle Interne.",
+          "points_forts": [
+            "Expérience significative en gestion d'équipes et coordination.",
+            "Bonne connaissance du secteur de l'énergie au Gabon.",
+            "Compétences en communication qui pourraient être utiles pour la rédaction de rapports d'audit."
+          ],
+          "points_a_travailler": [
+            "Manque d'expérience directe en conception et mise en œuvre d'un dispositif de contrôle interne complet.",
+            "Besoin d'approfondir les compétences techniques en gestion des risques.",
+            "Approfondissement des compétences en audit opérationnel et financier."
+          ],
+          "rang": 7
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 13.33,
+          "verdict": "défavorable",
+          "resume": "Le profil de Bénédicte Mengue ne semble pas répondre aux exigences cruciales du poste de Directeur Audit & Contrôle interne. L'absence de feedback RH et une faible conformité documentaire soulignent de potentiels manques dans ses qualifications et son adéquation avec la vision stratégique de transformation de la SEEG.",
+          "points_forts": [
+            "Expérience en audit et contrôle si existante sur le CV (non précisée)",
+            "Compréhension des processus de gouvernance"
+          ],
+          "points_a_ameliorer": [
+            "Manque de retour d’informations RH",
+            "Inadéquation du score de complétude par rapport à l'offre"
+          ],
+          "rang": 9
+        }
+      },
+      "Marie Ange Nambo Wezet": {
+        "prenom": "Marie",
+        "nom": "Ange Nambo Wezet",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "NAMBO WEZET",
+          "prenom": "Marie Ange",
+          "poste": "Directeur Audit & Contrôle interne",
+          "score": 41.4,
+          "resume_experience": "27 ans d'expérience, spécialisée en audit des processus et contrôle interne.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Grande expérience (27 ans) dans le domaine de l'audit et du contrôle interne, notamment au sein d'une entreprise de grande envergure telle que la SEEG.",
+            "Compétence avérée dans la cartographie des risques et l'analyse des procédures de contrôle interne.",
+            "Expérience solide en leadership et management, avec la capacité de diriger des équipes pluridisciplinaires pour la conduite de projets complexes."
+          ],
+          "points_a_travailler": [
+            "Améliorer constamment les compétences linguistiques en anglais pour mieux gérer les audits internationaux.",
+            "Finaliser la certification CIA prévue pour 2025 afin de renforcer la crédibilité et l'expertise en audit interne.",
+            "Continuer de mettre à niveau ses compétences technologiques, notamment en matière de digitalisation des processus."
+          ],
+          "rang": 1
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.28,
+          "verdict": "défavorable",
+          "resume": "Le score global de Marie Ange Nambo Wezet est défavorable. Son absence de conformité documentaire et de feedback RH nuisent à sa candidature, malgré une bonne complétude par rapport à l'offre. Le profil ne répond pas suffisamment aux exigences critiques de transformation et transparence requises par la SEEG.",
+          "points_forts": [
+            "Complétude du dossier par rapport à l'offre (41.4)"
+          ],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Absence de feedback RH"
+          ],
+          "rang": 10
+        }
+      },
+      "Jean Ondo Mayi": {
+        "prenom": "Jean",
+        "nom": "Ondo Mayi",
+        "conformite": {},
+        "mtp": {
+          "nom": "ONDO MAYI",
+          "prenom": "Jean",
+          "poste": "Direction de l'Audit & Contrôle Interne",
+          "scores": {
+            "Metier": 39,
+            "Talent": 0,
+            "Paradigme": 55
+          },
+          "Score_moyen": 31.33,
+          "niveau": "Le candidat présente un score moyen en dessous du seuil défavorable. Cela indique qu'il pourrait avoir des difficultés à s'aligner sur les exigences et la vision de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Son score moyen est nettement inférieur aux attentes, ce qui soulève des préoccupations concernant sa capacité à contribuer à la transformation de la SEEG.",
+          "points_forts": [
+            "Compréhension des enjeux liés à la modernisation et à l'investissement dans les infrastructures.",
+            "Potentiel d'intégration des solutions innovantes comme les énergies renouvelables.",
+            "Connaissance des problématiques de gouvernance et de transparence."
+          ],
+          "points_a_travailler": [
+            "Développer ses compétences managériales pour mieux gérer les équipes et favoriser une culture de responsabilité.",
+            "Améliorer ses aptitudes en communication et en mobilisations des parties prenantes.",
+            "Renforcer ses connaissances techniques liées à la gestion et à l'audit des infrastructures."
+          ],
+          "rang": 1
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 7.83,
+          "verdict": "défavorable",
+          "resume": "Le candidat Jean Ondo Mayi ne répond pas aux attentes de l'entreprise SEEG pour le poste de Directeur Audit & Contrôle interne. Son profil présente une conformité documentaire insuffisante et un manque de complétude par rapport à l'offre d'emploi. De plus, son score de feedback RH est défavorable, indiquant probablement des lacunes dans sa capacité à aligner avec la vision stratégique de transformation de la SEEG.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude par rapport à l'offre"
+          ],
+          "rang": 11
+        }
+      },
+      "Aude Akoure Eyang": {
+        "prenom": "Aude",
+        "nom": "Akoure Eyang",
+        "conformite": {},
+        "mtp": {
+          "nom": "AKOURE EYANG",
+          "prenom": "AUDE",
+          "poste": "Direction de l'Audit & Contrôle Interne",
+          "scores": {
+            "Metier": 0.38,
+            "Talent": 0.0,
+            "Paradigme": 0.54
+          },
+          "Score_moyen": 30.67,
+          "niveau": "Le score moyen du candidat est très en dessous des attentes requises pour le poste. Cela indique un fort besoin d'amélioration dans plusieurs domaines clés liés à ce rôle.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est insuffisant pour aligner le candidat à la vision de l'entreprise.",
+          "points_forts": [
+            "Connaissance approfondie des infrastructures et de la gestion des ressources.",
+            "Capacité à analyser et à identifier les problèmes organisationnels.",
+            "Compréhension des enjeux de gouvernance et d'audit."
+          ],
+          "points_a_travailler": [
+            "Développer davantage le talent et les compétences managériales.",
+            "Renforcer la capacité à mettre en œuvre des projets d'amélioration de processus.",
+            "Améliorer les compétences en communication et en partenariat avec les parties prenantes."
+          ],
+          "rang": 2
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 7.67,
+          "verdict": "défavorable",
+          "resume": "Le profil du candidat ne répond pas aux attentes du poste de Directeur Audit & Contrôle interne, notamment à travers des insuffisances dans la conformité documentaire et une non-complétude par rapport à l'offre. De plus, l'absence de feedback RH positif souligne un manque d'adéquation au regard des besoins de transformation et de modernisation stratégique de la SEEG.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Adéquation CV/Lettre de motivation par rapport à l'offre"
+          ],
+          "rang": 12
+        }
+      },
+      "Marie Nambo Wezet Née Mbourou Lamasse": {
+        "prenom": "Marie",
+        "nom": "Nambo Wezet Née Mbourou Lamasse",
+        "conformite": {},
+        "mtp": {
+          "nom": "NAMBO WEZET Née MBOUROU LAMASSE",
+          "prenom": "Marie",
+          "poste": "Direction de l'Audit & Contrôle Interne",
+          "scores": {
+            "Metier": 0.37,
+            "Talent": 0.0,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 29.33,
+          "niveau": "Le candidat présente un score moyen défavorable, indiquant un manque d'alignement avec la vision stratégique de l'entreprise. Cela reflète des lacunes dans les compétences nécessaires pour répondre aux défis actuels de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 29.33 est bien en dessous du seuil requis pour un alignement positif avec la vision de l'entreprise.",
+          "points_forts": [
+            "Compréhension des enjeux méthodologiques d'audit et de contrôle interne.",
+            "Capacité à identifier les points de non-conformité dans la gestion des ressources.",
+            "Connaissance des meilleures pratiques en matière de gouvernance et de transparence."
+          ],
+          "points_a_travailler": [
+            "Développer des compétences techniques spécifiques au secteur de l'eau et de l'électricité.",
+            "Améliorer la communication et le leadership pour impliquer les parties prenantes.",
+            "Renforcer les compétences en digitalisation des processus et des systèmes de contrôle."
+          ],
+          "rang": 4
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 7.33,
+          "verdict": "défavorable",
+          "resume": "Le profil de Marie Nambo Wezet Née Mbourou Lamasse présente un score global défavorable notamment en raison de l'absence de conformité documentaire et de complétude par rapport à l'offre. Aucun feedback RH détaillé n'est disponible pour tirer des conclusions précises quant à ses compétences pour le poste.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude par rapport à l'offre"
+          ],
+          "rang": 13
+        }
+      },
+      "Anouchka Ekome Mbeng Née Ntsame Nzoghe": {
+        "prenom": "Anouchka",
+        "nom": "Ekome Mbeng Née Ntsame Nzoghe",
+        "conformite": {},
+        "mtp": {
+          "nom": "EKOME MBENG née NTSAME NZOGHE",
+          "prenom": "Anouchka",
+          "poste": "Direction de l'Audit & Contrôle Interne",
+          "scores": {
+            "Metier": 0.38,
+            "Talent": 0.0,
+            "Paradigme": 0.46
+          },
+          "Score_moyen": 28.0,
+          "niveau": "Le candidat présente des performances en dessous des attentes pour le poste visé. Son score moyen indique une inadéquation avec les valeurs et la vision de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_du_verdict": "Le score moyen de 28.0 est bien en dessous du seuil requis pour un alignement favorable à la vision de l'entreprise.",
+          "points_forts": [
+            "Capacité d'analyse des infrastructures existantes",
+            "Connaissance des procédures de l'industrie",
+            "Potentialité pour améliorer les contrôles internes"
+          ],
+          "points_a_travailler": [
+            "Développer des compétences en leadership et en gestion d'équipe",
+            "Renforcer les capacités d'innovation sur les technologies modernes",
+            "Améliorer son aptitude à la prise de décision stratégique"
+          ],
+          "rang": 6
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 7.0,
+          "verdict": "défavorable",
+          "resume": "Le profil d'Anouchka Ekome Mbeng Née Ntsame Nzoghe ne répond pas aux attentes de l'entreprise SEEG concernant le poste de Directeur Audit & Contrôle interne, en raison d'un manque de conformité documentaire et de complétude de sa candidature vis-à-vis de l'offre. De plus, le score de feedback RH est défavorable, ce qui impacte négativement l'évaluation globale.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude de la candidature"
+          ],
+          "rang": 14
+        }
+      },
+      "Anouchka Claude Émilie Ekome Mbeng": {
+        "prenom": "Anouchka",
+        "nom": "Claude Émilie Ekome Mbeng",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "EKOME MBENG",
+          "prenom": "Anouchka Claude Émilie",
+          "poste": "Directeur Audit & Contrôle interne",
+          "score": 33.3,
+          "resume_experience": "17 années d'expérience en audit, contrôle interne et gestion du changement",
+          "verdict": "défavorable",
+          "points_forts": [
+            "Bonne expérience en élaboration et mise en œuvre de plans d'audit",
+            "Capacité éprouvée à concevoir des dispositifs de contrôle interne structurés",
+            "Expérience significative dans la gestion des risques et le reporting"
+          ],
+          "points_a_travailler": [
+            "Maîtrise insuffisante des langues étrangères qui pourraient être bénéfiques pour un poste de haute direction",
+            "Expérience nécessaire dans la supervision et la formation continue des équipes d'audit",
+            "Alignement stratégique et leadership pour transformer la vision en actions concrètes"
+          ],
+          "rang": 4
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 6.66,
+          "verdict": "défavorable",
+          "resume": "Le candidat montre un manque de préparation notable pour le poste de Directeur Audit & Contrôle interne, reflété par un score global défavorable. Il n'y a pas d'informations claires sur les compétences spécifiques ou l'expérience pertinente face aux exigences stratégiques et opérationnelles nécessaires pour soutenir la vision transformatrice de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Manque de conformité documentaire",
+            "Faible adéquation du CV et de la lettre de motivation par rapport à l'offre"
+          ],
+          "rang": 15
+        }
+      },
+      "Hans Owele": {
+        "prenom": "Hans",
+        "nom": "Owele",
+        "conformite": {},
+        "mtp": {
+          "nom": "OWELE",
+          "prenom": "Hans",
+          "poste": "Direction de l'Audit & Contrôle Interne",
+          "scores": {
+            "Metier": 0.38,
+            "Talent": 0.0,
+            "Paradigme": 0.39
+          },
+          "Score_moyen": 25.67,
+          "niveau": "Le score moyen du candidat est bien en dessous du seuil minimal, indiquant une inadéquation avec les exigences pour le poste. Il est donc essentiel pour lui d'améliorer ses compétences et sa vision pour correspondre à la vision de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Son score moyen très bas ne démontre pas une capacité à aligner avec les ambitions stratégiques et les besoins de la SEEG.",
+          "points_forts": [
+            "Sensibilité au paradigme économique viabilisant et à la nécessité de restructuration.",
+            "Connaissance des enjeux de gouvernance et d'audit interne.",
+            "Capacité à identifier les problèmes liés aux infrastructures vieillissantes."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion de projets pour l'amélioration des infrastructures.",
+            "Développer des talents en leadership et en inspiration d'équipe.",
+            "Acquérir des connaissances sur les technologies intelligentes pour l'optimisation des processus."
+          ],
+          "rang": 8
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 6.42,
+          "verdict": "défavorable",
+          "resume": "Le profil de Hans Owele n'est pas conforme aux attentes du poste de Directeur Audit & Contrôle interne chez SEEG. Les lacunes dans la conformité documentaire et la complétude de sa candidature soulignent une inadéquation avec les besoins critiques de l'entreprise, engagée dans une transformation majeure visant à améliorer sa gouvernance et ses opérations.",
+          "points_forts": [
+            "Expérience potentiellement pertinente dans l'audit et le contrôle interne",
+            "Capacité à intégrer une vision stratégique pour la transformation des organisations"
+          ],
+          "points_a_ameliorer": [
+            "Manque de conformité documentaire",
+            "Absence de complétude dans la correspondance entre CV, lettre de motivation et offre"
+          ],
+          "rang": 16
+        }
+      }
+    }
+  }

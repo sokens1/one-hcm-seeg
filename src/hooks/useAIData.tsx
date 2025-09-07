@@ -95,15 +95,18 @@ export function useAIData() {
           {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
           {name: 'Directeur Exploitation Eau', file: '/directeur_exploitation_eau.json'},
           {name: 'Chef de Département Electricite', file: '/chef_departement_electricite.json'},
-          // {name: 'Coordonnateur des Régions', file: '/coordonnateur_des_regions.json'},
-          // {name: 'Directeur Audit & Contrôle interne', file: '/directeur_audit_et_controle_interne.json'},
-          // {name: 'Directeur Qualité, Hygiène, Sécurité & Environnement', file: '/directeur_qualite_hygiene_securite_environnement.json'},
-          // {name: 'Directeur des Systèmes d\'Information', file: '/directeur_des_systemes_d_information.json'},
-          // {name: 'Directeur Commercial et Recouvrement', file: '/directeur_commercial_et_recouvrement.json'},
-          // {name: 'Directeur du Capital Humain', file: '/directeur_du_capital_humain.json'},
-          // {name: 'Directeur Finances et Comptabilités', file: '/directeur_finances_et_comptabilite.json'},
-          //s{name: 'Directeur Juridique, Communication & RSE', file: '/directeur_juridique_communication_rse.json'},
-        ];
+          {name: 'Coordonnateur des Régions', file: '/coordonnateur_des_regions.json'},
+          {name: 'Directeur Audit & Contrôle interne', file: '/directeur_audit_et_controle_interne.json'},
+          {name: 'Directeur Qualité, Hygiène, Sécurité & Environnement', file: '/directeur_qualite_hygiene_securite_environnement.json'},
+          {name: 'Directeur des Systèmes d\'Information', file: '/directeur_des_systemes_d_information.json'},
+          {name: 'Directeur Commercial et Recouvrement', file: '/directeur_commercial_et_recouvrement.json'},
+          {name: 'Directeur du Capital Humain', file: '/directeur_du_capital_humain.json'},
+          {name: 'Directeur Finances et Comptabilités', file: '/directeur_finances_et_comptabilite.json'},
+          {name: 'Directeur Juridique, Communication & RSE', file: '/directeur_juridique_communication_rse.json'},
+           {name: 'Directeur Technique Electricite', file: '/directeur_technique_electricité.json'},        // {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
+           {name: 'Directeur Exploitation Electricite', file: '/directeur_exploitation_electricite.json'},
+           {name: 'Chef de Departement Support', file: '/chef_de_departement_support.json'},
+      ];
 
         // Charger dynamiquement tous les fichiers JSON
         const responses = await Promise.all(
@@ -168,6 +171,157 @@ export function useAIData() {
                 if (directorData && typeof directorData === 'object') {
                   const rawData = transformData(directorData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Coordonnateur des Régions') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const coordData = nestedData['Coordonnateur des Régions'];
+                
+                if (coordData && typeof coordData === 'object') {
+                  const rawData = transformData(coordData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur Audit & Contrôle interne') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const auditData = nestedData['Directeur Audit & Contrôle interne'];
+                
+                if (auditData && typeof auditData === 'object') {
+                  const rawData = transformData(auditData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+               } else if (dept.name === 'Directeur des Systèmes d\'Information') {
+                 const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                 console.log('🔍 Debug DSI (failed) - Clés disponibles:', Object.keys(nestedData));
+                 
+                 // Utiliser la première clé disponible (plus robuste)
+                 const availableKeys = Object.keys(nestedData);
+                 const dsiData = availableKeys.length > 0 ? nestedData[availableKeys[0]] : null;
+                 console.log(`🔍 Debug DSI (failed) - Clé utilisée: "${availableKeys[0]}"`);
+                 
+                 console.log('🔍 Debug DSI (failed) - Données trouvées:', dsiData ? 'OUI' : 'NON');
+                 
+                 if (dsiData && typeof dsiData === 'object') {
+                   const rawData = transformData(dsiData, true);
+                   transformedData[dept.name] = deduplicateCandidates(rawData);
+                   console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                 } else {
+                   transformedData[dept.name] = [];
+                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                 }
+              } else if (dept.name === 'Directeur Qualité, Hygiène, Sécurité & Environnement') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const qhseData = nestedData['Directeur Qualité, Hygiène, Sécurité & Environnement'];
+                
+                if (qhseData && typeof qhseData === 'object') {
+                  const rawData = transformData(qhseData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur Commercial et Recouvrement') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const commercialData = nestedData['Directeur Commercial et Recouvrement'];
+                
+                if (commercialData && typeof commercialData === 'object') {
+                  const rawData = transformData(commercialData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur du Capital Humain') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const capitalHumainData = nestedData['Directeur du Capital Humain'];
+                
+                if (capitalHumainData && typeof capitalHumainData === 'object') {
+                  const rawData = transformData(capitalHumainData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur Finances et Comptabilités') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const financesData = nestedData['Directeur Finances et Comptabilité'];
+                
+                if (financesData && typeof financesData === 'object') {
+                  const rawData = transformData(financesData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur Juridique, Communication & RSE') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const juridiqueData = nestedData['Directeur Juridique, Communication & RSE'];
+                
+                if (juridiqueData && typeof juridiqueData === 'object') {
+                  const rawData = transformData(juridiqueData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur Technique Electricite') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const techniqueElecData = nestedData['Directeur Technique Electricité'];
+                
+                if (techniqueElecData && typeof techniqueElecData === 'object') {
+                  const rawData = transformData(techniqueElecData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur Exploitation Electricite') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const exploitationElecData = nestedData['Directeur Exploitation Electricité'];
+                
+                if (exploitationElecData && typeof exploitationElecData === 'object') {
+                  const rawData = transformData(exploitationElecData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Chef de Departement Support') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const supportData = nestedData['Chef de Département Support'];
+                
+                if (supportData && typeof supportData === 'object') {
+                  const rawData = transformData(supportData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Chef de Département Eau') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const chefEauData = nestedData['Chef de Département Eau'];
+                
+                if (chefEauData && typeof chefEauData === 'object') {
+                  const rawData = transformData(chefEauData, true);
+                  transformedData[dept.name] = deduplicateCandidates(rawData);
+                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -430,6 +584,181 @@ export function useAIData() {
               
               if (directorData && typeof directorData === 'object') {
                 const rawData = transformData(directorData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Coordonnateur des Régions') {
+              // Le fichier coordonnateur_des_regions.json a une structure imbriquée
+              // avec "Coordonnateur des Régions" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const coordData = nestedData['Coordonnateur des Régions'];
+              
+              if (coordData && typeof coordData === 'object') {
+                const rawData = transformData(coordData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Audit & Contrôle interne') {
+              // Le fichier directeur_audit_et_controle_interne.json a une structure imbriquée
+              // avec "Directeur Audit & Contrôle interne" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const auditData = nestedData['Directeur Audit & Contrôle interne'];
+              
+              if (auditData && typeof auditData === 'object') {
+                const rawData = transformData(auditData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur des Systèmes d\'Information') {
+              // Le fichier directeur_des_systemes_d_information.json a une structure imbriquée
+              // avec "Directeur des Systèmes d'Information" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              console.log('🔍 Debug DSI - Clés disponibles:', Object.keys(nestedData));
+              
+              // Utiliser la première clé disponible (plus robuste)
+              const availableKeys = Object.keys(nestedData);
+              const dsiData = availableKeys.length > 0 ? nestedData[availableKeys[0]] : null;
+              console.log(`🔍 Debug DSI - Clé utilisée: "${availableKeys[0]}"`);
+              
+              console.log('🔍 Debug DSI - Données trouvées:', dsiData ? 'OUI' : 'NON');
+              
+              if (dsiData && typeof dsiData === 'object') {
+                const rawData = transformData(dsiData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Qualité, Hygiène, Sécurité & Environnement') {
+              // Le fichier directeur_qualite_hygiene_securite_environnement.json a une structure imbriquée
+              // avec "Directeur Qualité, Hygiène, Sécurité & Environnement" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const qhseData = nestedData['Directeur Qualité, Hygiène, Sécurité & Environnement'];
+              
+              if (qhseData && typeof qhseData === 'object') {
+                const rawData = transformData(qhseData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Commercial et Recouvrement') {
+              // Le fichier directeur_commercial_et_recouvrement.json a une structure imbriquée
+              // avec "Directeur Commercial et Recouvrement" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const commercialData = nestedData['Directeur Commercial et Recouvrement'];
+              
+              if (commercialData && typeof commercialData === 'object') {
+                const rawData = transformData(commercialData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur du Capital Humain') {
+              // Le fichier directeur_du_capital_humain.json a une structure imbriquée
+              // avec "Directeur du Capital Humain" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const capitalHumainData = nestedData['Directeur du Capital Humain'];
+              
+              if (capitalHumainData && typeof capitalHumainData === 'object') {
+                const rawData = transformData(capitalHumainData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Finances et Comptabilités') {
+              // Le fichier directeur_finances_et_comptabilite.json a une structure imbriquée
+              // avec "Directeur Finances et Comptabilité" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const financesData = nestedData['Directeur Finances et Comptabilité'];
+              
+              if (financesData && typeof financesData === 'object') {
+                const rawData = transformData(financesData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Juridique, Communication & RSE') {
+              // Le fichier directeur_juridique_communication_rse.json a une structure imbriquée
+              // avec "Directeur Juridique, Communication & RSE" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const juridiqueData = nestedData['Directeur Juridique, Communication & RSE'];
+              
+              if (juridiqueData && typeof juridiqueData === 'object') {
+                const rawData = transformData(juridiqueData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Technique Electricite') {
+              // Le fichier directeur_technique_electricité.json a une structure imbriquée
+              // avec "Directeur Technique Electricité" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const techniqueElecData = nestedData['Directeur Technique Electricité'];
+              
+              if (techniqueElecData && typeof techniqueElecData === 'object') {
+                const rawData = transformData(techniqueElecData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Exploitation Electricite') {
+              // Le fichier directeur_exploitation_electricite.json a une structure imbriquée
+              // avec "Directeur Exploitation Electricité" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const exploitationElecData = nestedData['Directeur Exploitation Electricité'];
+              
+              if (exploitationElecData && typeof exploitationElecData === 'object') {
+                const rawData = transformData(exploitationElecData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Chef de Departement Support') {
+              // Le fichier chef_de_departement_support.json a une structure imbriquée
+              // avec "Chef de Département Support" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const supportData = nestedData['Chef de Département Support'];
+              
+              if (supportData && typeof supportData === 'object') {
+                const rawData = transformData(supportData, true);
+                transformedData[dept.name] = deduplicateCandidates(rawData);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Chef de Département Eau') {
+              // Le fichier chef_departement_eau.json a une structure imbriquée
+              // avec "Chef de Département Eau" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const chefEauData = nestedData['Chef de Département Eau'];
+              
+              if (chefEauData && typeof chefEauData === 'object') {
+                const rawData = transformData(chefEauData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
