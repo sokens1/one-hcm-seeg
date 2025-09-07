@@ -91,8 +91,8 @@ export function useAIData() {
         // Configuration des départements - facilement extensible
         const departments = [
           { name: 'Chef de Département Eau', file: '/chef_departement_eau.json' },
-           {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
-          // {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
+          {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
+          {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
           // {name: 'Directeur Exploitation Eau', file: '/directeur_exploitation_eau.json'},
           // {name: 'Moyens généraux', file: '/moyens_generaux_complet.json'},
           // {name: 'Directeur Technique Eau', file: '/directeur_technique_eau.json'},
@@ -130,10 +130,20 @@ export function useAIData() {
           let validIndex = 0;
           departments.forEach((dept, index) => {
             if (responses[index].ok) {
-              // Gestion spéciale pour les moyens généraux qui ont une structure imbriquée
+              // Gestion spéciale pour les départements qui ont une structure imbriquée
               if (dept.name === 'Moyens généraux') {
                 const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
                 const directorData = nestedData['Directeur Moyens Généraux'];
+                
+                if (directorData && typeof directorData === 'object') {
+                  transformedData[dept.name] = transformData(directorData, true);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+                }
+              } else if (dept.name === 'Directeur Technique Eau') {
+                const nestedData = validJsonData[validIndex] as Record<string, Record<string, unknown>>;
+                const directorData = nestedData['Directeur Technique Eau'];
                 
                 if (directorData && typeof directorData === 'object') {
                   transformedData[dept.name] = transformData(directorData, true);
@@ -194,7 +204,14 @@ export function useAIData() {
             const mtpScoreData = isMoyensGeneraux
               ? mtpData // Pour moyens généraux, les données sont directement dans mtp
               : mtpData?.['score MTP'] as Record<string, unknown> | undefined;
-            const mtpScores = mtpScoreData?.scores as Record<string, number> | undefined || {};
+            
+            // Vérifier si mtpScoreData est un objet valide avec des données
+            const hasValidMtpData = mtpScoreData && 
+              typeof mtpScoreData === 'object' && 
+              Object.keys(mtpScoreData).length > 0 &&
+              (mtpScoreData.scores || mtpScoreData.Score_moyen || mtpScoreData.verdict);
+            
+            const mtpScores = hasValidMtpData ? (mtpScoreData.scores as Record<string, number> | undefined || {}) : {};
             
             // Normalisation des scores MTP (gère différentes variantes de clés)
             const normalizedMtpScores = {
@@ -226,7 +243,13 @@ export function useAIData() {
             // Gestion robuste des feedbacks (structure différente selon le fichier)
             const feedbackData = isMoyensGeneraux
               ? candidateData.feedback as Record<string, unknown> | undefined
-              : undefined; // Les feedbacks ne sont pas dans le fichier chef_departement_eau
+              : candidateData.feedback as Record<string, unknown> | undefined; // Les feedbacks sont dans tous les fichiers maintenant
+            
+            // Vérifier si feedbackData est un objet valide avec des données
+            const hasValidFeedbackData = feedbackData && 
+              typeof feedbackData === 'object' && 
+              Object.keys(feedbackData).length > 0 &&
+              (feedbackData.score || feedbackData.verdict || feedbackData.raisons);
 
             // Extraction du poste (gère différentes sources)
             const poste = (mtpScoreData?.poste as string) || 
@@ -255,7 +278,7 @@ export function useAIData() {
                 score_conformité: (conformiteScoreData.score_conformité as number) || 0,
                 commentaire: (conformiteScoreData.commentaire as string) || 'Aucun commentaire'
               } : undefined,
-              mtp: mtpScoreData ? {
+              mtp: hasValidMtpData ? {
                 scores: normalizedMtpScores,
                 score_moyen: (mtpScoreData.Score_moyen as number) || undefined,
                 niveau: (mtpScoreData.niveau as string) || 'Non évalué',
@@ -267,7 +290,7 @@ export function useAIData() {
               similarite_offre: similariteScoreData ? {
                 resume_experience: similariteScoreData.resume_experience as string | { nombre_d_annees: number; specialite: string },
                 score: similarityScore,
-                commentaire_score: (similariteScoreData.commentaire_score as string) || (similariteScoreData.raison_verdict as string) || 'Aucun commentaire',
+                commentaire_score: (similariteScoreData.commentaire_score as string) || (similariteScoreData.raison_verdict as string) || (similariteScoreData.raison as string) || 'Aucun commentaire',
                 forces: Array.isArray(similariteScoreData.points_forts) ? similariteScoreData.points_forts as string[] : 
                        Array.isArray(similariteScoreData.forces) ? similariteScoreData.forces as string[] : [],
                 faiblesses: Array.isArray(similariteScoreData.points_a_travailler) ? similariteScoreData.points_a_travailler as string[] : 
@@ -275,7 +298,7 @@ export function useAIData() {
                 verdict: (similariteScoreData.verdict as string) || 'Non évalué',
                 rang: (similariteScoreData.rang as number) || 0
               } : undefined,
-              feedback: feedbackData ? {
+              feedback: hasValidFeedbackData ? {
                 score: (feedbackData.score as number) || 0,
                 verdict: (feedbackData.verdict as string) || 'Non évalué',
                 raisons: (feedbackData.raisons as string) || 'Aucun commentaire',
@@ -304,12 +327,25 @@ export function useAIData() {
         departments.forEach((dept, index) => {
           // Valider la structure avant transformation
           if (validateJsonStructure(jsonData[index], dept.file)) {
-            // Gestion spéciale pour les moyens généraux qui ont une structure imbriquée
+            // Gestion spéciale pour les départements qui ont une structure imbriquée
             if (dept.name === 'Moyens généraux') {
               // Le fichier moyens_generaux_complet.json a une structure imbriquée
               // avec "Directeur Moyens Généraux" comme clé parent
               const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
               const directorData = nestedData['Directeur Moyens Généraux'];
+              
+              if (directorData && typeof directorData === 'object') {
+                transformedData[dept.name] = transformData(directorData, true);
+                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s)`);
+              } else {
+                transformedData[dept.name] = [];
+                console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
+              }
+            } else if (dept.name === 'Directeur Technique Eau') {
+              // Le fichier directeur_technique_eau.json a une structure imbriquée
+              // avec "Directeur Technique Eau" comme clé parent
+              const nestedData = jsonData[index] as Record<string, Record<string, unknown>>;
+              const directorData = nestedData['Directeur Technique Eau'];
               
               if (directorData && typeof directorData === 'object') {
                 transformedData[dept.name] = transformData(directorData, true);
