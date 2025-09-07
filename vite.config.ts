@@ -52,20 +52,62 @@ export default defineConfig(({ mode }) => ({
               return;
             }
 
-            const dateObj = new Date(`${date}T${(time as string).slice(0, 5)}`);
+            // Récupérer le genre du candidat depuis la base de données
+            let candidateGender = 'Non renseigné';
+            if (applicationId) {
+              try {
+                const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
+                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
+                const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+                const { data: candidateData } = await supabase
+                  .from('applications')
+                  .select(`
+                                  candidate_id,
+                                  candidate_profiles!inner(gender)
+                                `)
+                  .eq('id', applicationId)
+                  .single();
+
+                //@ts-expect-error fix it later
+                if (candidateData?.candidate_profiles?.gender) {
+                  //@ts-expect-error fix it later
+                  candidateGender = candidateData.candidate_profiles.gender;
+                }
+              } catch (e) {
+                //console.log('[DEV API plugin] Erreur récupération genre:', e);
+              }
+            }
+
+            // Déterminer les accords selon le genre
+            const isFemale = candidateGender === 'Femme';
+            const title = isFemale ? 'Madame' : 'Monsieur';
+            const muniAccord = isFemale ? 'munie' : 'muni';
+            const dateObj = new Date(`${date}T${String(time).slice(0, 5)}`);
             const formattedDate = dateObj.toLocaleDateString('fr-FR');
-            const formattedTime = (time as string).slice(0, 5);
+            const formattedTime = String(time).slice(0, 5);
             const serif = ", Georgia, serif";
             const html = `
             <div style="font-family: ui-serif${serif}; color:#000; max-width:760px; margin:0 auto; font-size:16px; line-height:1.7;">
-              <p style="margin:0 0 10px; font-size:16px;">Madame/Monsieur <strong>${candidateFullName}</strong>,</p>
+              <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un entretien de recrutement qui se tiendra le&nbsp;:</p>
               <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
               <strong>Heure :</strong> ${formattedTime}<br/>
-              <strong>Lieu :</strong> ${location || 'Salle de réunion du Président du Conseil d’Administration au 9ᵉ étage du siège de la SEEG sis à Libreville.'}</p>
-              <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, muni(e) de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
+              <strong>Lieu :</strong> ${location || "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville."}</p>
+              <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
+              <p style="margin:0 0 10px; font-size:16px;"><strong>PS: Presenter-vous avec tous les documents fournis sur la plateforme, badge professionnel ainsi que votre acte de naissance</strong></p>
+              
+              <br/>
+              <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
+              <p style="margin:0 0 6px; font-size:16px;"><strong>Équipe Support</strong></p>
+              <p style="margin:0 0 6px; font-size:16px;"><strong>OneHCM | Talent source</strong></p>
+              <p style="margin:0 0 6px; font-size:16px;"><strong><a href="https://www.seeg-talentsource.com" style="color: #0066cc; text-decoration: underline;">https://www.seeg-talentsource.com</a></strong></p>
+              <br/>
+              <div style="display: flex; align-items: center; margin-top: 15px;">
+                <img src="https://www.seeg-talentsource.com/LOGO%20HCM4.png" alt="OneHCM Logo" style="height: 44px; margin-right: 10px;" />
+              </div>
             </div>`;
 
             const transporter = nodemailer.createTransport({
@@ -104,10 +146,10 @@ export default defineConfig(({ mode }) => ({
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
 
-             
+
             res.end(JSON.stringify({ ok: true, messageId: (info as any)?.messageId }));
             return;
-             
+
           } catch (e: any) {
             //console.error('[DEV API] Erreur /api/send-interview-email:', e);
             res.statusCode = 500;
@@ -205,6 +247,7 @@ export default defineConfig(({ mode }) => ({
               <strong>Lieu :</strong> ${location || "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville."}</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
               <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
+              <p style="margin:0 0 10px; font-size:16px;"><strong>PS: Presenter-vous avec tous les documents fournis sur la plateforme, badge professionnel ainsi que votre acte de naissance</strong></p>
               
               <br/>
               <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
