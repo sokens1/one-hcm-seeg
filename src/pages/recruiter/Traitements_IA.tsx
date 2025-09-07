@@ -865,8 +865,10 @@ export default function Traitements_IA() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="text-center">
                         <div className="text-3xl font-bold text-primary">
-                          {selectedCandidate.aiData.resume_global.score_global >= 0 
-                            ? `${(selectedCandidate.aiData.resume_global.score_global * 100).toFixed(1)}%`
+                          {selectedCandidate.aiData.resume_global.score_global > 0 
+                            ? selectedCandidate.aiData.resume_global.score_global > 1
+                              ? `${selectedCandidate.aiData.resume_global.score_global.toFixed(1)}%`
+                              : `${(selectedCandidate.aiData.resume_global.score_global * 100).toFixed(1)}%`
                             : 'N/A'
                           }
                         </div>
@@ -901,7 +903,7 @@ export default function Traitements_IA() {
                 </Card>
 
                 {/* Scores MTP */}
-                {selectedCandidate.aiData.mtp && (
+                {selectedCandidate.aiData.mtp ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -910,32 +912,67 @@ export default function Traitements_IA() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                      <div className={`grid gap-4 mb-4 ${
+                        selectedCandidate.aiData.mtp.scores.Moyen > 0 
+                          ? 'grid-cols-2 md:grid-cols-4' 
+                          : 'grid-cols-1 md:grid-cols-3'
+                      }`}>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-blue-500">
-                            {(selectedCandidate.aiData.mtp.scores.Métier * 100).toFixed(1)}%
+                            {selectedCandidate.aiData.mtp.scores.Métier > 0 
+                              ? selectedCandidate.aiData.mtp.scores.Métier > 1
+                                ? `${selectedCandidate.aiData.mtp.scores.Métier.toFixed(1)}%`
+                                : `${(selectedCandidate.aiData.mtp.scores.Métier * 100).toFixed(1)}%`
+                              : 'N/A'
+                            }
                           </div>
                           <p className="text-sm text-muted-foreground">Métier</p>
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-green-500">
-                            {(selectedCandidate.aiData.mtp.scores.Talent * 100).toFixed(1)}%
+                            {selectedCandidate.aiData.mtp.scores.Talent > 0 
+                              ? selectedCandidate.aiData.mtp.scores.Talent > 1
+                                ? `${selectedCandidate.aiData.mtp.scores.Talent.toFixed(1)}%`
+                                : `${(selectedCandidate.aiData.mtp.scores.Talent * 100).toFixed(1)}%`
+                              : 'N/A'
+                            }
                           </div>
                           <p className="text-sm text-muted-foreground">Talent</p>
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-purple-500">
-                            {(selectedCandidate.aiData.mtp.scores.Paradigme * 100).toFixed(1)}%
+                            {selectedCandidate.aiData.mtp.scores.Paradigme > 0 
+                              ? selectedCandidate.aiData.mtp.scores.Paradigme > 1
+                                ? `${selectedCandidate.aiData.mtp.scores.Paradigme.toFixed(1)}%`
+                                : `${(selectedCandidate.aiData.mtp.scores.Paradigme * 100).toFixed(1)}%`
+                              : 'N/A'
+                            }
                           </div>
                           <p className="text-sm text-muted-foreground">Paradigme</p>
                         </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-orange-500">
-                            {(selectedCandidate.aiData.mtp.scores.Moyen * 100).toFixed(1)}%
+                        {selectedCandidate.aiData.mtp.scores.Moyen > 0 && (
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-orange-500">
+                              {selectedCandidate.aiData.mtp.scores.Moyen > 1
+                                ? `${selectedCandidate.aiData.mtp.scores.Moyen.toFixed(1)}%`
+                                : `${(selectedCandidate.aiData.mtp.scores.Moyen * 100).toFixed(1)}%`
+                              }
+                            </div>
+                            <p className="text-sm text-muted-foreground">Moyen</p>
                           </div>
-                          <p className="text-sm text-muted-foreground">Moyen</p>
-                        </div>
+                        )}
                       </div>
+                      {selectedCandidate.aiData.mtp.score_moyen && (
+                        <div className="text-center mb-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl shadow-sm">
+                          <div className="text-3xl font-extrabold text-indigo-600 mb-1">
+                            {selectedCandidate.aiData.mtp.score_moyen > 1
+                              ? `${selectedCandidate.aiData.mtp.score_moyen.toFixed(1)}%`
+                              : `${(selectedCandidate.aiData.mtp.score_moyen * 100).toFixed(1)}%`
+                            }
+                          </div>
+                          <p className="text-sm font-medium text-indigo-700">Score Moyen MTP</p>
+                        </div>
+                      )}
                       <div className="space-y-3">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground mb-1">Niveau :</p>
@@ -968,10 +1005,25 @@ export default function Traitements_IA() {
                       </div>
                     </CardContent>
                   </Card>
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Target className="h-5 w-5" />
+                        Évaluation MTP (Métier, Talent, Paradigme)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8">
+                        <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Aucune évaluation MTP disponible pour ce candidat</p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
 
                 {/* Similarité avec l'offre */}
-                {selectedCandidate.aiData.similarite_offre && (
+                {selectedCandidate.aiData.similarite_offre ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -984,7 +1036,7 @@ export default function Traitements_IA() {
                         <div className="text-center">
                           <div className="text-3xl font-bold text-primary">
                             {selectedCandidate.aiData.similarite_offre.score > 1 
-                              ? `${selectedCandidate.aiData.similarite_offre.score * 10}%`
+                              ? `${selectedCandidate.aiData.similarite_offre.score.toFixed(1)}%`
                               : `${(selectedCandidate.aiData.similarite_offre.score * 100).toFixed(1)}%`
                             }
                           </div>
@@ -1032,10 +1084,97 @@ export default function Traitements_IA() {
                       </div>
                     </CardContent>
                   </Card>
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5" />
+                        Similarité avec l'offre
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8">
+                        <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Aucune évaluation de similarité disponible pour ce candidat</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Feedback RH */}
+                {selectedCandidate.aiData.feedback ? (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Feedback RH
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-primary">
+                            {selectedCandidate.aiData.feedback.score > 0 
+                              ? selectedCandidate.aiData.feedback.score > 1
+                                ? `${selectedCandidate.aiData.feedback.score.toFixed(1)}%`
+                                : `${(selectedCandidate.aiData.feedback.score * 100).toFixed(1)}%`
+                              : 'N/A'
+                            }
+                          </div>
+                          <p className="text-sm text-muted-foreground">Score Feedback</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground mb-2">Raisons :</p>
+                          <p className="text-sm bg-muted p-2 rounded">
+                            {selectedCandidate.aiData.feedback.raisons}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground mb-2">Points forts :</p>
+                            <ul className="text-sm space-y-1">
+                              {selectedCandidate.aiData.feedback.points_forts.map((point, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                  {point}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground mb-2">Points à travailler :</p>
+                            <ul className="text-sm space-y-1">
+                              {selectedCandidate.aiData.feedback.points_a_travailler.map((point, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                                  {point}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Feedback RH
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8">
+                        <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Aucun feedback RH disponible pour ce candidat</p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
 
                 {/* Conformité documentaire */}
-                {selectedCandidate.aiData.conformite && (
+                {selectedCandidate.aiData.conformite ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -1052,6 +1191,21 @@ export default function Traitements_IA() {
                         <p className="text-sm bg-muted p-2 rounded mt-2">
                           {selectedCandidate.aiData.conformite.commentaire}
                         </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Conformité documentaire
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8">
+                        <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Aucune évaluation de conformité disponible pour ce candidat</p>
                       </div>
                     </CardContent>
                   </Card>
