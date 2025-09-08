@@ -95,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const serif = ", Georgia, serif";
 
     const html = `
-      <div style="font-family: ui-serif${serif}; color:#000; max-width:760px; margin:0 auto; font-size:16px; line-height:1.7;">
+      <div style="font-family: ui-serif${serif}; color:#000; width:100%; margin:0; font-size:16px; line-height:1.7;">
         <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
         <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
         <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un entretien de recrutement qui se tiendra le&nbsp;:</p>
