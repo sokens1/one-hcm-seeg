@@ -193,6 +193,11 @@ export default function Traitements_IA() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  
+  // Défère les mises à jour du Select pour éviter les conflits DOM (Chrome)
+  const handleDepartmentChange = (value: string) => {
+    requestAnimationFrame(() => setSelectedDepartment(value));
+  };
 
   // Récupérer l'URL de retour
   const returnUrl = searchParams.get('returnUrl');
@@ -223,15 +228,12 @@ export default function Traitements_IA() {
     // Parcourir dynamiquement tous les départements
     Object.entries(aiData).forEach(([departmentKey, candidates]) => {
       candidates.forEach((candidate, index) => {
-        // Capitaliser la première lettre du département pour l'affichage
-        const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
-        
         allCandidates.push({
           id: `${departmentKey}-${index}`,
           firstName: candidate.prenom,
           lastName: candidate.nom,
           poste: candidate.poste,
-          department: departmentName,
+          department: departmentKey, // Utiliser le nom exact du département
           aiData: candidate
         });
       });
@@ -453,23 +455,24 @@ export default function Traitements_IA() {
                 
                 {/* Filtres de base */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1 sm:max-w-[200px]">
-                    <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Département" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tous les départements</SelectItem>
-                        {aiData && Object.keys(aiData).map((departmentKey) => {
-                          const departmentName = departmentKey.charAt(0).toUpperCase() + departmentKey.slice(1);
-                          return (
-                            <SelectItem key={departmentKey} value={departmentName}>
-                              Département {departmentName}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
+                  <div className="flex-1 sm:max-w-[240px]">
+                    <div className="relative group">
+                      <select
+                        value={selectedDepartment}
+                        onChange={(e) => handleDepartmentChange(e.target.value)}
+                        className="block w-full h-10 rounded-lg border border-input bg-background px-3 pr-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-colors hover:border-ring/40 appearance-none"
+                      >
+                        <option value="all">Tous les départements</option>
+                        {aiData && Object.keys(aiData).map((departmentKey) => (
+                          <option key={departmentKey} value={departmentKey}>{departmentKey}</option>
+                        ))}
+                      </select>
+                      <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-muted-foreground group-hover:text-foreground/80">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                          <path d="m6 9 6 6 6-6" />
+                        </svg>
+                      </span>
+                    </div>
                   </div>
                   
                   <Button 
@@ -665,7 +668,7 @@ export default function Traitements_IA() {
                             {candidate.firstName[0]}{candidate.lastName[0]}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="font-medium text-sm sm:text-base truncate">{candidate.firstName} {candidate.lastName}</p>
+                            <p className="font-medium text-sm sm:text-base break-words whitespace-normal">{candidate.firstName} {candidate.lastName}</p>
                           </div>
                         </div>
                       </TableCell>
@@ -684,7 +687,7 @@ export default function Traitements_IA() {
                       <TableCell className="text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Award className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium text-sm sm:text-base">#{candidate.aiData.resume_global.rang_global}</span>
+                          <span className="font-medium text-sm sm:text-base inline-flex whitespace-nowrap">#{candidate.aiData.resume_global.rang_global}</span>
                         </div>
                       </TableCell>
                       <TableCell className="min-w-[120px]">
@@ -715,8 +718,8 @@ export default function Traitements_IA() {
                         {candidate.firstName[0]}{candidate.lastName[0]}
                       </div>
                       <div>
-                        <div className="font-medium">{candidate.firstName} {candidate.lastName}</div>
-                        <div className="text-sm text-muted-foreground">#{candidate.aiData.resume_global.rang_global}</div>
+                        <div className="font-medium break-words whitespace-normal">{candidate.firstName} {candidate.lastName}</div>
+                        <div className="text-sm text-muted-foreground inline-flex whitespace-nowrap">#{candidate.aiData.resume_global.rang_global}</div>
                       </div>
                     </div>
                     <Button
