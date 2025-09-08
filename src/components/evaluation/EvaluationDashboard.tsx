@@ -21,6 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { InterviewCalendarModal } from './InterviewCalendarModal';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -115,14 +116,59 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   } = useInterviewScheduling(applicationId);
   
   const { toast } = useToast();
+  const navigate = useNavigate();
   
+  // Fonction pour mapper les noms de postes vers les départements dans Traitement IA
+  const mapJobTitleToDepartment = (jobTitle: string): string => {
+    const mapping: Record<string, string> = {
+      'Directeur Moyens Généraux': 'Moyens généraux',
+      'Chef de Département Eau': 'Chef de Département Eau',
+      'Directeur Technique Eau': 'Directeur Technique Eau',
+      'Directeur Exploitation Eau': 'Directeur Exploitation Eau',
+      'Chef de Département Electricité': 'Chef de Département Electricite',
+      'Coordonnateur des Régions': 'Coordonnateur des Régions',
+      'Directeur Audit & Contrôle interne': 'Directeur Audit & Contrôle interne',
+      'Directeur Qualité, Hygiène, Sécurité & Environnement': 'Directeur Qualité, Hygiène, Sécurité & Environnement',
+      'Directeur des Systèmes d\'Information': 'Directeur des Systèmes d\'Information',
+      'Directeur Commercial et Recouvrement': 'Directeur Commercial et Recouvrement',
+      'Directeur du Capital Humain': 'Directeur du Capital Humain',
+      'Directeur Finances et Comptabilité': 'Directeur Finances et Comptabilités',
+      'Directeur Juridique, Communication & RSE': 'Directeur Juridique, Communication & RSE',
+      'Directeur Technique Electricité': 'Directeur Technique Electricite',
+      'Directeur Exploitation Electricité': 'Directeur Exploitation Electricite',
+      'Chef de Département Support': 'Chef de Departement Support'
+    };
+    
+    // Appliquer la même capitalisation que dans Traitement IA
+    const mappedDepartment = mapping[jobTitle] || jobTitle;
+    return mappedDepartment.charAt(0).toUpperCase() + mappedDepartment.slice(1);
+  };
+
   // Fonction pour gérer le clic sur le bouton "Traitement IA"
   const handleAITreatment = () => {
-    toast({
-      title: "Traitement IA",
-      description: "Cette fonctionnalité sera disponible à partir du 01/09/2025",
-      duration: 3000,
-    });
+    // Rediriger vers la page Traitement IA avec filtres pré-appliqués
+    // Déterminer le rôle de l'utilisateur basé sur l'URL actuelle
+    const currentPath = window.location.pathname;
+    
+    // Construire les paramètres de filtrage
+    const searchParams = new URLSearchParams();
+    if (jobTitle) {
+      const mappedDepartment = mapJobTitleToDepartment(jobTitle);
+      searchParams.set('department', encodeURIComponent(mappedDepartment));
+    }
+    if (candidateName) {
+      searchParams.set('candidate', encodeURIComponent(candidateName));
+    }
+    
+    // Ajouter l'URL de retour
+    searchParams.set('returnUrl', encodeURIComponent(currentPath));
+    
+    const queryString = searchParams.toString();
+    const baseUrl = currentPath.includes('/observer/') 
+      ? '/observer/traitements-ia' 
+      : '/recruiter/traitements-ia';
+    
+    navigate(`${baseUrl}${queryString ? `?${queryString}` : ''}`);
   };
   
   // Fonction pour gérer l'incubation

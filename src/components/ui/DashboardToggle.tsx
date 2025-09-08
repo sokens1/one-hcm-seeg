@@ -3,6 +3,7 @@ import { Button } from './button';
 import { Card, CardContent } from './card';
 import { BarChart3, LayoutDashboard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardToggleProps {
   currentView: 'classic' | 'advanced';
@@ -11,14 +12,17 @@ interface DashboardToggleProps {
 
 export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleAdvancedClick = () => {
-    // Afficher le toast au lieu de basculer vers la vue avancée
-    toast({
-      title: "Avancé (IA)",
-      description: "Fonctionnalité disponible à partir du 01/09/2025",
-      variant: "default",
-    });
+    // Rediriger vers la page Traitement IA
+    // Déterminer le rôle de l'utilisateur basé sur l'URL actuelle
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/observer/')) {
+      navigate('/observer/traitements-ia');
+    } else {
+      navigate('/recruiter/traitements-ia');
+    }
   };
 
   return (
