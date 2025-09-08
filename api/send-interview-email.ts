@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
+// Assure le runtime Node (et non Edge) en production Vercel
+export const config = {
+  runtime: 'nodejs',
+};
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method Not Allowed' });
@@ -24,6 +29,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ? createClient(supabaseUrl, supabaseAnonKey)
       : null;
 
+    // Tolérant: certains environnements ne fournissent pas req.body parsé
+    let body: any = req.body;
+    if (!body || typeof body !== 'object') {
+      body = await new Promise<any>((resolve, reject) => {
+        try {
+          let raw = '';
+          req.on('data', (chunk) => (raw += chunk));
+          req.on('end', () => {
+            try {
+              resolve(raw ? JSON.parse(raw) : {});
+            } catch (e) {
+              resolve({});
+            }
+          });
+          req.on('error', reject);
+        } catch (e) {
+          resolve({});
+        }
+      });
+    }
+
     const {
       to,
       candidateFullName,
@@ -33,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       time,
       location,
       applicationId,
-    } = (req.body as any) || {};
+    } = body || {};
 
     if (!candidateFullName || !jobTitle || !date || !time) {
       res.status(400).json({ error: 'Missing fields: candidateFullName, jobTitle, date, time' });
@@ -135,7 +161,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           info = { messageId: (resendData as any)?.id };
           emailSent = true;
         } else {
-          // ignore, on renverra l'erreur plus bas si rien n'a marché
+          const errTxt = await resendResp.text();
+          console.error('[send-interview-email] Resend failed:', resendResp.status, errTxt);
         }
       } catch {
         // ignore
@@ -143,6 +170,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (!emailSent) {
+      console.error('[send-interview-email] Email sending failed. SMTP host/user/pass present?', !!smtpHost, !!smtpUser, !!smtpPass, 'RESEND_API_KEY:', !!process.env.RESEND_API_KEY);
       res.status(500).json({ error: 'Email sending failed (no provider succeeded)' });
       return;
     }
@@ -166,6 +194,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ ok: true, messageId: info?.messageId || null });
   } catch (e: any) {
+    console.error('[send-interview-email] Uncaught error:', e);
     res.status(500).json({ error: e?.message || 'Internal error' });
   }
 }
