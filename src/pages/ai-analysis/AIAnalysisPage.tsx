@@ -129,8 +129,8 @@ export default function AIAnalysisPage() {
 
   // Log des fichiers disponibles au chargement
   useEffect(() => {
-    console.log('📁 Fichiers JSON disponibles:', Object.values(JOB_TO_FILE_MAPPING));
-    console.log('📋 Postes disponibles:', JOB_OFFERS.map(j => j.title));
+    // console.log('📁 Fichiers JSON disponibles:', Object.values(JOB_TO_FILE_MAPPING));
+    // console.log('📋 Postes disponibles:', JOB_OFFERS.map(j => j.title));
   }, []);
 
   // Charger les données d'évaluation
@@ -147,13 +147,13 @@ export default function AIAnalysisPage() {
         return;
       }
 
-      console.log(`📁 Chargement des données pour: ${jobTitle} -> ${fileName}`);
+      // console.log(`📁 Chargement des données pour: ${jobTitle} -> ${fileName}`);
       
       // Charger les vraies données depuis le fichier JSON
       const response = await fetch(`/${fileName}`);
       if (response.ok) {
         const data = await response.json();
-        console.log(`✅ Données chargées:`, data);
+        // console.log(`✅ Données chargées:`, data);
         setCandidatesData(data);
       } else {
         console.error(`❌ Erreur HTTP ${response.status}: ${response.statusText}`);
@@ -179,16 +179,16 @@ export default function AIAnalysisPage() {
   useEffect(() => {
     const jobFromParams = searchParams.get('job');
     if (jobFromParams) {
-      console.log(`🔍 Recherche du poste: "${jobFromParams}"`);
+      // console.log(`🔍 Recherche du poste: "${jobFromParams}"`);
       
       // Trouver l'ID du job correspondant au titre (gestion de la casse)
       const job = JOB_OFFERS.find(j => normalizeJobTitle(j.title) === normalizeJobTitle(jobFromParams));
       if (job) {
-        console.log(`✅ Poste trouvé: ${job.title} (ID: ${job.id})`);
+        // console.log(`✅ Poste trouvé: ${job.title} (ID: ${job.id})`);
         setSelectedJob(job.id);
         loadEvaluationData(job.title);
       } else {
-        console.log(`❌ Aucun poste trouvé pour: "${jobFromParams}"`);
+        // console.log(`❌ Aucun poste trouvé pour: "${jobFromParams}"`);
         // Essayer de charger directement avec le titre fourni
         loadEvaluationData(jobFromParams);
       }
@@ -234,11 +234,11 @@ export default function AIAnalysisPage() {
   }, [filteredCandidates]);
 
   const handleJobChange = (jobId: string) => {
-    console.log(`🔄 Changement de poste sélectionné: ${jobId}`);
+    // console.log(`🔄 Changement de poste sélectionné: ${jobId}`);
     setSelectedJob(jobId);
     const job = JOB_OFFERS.find(j => j.id === jobId);
     if (job) {
-      console.log(`📋 Poste trouvé: ${job.title}`);
+      // console.log(`📋 Poste trouvé: ${job.title}`);
       loadEvaluationData(job.title);
     } else {
       console.error(`❌ Aucun poste trouvé avec l'ID: ${jobId}`);

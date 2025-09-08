@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 
 export interface AICandidateData {
@@ -186,7 +187,7 @@ export function useAIData() {
                 if (coordData && typeof coordData === 'object') {
                   const rawData = transformData(coordData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -198,7 +199,7 @@ export function useAIData() {
                 if (auditData && typeof auditData === 'object') {
                   const rawData = transformData(auditData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -213,7 +214,7 @@ export function useAIData() {
                  if (dsiData && typeof dsiData === 'object') {
                    const rawData = transformData(dsiData, true);
                    transformedData[dept.name] = deduplicateCandidates(rawData);
-                   console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  //  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                  } else {
                    transformedData[dept.name] = [];
                    console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -225,7 +226,7 @@ export function useAIData() {
                 if (qhseData && typeof qhseData === 'object') {
                   const rawData = transformData(qhseData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -237,7 +238,7 @@ export function useAIData() {
                 if (commercialData && typeof commercialData === 'object') {
                   const rawData = transformData(commercialData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -249,7 +250,7 @@ export function useAIData() {
                 if (capitalHumainData && typeof capitalHumainData === 'object') {
                   const rawData = transformData(capitalHumainData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -261,7 +262,7 @@ export function useAIData() {
                 if (financesData && typeof financesData === 'object') {
                   const rawData = transformData(financesData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -273,7 +274,7 @@ export function useAIData() {
                 if (juridiqueData && typeof juridiqueData === 'object') {
                   const rawData = transformData(juridiqueData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -285,7 +286,7 @@ export function useAIData() {
                 if (techniqueElecData && typeof techniqueElecData === 'object') {
                   const rawData = transformData(techniqueElecData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -297,7 +298,7 @@ export function useAIData() {
                 if (exploitationElecData && typeof exploitationElecData === 'object') {
                   const rawData = transformData(exploitationElecData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -309,7 +310,7 @@ export function useAIData() {
                 if (supportData && typeof supportData === 'object') {
                   const rawData = transformData(supportData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -321,7 +322,7 @@ export function useAIData() {
                 if (chefEauData && typeof chefEauData === 'object') {
                   const rawData = transformData(chefEauData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
-                  console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -762,7 +763,7 @@ export function useAIData() {
               if (directorData && typeof directorData === 'object') {
                 const rawData = transformData(directorData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -776,7 +777,7 @@ export function useAIData() {
               if (directorData && typeof directorData === 'object') {
                 const rawData = transformData(directorData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -790,7 +791,7 @@ export function useAIData() {
               if (directorData && typeof directorData === 'object') {
                 const rawData = transformData(directorData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -804,7 +805,7 @@ export function useAIData() {
               if (directorData && typeof directorData === 'object') {
                 const rawData = transformData(directorData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -818,7 +819,7 @@ export function useAIData() {
               if (coordData && typeof coordData === 'object') {
                 const rawData = transformData(coordData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -832,7 +833,7 @@ export function useAIData() {
               if (auditData && typeof auditData === 'object') {
                 const rawData = transformData(auditData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -849,7 +850,7 @@ export function useAIData() {
               if (dsiData && typeof dsiData === 'object') {
                 const rawData = transformData(dsiData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -863,7 +864,7 @@ export function useAIData() {
               if (qhseData && typeof qhseData === 'object') {
                 const rawData = transformData(qhseData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -877,7 +878,7 @@ export function useAIData() {
               if (commercialData && typeof commercialData === 'object') {
                 const rawData = transformData(commercialData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -891,7 +892,7 @@ export function useAIData() {
               if (capitalHumainData && typeof capitalHumainData === 'object') {
                 const rawData = transformData(capitalHumainData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -905,7 +906,7 @@ export function useAIData() {
               if (financesData && typeof financesData === 'object') {
                 const rawData = transformData(financesData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -919,7 +920,7 @@ export function useAIData() {
               if (juridiqueData && typeof juridiqueData === 'object') {
                 const rawData = transformData(juridiqueData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -933,7 +934,7 @@ export function useAIData() {
               if (techniqueElecData && typeof techniqueElecData === 'object') {
                 const rawData = transformData(techniqueElecData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -947,7 +948,7 @@ export function useAIData() {
               if (exploitationElecData && typeof exploitationElecData === 'object') {
                 const rawData = transformData(exploitationElecData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -961,7 +962,7 @@ export function useAIData() {
               if (supportData && typeof supportData === 'object') {
                 const rawData = transformData(supportData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -975,7 +976,7 @@ export function useAIData() {
               if (chefEauData && typeof chefEauData === 'object') {
                 const rawData = transformData(chefEauData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
-                console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -984,7 +985,7 @@ export function useAIData() {
               // Structure normale pour les autres départements
               const rawData = transformData(jsonData[index], false);
               transformedData[dept.name] = deduplicateCandidates(rawData);
-              console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+              // console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
             }
           } else {
             transformedData[dept.name] = [];

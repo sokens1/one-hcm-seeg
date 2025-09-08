@@ -490,7 +490,7 @@ export function useRecruiterApplications(jobOfferId?: string) {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ applicationId, status }: { applicationId: string; status: Application['status'] }) => {
-      console.log('🔧 [updateStatusMutation] Mise à jour du statut:', { applicationId, status });
+      // console.log('🔧 [updateStatusMutation] Mise à jour du statut:', { applicationId, status });
       
       // Vérifier d'abord le rôle de l'utilisateur connecté
       const { data: userData, error: userError } = await supabase
@@ -499,13 +499,13 @@ export function useRecruiterApplications(jobOfferId?: string) {
         .eq('id', user?.id)
         .single();
 
-      console.log('👤 [updateStatusMutation] Données utilisateur:', { userData, userError });
+      // console.log('👤 [updateStatusMutation] Données utilisateur:', { userData, userError });
 
       if (userError || !userData) {
         throw new Error('Impossible de vérifier les permissions utilisateur');
       }
 
-      console.log('🔍 [updateStatusMutation] Rôle utilisateur:', userData.role);
+      // console.log('🔍 [updateStatusMutation] Rôle utilisateur:', userData.role);
 
       // Vérifier que l'utilisateur est bien un recruteur ou admin
       if (!['recruteur', 'admin', 'observateur'].includes(userData.role)) {
@@ -513,7 +513,7 @@ export function useRecruiterApplications(jobOfferId?: string) {
       }
 
       // Méthode 1: Essayer avec une requête directe incluant le contexte
-      console.log('🔄 [updateStatusMutation] Tentative avec requête directe...');
+      // console.log('🔄 [updateStatusMutation] Tentative avec requête directe...');
       const { data, error } = await supabase
         .from('applications')
         .update({ status, updated_at: new Date().toISOString() })
@@ -524,7 +524,7 @@ export function useRecruiterApplications(jobOfferId?: string) {
           users!inner(*)
         `);
 
-      console.log('🔧 [updateStatusMutation] Résultat direct:', { data, error });
+      // console.log('🔧 [updateStatusMutation] Résultat direct:', { data, error });
 
       if (error) {
         console.error('❌ [updateStatusMutation] Erreur directe:', error);
@@ -541,13 +541,13 @@ export function useRecruiterApplications(jobOfferId?: string) {
           .eq('id', applicationId)
           .single();
 
-        console.log('🔍 [updateStatusMutation] Vérification existence:', { checkData, checkError });
+        // console.log('🔍 [updateStatusMutation] Vérification existence:', { checkData, checkError });
 
         if (checkError || !checkData) {
           throw new Error('Application non trouvée avec cet ID');
         } else {
           // Problème de politique RLS - essayer une solution de contournement
-          console.log('🚨 [updateStatusMutation] Problème de politique RLS détecté, tentative de contournement...');
+          // console.log('🚨 [updateStatusMutation] Problème de politique RLS détecté, tentative de contournement...');
           
           // Solution de contournement: essayer avec une requête qui inclut plus de contexte
           try {
@@ -565,7 +565,7 @@ export function useRecruiterApplications(jobOfferId?: string) {
               `);
 
             if (!contextError && contextData && contextData.length > 0) {
-              console.log('✅ [updateStatusMutation] Contournement réussi avec contexte étendu');
+              // console.log('✅ [updateStatusMutation] Contournement réussi avec contexte étendu');
               return contextData[0];
             } else {
               console.error('❌ [updateStatusMutation] Contournement échoué:', contextError);
@@ -578,7 +578,7 @@ export function useRecruiterApplications(jobOfferId?: string) {
         }
       }
 
-      console.log('✅ [updateStatusMutation] Statut mis à jour avec succès');
+      // console.log('✅ [updateStatusMutation] Statut mis à jour avec succès');
       return data[0];
     },
     onSuccess: (_, { applicationId }) => {

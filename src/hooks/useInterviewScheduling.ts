@@ -61,7 +61,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
 
   // Fonction pour notifier les changements aux autres composants
   const notifySlotsChange = useCallback((action: 'created' | 'updated' | 'deleted', details?: Record<string, unknown>) => {
-    console.log(`🔔 [SCHEDULE DEBUG] Notification changement créneaux: ${action}`, details);
+    // console.log(`🔔 [SCHEDULE DEBUG] Notification changement créneaux: ${action}`, details);
     window.dispatchEvent(new CustomEvent('interviewSlotsUpdated', { 
       detail: { action, details, timestamp: Date.now() } 
     }));
@@ -87,16 +87,16 @@ export const useInterviewScheduling = (applicationId?: string) => {
         const parsedData = JSON.parse(cachedData);
         setSchedules(parsedData);
         setIsLoading(false);
-        console.log('📦 Données chargées depuis le cache');
+        // console.log('📦 Données chargées depuis le cache');
         return;
       } catch (e) {
-        console.log('❌ Cache invalide, rechargement...');
+        // console.log('❌ Cache invalide, rechargement...');
       }
     }
 
     // Éviter les appels multiples pour la même application
     if (lastApplicationIdRef.current === applicationId && schedules.length > 0) {
-      console.log('⏭️ Chargement ignoré - données déjà présentes pour:', applicationId);
+      // console.log('⏭️ Chargement ignoré - données déjà présentes pour:', applicationId);
       return;
     }
 
@@ -109,7 +109,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     lastApplicationIdRef.current = applicationId;
     
     try {
-      console.log('🔄 Chargement des créneaux pour application:', applicationId);
+      // console.log('🔄 Chargement des créneaux pour application:', applicationId);
       
       // Récupérer seulement les créneaux nécessaires avec une requête optimisée
       const { data, error } = await supabase
@@ -125,7 +125,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
         throw error;
       }
 
-      console.log('✅ Données reçues:', data);
+      // console.log('✅ Données reçues:', data);
 
       // Optimisation : Organiser les créneaux par date avec Map plus efficace
       const schedulesMap = new Map<string, Map<string, InterviewSlot>>();
@@ -165,14 +165,14 @@ export const useInterviewScheduling = (applicationId?: string) => {
         schedules.push({ date, slots: allSlots });
       });
 
-      console.log('📅 Schedules générés:', schedules);
+      // console.log('📅 Schedules générés:', schedules);
       
       // Mettre en cache les données pour 30 secondes
       try {
         sessionStorage.setItem(cacheKey, JSON.stringify(schedules));
         sessionStorage.setItem(`${cacheKey}_time`, Date.now().toString());
       } catch (e) {
-        console.log('⚠️ Impossible de mettre en cache');
+        // console.log('⚠️ Impossible de mettre en cache');
       }
       
       setSchedules(schedules);
@@ -198,7 +198,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
     setIsSaving(true);
     try {
       const normalizedTime = normalizeTimeToHms(time);
-      console.log('🔄 Programmation entretien pour:', { date, time: normalizedTime, applicationId, userId: user.id });
+      // console.log('🔄 Programmation entretien pour:', { date, time: normalizedTime, applicationId, userId: user.id });
 
       // Récupérer les informations du job et du candidat pour remplir les champs obligatoires
       const { data: applicationDetails, error: appDetailsError } = await supabase
@@ -229,7 +229,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       const candidateEmail = (userRecord as any)?.email || '';
       const jobTitle = jobOfferRecord?.title || 'Poste non spécifié';
 
-      console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
+      // console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
 
       // Vérifier si le créneau existe déjà et s'il est occupé
       const { data: existingSlot, error: checkError } = await supabase
@@ -361,7 +361,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
       if (options?.sendEmail) {
         try {
           const toAddress = 'support@seeg-talentsource.com';
-          console.log('✉️ [EMAIL] Envoi interview ->', { to: toAddress, candidateName, jobTitle, date, time: normalizedTime.slice(0,5), applicationId });
+          // console.log('✉️ [EMAIL] Envoi interview ->', { to: toAddress, candidateName, jobTitle, date, time: normalizedTime.slice(0,5), applicationId });
           const resp = await fetch('/api/send-interview-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -380,7 +380,7 @@ export const useInterviewScheduling = (applicationId?: string) => {
             console.error('✉️ [EMAIL] échec:', resp.status, json);
             toast({ title: 'Envoi email échoué', description: `Statut ${resp.status}`, variant: 'destructive' });
           } else {
-            console.log('✉️ [EMAIL] succès:', json);
+            // console.log('✉️ [EMAIL] succès:', json);
             const { count } = await supabase
               .from('email_logs')
               .select('id', { count: 'exact', head: true })
@@ -395,20 +395,20 @@ export const useInterviewScheduling = (applicationId?: string) => {
       }
 
       // Message différent selon le rôle de l'utilisateur
-      console.log('🔍 DEBUG: isRecruiter from useAuth:', isRecruiter);
-      console.log('🔍 DEBUG: isAdmin from useAuth:', isAdmin);
+      // console.log('🔍 DEBUG: isRecruiter from useAuth:', isRecruiter);
+      // console.log('🔍 DEBUG: isAdmin from useAuth:', isAdmin);
       
       const isRecruiterOrAdmin = isRecruiter || isAdmin;
-      console.log('🔍 DEBUG: isRecruiterOrAdmin:', isRecruiterOrAdmin);
+      // console.log('🔍 DEBUG: isRecruiterOrAdmin:', isRecruiterOrAdmin);
       
       if (isRecruiterOrAdmin) {
-        console.log('🔍 DEBUG: Affichage message recruteur');
+        // console.log('🔍 DEBUG: Affichage message recruteur');
         toast({
           title: "Entretien programmé",
           description: `Entretien programmé avec succès pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${normalizedTime.slice(0,5)}`,
         });
       } else {
-        console.log('🔍 DEBUG: Affichage message candidat');
+        // console.log('🔍 DEBUG: Affichage message candidat');
         toast({
           title: "Entretien programmé",
           description: `Félicitations, votre candidature a été retenue. Vous avez un entretien programmé pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${normalizedTime.slice(0,5)} suite à votre candidature pour le poste de ${jobTitle}`,
@@ -561,13 +561,13 @@ export const useInterviewScheduling = (applicationId?: string) => {
   // Écouter l'événement de force reload depuis InterviewCalendarModal
   useEffect(() => {
     const handleForceReload = () => {
-      console.log('🔄 [SCHEDULE DEBUG] Force reload créneaux depuis calendrier');
+      // console.log('🔄 [SCHEDULE DEBUG] Force reload créneaux depuis calendrier');
       lastApplicationIdRef.current = undefined; // Force le rechargement
       loadInterviewSlots();
     };
 
     const handleSlotsUpdated = () => {
-      console.log('🔄 [SCHEDULE DEBUG] Mise à jour des créneaux depuis calendrier');
+      // console.log('🔄 [SCHEDULE DEBUG] Mise à jour des créneaux depuis calendrier');
       lastApplicationIdRef.current = undefined; // Force le rechargement
       loadInterviewSlots();
     };

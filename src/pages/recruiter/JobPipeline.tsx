@@ -105,8 +105,8 @@ export default function JobPipeline() {
   };
 
   const candidates: Candidate[] = applications.map(app => {
-    console.log('Application data received in JobPipeline:', app);
-    console.log('Raw interview_date from DB:', app.interview_date);
+    // console.log('Application data received in JobPipeline:', app);
+    // console.log('Raw interview_date from DB:', app.interview_date);
     
     const normalizedStatus = normalizeStatus(app.status);
     
@@ -127,7 +127,7 @@ export default function JobPipeline() {
     };
     
     if (app.interview_date) {
-      console.log('🔍 Interview date for', candidate.name, ':', app.interview_date);
+      // console.log('🔍 Interview date for', candidate.name, ':', app.interview_date);
     }
     
     return candidate;
@@ -154,7 +154,7 @@ export default function JobPipeline() {
   const handleAnalyzeCandidate = (candidateId: string) => {
     const jobId = id; // current job offer id from route params
     const suffix = jobId ? `?jobId=${jobId}` : "";
-    console.log(`Navigating to analysis for candidate ${candidateId} with job ${jobId}`);
+    // console.log(`Navigating to analysis for candidate ${candidateId} with job ${jobId}`);
     navigate(`/recruiter/candidates/${candidateId}/analysis${suffix}`);
   };
 

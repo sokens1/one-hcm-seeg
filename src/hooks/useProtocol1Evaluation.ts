@@ -343,7 +343,7 @@ export function useProtocol1Evaluation(applicationId: string) {
         throw result.error;
       }
 
-      console.log('Évaluation sauvegardée avec succès');
+      // console.log('Évaluation sauvegardée avec succès');
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
       toast({
