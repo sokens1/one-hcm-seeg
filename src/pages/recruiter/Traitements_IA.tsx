@@ -1044,13 +1044,13 @@ export default function Traitements_IA() {
                   </Card>
                 )}
 
-                {/* Similarité avec l'offre */}
+                {/* Complétude */}
                 {selectedCandidate.aiData.similarite_offre ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
                         <TrendingUp className="h-5 w-5" />
-                        Similarité avec l'offre
+                        Complétude
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -1120,7 +1120,7 @@ export default function Traitements_IA() {
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
                         <TrendingUp className="h-5 w-5" />
-                        Similarité avec l'offre
+                        Complétude
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
