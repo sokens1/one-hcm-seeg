@@ -769,7 +769,7 @@ export default function Traitements_IA() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Informations sur desktop */}
                   <div className="hidden sm:block text-sm text-muted-foreground">
-                    Affichage de {startIndex + 1} à {Math.min(endIndex, filteredCandidates.length)} sur {filteredCandidates.length} candidats
+                    Page {currentPage} sur {totalPages}
                   </div>
                   
                   {/* Contrôles de pagination */}
