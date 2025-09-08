@@ -17,24 +17,34 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
-    // Met à jour l'état pour afficher l'UI de fallback
+    // Ignorer les erreurs DOM Chrome non-critiques pour ne pas perturber l'UI (ex: Select)
+    if (
+      error.message.includes('removeChild') ||
+      error.message.includes('NotFoundError') ||
+      error.name === 'NotFoundError'
+    ) {
+      return { hasError: false };
+    }
+
+    // Met à jour l'état pour afficher l'UI de fallback pour les autres erreurs
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log l'erreur pour le debugging
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
-    // Ignore les erreurs DOM spécifiques à Chrome
-    if (error.message.includes('removeChild') || 
-        error.message.includes('NotFoundError') ||
-        error.name === 'NotFoundError') {
-      console.warn('Erreur DOM Chrome ignorée:', error.message);
-      // Reset l'état après un court délai
-      setTimeout(() => {
-        this.setState({ hasError: false, error: undefined });
-      }, 100);
+    if (
+      error.message.includes('removeChild') ||
+      error.message.includes('NotFoundError') ||
+      error.name === 'NotFoundError'
+    ) {
+      // Réduire le bruit sans affecter l'état
+      if (import.meta.env.DEV) {
+        console.debug('Erreur DOM Chrome ignorée par ErrorBoundary:', error.message, errorInfo);
+      }
+      return;
     }
+
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
   render() {
@@ -72,3 +82,4 @@ class ErrorBoundary extends Component<Props, State> {
 }
 
 export default ErrorBoundary;
+

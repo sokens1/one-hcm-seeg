@@ -4,16 +4,17 @@ export const setupGlobalErrorHandler = () => {
   window.addEventListener('error', (event) => {
     const error = event.error;
     
-    // Ignore les erreurs DOM spécifiques à Chrome
+    // Réduire le bruit des erreurs DOM spécifiques à Chrome sans bloquer l'UI
     if (error && (
       error.message?.includes('removeChild') ||
       error.message?.includes('NotFoundError') ||
       error.name === 'NotFoundError' ||
       error.message?.includes('le nœud à supprimer n\'est pas un enfant de ce nœud')
     )) {
-      console.warn('Erreur DOM Chrome ignorée:', error.message);
-      event.preventDefault(); // Empêche l'affichage de l'erreur
-      return false;
+      if (import.meta.env.DEV) {
+        console.debug('Erreur DOM Chrome (non-bloquante):', error.message);
+      }
+      // Ne pas appeler event.preventDefault ici pour ne pas casser des composants (ex: Select)
     }
   });
 
@@ -21,14 +22,16 @@ export const setupGlobalErrorHandler = () => {
   window.addEventListener('unhandledrejection', (event) => {
     const error = event.reason;
     
-    // Ignore les erreurs DOM spécifiques à Chrome dans les promesses
+    // Réduire le bruit sans bloquer
     if (error && (
       error.message?.includes('removeChild') ||
       error.message?.includes('NotFoundError') ||
       error.name === 'NotFoundError'
     )) {
-      console.warn('Erreur DOM Chrome (promesse) ignorée:', error.message);
-      event.preventDefault(); // Empêche l'affichage de l'erreur
+      if (import.meta.env.DEV) {
+        console.debug('Erreur DOM Chrome (promesse, non-bloquante):', error?.message || error);
+      }
+      // Ne pas preventDefault
     }
   });
 };
@@ -49,3 +52,4 @@ export const safeDOMOperation = <T>(operation: () => T, fallback?: T): T | undef
     throw error; // Re-lance les autres erreurs
   }
 };
+
