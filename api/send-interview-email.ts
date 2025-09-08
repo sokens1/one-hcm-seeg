@@ -3,7 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // Assure le runtime Node (et non Edge) en production Vercel
 export const config = {
-  runtime: 'nodejs18.x',
+  runtime: 'nodejs',
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
