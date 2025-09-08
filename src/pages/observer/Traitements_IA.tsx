@@ -638,7 +638,7 @@ export default function Traitements_IA() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
-              Évaluations IA des Candidats ({filteredCandidates.length})
+              Évaluations IA des Candidats
               {filteredCandidates.length > itemsPerPage && (
                 <span className="text-sm font-normal text-muted-foreground">
                   - Page {currentPage} sur {totalPages}
