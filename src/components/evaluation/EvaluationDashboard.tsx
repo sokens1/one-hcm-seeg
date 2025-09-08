@@ -654,7 +654,11 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               <div className="flex flex-col sm:flex-row justify-end pt-4 border-t border-blue-200 gap-3">
                 <Button 
                   size="lg"
-                  // onClick={handleAITreatment}
+                  onClick={() => {
+                    toast({
+                      title: 'Activation en cours ...',
+                    });
+                  }}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
                   disabled={isReadOnly}
                 >
