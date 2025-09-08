@@ -405,7 +405,7 @@ export default function Traitements_IA() {
   return (
     <RecruiterLayout>
       <ErrorBoundary>
-        <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6">
         {/* En-tête de la page */}
         <div className="mb-8">
           {/* Bouton retour */}
@@ -638,7 +638,7 @@ export default function Traitements_IA() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
-              Évaluations IA des Candidats ({filteredCandidates.length})
+              Évaluations IA des Candidats
               {filteredCandidates.length > itemsPerPage && (
                 <span className="text-sm font-normal text-muted-foreground">
                   - Page {currentPage} sur {totalPages}
@@ -654,7 +654,6 @@ export default function Traitements_IA() {
                   <TableRow>
                     <TableHead>Candidat</TableHead>
                     <TableHead>Poste</TableHead>
-                    <TableHead>Département</TableHead>
                     <TableHead>Rang</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -678,12 +677,7 @@ export default function Traitements_IA() {
                           <span className="text-sm">{candidate.poste}</span>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <Badge variant="outline">{candidate.department}</Badge>
-                        </div>
-                      </TableCell>
+                      
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Award className="h-4 w-4 text-muted-foreground" />
@@ -737,10 +731,6 @@ export default function Traitements_IA() {
                       <Briefcase className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm">{candidate.poste}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <Badge variant="outline">{candidate.department}</Badge>
-                    </div>
                   </div>
                 </Card>
               ))}
@@ -768,65 +758,65 @@ export default function Traitements_IA() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Informations sur desktop */}
                   <div className="hidden sm:block text-sm text-muted-foreground">
-                    Affichage de {startIndex + 1} à {Math.min(endIndex, filteredCandidates.length)} sur {filteredCandidates.length} candidats
+                    Page {currentPage} sur {totalPages}
                   </div>
                   
                   {/* Contrôles de pagination */}
                   <div className="flex items-center justify-center sm:justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePreviousPage}
-                      disabled={currentPage === 1}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
                       className="flex items-center gap-1"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
+                  >
+                    <ChevronLeft className="h-4 w-4" />
                       <span className="hidden xs:inline">Précédent</span>
-                    </Button>
-                    
+                  </Button>
+                  
                     <div className="flex items-center gap-1 overflow-x-auto">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                        // Afficher seulement quelques pages autour de la page actuelle
-                        if (
-                          page === 1 ||
-                          page === totalPages ||
-                          (page >= currentPage - 1 && page <= currentPage + 1)
-                        ) {
-                          return (
-                            <Button
-                              key={page}
-                              variant={currentPage === page ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => handlePageChange(page)}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                      // Afficher seulement quelques pages autour de la page actuelle
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handlePageChange(page)}
                               className="w-8 h-8 p-0 min-w-[32px] flex-shrink-0"
-                            >
-                              {page}
-                            </Button>
-                          );
-                        } else if (
-                          page === currentPage - 2 ||
-                          page === currentPage + 2
-                        ) {
-                          return (
+                          >
+                            {page}
+                          </Button>
+                        );
+                      } else if (
+                        page === currentPage - 2 ||
+                        page === currentPage + 2
+                      ) {
+                        return (
                             <span key={page} className="text-muted-foreground px-1 flex-shrink-0">
-                              ...
-                            </span>
-                          );
-                        }
-                        return null;
-                      })}
-                    </div>
+                            ...
+                          </span>
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleNextPage}
-                      disabled={currentPage === totalPages}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
                       className="flex items-center gap-1"
-                    >
+                  >
                       <span className="hidden xs:inline">Suivant</span>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                   </div>
                 </div>
               </div>
@@ -967,15 +957,15 @@ export default function Traitements_IA() {
                           <p className="text-sm text-muted-foreground">Paradigme</p>
                         </div>
                         {(selectedCandidate.aiData.mtp.scores?.Moyen || 0) > 0 && (
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-orange-500">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-orange-500">
                               {(selectedCandidate.aiData.mtp.scores.Moyen || 0) > 1
                                 ? `${(selectedCandidate.aiData.mtp.scores.Moyen || 0).toFixed(1)}%`
                                 : `${((selectedCandidate.aiData.mtp.scores.Moyen || 0) * 100).toFixed(1)}%`
                               }
-                            </div>
-                            <p className="text-sm text-muted-foreground">Moyen</p>
                           </div>
+                          <p className="text-sm text-muted-foreground">Moyen</p>
+                        </div>
                         )}
                       </div>
                       {selectedCandidate.aiData.mtp.score_moyen && (
@@ -1000,10 +990,10 @@ export default function Traitements_IA() {
                             <ul className="text-sm space-y-1">
                               {Array.isArray(selectedCandidate.aiData.mtp.points_forts) && selectedCandidate.aiData.mtp.points_forts.length > 0
                                 ? selectedCandidate.aiData.mtp.points_forts.map((point, index) => (
-                                    <li key={index} className="flex items-start gap-2">
-                                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                      {point}
-                                    </li>
+                                <li key={index} className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                  {point}
+                                </li>
                                   ))
                                 : <li className="text-muted-foreground">Aucun point fort identifié</li>
                               }
@@ -1014,10 +1004,10 @@ export default function Traitements_IA() {
                             <ul className="text-sm space-y-1">
                               {Array.isArray(selectedCandidate.aiData.mtp.points_a_travailler) && selectedCandidate.aiData.mtp.points_a_travailler.length > 0
                                 ? selectedCandidate.aiData.mtp.points_a_travailler.map((point, index) => (
-                                    <li key={index} className="flex items-start gap-2">
-                                      <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
-                                      {point}
-                                    </li>
+                                <li key={index} className="flex items-start gap-2">
+                                  <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                                  {point}
+                                </li>
                                   ))
                                 : <li className="text-muted-foreground">Aucun point à travailler identifié</li>
                               }
@@ -1069,7 +1059,7 @@ export default function Traitements_IA() {
                           <p className="text-sm bg-muted p-2 rounded">
                             {selectedCandidate.aiData.similarite_offre?.resume_experience ? (
                               typeof selectedCandidate.aiData.similarite_offre.resume_experience === 'string' 
-                                ? selectedCandidate.aiData.similarite_offre.resume_experience
+                              ? selectedCandidate.aiData.similarite_offre.resume_experience
                                 : selectedCandidate.aiData.similarite_offre.resume_experience?.nombre_d_annees && selectedCandidate.aiData.similarite_offre.resume_experience?.specialite
                                   ? `${selectedCandidate.aiData.similarite_offre.resume_experience.nombre_d_annees} ans - ${selectedCandidate.aiData.similarite_offre.resume_experience.specialite}`
                                   : 'Informations non disponibles'
@@ -1088,10 +1078,10 @@ export default function Traitements_IA() {
                             <ul className="text-sm space-y-1">
                               {Array.isArray(selectedCandidate.aiData.similarite_offre.forces) 
                                 ? selectedCandidate.aiData.similarite_offre.forces.map((force, index) => (
-                                    <li key={index} className="flex items-start gap-2">
-                                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                      {force}
-                                    </li>
+                                <li key={index} className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                  {force}
+                                </li>
                                   ))
                                 : <li className="text-muted-foreground">Aucune force identifiée</li>
                               }
@@ -1102,10 +1092,10 @@ export default function Traitements_IA() {
                             <ul className="text-sm space-y-1">
                               {Array.isArray(selectedCandidate.aiData.similarite_offre.faiblesses) 
                                 ? selectedCandidate.aiData.similarite_offre.faiblesses.map((faiblesse, index) => (
-                                    <li key={index} className="flex items-start gap-2">
-                                      <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                                      {faiblesse}
-                                    </li>
+                                <li key={index} className="flex items-start gap-2">
+                                  <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                                  {faiblesse}
+                                </li>
                                   ))
                                 : <li className="text-muted-foreground">Aucune faiblesse identifiée</li>
                               }
@@ -1245,7 +1235,7 @@ export default function Traitements_IA() {
             )}
           </DialogContent>
         </Dialog>
-        </div>
+      </div>
       </ErrorBoundary>
     </RecruiterLayout>
   );

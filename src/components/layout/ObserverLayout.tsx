@@ -30,12 +30,12 @@ const navigation = [
     icon: Users,
     description: "Liste des candidats"
   },
-  {
-    name: "Traitements IA",
-    href: "/observer/traitements-ia",
-    icon: Brain,
-    description: "Gestion IA des candidatures"
-  },
+  // {
+  //   name: "Traitements IA",
+  //   href: "/observer/traitements-ia",
+  //   icon: Brain,
+  //   description: "Gestion IA des candidatures"
+  // },
   {
     name: "Espace Candidature",
     href: "/jobs",
