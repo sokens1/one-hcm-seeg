@@ -18,10 +18,10 @@ import { cn } from "@/lib/utils";
 import { useOptimizedProtocol1Evaluation } from "@/hooks/useOptimizedProtocol1Evaluation";
 import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { InterviewCalendarModal } from './InterviewCalendarModal';
-import { useNavigate } from 'react-router-dom';
 
 
 
@@ -655,9 +655,13 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 <Button 
                   size="lg"
                   onClick={() => {
-                    toast({
-                      title: 'Activation en cours ...',
-                    });
+                    // Rediriger vers la page Traitement IA
+                    const currentPath = window.location.pathname;
+                    if (currentPath.includes('/observer/')) {
+                      navigate('/observer/traitements-ia');
+                    } else {
+                      navigate('/recruiter/traitements-ia');
+                    }
                   }}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
                   disabled={isReadOnly}
