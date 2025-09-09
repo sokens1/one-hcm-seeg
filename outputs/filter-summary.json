@@ -1,0 +1,98 @@
+[
+  {
+    "file": "chef_de_departement_support.json",
+    "kept": 7,
+    "removed": 8,
+    "total": 15
+  },
+  {
+    "file": "chef_departement_eau.json",
+    "kept": 5,
+    "removed": 8,
+    "total": 13
+  },
+  {
+    "file": "chef_departement_electricite.json",
+    "kept": 7,
+    "removed": 3,
+    "total": 10
+  },
+  {
+    "file": "coordonnateur_des_regions.json",
+    "kept": 11,
+    "removed": 17,
+    "total": 28
+  },
+  {
+    "file": "directeur_audit_et_controle_interne.json",
+    "kept": 1,
+    "removed": 15,
+    "total": 16
+  },
+  {
+    "file": "directeur_commercial_et_recouvrement.json",
+    "kept": 3,
+    "removed": 14,
+    "total": 17
+  },
+  {
+    "file": "directeur_des_systemes_d_information.json",
+    "kept": 4,
+    "removed": 10,
+    "total": 14
+  },
+  {
+    "file": "directeur_du_capital_humain.json",
+    "kept": 5,
+    "removed": 5,
+    "total": 10
+  },
+  {
+    "file": "directeur_exploitation_eau.json",
+    "kept": 6,
+    "removed": 8,
+    "total": 14
+  },
+  {
+    "file": "directeur_exploitation_electricite.json",
+    "kept": 12,
+    "removed": 9,
+    "total": 21
+  },
+  {
+    "file": "directeur_finances_et_comptabilite.json",
+    "kept": 0,
+    "removed": 17,
+    "total": 17
+  },
+  {
+    "file": "directeur_juridique_communication_rse.json",
+    "kept": 1,
+    "removed": 7,
+    "total": 8
+  },
+  {
+    "file": "directeur_qualite_hygiene_securite_environnement.json",
+    "kept": 3,
+    "removed": 17,
+    "total": 20
+  },
+  {
+    "file": "directeur_technique_eau.json",
+    "kept": 5,
+    "removed": 18,
+    "total": 23
+  },
+  {
+    "file": "directeur_technique_electricité.json",
+    "kept": 7,
+    "removed": 8,
+    "total": 15
+  },
+  {
+    "file": "moyens_generaux_complet.json",
+    "kept": 9,
+    "removed": 24,
+    "total": 33
+  }
+]
