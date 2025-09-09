@@ -50,11 +50,7 @@ export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps)
             <Button
               variant={currentView === 'advanced' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => {
-                toast({
-                  title: 'Activation en cours ...',
-                })
-              }}
+              onClick={handleAdvancedClick}
               className="gap-2"
             >
               <BarChart3 className="w-3 h-3" />

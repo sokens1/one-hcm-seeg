@@ -1,1810 +1,1550 @@
 {
-    "Coordonnateur des Régions": {
-      "Calvin Ndong Eyegue": {
-        "prenom": "Calvin",
-        "nom": "Ndong Eyegue",
-        "conformite": {
-          "prenom": "Calvin",
-          "nom": "NDONG EYEGUE",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "NDONG EYEGUE",
-          "prenom": "Calvin",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.33,
-            "Talent": 0.32,
-            "Paradigme": 0.45
-          },
-          "Score_moyen": 36.67,
-          "niveau": "Le candidat présente un score moyen strictement inférieur à 43.5, ce qui indique une inadéquation avec les attentes de l'entreprise. Ses compétences dans les domaines clés sont insuffisantes pour accompagner la transformation qu'exige la vision de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 36.67 suggère que le candidat ne répond pas aux critères nécessaires pour contribuer positivement à la vision de l'entreprise.",
-          "points_forts": [
-            "Approche méthodique face aux défis organisationnels.",
-            "Capacité à travailler en équipe et à motiver les employés.",
-            "Connaissances des problématiques liées aux infrastructures énergétiques."
-          ],
-          "points_a_travailler": [
-            "Améliorer la compréhension des exigences réglementaires et de gouvernance.",
-            "Développer des compétences en gestion de projets d'investissement.",
-            "Renforcer les compétences en communication pour faciliter le dialogue avec les parties prenantes."
-          ],
-          "rang": 14
-        },
-        "completude": {
-          "nom": "NDONG EYEGUE",
-          "prenom": "Calvin",
-          "poste": "Coordonnateur des Régions",
-          "score": 41.3,
-          "resume_experience": "27 ans d'expérience, principalement dans la gestion de l'eau et de l'énergie",
-          "verdict": "favorable",
-          "points_forts": [
-            "Expérience significative dans la gestion de plusieurs régions chez SEEG",
-            "Connaissance approfondie des processus techniques et commerciaux internes",
-            "Compétences en management et coordination d'équipes"
-          ],
-          "points_a_travailler": [
-            "Renforcer ses compétences linguistiques, notamment en anglais et espagnol",
-            "Développer davantage des compétences en veille réglementaire et conformité",
-            "Augmenter l'expérience en interface avec la Direction générale et les partenaires"
-          ],
-          "rang": 1
-        },
-        "feedback": {
-          "prenom": "Calvin",
-          "nom": "NDONG EYEGUE",
-          "score": 78.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat présente une expérience significative et des résultats positifs dans ses précédents postes. Ses qualités de leader et l'absence de plaintes de la part de ses équipes sont des atouts importants pour accompagner la vision de transformation de la SEEG.",
-          "Points forces": [
-            "Excellente expérience de gestion au niveau régional avec de bons résultats",
-            "Reconnu pour son leadership et sa capacité à motiver ses équipes"
-          ],
-          "Points à travailler": [
-            "Renforcer les compétences en gestion de la transition énergétique et des infrastructures modernes",
-            "Améliorer les connaissances sur les mécanismes de gouvernance transparente et de contrôle"
-          ],
-          "rang": 1
-        },
-        "global": {
-          "score_global": 61.68,
-          "verdict": "favorable",
-          "resume": "Calvin Ndong Eyegue présente une expérience impressionnante en gestion régionale, ayant démontré des résultats positifs et un leadership reconnu. Son score de feedback RH de 78.5 souligne ses capacités à motiver ses équipes, ce qui est crucial pour la vision transformationnelle de la SEEG. Toutefois, il est nécessaire d'améliorer ses compétences en transition énergétique et gouvernance.",
-          "points_forts": [
-            "Excellente expérience de gestion au niveau régional avec de bons résultats",
-            "Reconnu pour son leadership",
-            "Capacité à motiver ses équipes"
-          ],
-          "points_a_ameliorer": [
-            "Renforcer les compétences en gestion de la transition énergétique et des infrastructures modernes",
-            "Améliorer les connaissances sur les mécanismes de gouvernance transparente et de contrôle"
-          ],
-          "rang": 1
-        }
-      },
-      "Elvis Ella Okwe": {
-        "prenom": "Elvis",
-        "nom": "Ella Okwe",
-        "conformite": {
-          "prenom": "ELVIS",
-          "nom": "ELLA OKWE",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "ELLA OKWE",
-          "prenom": "ELVIS",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.31,
-            "Talent": 0.31,
-            "Paradigme": 0.48
-          },
-          "Score_moyen": 36.67,
-          "niveau": "Le score moyen de 36.67 indique une performance jugée défavorable. Cette situation suggère que le candidat ne répond pas adéquatement aux attentes du poste visé.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen inférieur à 43.5 indique des lacunes dans l'adéquation du candidat avec la vision de l'entreprise.",
-          "points_forts": [
-            "Capacité à travailler sous pression, ce qui peut être crucial pour la SEEG confrontée à des crises récurrentes.",
-            "Volonté de mettre en œuvre des améliorations dans l'infrastructure, en ligne avec les thèmes de réhabilitation de la vision de la SEEG.",
-            "Ouverture à la formation et à l'innovation, ce qui pourrait aider à moderniser les pratiques en place."
-          ],
-          "points_a_travailler": [
-            "Améliorer la compréhension des processus de gestion des ressources pour garantir la conformité aux normes.",
-            "Acquérir des compétences en gouvernance et en transparence pour renforcer la confiance au sein de l'organisation.",
-            "Développer des capacités en contrôle de gestion pour répondre aux exigences financières et opérationnelles de la SEEG."
-          ],
-          "rang": 15
-        },
-        "completude": {
-          "nom": "ELLA OKWE",
-          "prenom": "Elvis",
-          "poste": "Coordonnateur des Régions",
-          "score": 38.2,
-          "resume_experience": "17 années d'expérience à la SEEG, avec une spécialité dans la coordination des activités régionales en eau et électricité.",
-          "verdict": "favorable",
-          "raison_du_verdict": "Elvis Ella Okwe a une expérience significative de 17 ans à la SEEG avec une spécialisation dans la gestion des activités régionales.",
-          "points_forts": [
-            "Expérience de 17 ans dans le secteur de l'eau et de l'électricité.",
-            "Connaissance approfondie des défis et opportunités au sein de la SEEG.",
-            "Capacité éprouvée à coordonner et optimiser les ressources régionales."
-          ],
-          "points_a_travailler": [
-            "Manque de précisions sur des compétences spécifiques techniques ou administratives.",
-            "Absence d'informations sur la réussite de projets passés dans le CV mentionné.",
-            "Amélioration des compétences en présentation des plans stratégiques."
-          ],
-          "rang": 6
-        },
-        "feedback": {
-          "prenom": "Elvis",
-          "nom": "ELLA OKWE",
-          "score": 78.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat démontre une forte capacité de leadership et a un impact positif sur le chiffre d'affaires grâce à des actions rigoureuses contre la fraude. Son engagement pour la SEEG et sa prise d'initiatives dans des situations délicates sont des atouts alignés avec la vision de l'entreprise.",
-          "Points forces": [
-            "Leadership confirmé et impact positif sur le chiffre d'affaires",
-            "Rigueur et discipline dans la gestion des opérations"
-          ],
-          "Points à travailler": [
-            "Améliorer la communication avec ses collègues pour éviter les tensions",
-            "Développer des compétences en gestion de conflits, notamment en cas de désaccord"
-          ],
-          "rang": 2
-        },
-        "global": {
-          "score_global": 61.06,
-          "verdict": "favorable",
-          "resume": "Elvis possède un solide leadership et un impact démontré sur le chiffre d'affaires, ce qui le rend bien aligné avec la vision transformationnelle de la SEEG. Sa capacité à prendre des initiatives dans des situations délicates et son engagement envers les objectifs de l'entreprise sont des atouts majeurs.",
-          "points_forts": [
-            "Leadership confirmé",
-            "Impact positif sur le chiffre d'affaires",
-            "Rigueur et discipline dans la gestion"
-          ],
-          "points_a_ameliorer": [
-            "Améliorer la communication avec ses collègues",
-            "Développer des compétences en gestion de conflits"
-          ],
-          "rang": 2
-        }
-      },
-      "Wivine Mengue": {
-        "prenom": "Wivine",
-        "nom": "Mengue",
-        "conformite": {
-          "prenom": "Wivine",
-          "nom": "MENGUE",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "MENGUE",
-          "prenom": "Wivine",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.35,
-            "Talent": 0.35,
-            "Paradigme": 0.46
-          },
-          "Score_moyen": 38.67,
-          "niveau": "Le score moyen indique une prise de conscience limitée des exigences et des compétences essentielles pour le poste visé. Cela soulève des inquiétudes quant à la capacité du candidat à s'aligner avec la vision de transformation de l'entreprise.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est bien en dessous du seuil requis et reflète un potentiel d'adaptation faible aux objectifs stratégiques de l'entreprise.",
-          "points_forts": [
-            "Bonne compréhension des enjeux liés à la gestion des ressources.",
-            "Capacité à reconnaître la nécessité d'une amélioration dans la gouvernance.",
-            "Sensibilité à la participation des parties prenantes dans l'évolution des services."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences techniques spécifiques liées à la coordination des projets.",
-            "Développer une compréhension approfondie des infrastructures et des processus opérationnels.",
-            "Améliorer la vision stratégique et la capacité à planifier à long terme."
-          ],
-          "rang": 8
-        },
-        "completude": {
-          "nom": "MENGUE",
-          "prenom": "Wivine",
-          "poste": "Coordonnateur des Régions",
-          "score": 30.1,
-          "resume_experience": "13 ans d'expérience en production, transport et distribution de l'électricité, planification et normalisation, gestion QHSE, et gestion de projets stratégiques",
-          "verdict": "défavorable",
-          "points_forts": [
-            "Expérience significative en planification stratégique",
-            "Compétences en gestion et supervision d'équipes",
-            "Connaissances en normes réglementaires et gestion QHSE"
-          ],
-          "points_a_travailler": [
-            "Renforcement des compétences spécifiques en coordination inter-régionale",
-            "Amélioration de l'expérience en interface avec la Direction Générale et les partenaires",
-            "Augmentation de l'expérience sur les livrables requis du poste"
-          ],
-          "rang": 17
-        },
-        "feedback": {
-          "prenom": "Wivine",
-          "nom": "MENGUE",
-          "score": 68.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat démontre un bon potentiel managérial et des comportements positifs, bien qu'il lui faille renforcer son leadership à travers des expériences concrètes. Sa compréhension des enjeux en matière de réorganisation et gouvernance est en adéquation avec la vision de l'entreprise.",
-          "Points forces": [
-            "Bon comportement",
-            "Potentiel de leadership"
-          ],
-          "Points à travailler": [
-            "Affirmer son leadership",
-            "Expérience dans un rôle supérieur"
-          ],
-          "rang": 3
-        },
-        "global": {
-          "score_global": 54.94,
-          "verdict": "moyen",
-          "resume": "Wivine Mengue présente un bon potentiel managérial et démontre des comportements positifs, alignés avec la vision de réorganisation et de gouvernance de l'entreprise. Bien qu'elle ait besoin de renforcer son leadership par des expériences concrètes, son profil est considéré favorable par les RH.",
-          "points_forts": [
-            "Bon comportement",
-            "Potentiel de leadership"
-          ],
-          "points_a_ameliorer": [
-            "Affirmer son leadership",
-            "Expérience dans un rôle supérieur"
-          ],
-          "rang": 3
-        }
-      },
-      "Juvenal Awori Onanga": {
-        "prenom": "Juvenal",
-        "nom": "Awori Onanga",
-        "conformite": {
-          "prenom": "JUVENAL",
-          "nom": "AWORI ONANGA",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "AWORI ONANGA",
-          "prenom": "JUVENAL",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Métier": 0.31,
-            "Talent": 0.31,
-            "Paradigme": 0.48
-          },
-          "Score_moyen": 36.67,
-          "niveau": "Le candidat présente un score moyen défavorable qui indique des lacunes dans les trois axes évalués, ce qui pourrait poser des problèmes pour adhérer aux besoins stratégiques de l'entreprise. Un développement ultérieur est nécessaire pour aligner ses compétences avec les missions de la SEEG.",
-          "verdict": "défavorable",
-          "raison_du_verdict": "Le score moyen de 36.67 est significativement en dessous du seuil requis, ce qui montre une inadéquation avec la vision de l'entreprise.",
-          "points_forts": [
-            "Compréhension des enjeux en matière d'infrastructures de service public",
-            "Capacité à identifier les problèmes structurels au sein d'une organisation",
-            "Connaissance des attentes en matière de gouvernance et de transparence"
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en gestion financière et budgétaire",
-            "Développer des capacités en leadership et en management d'équipe",
-            "Acquérir une meilleure compréhension des technologies modernes et des innovations énergétiques"
-          ],
-          "rang": 16
-        },
-        "completude": {
-          "nom": "AWORI ONANGA",
-          "prenom": "Juvenal",
-          "poste": "Coordonnateur des Régions",
-          "score": 34.7,
-          "resume_experience": "26 ans dans la gestion de l'énergie et de l'eau, avec une expertise notable en coordination régionale et direction administrative.",
-          "verdict": "défavorable",
-          "raison": "Bien que Juvenal possède une vaste expérience, son score de similarité est légèrement en dessous du seuil moyen, ce qui suggère qu'il pourrait ne pas répondre parfaitement aux exigences spécifiques du poste.",
-          "points_forts": [
-            "Grande expérience en gestion et coordination des équipes régionales.",
-            "Compétence éprouvée en administration et gestion de portefeuille financier conséquent.",
-            "Bonne connaissance des normes et procédures liées à l'industrie de l'eau et de l'énergie."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en stratégie commerciale inter-régionale.",
-            "Amélioration de la cohérence des projets régionaux avec les orientations nationales.",
-            "Développement des compétences en optimisation des coûts et mutualisation des ressources."
-          ],
-          "rang": 9
-        },
-        "feedback": {
-          "prenom": "Juvenal",
-          "nom": "AWORI ONANGA",
-          "score": 67.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat démontre un bon potentiel de leadership et une attitude satisfaisante, ce qui est en alignement avec la vision de transformation de la SEEG. Cependant, une vision plus claire sur les défis spécifiques à relever serait souhaitable.",
-          "Points forces": [
-            "Leadership affirmé",
-            "Comportement positif et satisfaisant"
-          ],
-          "Points à travailler": [
-            "Compréhension des enjeux spécifiques de la SEEG",
-            "Stratégies de mise en œuvre concrètes pour la réorganisation"
-          ],
-          "rang": 4
-        },
-        "global": {
-          "score_global": 54.86,
-          "verdict": "moyen",
-          "resume": "Le candidat Juvenal Awori Onanga présente un leadership affirmé et une attitude positive, alignés avec la vision de transformation de la SEEG. Toutefois, un manque de clarté sur les défis spécifiques et les stratégies de mise en œuvre concrètes pour la réorganisation a été relevé.",
-          "points_forts": [
-            "Leadership affirmé",
-            "Comportement positif et satisfaisant"
-          ],
-          "points_a_ameliorer": [
-            "Compréhension des enjeux spécifiques de la SEEG",
-            "Stratégies de mise en œuvre concrètes pour la réorganisation"
-          ],
-          "rang": 4
-        }
-      },
-      "Serge Ghogho": {
+  "Coordonnateur des Régions": {
+    "Serge Ghogho": {
+      "prenom": "Serge",
+      "nom": "Ghogho",
+      "conformite": {
         "prenom": "Serge",
-        "nom": "Ghogho",
-        "conformite": {
-          "prenom": "Serge",
-          "nom": "GHOGHO",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "GHOGHO",
-          "prenom": "Serge",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Métier": 0.34,
-            "Talent": 0.33,
-            "Paradigme": 0.51
-          },
-          "Score_moyen": 39.33,
-          "niveau": "Le candidat présente un score moyen défavorable, ce qui indique qu'il a des difficultés à aligner ses compétences avec les exigences de la vision stratégique de l'entreprise. Sa faible capacité à répondre aux critères du MTP souligne la nécessité d'améliorations significatives dans plusieurs domaines clés.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 39.33 est bien inférieur à la barre limite de 43.5, ce qui démontre un manque d'alignement avec la vision de l'entreprise.",
-          "points_forts": [
-            "Compréhension des enjeux organisationnels liés à la gestion des ressources.",
-            "Capacité à intégrer des solutions innovantes, telles que la digitalisation, dans le cadre d'un processus de transformation.",
-            "Volonté de participer à des initiatives sur l'implication des parties prenantes."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences techniques spécifiques au secteur pour remédier à l'insuffisance perçue dans le domaine métier.",
-            "Renforcer les capacités de leadership et de gestion d'équipe pour répondre aux nouvelles exigences managériales.",
-            "Développer une compréhension plus approfondie des normes et pratiques de l'industrie afin de mieux aligner ses actions avec les objectifs de l'entreprise."
-          ],
-          "rang": 5
-        },
-        "completude": {
-          "nom": "GHOGHO",
-          "prenom": "Serge",
-          "poste": "Coordonnateur des Régions",
-          "score": 41.3,
-          "resume_experience": "19 années d'expérience dans le secteur de l'énergie et de l'adduction d'eau potable, avec une spécialité en gestion technique et managériale",
-          "verdict": "favorable",
-          "points_forts": [
-            "Expérience solide en gestion technique et managériale",
-            "Capacité à gérer des opérations multisites",
-            "Maîtrise des procédures de passation de marchés et de gestion des projets techniques complexes"
-          ],
-          "points_a_travailler": [
-            "Approfondir la connaissance des réglementations nationales et internationales en matière d'électricité et d'eau",
-            "Améliorer la capacité de reporting stratégique à la direction générale",
-            "Renforcer les compétences en optimisation des budgets régionaux"
-          ],
-          "rang": 2
-        },
-        "feedback": {
-          "prenom": "Serge",
-          "nom": "GHOGHO",
-          "score": 62.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat montre un bon potentiel de leadership et une volonté d'amélioration. Sa disponibilité et son comportement positif sont des atouts dans le cadre de la transformation nécessaire au sein de la SEEG.",
-          "Points forces": [
-            "Disponibilité",
-            "Comportement positif"
-          ],
-          "Points à travailler": [
-            "Leadership à confirmer",
-            "Gestion de l'innovation"
-          ],
-          "rang": 8
-        },
-        "global": {
-          "score_global": 54.34,
-          "verdict": "moyen",
-          "resume": "Serge Ghogho montre un potentiel favorable pour le poste de Coordonnateur des Régions, avec une disposition positive et une forte disponibilité, éléments clés pour la transformation de la SEEG. Toutefois, il est important de confirmer ses compétences en leadership et sa capacité à gérer l'innovation, essentielles pour aligner avec la vision stratégique de l'entreprise.",
-          "points_forts": [
-            "Disponibilité",
-            "Comportement positif",
-            "Potentiel de leadership"
-          ],
-          "points_a_ameliorer": [
-            "Leadership à confirmer",
-            "Gestion de l'innovation"
-          ],
-          "rang": 5
-        }
+        "nom": "GHOGHO",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
       },
-      "Joël Kinga Delalain": {
-        "prenom": "Joël",
-        "nom": "Kinga Delalain",
-        "conformite": {
-          "prenom": "Joël",
-          "nom": "KINGA DELALAIN",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
+      "mtp": {
+        "nom": "GHOGHO",
+        "prenom": "Serge",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.34,
+          "Talent": 0.33,
+          "Paradigme": 0.46
         },
-        "mtp": {
-          "nom": "KINGA DELALAIN",
-          "prenom": "Joël",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.34,
-            "Talent": 0.33,
-            "Paradigme": 0.44
-          },
-          "Score_moyen": 37.0,
-          "niveau": "Le score moyen du candidat est nettement en dessous du seuil défavorable. Cela indique un manque de préparation et d'adéquation avec les exigences du poste visé, particulièrement dans un contexte aussi exigeant que celui de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 37.0 démontre une insuffisance dans les compétences essentielles requises pour la fonction de Coordination Régions.",
-          "points_forts": [
-            "Capacité à identifier des dynamiques d'interaction au sein de l'équipe.",
-            "Présente un esprit d'initiative qui peut contribuer à une meilleure organisation.",
-            "Bonne compréhension des enjeux de transformation en cours dans l'entreprise."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences techniques liées à la gestion des infrastructures.",
-            "Renforcer les connaissances en gestion des talents pour une meilleure mobilisation des équipes.",
-            "Travailler sur la compréhension des enjeux de gouvernance et de transparence au sein de l'organisation."
-          ],
-          "rang": 12
-        },
-        "completude": {
-          "nom": "KINGA DELALAIN",
-          "prenom": "Joël",
-          "poste": "Coordonnateur des Régions",
-          "score": 33.8,
-          "resume_experience": "26 ans en gestion des régions, management et encadrement.",
-          "verdict": "défavorable",
-          "points_forts": [
-            "Expérience significative en management des organisations",
-            "Compétence en gestion de projets",
-            "Connaissance approfondie des systèmes électriques et hydrauliques"
-          ],
-          "points_a_travailler": [
-            "Mise à jour des compétences en coordination commerciale inter-régionale",
-            "Approfondissement en politique commerciale au niveau régional",
-            "Amélioration des compétences en gestion des indicateurs de performance"
-          ],
-          "rang": 10
-        },
-        "feedback": {
-          "prenom": "Joël",
-          "nom": "KINGA DELALAIN",
-          "score": 62.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat a une expertise métier reconnue, mais son leadership et sa capacité managériale doivent être confirmés. Le retour positif sur son comportement après sa maladie est un indicateur de résilience.",
-          "Points forces": [
-            "Expertise métier dans le secteur",
-            "Résilience démontrée après un événement personnel difficile"
-          ],
-          "Points à travailler": [
-            "Confirmation de ses compétences en management et leadership",
-            "Adaptation aux mesures de réorganisation et de modernisation nécessaires au sein de la SEEG"
-          ],
-          "rang": 6
-        },
-        "global": {
-          "score_global": 52.26,
-          "verdict": "moyen",
-          "resume": "Joël Kinga Delalain présente une expertise significative dans le secteur, appuyée par une résilience notable après un événement personnel difficile. Son score de feedback RH favorable souligne son potentiel, bien que des compétences en management et leadership restent à confirmer dans le contexte de réorganisation et modernisation de la SEEG.",
-          "points_forts": [
-            "Expertise métier dans le secteur",
-            "Résilience démontrée après un événement personnel difficile"
-          ],
-          "points_a_ameliorer": [
-            "Confirmation de ses compétences en management et leadership",
-            "Adaptation aux mesures de réorganisation et de modernisation nécessaires au sein de la SEEG"
-          ],
-          "rang": 6
-        }
+        "Score_moyen": 37.67,
+        "niveau": "Le score moyen de Serge est insuffisant pour répondre aux exigences de la vision de l'entreprise. Ses compétences ne semblent pas en adéquation avec les attentes pour ce poste stratégique.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 37.67 est strictement inférieur à 43.5, reflétant ainsi un manque de préparation et d'adéquation aux objectifs de transformation et de performance de la SEEG.",
+        "points_forts": [
+          "Capacité à identifier des problèmes liés à la gestion des ressources.",
+          "Sensibilité aux enjeux de gouvernance et de transparence.",
+          "Connaissance des infrastructures et des défis techniques associés."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences techniques en gestion de projets d'infrastructure.",
+          "Développer des compétences en leadership et en gestion d'équipe.",
+          "Renforcer la compréhension des enjeux financiers et économiques de l'entreprise."
+        ],
+        "rang": 5
       },
-      "Presty Minko Mi Nzue": {
-        "prenom": "Presty",
-        "nom": "Minko Mi Nzue",
-        "conformite": {
-          "prenom": "Presty",
-          "nom": "MINKO MI NZUE",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "MINKO MI NZUE",
-          "prenom": "Presty",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.32,
-            "Talent": 0.31,
-            "Paradigme": 0.4
-          },
-          "Score_moyen": 34.33,
-          "niveau": "Le score moyen du candidat est bien en dessous du seuil requis, indiquant une faible adéquation à la vision et aux objectifs de l'entreprise. Ce résultat prévaut une certaine préoccupation quant à sa capacité à contribuer efficacement aux transformations nécessaires au sein de SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 34.33, bien en dessous de 43.5, ne répond pas aux attentes des exigences de l'entreprise.",
-          "points_forts": [
-            "Possède une certaine base de compétence technique en matière d'infrastructure.",
-            "Peut avoir une perspective innovante grâce à une familiarité avec les enjeux modernes de durabilité.",
-            "Une sensibilité aux enjeux de gouvernance et de transparence pourrait être bénéfique."
-          ],
-          "points_a_travailler": [
-            "Améliorer ses compétences techniques spécifiques liées au secteur d'énergie et d'eau.",
-            "Développer des capacités en gestion de projet pour la mise en œuvre des infrastructures.",
-            "Renforcer ses compétences en leadership et en gestion d'équipe pour aligner les ressources humaines aux objectifs stratégiques."
-          ],
-          "rang": 20
-        },
-        "completude": {
-          "nom": "MINKO MI NZUE",
-          "prenom": "Presty",
-          "poste": "Coordonnateur des Régions",
-          "score": 32.4,
-          "resume_experience": "Plus de 13 ans d'expérience en Métrologie et Comptage électrique.",
-          "verdict": "défavorable",
-          "raison": "Le score de similarité est inférieur aux attentes, et l'expérience du candidat est plus axée sur la métrologie et la gestion électrique que sur la coordination régionale requise par le poste.",
-          "points_forts": [
-            "Solide expérience en gestion de projets et en métrologie électrique",
-            "Bonne communication et capacité de leadership",
-            "Expertise en formation et encadrement d'équipes techniques"
-          ],
-          "points_a_travailler": [
-            "Expérience spécifique en coordination inter-régionale",
-            "Gestion et pilotage de projets commerciaux",
-            "Connaissance approfondie des normes réglementaires interrégionales"
-          ],
-          "rang": 12
-        },
-        "feedback": {
-          "prenom": "Presty",
-          "nom": "MINKO MI NZUE",
-          "score": 62.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat possède un bon potentiel pour le poste, avec un comportement positif et une affinité pour les fonctions techniques et d'exploitation. Il est à un stade de développement prometteur mais doit continuer à améliorer ses compétences managériales.",
-          "Points forces": [
-            "Bon comportement et attitude positive.",
-            "Affinité pour les fonctions techniques et d'exploitation."
-          ],
-          "Points à travailler": [
-            "Niveau d'expérience managériale encore insuffisant.",
-            "Besoin d'approfondir ses compétences en gestion d'équipe."
-          ],
-          "rang": 7
-        },
-        "global": {
-          "score_global": 51.31,
-          "verdict": "moyen",
-          "resume": "Presty Minko Mi Nzue présente un potentiel intéressant pour le rôle de Coordonnateur des Régions, avec une attitude positive et une affinité pour les aspects techniques et opérationnels. Cependant, il doit renforcer son expérience et ses compétences en gestion d'équipe pour s'aligner pleinement sur les ambitions de la SEEG.",
-          "points_forts": [
-            "Bon comportement et attitude positive.",
-            "Affinité pour les fonctions techniques et d'exploitation."
-          ],
-          "points_a_ameliorer": [
-            "Niveau d'expérience managériale encore insuffisant.",
-            "Besoin d'approfondir ses compétences en gestion d'équipe."
-          ],
-          "rang": 7
-        }
+      "completude": {
+        "nom": "GHOGHO",
+        "prenom": "Serge",
+        "poste": "Coordonnateur des Régions",
+        "score": 41.2,
+        "resume_experience": "19 années d'expérience dans le secteur de l'énergie et de l'adduction d'eau potable, incluant 16 années chez SEEG.",
+        "verdict": "favorable",
+        "points_forts": [
+          "Grande expertise en gestion de projet et coordination inter-régionale.",
+          "Maîtrise des procédures de passation de marchés et gestion de projets complexes.",
+          "Expérience significative en supervision d'équipes multisites et gestion stratégique."
+        ],
+        "points_a_travailler": [
+          "Renforcement des compétences en interface avec les partenaires nationaux et internationaux.",
+          "Optimisation continue des coûts avec une approche plus orientée vers l'innovation.",
+          "Approfondir la veille technologique en matière de nouvelles réglementations internationales."
+        ],
+        "rang": 1
       },
-      "Adrien Divakou": {
+      "feedback": {},
+      "global": {
+        "score_global": 22.66,
+        "verdict": "défavorable",
+        "resume": "Le candidature de Serge Ghogho pour le poste de Coordonnateur des Régions présente de sérieuses lacunes. Son score de feedback RH, inexistant, est préoccupant et contribue fortement à un profil global défavorable au regard des exigences stratégiques de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire parfaite",
+          "Respect des attentes initiales sur les documents fournis"
+        ],
+        "points_a_ameliorer": [
+          "Feedback RH inexistant, indiquant potentiellement un manque de validations ou références professionnelles",
+          "La complétude par rapport à l'offre est insuffisante, ce qui pourrait indiquer un manque de compréhension ou d'alignement avec le poste"
+        ],
+        "rang": 1
+      }
+    },
+    "Adrien Divakou": {
+      "prenom": "Adrien",
+      "nom": "Divakou",
+      "conformite": {
         "prenom": "Adrien",
+        "nom": " Divakou",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
         "nom": "Divakou",
-        "conformite": {
-          "prenom": "Adrien",
-          "nom": " Divakou",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
+        "prenom": "Adrien",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.35,
+          "Talent": 0.33,
+          "Paradigme": 0.4
         },
-        "mtp": {
-          "nom": "Divakou",
-          "prenom": "Adrien",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.35,
-            "Talent": 0.33,
-            "Paradigme": 0.48
-          },
-          "Score_moyen": 38.67,
-          "niveau": "Le candidat présente un score moyen défavorable, ce qui indique une inadéquation avec la vision de l'entreprise. Il est essentiel qu'il améliore son score pour répondre aux exigences de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 38.67 est bien en dessous du seuil de 43.5, révélant des lacunes dans ses compétences et perspectives alignées avec la vision de l'entreprise.",
-          "points_forts": [
-            "Capacité d'analyse des systèmes complexes grâce à son score au Paradigme (0.48).",
-            "Potentiel dans le domaine métier, malgré un score faible, il montre des connaissances qui peuvent être développées.",
-            "Sensibilité aux défis organisationnels, ce qui est essentiel pour un poste de coordination."
-          ],
-          "points_a_travailler": [
-            "Renforcer ses compétences techniques et ses connaissances spécifiques au métier pour améliorer son score en Métier.",
-            "Améliorer ses talents en gestion d'équipe et en communication pour augmenter l'efficacité dans un environnement de travail collaboratif.",
-            "Développer une compréhension approfondie des enjeux stratégiques et économiques afin de mieux aligner ses efforts avec la vision de la SEEG."
-          ],
-          "rang": 7
-        },
-        "completude": {
-          "nom": "Divakou",
-          "prenom": "Adrien",
-          "poste": "Coordonnateur des Régions",
-          "score": 39.1,
-          "resume_experience": "13 ans d'expériences dans les métiers de l’eau et le management à la SEEG",
-          "verdict": "moyen",
-          "points_forts": [
-            "Excellente expertise en gestion et optimisation de la production et distribution d'eau",
-            "Forte capacité de coordination et de supervision des équipes",
-            "Solide aptitude à proposer et mettre en œuvre des stratégies de fonctionnement"
-          ],
-          "points_a_travailler": [
-            "Renforcement de l'expérience en matière d'interface avec la Direction générale et les autorités",
-            "Amélioration de la maîtrise et du suivi des évolutions réglementaires dans le secteur régional",
-            "Développement des compétences en coordination inter-régionale pour assurer la cohérence avec les orientations nationales"
-          ],
-          "rang": 5
-        },
-        "feedback": {
-          "prenom": "Adrien",
-          "nom": "DIVAKOU",
-          "score": 49.7,
-          "verdict": "Moyen",
-          "raisons": "Le candidat montre un potentiel mais manque d'unanimité et de reconnaissance au sein des équipes, ce qui pourrait nuire à la mise en œuvre de la vision stratégique de l'entreprise.",
-          "Points forces": [
-            "Connaissance des enjeux opérationnels",
-            "Contexte technique de l'entreprise"
-          ],
-          "Points à travailler": [
-            "Améliorer la relation avec les équipes",
-            "Affirmation de son leadership et transparence dans la prise de décision"
-          ],
-          "rang": 11
-        },
-        "global": {
-          "score_global": 47.34,
-          "verdict": "moyen",
-          "resume": "Adrien Divakou possède une bonne connaissance des enjeux opérationnels et du contexte technique de l'entreprise. Cependant, il manque d'unanimité et de reconnaissance au sein des équipes, ce qui pourrait compromettre la mise en œuvre de la vision stratégique de transformation de la SEEG.",
-          "points_forts": [
-            "Connaissance des enjeux opérationnels",
-            "Compréhension du contexte technique de l'entreprise"
-          ],
-          "points_a_ameliorer": [
-            "Améliorer la relation avec les équipes",
-            "Affirmation de son leadership"
-          ],
-          "rang": 8
-        }
+        "Score_moyen": 36.0,
+        "niveau": "Le candidat présente un score moyen jugé défavorable, ce qui indique une adéquation limitée avec les attentes de la vision de l'entreprise. Il est nécessaire qu'il améliore ses compétences pour répondre aux défis posés par la SEEG.",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le score moyen de 36.0 est bien inférieur au seuil de 43.5, indiquant des lacunes significatives dans son adéquation avec la vision de l'entreprise.",
+        "points_forts": [
+          "Possède une bonne compréhension des enjeux liés aux infrastructures et à la gestion des ressources.",
+          "Démontre des capacités qui pourraient être développées dans la modernisation des infrastructures.",
+          "Exprime une motivation pour participer à l'amélioration des services publics."
+        ],
+        "points_a_travailler": [
+          "Renforcer ses compétences techniques spécifiques nécessaires à la coordination régionale.",
+          "Développer des compétences en gestion de crise et en gouvernance.",
+          "Améliorer sa capacité à implémenter des plans d'investissement et de transformation."
+        ],
+        "rang": 10
       },
-      "Jean Fabrice Ondo Mayi": {
-        "prenom": "Jean",
-        "nom": "Fabrice Ondo Mayi",
-        "conformite": {
-          "prenom": "Jean",
-          "nom": "Fabrice ONDO MAYI",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {
-          "nom": "ONDO MAYI",
-          "prenom": "Jean Fabrice",
-          "poste": "Coordonnateur des Régions",
-          "score": 40.4,
-          "resume_experience": "15 ans d'expérience en audit et contrôle, avec des responsabilités en gestion clientèle et management des équipes",
-          "verdict": "favorable",
-          "raison": "Le candidat possède une vaste expérience de 15 ans en audit et contrôle qui lui confère une maîtrise des procédures et normes, essentielle pour la coordination et la supervision des équipes régionales.",
-          "points_forts": [
-            "Expérience significative en audit et contrôle",
-            "Capacité à gérer et à superviser des équipes",
-            "Habileté à analyser et à améliorer les indicateurs de performance"
-          ],
-          "points_a_travailler": [
-            "Approfondir la connaissance des spécificités techniques de l'eau et de l'électricité",
-            "Développer des compétences en gestion inter-régionale",
-            "Renforcer les compétences en optimisation des coûts"
-          ],
-          "rang": 3
-        },
-        "feedback": {
-          "prenom": "Jean",
-          "nom": "FABRICE ONDO MAYI",
-          "score": 62.5,
-          "verdict": "Favorable",
-          "raisons": "Candidat montre un bon potentiel managérial et un leadership qui peut être confirmé, ce qui est en ligne avec la nécessité de réorganisation et de réhabilitation de la SEEG. Cependant, manque de précisions sur sa vision pour le futur.",
-          "Points forces": [
-            "Bonne capacité managériale",
-            "Compétences en leadership à confirmer"
-          ],
-          "Points à travailler": [
-            "Clarifier sa vision pour l'avenir de la SEEG",
-            "Améliorer sa capacité à s'adapter aux besoins changeants de l'entreprise"
-          ],
-          "rang": 5
-        },
-        "global": {
-          "score_global": 44.33,
-          "verdict": "défavorable",
-          "resume": "Jean Fabrice Ondo Mayi présente un bon potentiel managérial et des compétences en leadership alignées avec le besoin de réorganisation de la SEEG, cependant, son manque de clarté sur la vision future et sa capacité d'adaptation aux besoins changeants de l'entreprise nécessitent une amélioration.",
-          "points_forts": [
-            "Bonne capacité managériale",
-            "Compétences en leadership à confirmer"
-          ],
-          "points_a_ameliorer": [
-            "Clarifier sa vision pour l'avenir de la SEEG",
-            "Améliorer sa capacité à s'adapter aux besoins changeants de l'entreprise"
-          ],
-          "rang": 9
-        }
+      "completude": {
+        "nom": "Divakou",
+        "prenom": "Adrien",
+        "poste": "Coordonnateur des Régions",
+        "score": 38.6,
+        "resume_experience": "13 ans d’expérience dans le domaine de l'eau et du management, principalement à la SEEG.",
+        "verdict": "moyen",
+        "raison_verdict": "Adrien présente une expérience significative dans le domaine de l'eau, cependant, le score de similarité avec les exigences du poste n'est que légèrement dans la moyenne, ce qui indique qu'il pourrait avoir besoin de développer certaines compétences spécifiques en coordination technique inter-régionale et veiller à la conformité réglementaire.",
+        "points_forts": [
+          "Expérience approfondie dans le secteur de l'eau, notamment dans la production et la distribution.",
+          "Capacité avérée en management des équipes et gestion de la cohésion et de la motivation.",
+          "Compétences en gestion de projet et optimisation des coûts."
+        ],
+        "points_a_travailler": [
+          "Approfondissement des connaissances en matière de conformité réglementaire et veille sectorielle.",
+          "Développement de compétences en interface avec les autorités et partenaires pour une représentation optimisée des régions.",
+          "Renforcement des compétences en coordination technique et administrative inter-régionale."
+        ],
+        "rang": 4
       },
-      "Fredi Bongo": {
+      "feedback": {},
+      "global": {
+        "score_global": 21.72,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Adrien Divakou ne semble pas bien aligné avec les exigences du poste et la vision transformative de la SEEG, comme le reflète son score global défavorable. Son manque de feedback RH pourrait indiquer une absence d'engagement ou de performance antérieure insuffisante dans des rôles similaires. La très faible adéquation à l'offre souligne des défis en termes de compréhension des enjeux stratégiques de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire impeccable"
+        ],
+        "points_a_ameliorer": [
+          "Manque de pertinence avec le plan stratégique de l'entreprise",
+          "Absence de feedback RH positif"
+        ],
+        "rang": 2
+      }
+    },
+    "Fredi Bongo": {
+      "prenom": "Fredi",
+      "nom": "Bongo",
+      "conformite": {
         "prenom": "Fredi",
-        "nom": "Bongo",
-        "conformite": {
-          "prenom": "Fredi",
-          "nom": "BONGO",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "BONGO",
-          "prenom": "Fredi",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.33,
-            "Talent": 0.32,
-            "Paradigme": 0.38
-          },
-          "Score_moyen": 34.33,
-          "niveau": "Le score moyen de 34.33 indique un manque de préparation et d'adéquation aux exigences du poste visé. La contribution potentielle de Fredi au sein de l'entreprise semble insuffisante face aux défis à relever pour atteindre la vision stratégique de la SEEG.",
-          "verdict": "défavorable",
-          "raison_du_verdict": "Le score moyen étant largement en dessous de 43.5, cela démontre une inadéquation avec les valeurs et l'ambition de l'entreprise.",
-          "points_forts": [
-            "Capacité à comprendre les enjeux liés à la transformation organisationnelle.",
-            "Engagement envers l'amélioration des infrastructures et des services.",
-            "Sensibilité aux problématiques de clientèle et de concerto avec les parties prenantes."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences techniques et de gestion de projet pour s'aligner avec les exigences de modernisation.",
-            "Développer des compétences en gouvernance et en efficacité opérationnelle.",
-            "Renforcer la capacité d'adaptation à la culture de performance et de transparence de l'entreprise."
-          ],
-          "rang": 19
-        },
-        "completude": {
-          "nom": "BONGO",
-          "prenom": "Fredi",
-          "poste": "Coordonnateur des Régions",
-          "score": 40.3,
-          "resume_experience": "23 ans d'expérience, principalement en comptabilité, contrôle de gestion, audit interne et gestion opérationnelle.",
-          "verdict": "favorable",
-          "verdict_raison": "Le candidat possède une solide expérience en gestion opérationnelle et en audit, ce qui est crucial pour le rôle de coordonnateur des régions. Son score de 40.3 est au-dessus du seuil moyen, le classant comme un candidat favorable.",
-          "points_forts": [
-            "Expérience en gestion d'une unité opérationnelle avec supervision et mise en œuvre des politiques de l'entreprise.",
-            "Compétences en audit interne et contrôle financier, améliorant le contrôle interne et générant des économies.",
-            "Bonne capacité d'analyse et d'anticipation, pertinentes pour le suivi des indicateurs de performance."
-          ],
-          "points_a_travailler": [
-            "Développement des compétences en planification stratégique inter-régionale.",
-            "Renforcement des compétences en animation et encadrement d'équipes à travers différentes régions.",
-            "Optimisation de l'utilisation des outils numériques pour le suivi des opérations régionales."
-          ],
-          "rang": 4
-        },
-        "feedback": {
-          "prenom": "Fredi",
-          "nom": "BONGO",
-          "score": 42.7,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat présente des problèmes de leadership, des tensions avec les collaborateurs, et ne respecte pas la hiérarchie, ce qui est incompatible avec les exigences de transformation et de gouvernance de la SEEG.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Leadership",
-            "Gestion des relations interpersonnelles",
-            "Respect de l'autorité"
-          ],
-          "rang": 14
-        },
-        "global": {
-          "score_global": 42.99,
-          "verdict": "défavorable",
-          "resume": "Le candidat Fredi Bongo affiche un score global défavorable en raison de problèmes majeurs au niveau du leadership, des tensions avec ses collaborateurs et d'un manque de respect de la hiérarchie. Ces aspects sont incompatibles avec les exigences de transformation et de gouvernance nécessaires à la SEEG pour atteindre sa vision stratégique.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Leadership",
-            "Gestion des relations interpersonnelles",
-            "Respect de l'autorité"
-          ],
-          "rang": 10
-        }
+        "nom": "BONGO",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
       },
-      "Remus Arnold Mbouogho": {
-        "prenom": "Remus",
-        "nom": "Arnold Mbouogho",
-        "conformite": {
-          "prenom": "Remus",
-          "nom": "Arnold  MBOUOGHO",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
+      "mtp": {
+        "nom": "BONGO",
+        "prenom": "Fredi",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.33,
+          "Talent": 0.32,
+          "Paradigme": 0.38
         },
-        "mtp": {},
-        "completude": {
-          "nom": "MBOUOGHO",
-          "prenom": "Remus Arnold",
-          "poste": "Coordonnateur des Régions",
-          "score": 34.9,
-          "resume_experience": "10 ans d'expérience dans la distribution d'électricité et la gestion de projets techniques.",
-          "verdict": "défavorable",
-          "points_forts": [
-            "Expérience significative dans le domaine de la distribution et de la gestion de projets électriques.",
-            "Compétence en management et animation d'équipes pluridisciplinaires.",
-            "Capacité de suivre et d'optimiser les performances techniques et opérationnelles."
-          ],
-          "points_a_travailler": [
-            "Renforcer l'expérience en coordination inter-régionale commerciale et technique.",
-            "Augmenter la familiarité avec les politiques et la stratégie commerciale.",
-            "Renforcer ses compétences en matière de communication et de représentation institutionnelle."
-          ],
-          "rang": 7
-        },
-        "feedback": {
-          "prenom": "Remus",
-          "nom": "ARNOLD MBOUOGHO",
-          "score": 61.7,
-          "verdict": "Favorable",
-          "raisons": "Le candidat possède des compétences managériales reconnues et un bon comportement, ce qui est essentiel pour le poste. Cependant, certaines de ses capacités en leadership doivent être confirmées.",
-          "Points forces": [
-            "Management et leadership potentiel reconnu",
-            "Bon comportement observé"
-          ],
-          "Points à travailler": [
-            "Renforcer ses compétences en leadership",
-            "Acquérir plus d'expérience dans des contextes de transformation organisationnelle"
-          ],
-          "rang": 9
-        },
-        "global": {
-          "score_global": 42.83,
-          "verdict": "défavorable",
-          "resume": "Remus Arnold Mbouogho présente des compétences managériales reconnues et un bon comportement, ce qui est crucial pour le rôle de coordonnateur. Néanmoins, son manque d'expérience dans des contextes de transformation organisationnelle et le besoin de renforcer ses compétences en leadership sont notables.",
-          "points_forts": [
-            "Management et leadership potentiel reconnu",
-            "Bon comportement observé"
-          ],
-          "points_a_ameliorer": [
-            "Renforcer ses compétences en leadership",
-            "Acquérir plus d'expérience dans des contextes de transformation organisationnelle"
-          ],
-          "rang": 11
-        }
+        "Score_moyen": 34.33,
+        "niveau": "Le score moyen du candidat est largement en dessous du seuil de 43.5, indiquant une insuffisance d'alignement avec les attentes de l'entreprise. Cela évoque des lacunes significatives en matière de compétences et de potentiel d'adaptation à la vision stratégique de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen du candidat est bien inférieur aux attentes, ce qui le rend inapte à contribuer efficacement à la vision de l'entreprise.",
+        "points_forts": [
+          "Connaissance des enjeux dans le secteur de l'énergie et de l'eau au Gabon.",
+          "Capacité à identifier les problèmes organisationnels et structurels.",
+          "Volonté apparente de contribuer à la transformation et à l'amélioration continue."
+        ],
+        "points_a_travailler": [
+          "Développer des compétences sectorielles spécifiques nécessaires à la gestion des infrastructures énergétiques.",
+          "Améliorer les aptitudes en gestion financière et en gouvernance d'entreprise.",
+          "Renforcer les compétences en leadership et en gestion d'équipe pour mobiliser les parties prenantes autour des objectifs de la SEEG."
+        ],
+        "rang": 19
       },
-      "Léon Ngnimi": {
-        "prenom": "Léon",
-        "nom": "Ngnimi",
-        "conformite": {
-          "prenom": "Léon",
-          "nom": " NGNIMI",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "NGNIMI",
-          "prenom": "Léon",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.32,
-            "Talent": 0.31,
-            "Paradigme": 0.41
-          },
-          "Score_moyen": 34.67,
-          "niveau": "Le candidat a un score moyen insuffisant qui reflète une inadéquation avec les exigences de poste. Ses scores en Métier, Talent et Paradigme indiquent des lacunes significatives par rapport aux attentes de l'entreprise.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui indique que le candidat ne répond pas aux critères de performance requis.",
-          "points_forts": [
-            "Capacité à comprendre les enjeux organisationnels liés à la réorganisation.",
-            "Ouverture à l'innovation et aux nouvelles technologies, comme intégré dans la vision de la SEEG.",
-            "Possibilité d'apporter des perspectives fraîches sur la gestion des ressources."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences en gestion des infrastructures vieillissantes.",
-            "Renforcer les capacités d'audit et de gouvernance pour se conformer aux exigences de transparence.",
-            "Développer des compétences en gestion de crise et en relation avec les parties prenantes."
-          ],
-          "rang": 18
-        },
-        "completude": {
-          "nom": "NGNIMI",
-          "prenom": "Léon",
-          "poste": "Coordonnateur des Régions",
-          "score": 33.4,
-          "resume_experience": {
-            "annees": 20,
-            "specialite": "Distribution Électrique et Gestion de Projets"
-          },
-          "verdict": "défavorable",
-          "points_forts": [
-            "Expérience approfondie en gestion de projets d'infrastructure électrique",
-            "Encadrement et supervision d'équipes techniques",
-            "Compétences en optimisation de la qualité de service dans des environnements complexes"
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en coordination inter-régionale",
-            "Améliorer la connaissance en réglementation nationale et internationale",
-            "Développer des compétences en planification stratégique des activités"
-          ],
-          "rang": 11
-        },
-        "feedback": {
-          "prenom": "Léon",
-          "nom": "NGNIMI",
-          "score": 42.7,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat montre des lacunes en leadership et en sociabilité, ce qui pourrait compromettre sa capacité à adhérer à la vision de transformation et d'implication des parties prenantes de la SEEG.",
-          "Points forces": [
-            "Expérience en gestion managériale",
-            "Compétences techniques dans le domaine"
-          ],
-          "Points à travailler": [
-            "Leadership à renforcer",
-            "Sociabilité et ouverture dans la prise de décision"
-          ],
-          "rang": 15
-        },
-        "global": {
-          "score_global": 41.7,
-          "verdict": "défavorable",
-          "resume": "Léon Ngnimi présente des compétences techniques solides et une expérience en gestion managériale. Cependant, des lacunes en leadership et en sociabilité pourraient limiter son aptitude à s'engager pleinement dans la vision de transformation de la SEEG et l'implication des parties prenantes.",
-          "points_forts": [
-            "Expérience en gestion managériale",
-            "Compétences techniques dans le domaine"
-          ],
-          "points_a_ameliorer": [
-            "Leadership à renforcer",
-            "Sociabilité et ouverture dans la prise de décision"
-          ],
-          "rang": 12
-        }
+      "completude": {
+        "nom": "BONGO",
+        "prenom": "Fredi",
+        "poste": "Coordonnateur des Régions",
+        "score": 39.2,
+        "resume_experience": "23 ans en comptabilité, contrôle de gestion, audit interne et management d'une unité opérationnelle",
+        "verdict": "moyen",
+        "points_forts": [
+          "Expérience solide en supervision et gestion budgétaire",
+          "Capacité à définir et mettre en œuvre des politiques d'entreprise",
+          "Expérience en audit interne et en économies de coûts"
+        ],
+        "points_a_travailler": [
+          "Renforcement de compétences en stratégie inter-régionale",
+          "Approfondissement des connaissances en coordination commerciale",
+          "Meilleure intégration des pratiques de veille réglementaire"
+        ],
+        "rang": 2
       },
-      "Aimée Ntchandi Tevenet": {
+      "feedback": {},
+      "global": {
+        "score_global": 21.42,
+        "verdict": "défavorable",
+        "resume": "Fredi Bongo présente un score global défavorable de 21.42, surtout marqué par un feedback RH inexistant et une faible correspondance entre son dossier et l'offre. Ce manque de retour RH et d'alignement réduit sa pertinence pour un poste aussi stratégique dans le contexte de transformation de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible correspondance du CV et LM avec l'offre"
+        ],
+        "rang": 3
+      }
+    },
+    "Calvin Ndong Eyegue": {
+      "prenom": "Calvin",
+      "nom": "Ndong Eyegue",
+      "conformite": {
+        "prenom": "Calvin",
+        "nom": "NDONG EYEGUE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "NDONG EYEGUE",
+        "prenom": "Calvin",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.33,
+          "Talent": 0.32,
+          "Paradigme": 0.41
+        },
+        "Score_moyen": 35.33,
+        "niveau": "Le candidat affiche un score moyen défavorable, ce qui suggère un manque de correspondance avec les attentes du poste proposé. Ses compétences actuelles semblent insuffisantes pour répondre aux défis auxquels la SEEG est confrontée.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est fortement en dessous de la barre minimale requise pour une bonne adéquation avec la vision de l'entreprise.",
+        "points_forts": [
+          "Connaissance des enjeux métier liés aux infrastructures vieillissantes.",
+          "Prise de conscience des besoins en modernisation des infrastructures.",
+          "Capacité à identifier les problématiques organisationnelles."
+        ],
+        "points_a_travailler": [
+          "Améliorer ses compétences techniques en gestion des infrastructures modernes.",
+          "Renforcer ses capacités en gouvernance et transparence.",
+          "Développer des compétences en négociation et en relations avec les parties prenantes."
+        ],
+        "rang": 14
+      },
+      "completude": {
+        "nom": "NDONG EYEGUE",
+        "prenom": "Calvin",
+        "poste": "Coordonnateur des Régions",
+        "score": 37.3,
+        "resume_experience": "27 années d'expérience en gestion régionale dans le secteur de l'énergie et de l'eau",
+        "verdict": "favorable",
+        "points_forts": [
+          "Expérience significative en gestion de régions",
+          "Bonne compréhension des besoins techniques et commerciaux",
+          "Connaissances approfondies des processus internes de la SEEG"
+        ],
+        "points_a_travailler": [
+          "Mise à jour des compétences linguistiques pour améliorer la communication internationale",
+          "Approfondir la veille réglementaire pour anticiper les évolutions",
+          "Renforcer la stratégie d'optimisation des coûts"
+        ],
+        "rang": 6
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 21.29,
+        "verdict": "défavorable",
+        "resume": "Calvin Ndong Eyegue semble avoir rencontré des difficultés à répondre aux attentes pour le poste de Coordonnateur des Régions, comme le montre son score global défavorable. Son absence de feedback RH positif et ses scores en MTP et complétude laissent supposer des lacunes importantes dans son adéquation avec la vision de transformation de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire impeccable"
+        ],
+        "points_a_ameliorer": [
+          "Manque de pertinence sur le marché du travail (MTP: 35.33)",
+          "Complétude faible par rapport aux besoins du poste"
+        ],
+        "rang": 4
+      }
+    },
+    "Joël Kinga Delalain": {
+      "prenom": "Joël",
+      "nom": "Kinga Delalain",
+      "conformite": {
+        "prenom": "Joël",
+        "nom": "KINGA DELALAIN",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "KINGA DELALAIN",
+        "prenom": "Joël",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Métier": 0.34,
+          "Talent": 0.33,
+          "Paradigme": 0.45
+        },
+        "Score_moyen": 37.33,
+        "niveau": "Le candidat présente un score moyen en dessous des attentes pour le poste visé. Sa performance ne correspond pas aux exigences de transformation et d'innovation exigées par la vision de l'entreprise.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 37.33 est supérieur à 43.5, ce qui le place en situation défavorable par rapport aux critères nécessaires à la réussite dans ce rôle.",
+        "points_forts": [
+          "Capacité à identifier des problématiques complexes dans le domaine de l'eau et de l'électricité.",
+          "Compétences analytiques pour évaluer les infrastructures vieillissantes et leur impact sur le service.",
+          "Vision critique sur la gouvernance et la transparence, essentielle pour le redressement de la SEEG."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques liées à l'optimisation des infrastructures.",
+          "Améliorer les capacités de gestion des ressources et de respect des procédures.",
+          "Développer des capacités de communication avec les parties prenantes pour mieux gérer les attentes des clients."
+        ],
+        "rang": 7
+      },
+      "completude": {
+        "nom": "KINGA DELALAIN",
+        "prenom": "Joël",
+        "poste": "Coordonnateur des Régions",
+        "score": 33.2,
+        "resume_experience": "26 ans au service de la SEEG dans les domaines de l'énergie, de l'eau, et de la clientèle, avec des compétences en management et gestion des régions.",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Expérience significative en gestion des régions et management.",
+          "Connaissance approfondie des systèmes de télécommunication et de téléconduite dans le secteur de l'énergie.",
+          "Formation et certification ISO en santé et sécurité au travail."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences spécifiques en coordination commerciale inter-régionale.",
+          "Renforcer l'expérience en interface directe avec la Direction générale et les partenaires.",
+          "Développer des compétences en élaboration de stratégies nationales autour de la supervision régionale."
+        ],
+        "rang": 8
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 20.97,
+        "verdict": "défavorable",
+        "resume": "Joël Kinga Delalain présente un profil documenté mais manque des éléments critiques pour le rôle de Coordonnateur des Régions. L'absence de feedback RH constructif et un score pondéré défavorable réduisent sa candidature. Une amélioration manifeste dans la compréhension du rôle et les compétences spécifiques associées est nécessaire.",
+        "points_forts": [
+          "Conformité documentaire optimale",
+          "Potentiel de contribution à la transformation stratégique"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Manque de complétude par rapport à l'offre"
+        ],
+        "rang": 5
+      }
+    },
+    "Aimée Ntchandi Tevenet": {
+      "prenom": "Aimée",
+      "nom": "Ntchandi Tevenet",
+      "conformite": {
         "prenom": "Aimée",
-        "nom": "Ntchandi Tevenet",
-        "conformite": {
-          "prenom": "Aimée",
-          "nom": "NTCHANDI TEVENET",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "NTCHANDI TEVENET",
-          "prenom": "Aimée",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Métier": 0.35,
-            "Talent": 0.35,
-            "Paradigme": 0.47
-          },
-          "Score_moyen": 39.0,
-          "niveau": "Le score moyen de 39.0 indique une aptitude insuffisante par rapport aux attentes de l'entreprise. Le candidat ne semble pas aligné avec la vision de transformation proposée par la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, indiquant que le candidat n'est pas en adéquation avec les exigences du poste et la vision de l'entreprise.",
-          "points_forts": [
-            "Excellente adaptation à des environnements en mutation grâce à son Paradigme.",
-            "Capacité à comprendre les enjeux nationaux et challenges associés au secteur de l'énergie.",
-            "Volonté d'apprendre et d'évoluer dans des structures complexes."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences techniques et opérationnelles dans le secteur de l'énergie.",
-            "Développer des compétences managériales pour une meilleure coordination au sein des équipes.",
-            "Améliorer la capacité d'influence et de communication pour mobiliser les parties prenantes autour des projets."
-          ],
-          "rang": 6
-        },
-        "completude": {
-          "nom": "NTCHANDI TEVENET",
-          "prenom": "Aimée",
-          "poste": "Coordonnateur des Régions",
-          "score": 32.3,
-          "resume_experience": "13 années dans le pilotage de projets en génie civil et en hydraulique",
-          "verdict": "défavorable",
-          "raison_verdict": "Le candidat n'a pas atteint le score nécessaire pour être considéré comme favorable pour le poste visé.",
-          "points_forts": [
-            "Solides compétences en gestion et supervision de projets",
-            "Expérience en coordination inter-équipes",
-            "Capacité à gérer des budgets et optimiser les ressources"
-          ],
-          "points_a_travailler": [
-            "Approfondir l'expérience en politique commerciale régionale",
-            "Renforcer les compétences en interface avec les autorités",
-            "Connaissance spécifique des réglementations en énergie"
-          ],
-          "rang": 13
-        },
-        "feedback": {
-          "prenom": "Aimée",
-          "nom": "NTCHANDI TEVENET",
-          "score": 32.5,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat présente des faiblesses importantes en matière de comportement et de collaboration, essentielles pour un poste de coordination. Son manque de leadership et son attitude clivante nuisent à l'adhésion des équipes et à l'implémentation de la vision de SEEG pour 2025-2035.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Collaboration avec les collaborateurs",
-            "Leadership et capacité à rassembler"
-          ],
-          "rang": 19
-        },
-        "global": {
-          "score_global": 37.46,
-          "verdict": "défavorable",
-          "resume": "Aimée Ntchandi Tevenet ne semble pas correspondre au profil requis pour le poste de Coordonnateur des Régions en raison de faiblesses significatives en matière de leadership et de collaboration. Ces compétences sont cruciales pour piloter les initiatives alignées avec la vision stratégique de la SEEG 2025-2035.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Collaboration avec les collaborateurs",
-            "Leadership et capacité à rassembler"
-          ],
-          "rang": 13
-        }
+        "nom": "NTCHANDI TEVENET",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
       },
-      "Maria Evans Ze Ebe": {
-        "prenom": "Maria",
-        "nom": "Evans Ze Ebe",
-        "conformite": {
-          "prenom": "Maria",
-          "nom": "Evans ZE EBE",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
+      "mtp": {
+        "nom": "NTCHANDI TEVENET",
+        "prenom": "Aimée",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.35,
+          "Talent": 0.35,
+          "Paradigme": 0.45
         },
-        "mtp": {},
-        "completude": {
-          "nom": "ZE EBE",
-          "prenom": "Maria Evans",
-          "poste": "Coordonnateur des Régions",
-          "score": 29.5,
-          "resume_experience": "14 ans en électromécanique et gestion des services hydroélectriques",
-          "verdict": "défavorable",
-          "raison": "Le score de similarité entre le profil du candidat et les exigences du poste est bas, indiquant un écart notable.",
-          "points_forts": [
-            "Expérience significative en gestion et maintenance des équipements électriques",
-            "Solides compétences en encadrement des équipes",
-            "Capacité à rédiger et suivre les consignes d'exploitation"
-          ],
-          "points_a_travailler": [
-            "Compétences limitées en langues étrangères (Anglais et Espagnol débutant)",
-            "Pas d'expérience directe en gestion d'activités commerciales régionales",
-            "Absence de formation ou expérience déclarée en coordination inter-régionale"
-          ],
-          "rang": 18
-        },
-        "feedback": {
-          "prenom": "Maria",
-          "nom": "EVANS ZE EBE",
-          "score": 52.3,
-          "verdict": "Moyen",
-          "raisons": "Le candidat présente un bon comportement et un potentiel en management, mais son manque d'expérience dans le secteur de la distribution d'eau et d'électricité ainsi que la nécessité de confirmer son leadership sont des points préoccupants.",
-          "Points forces": [
-            "Bon comportement",
-            "Potentiel managérial identifié"
-          ],
-          "Points à travailler": [
-            "Expérience dans le secteur de l'eau et de l'électricité",
-            "Leadership à confirmer dans un environnement contraignant"
-          ],
-          "rang": 10
-        },
-        "global": {
-          "score_global": 37.05,
-          "verdict": "défavorable",
-          "resume": "Maria Evans Ze Ebe montre un bon comportement et un certain potentiel managérial. Toutefois, son manque d'expérience spécifique dans le secteur de la distribution d'eau et d'électricité et son besoin de renforcer son leadership sont préoccupants.",
-          "points_forts": [
-            "Bon comportement",
-            "Potentiel managérial identifié"
-          ],
-          "points_a_ameliorer": [
-            "Expérience dans le secteur de l'eau et de l'électricité",
-            "Leadership à confirmer dans un environnement contraignant"
-          ],
-          "rang": 14
-        }
+        "Score_moyen": 38.33,
+        "niveau": "Le score moyen de 38.33 est bien en dessous du seuil minimal requis. Cela indique également que le candidat a des lacunes importantes à plusieurs niveaux.",
+        "verdict": "défavorable",
+        "raison": "Les performances globales du candidat ne répondent pas aux exigences de la vision et des objectifs de transformation de l'entreprise.",
+        "points_forts": [
+          "Bonne compréhension des enjeux de transformation organisationnelle.",
+          "Capacité à identifier des partenariats techniques potentiels pour améliorer les infrastructures.",
+          "Sensibilité aux besoins d'implication des parties prenantes."
+        ],
+        "points_a_travailler": [
+          "Développer des compétences en gestion budgétaire et en optimisation des coûts.",
+          "Améliorer les compétences managériales pour motiver les équipes.",
+          "Renforcer les connaissances techniques sur les nouvelles technologies dans le secteur de l'énergie."
+        ],
+        "rang": 4
       },
-      "Ulrich Moundounga": {
+      "completude": {
+        "nom": "NTCHANDI TEVENET",
+        "prenom": "Aimée",
+        "poste": "Coordonnateur des Régions",
+        "score": 31.6,
+        "resume_experience": "13 années d'expérience en gestion de projets en génie civil et hydraulique",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score de similarité est en dessous du seuil requis pour un avis favorable.",
+        "points_forts": [
+          "Solide expérience dans la gestion de projets hydrauliques et d'approvisionnement en eau",
+          "Compétences en supervision et optimisation des ressources",
+          "Bien familiarisé avec le suivi des indicateurs de performance"
+        ],
+        "points_a_travailler": [
+          "Renforcer la compréhension des enjeux techniques spécifiques de la coordination inter-régionale",
+          "Améliorer les compétences en coordination commerciale et administrative entre régions",
+          "Développer davantage l'expertise dans la mise en œuvre de politiques commerciales"
+        ],
+        "rang": 11
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 20.9,
+        "verdict": "défavorable",
+        "resume": "Aimée Ntchandi Tevenet n’a pas reçu de feedback RH positif et présente un score global défavorable. Sa candidature montre des lacunes notamment dans la complétude du CV et de la lettre de motivation par rapport à l'offre, ainsi qu'une faible maîtrise des tâches de planification (MTP).",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Manque de feedback RH positif",
+          "Faible complétude du dossier par rapport à l'offre"
+        ],
+        "rang": 6
+      }
+    },
+    "Wivine Mengue": {
+      "prenom": "Wivine",
+      "nom": "Mengue",
+      "conformite": {
+        "prenom": "Wivine",
+        "nom": "MENGUE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MENGUE",
+        "prenom": "Wivine",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Métier": 0.35,
+          "Talent": 0.35,
+          "Paradigme": 0.43
+        },
+        "Score_moyen": 37.67,
+        "niveau": "Le score moyen de 37.67 indique un fort besoin de développement dans plusieurs domaines. Ce candidat ne démontre pas actuellement une adéquation avec les exigences de la SEEG ni la vision à long terme de l'entreprise.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen en dessous de 43.5 montre des lacunes significatives dans les compétences requises.",
+        "points_forts": [
+          "Potentiel pour le développement des compétences techniques",
+          "Capacité d'adaptation au changement",
+          "Connaissance des enjeux du secteur énergétique"
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences en gestion de projet",
+          "Renforcer les capacités de leadership",
+          "Acquérir une compréhension approfondie des procédures de gouvernance"
+        ],
+        "rang": 6
+      },
+      "completude": {
+        "nom": "MENGUE",
+        "prenom": "Wivine",
+        "poste": "Coordonnateur des Régions",
+        "score": 30.1,
+        "resume_experience": "13 années d'expérience en production, transport et distribution de l'électricité, spécifiquement dans la planification stratégique et la gestion QHSE",
+        "verdict": "défavorable",
+        "raison": "Le score est en dessous de 35, indiquant une inadéquation avec les exigences du poste, malgré une expérience technique solide.",
+        "points_forts": [
+          "Forte expérience en planification stratégique dans le secteur énergétique",
+          "Compétences managériales et techniques avérées",
+          "Grande capacité en gestion de projets et suivi de performance"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée dans la coordination inter-régionale et la gestion commerciale",
+          "Adaptation des compétences techniques à des rôles de coordination stratégique inter-régionale",
+          "Renforcement des connaissances en optimisation des coûts et performance budgétaire au niveau régional"
+        ],
+        "rang": 16
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 20.44,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente des déficits majeurs en termes d'alignement avec les exigences du poste et de la vision stratégique de la SEEG, notamment en raison d'un score de feedback RH inexistant. La faible complétude et le score pondéré défavorable indiquent un manque de préparation ou d'adéquation au poste ciblé.",
+        "points_forts": [
+          "Conformité documentaire impeccable"
+        ],
+        "points_a_ameliorer": [
+          "Score MTP basse",
+          "Absence de feedback RH positif"
+        ],
+        "rang": 7
+      }
+    },
+    "Léon Ngnimi": {
+      "prenom": "Léon",
+      "nom": "Ngnimi",
+      "conformite": {
+        "prenom": "Léon",
+        "nom": " NGNIMI",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "NGNIMI",
+        "prenom": "Léon",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.32,
+          "Talent": 0.31,
+          "Paradigme": 0.42
+        },
+        "Score_moyen": 35.0,
+        "niveau": "Le candidat présente un score moyen défavorable, indiquant une inadéquation avec les attentes de la vision de l'entreprise. Sa performance dans les domaines clés requiert une amélioration significative pour aligner ses compétences aux besoins organisationnels.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 35.0 est bien en dessous du seuil minimal requis de 43.5.",
+        "points_forts": [
+          "Léon a montré un intérêt pour la compréhension des défis organisationnels.",
+          "Sa capacité à identifier les problèmes dans les processus internes pourrait être un atout dans un contexte d'amélioration continue.",
+          "Il possède des compétences d'analyse qui peuvent contribuer à une vision stratégique à long terme."
+        ],
+        "points_a_travailler": [
+          "Améliorer ses connaissances en matière de gestion des ressources et d'optimisation des processus.",
+          "Développer des compétences en leadership et en gestion de projets pour mieux répondre aux exigences de la coordination.",
+          "Renforcer sa capacité d'adaptation aux changements et aux nouvelles technologies pour soutenir la transition énergétique et l'innovation."
+        ],
+        "rang": 17
+      },
+      "completude": {
+        "nom": "NGNIMI",
+        "prenom": "Léon",
+        "poste": "Coordonnateur des Régions",
+        "score": 32.5,
+        "resume_experience": "Plus de 20 ans d'expérience en distribution électrique et gestion de projets",
+        "verdict": "défavorable",
+        "raison": "Le score de similarité est inférieur au seuil minimal requis, indiquant que les compétences et l'expérience ne sont pas pleinement alignées avec les exigences spécifiques du poste de Coordonnateur des Régions.",
+        "points_forts": [
+          "Expertise technique en réseaux HTA/BT",
+          "Capacité avérée à diriger des équipes",
+          "Expérience en supervision stratégique et opérationnelle"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée dans la coordination inter-régionale",
+          "Amélioration du niveau d'anglais pour de meilleures interactions internationales",
+          "Approfondissement des connaissances en gestion commerciale inter-régionale"
+        ],
+        "rang": 9
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 20.25,
+        "verdict": "défavorable",
+        "resume": "Le profil de Léon Ngnimi ne semble pas aligné avec la vision et les exigences stratégiques du poste de Coordonnateur des Régions, surtout compte tenu de l'absence de feedback RH et du faible score global pondéré. Cela laisse suggérer des lacunes potentiellement critiques en termes de qualifications ou d'expérience requises pour ce rôle nécessitant une gestion rigoureuse et des compétences transversales.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Manque de retour d'information positif des RH",
+          "Incohérence entre le CV et la lettre de motivation par rapport à l'offre"
+        ],
+        "rang": 8
+      }
+    },
+    "Presty Minko Mi Nzue": {
+      "prenom": "Presty",
+      "nom": "Minko Mi Nzue",
+      "conformite": {
+        "prenom": "Presty",
+        "nom": "MINKO MI NZUE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MINKO MI NZUE",
+        "prenom": "Presty",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.32,
+          "Talent": 0.31,
+          "Paradigme": 0.38
+        },
+        "Score_moyen": 33.67,
+        "niveau": "Le candidat présente des scores globalement en dessous des attentes de l'entreprise. Cela pourrait indiquer un manque d'alignement avec la vision stratégique mise en avant par la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 33.67 est inférieur à 43.5, ce qui indique une inadéquation avec les besoins et la vision de l'entreprise.",
+        "points_forts": [
+          "Possède une compréhension des enjeux liés à la gestion des ressources.",
+          "Montre un intérêt pour la réhabilitation et la modernisation des infrastructures.",
+          "Démontre une capacité à réfléchir sur des thèmes de gouvernance et de transparence."
+        ],
+        "points_a_travailler": [
+          "Développer des compétences en gestion stratégique et opérationnelle.",
+          "Améliorer la capacité d'adaptation aux normes de l'industrie et aux attentes du marché.",
+          "Renforcer les compétences relationnelles pour une meilleure collaboration avec les parties prenantes."
+        ],
+        "rang": 20
+      },
+      "completude": {
+        "nom": "MINKO MI NZUE",
+        "prenom": "Presty",
+        "poste": "Coordonnateur des Régions",
+        "score": 32.0,
+        "resume_experience": "Environ 14 ans dans la Métrologie et Comptage",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le score de similarité du candidat avec le poste visé est inférieur au seuil défavorable. Son expérience est principalement centrée sur la métrologie et le comptage, qui ne correspondent pas directement aux exigences du poste de coordination régionale.",
+        "points_forts": [
+          "Expérience étendue en métrologie et comptage",
+          "Compétences en formation et gestion d'équipe",
+          "Vision stratégique et bonne capacité d'adaptation"
+        ],
+        "points_a_travailler": [
+          "Expérience directe en coordination régionale",
+          "Compétences en gestion inter-régionale et commercial",
+          "Connaissance des normes spécifiques au secteur des utilités publiques",
+          "rang"
+        ],
+        "rang": 10
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 19.82,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente un bon niveau de conformité documentaire, mais le manque de feedback RH positif et une faible complétude par rapport au poste limitent son adéquation. Son faible score global rend sa candidature défavorable pour assumer le poste de coordonnateur en lien avec la vision ambitieuse et transformatrice de l'entreprise SEEG.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH positif",
+          "Faible complétude du dossier par rapport à l'offre"
+        ],
+        "rang": 9
+      }
+    },
+    "Ida Totiga": {
+      "prenom": "Ida",
+      "nom": "Totiga",
+      "conformite": {
+        "prenom": "IDA",
+        "nom": "TOTIGA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "TOTIGA",
+        "prenom": "IDA",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Métier": 0.36,
+          "Talent": 0.35,
+          "Paradigme": 0.5
+        },
+        "Score_moyen": 40.33,
+        "niveau": "Avec un score moyen de 40.33, le candidat est dans une zone défavorable. Cela indique une inadéquation avec les attentes requises pour le poste au sein de l'entreprise.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est en dessous du seuil minimal requis pour exprimer une adéquation avec la vision de l'entreprise.",
+        "points_forts": [
+          "Montre une connaissance des enjeux de gouvernance et de transparence dans les opérations.",
+          "Possède des idées relatives à la modernisation et à l'investissement dans les infrastructures.",
+          "Démontre une compréhension des impératifs de gestion des ressources et des relations avec les parties prenantes."
+        ],
+        "points_a_travailler": [
+          "Améliorer ses compétences en gestion de projet pour une mise en œuvre efficace des changements.",
+          "Développer des stratégies pour renforcer la conformité aux procédures internes et aux pratiques de l'industrie.",
+          "Travailler sur ses compétences de leadership pour mobiliser et motiver les équipes autour de la vision stratégique de l'entreprise."
+        ],
+        "rang": 1
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 15.08,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Ida Totiga ne semble pas aligné avec les exigences du poste ni la vision stratégique de l’entreprise. Le score global et notamment le feedback RH indiquent de sérieuses lacunes, notamment en termes de complétude du dossier de candidature et de pertinence pour le poste.",
+        "points_forts": [
+          "Conformité documentaire impeccable"
+        ],
+        "points_a_ameliorer": [
+          "Pertinence par rapport à l'offre",
+          "Complétude du dossier de candidature"
+        ],
+        "rang": 10
+      }
+    },
+    "Ulrich Moundounga": {
+      "prenom": "Ulrich",
+      "nom": "Moundounga",
+      "conformite": {
         "prenom": "Ulrich",
-        "nom": "Moundounga",
-        "conformite": {
-          "prenom": "Ulrich",
-          "nom": "MOUNDOUNGA",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "MOUNDOUNGA",
-          "prenom": "Ulrich",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.33,
-            "Talent": 0.32,
-            "Paradigme": 0.48
-          },
-          "Score_moyen": 37.67,
-          "niveau": "Le score moyen du candidat est considéré comme défavorable. Cela indique une inadéquation avec la vision de l'entreprise qui exige une forte compétence et des talents pouvant répondre aux défis de transformation et de modernisation de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est en dessous du seuil requis, ce qui souligne un manque de préparation pour les défis et les exigences de la vision stratégique de la SEEG.",
-          "points_forts": [
-            "Capacité à identifier les enjeux de transformation des infrastructures.",
-            "Connaissance apparente des problématiques de gouvernance et de transparence.",
-            "Compréhension des exigences en matière de dialogue avec les parties prenantes."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en gestion des ressources humaines et en optimisation des coûts.",
-            "Améliorer les capacités en planification stratégique et en gestion de projet.",
-            "Développer des compétences techniques pour intégrer les nouvelles technologies au sein des opérations."
-          ],
-          "rang": 10
-        },
-        "completude": {},
-        "feedback": {
-          "prenom": "Ulrich",
-          "nom": "MOUNDOUNGA",
-          "score": 42.5,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat a une expérience managériale marquée par des problèmes de performance dans ses précédents postes, ce qui ne correspond pas aux attentes de transformation et de stabilité requises par la SEEG.",
-          "Points forces": [
-            "Connaissance des procédures techniques",
-            "Capacité d'adaptation"
-          ],
-          "Points à travailler": [
-            "Expérience managériale positive",
-            "Capacité à gérer les crises et les tensions"
-          ],
-          "rang": 17
-        },
-        "global": {
-          "score_global": 35.67,
-          "verdict": "défavorable",
-          "resume": "Ulrich Moundounga présente une bonne connaissance des procédures techniques et une capacité d'adaptation. Toutefois, son historique managérial laisse apparaître des performances insatisfaisantes, ce qui ne cadre pas avec les exigences de transformation et de stabilité de la SEEG.",
-          "points_forts": [
-            "Connaissance des procédures techniques",
-            "Capacité d'adaptation"
-          ],
-          "points_a_ameliorer": [
-            "Expérience managériale positive",
-            "Capacité à gérer les crises et les tensions"
-          ],
-          "rang": 15
-        }
+        "nom": "MOUNDOUNGA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
       },
-      "Abessolo Aubain": {
+      "mtp": {
+        "nom": "MOUNDOUNGA",
+        "prenom": "Ulrich",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.33,
+          "Talent": 0.32,
+          "Paradigme": 0.45
+        },
+        "Score_moyen": 36.67,
+        "niveau": "Le score obtenu par le candidat est nettement en dessous des attentes de l'entreprise. Cela indique une inadéquation avec les compétences et les valeurs nécessaires pour le poste visé.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est inférieur à 43.5, ce qui suggère un manque de pertinence par rapport à la vision de la SEEG.",
+        "points_forts": [
+          "Capacité à identifier les défis organisationnels, ce qui peut être précieux dans un contexte de restructuration.",
+          "Une compréhension des enjeux modernes liés à la gestion des ressources, bien que cela doive être appliqué avec plus d'expertise.",
+          "Possibilité d'un certain dynamisme en raison de la curiosité pour le Paradigme, mais cela nécessite une mise en œuvre plus concrète."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques et sectorielles spécifiques liées aux métiers de l'eau et de l'électricité.",
+          "Améliorer la gestion du talent pour maximiser le potentiel des équipes au sein de l'organisation.",
+          "Développer une vision stratégique plus claire et ancrée dans les réalités opérationnelles de la SEEG."
+        ],
+        "rang": 9
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 14.17,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente des lacunes significatives dans son dossier, notamment un feedback RH nul et un manque de complétude par rapport à l'offre. Malgré une excellente conformité documentaire, son profil ne répond pas aux attentes stratégiques de la SEEG, particulièrement en période de transformation.",
+        "points_forts": [
+          "Conformité documentaire"
+        ],
+        "points_a_ameliorer": [
+          "Feedback RH nul",
+          "Absence de complétude entre le CV, lettre de motivation et l'offre"
+        ],
+        "rang": 11
+      }
+    },
+    "Abessolo Aubain": {
+      "prenom": "Abessolo",
+      "nom": "Aubain",
+      "conformite": {
         "prenom": "Abessolo",
         "nom": "Aubain",
-        "conformite": {
-          "prenom": "Abessolo",
-          "nom": "Aubain",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "Aubain",
-          "prenom": "Abessolo",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Métier": 0.31,
-            "Talent": 0.31,
-            "Paradigme": 0.49
-          },
-          "Score_moyen": 37.0,
-          "niveau": "Le candidat présente un score moyen en dessous du seuil critique, ce qui démontre un manque d'alignement avec les exigences de la vision de l'entreprise. Ses résultats laissent présager une faible contribution à la transformation nécessaire de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 37.0 indique un désalignement avec la vision stratégique et les compétences requises pour le poste.",
-          "points_forts": [
-            "Capacité à identifier des problématiques en matière de gestion et d'organisation.",
-            "Connaissance des enjeux liés à la transition énergétique et de la nécessité d'innovation.",
-            "Volonté de participation active dans les processus d'amélioration."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences techniques pour répondre aux défis d'infrastructures vieillissantes.",
-            "Développer des capacités en leadership et en gestion des ressources humaines.",
-            "Améliorer la compréhension des processus de gouvernance et de transparence."
-          ],
-          "rang": 11
-        },
-        "completude": {},
-        "feedback": {
-          "prenom": "Abessolo",
-          "nom": "AUBAIN",
-          "score": 42.7,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat fait face à des problèmes de comportement et de tension au sein de son équipe. De plus, il n'a pas fourni de documents appropriés, ce qui soulève des préoccupations sur son organisation et sa capacité à assumer des responsabilités.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Affirmation en tant que manager",
-            "Gestion des tensions d'équipe",
-            "Organisation et présentation des documents"
-          ],
-          "rang": 13
-        },
-        "global": {
-          "score_global": 35.6,
-          "verdict": "défavorable",
-          "resume": "Le candidat, Abessolo Aubain, obtient un score global défavorable de 35.6. Bien que conforme sur le plan documentaire, il présente des problèmes de comportement et de tension au sein de son équipe, et manque d'organisation dans la présentation des documents requis, ce qui soulève des doutes quant à sa capacité à assumer le rôle de coordonnateur selon la vision stratégique de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Affirmation en tant que manager",
-            "Gestion des tensions d'équipe",
-            "Organisation et présentation des documents"
-          ],
-          "rang": 16
-        }
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
       },
-      "Steve Olivier N'Nang": {
-        "prenom": "Steve",
-        "nom": "Olivier N'Nang",
-        "conformite": {
-          "prenom": "Steve",
-          "nom": "Olivier N'NANG",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
+      "mtp": {
+        "nom": "Aubain",
+        "prenom": "Abessolo",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.32,
+          "Talent": 0.31,
+          "Paradigme": 0.44
         },
-        "mtp": {},
-        "completude": {
-          "nom": "N'NANG",
-          "prenom": "Steve Olivier",
-          "poste": "Coordonnateur des Régions",
-          "score": 29.4,
-          "resume_experience": "Près de 30 ans d'expérience en génie électromécanique principalement dans le secteur de l'énergie.",
-          "verdict": "défavorable",
-          "raison": "Le score de similarité est inférieur au seuil requis, ce qui indique qu'il pourrait ne pas être le meilleur candidat pour le poste de Coordonnateur des Régions, malgré sa vaste expérience.",
-          "points_forts": [
-            "Solide expérience en gestion de projets énergétiques.",
-            "Capacité démontrée à superviser et encadrer des équipes.",
-            "Connaissance approfondie du secteur énergétique au Gabon."
-          ],
-          "points_a_travailler": [
-            "Renforcement des compétences en conformité et veille réglementaire.",
-            "Amélioration de l'expérience en interface et collaboration avec la direction générale et les partenaires.",
-            "Augmentation de l'expérience en gestion de budgets et optimisation des coûts."
-          ],
-          "rang": 19
-        },
-        "feedback": {
-          "prenom": "Steve",
-          "nom": "OLIVIER N'NANG",
-          "score": 48.7,
-          "verdict": "Moyen",
-          "raisons": "Bien que le candidat ait des compétences managériales, son leadership et son autorité vis-à-vis des collaborateurs sont remis en question. Cela pourrait poser des défis dans un contexte de transformation où la gouvernance et l'implication des parties prenantes sont critiques.",
-          "Points forces": [
-            "Potentiel pour le management",
-            "Bon comportement observé"
-          ],
-          "Points à travailler": [
-            "Leadership à confirmer",
-            "Manque d'autorité vis-à-vis des collaborateurs"
-          ],
-          "rang": 12
-        },
-        "global": {
-          "score_global": 35.23,
-          "verdict": "défavorable",
-          "resume": "Steve Olivier N'Nang possède des compétences managériales et un bon comportement, mais son leadership et son autorité vis-à-vis des collaborateurs sont insuffisants. Cela pourrait limiter son efficacité dans un contexte de transformation où la gouvernance et la mobilisation des parties prenantes sont essentielles.",
-          "points_forts": [
-            "Potentiel pour le management",
-            "Bon comportement observé"
-          ],
-          "points_a_ameliorer": [
-            "Leadership à confirmer",
-            "Manque d'autorité vis-à-vis des collaborateurs"
-          ],
-          "rang": 17
-        }
+        "Score_moyen": 35.67,
+        "niveau": "Le candidat présente un score moyen défavorable, ce qui indique une inadéquation avec la vision de l'entreprise. Sa compréhension des compétences métier semble particulièrement faible par rapport aux attentes de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui souligne des lacunes significatives dans la correspondance avec la vision de l'entreprise.",
+        "points_forts": [
+          "Une certaine connaissance des paradigmes d'amélioration organisationnelle.",
+          "Capacité à comprendre les enjeux de modernisation des infrastructures."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques et métier nécessaires pour le poste.",
+          "Développer un meilleur alignement avec les valeurs et l'orientation stratégique de la SEEG.",
+          "Améliorer la compréhension des talents nécessaires pour diriger efficacement dans un environnement en transformation."
+        ],
+        "rang": 12
       },
-      "Ida Totiga": {
-        "prenom": "Ida",
-        "nom": "Totiga",
-        "conformite": {
-          "prenom": "IDA",
-          "nom": "TOTIGA",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "TOTIGA",
-          "prenom": "IDA",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Métier": 0.36,
-            "Talent": 0.35,
-            "Paradigme": 0.56
-          },
-          "Score_moyen": 42.33,
-          "niveau": "Le score moyen du candidat est largement en dessous du seuil favorable. Cela indique un manque d'adéquation avec les exigences et la vision de l'entreprise.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 42.33 suggère une insuffisance dans les compétences et talents requis pour le poste visé.",
-          "points_forts": [
-            "Capacité à comprendre la nécessité de réorganisation au sein de l'entreprise.",
-            "Sensibilité aux enjeux environnementaux et à la transition énergétique.",
-            "Compétence en gestion de projet et capacité à évaluer les besoins organisationnels."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences techniques liées aux métiers spécifiques de l'énergie et de l'eau.",
-            "Développer les capacités d'innovation pour s'adapter à la modernisation des infrastructures.",
-            "Renforcer les compétences en gouvernance et en transparence dans les opérations."
-          ],
-          "rang": 1
-        },
-        "completude": {},
-        "feedback": {
-          "prenom": "Ida",
-          "nom": "TOTIGA",
-          "score": 38.5,
-          "verdict": "Défavorable",
-          "raisons": "Le feedback du candidat soulève de sérieuses préoccupations sur ses compétences managériales et sa capacité à travailler efficacement dans le cadre des objectifs stratégiques de la SEEG.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Leadership et compétences managériales",
-            "Capacité à collaborer et à engager des actions constructives"
-          ],
-          "rang": 18
-        },
-        "global": {
-          "score_global": 34.83,
-          "verdict": "défavorable",
-          "resume": "Le profil d'Ida Totiga pose de sérieuses préoccupations, particulièrement en ce qui concerne ses compétences managériales et sa capacité à s'aligner avec la vision stratégique de la SEEG. Le score global reflète un décalage important entre les attentes du poste et les capacités évaluées de la candidate.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Leadership et compétences managériales",
-            "Capacité à collaborer et à engager des actions constructives"
-          ],
-          "rang": 18
-        }
+      "completude": {
+        "nom": "Aubain",
+        "prenom": "Abessolo",
+        "poste": "Coordonnateur des Régions",
+        "resume_experience": "Non détecté",
+        "verdict": [],
+        "points_forts": "Analyse échouée (Error code: 429 - {'error': {'message': 'Rate limit reached for gpt-4o in organization org-aoRA7l9j5rQZ7YfhVeRvIBw8 on tokens per min (TPM): Limit 30000, Used 27542, Requested 4912. Please try again in 4.908s. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}})",
+        "points_a_travailler": [],
+        "rang": 13
       },
-      "Louis De Gonzague Mboulou Assoumou": {
-        "prenom": "Louis",
-        "nom": "De Gonzague Mboulou Assoumou",
-        "conformite": {
-          "prenom": "Louis",
-          "nom": "de Gonzague  Mboulou Assoumou",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {
-          "nom": "Mboulou Assoumou",
-          "prenom": "Louis de Gonzague",
-          "poste": "Coordonnateur des Régions",
-          "score": 30.5,
-          "resume_experience": "25 années dans le domaine de l'électricité et de l'eau",
-          "verdict": "défavorable",
-          "points_forts": [
-            "Expérience extensive en gestion de l'exploitation et maintenance dans l'industrie électrique",
-            "Compétences éprouvées en élaboration et suivi de budgets et plans d'investissements",
-            "Certifications techniques en télécommunication et gestion de la sécurité"
-          ],
-          "points_a_travailler": [
-            "Expérience spécifique à la coordination inter-régionale n'est pas mise en évidence",
-            "Manque de mention directe des compétences en gestion commerciale inter-régionale",
-            "Faible score de similarité avec les exigences spécifiques du poste de coordonnateur"
-          ],
-          "rang": 16
-        },
-        "feedback": {
-          "prenom": "Louis",
-          "nom": "DE GONZAGUE MBOULOU ASSOUMOU",
-          "score": 42.5,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat manifeste un manque de leadership et de vision managériale, essentiels à la transformation demandée par la SEEG pour atteindre ses objectifs stratégiques.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Développer des compétences en gestion et leadership",
-            "Adopter une vision à long terme alignée avec la transformation stratégique de la SEEG"
-          ],
-          "rang": 16
-        },
-        "global": {
-          "score_global": 32.35,
-          "verdict": "défavorable",
-          "resume": "Le candidat Louis De Gonzague Mboulou Assoumou présente un profil qui ne répond pas pleinement aux exigences de leadership et de vision managériale nécessaires à la transformation stratégique attendue par la SEEG. Son score global et son feedback RH indiquent une inadéquation avec les objectifs ambitieux de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Développer des compétences en gestion et leadership",
-            "Adopter une vision à long terme alignée avec la transformation stratégique de la SEEG"
-          ],
-          "rang": 19
-        }
+      "feedback": {},
+      "global": {
+        "score_global": 13.92,
+        "verdict": "défavorable",
+        "resume": "Le candidat Abessolo Aubain présente un profil défavorable pour le poste de Coordonnateur des Régions à la SEEG. Bien que conforme sur le plan documentaire, son manque de complétude et l'absence de feedback RH positif pèsent sur son évaluation globale. Sa capacité à s'aligner avec la vision transformatrice et les exigences en matière de gouvernance et d'innovation stratégique de l'entreprise n'est pas démontrée.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH positif",
+          "Complétude insuffisante du dossier"
+        ],
+        "rang": 12
+      }
+    },
+    "Juvenal Awori Onanga": {
+      "prenom": "Juvenal",
+      "nom": "Awori Onanga",
+      "conformite": {
+        "prenom": "JUVENAL",
+        "nom": "AWORI ONANGA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
       },
-      "Wilfrid Pascal Andjayi": {
-        "prenom": "Wilfrid",
-        "nom": "Pascal Andjayi",
-        "conformite": {
-          "prenom": "Wilfrid",
-          "nom": "Pascal ANDJAYI",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
+      "mtp": {
+        "nom": "AWORI ONANGA",
+        "prenom": "JUVENAL",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.31,
+          "Talent": 0.31,
+          "Paradigme": 0.44
         },
-        "mtp": {},
-        "completude": {
-          "nom": "ANDJAYI",
-          "prenom": "Wilfrid Pascal",
-          "poste": "Coordonnateur des Régions",
-          "score": 30.8,
-          "resume_experience": "22 ans d'expérience principalement dans la gestion de l'eau et des ressources hydriques chez SEEG",
-          "verdict": "défavorable",
-          "points_forts": [
-            "Solide expérience dans la gestion et la distribution de l'eau",
-            "Expérience de supervision et management d’équipes",
-            "Connaissances approfondies des opérations hydrauliques"
-          ],
-          "points_a_travailler": [
-            "Alignement avec les missions inter-régionales et multi-sectorielles",
-            "Compétences en coordination et animation inter-régionale",
-            "Suivi des indicateurs de performance au niveau régional"
-          ],
-          "rang": 15
-        },
-        "feedback": {
-          "prenom": "Wilfrid",
-          "nom": "PASCAL ANDJAYI",
-          "score": 32.5,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat présente plusieurs faiblesses dans son parcours, notamment une absence de leadership et une perception négative de ses résultats dans son rôle précédent, ce qui ne correspond pas aux attentes pour le poste.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Manque de compétences en management et leadership",
-            "Résultats insatisfaisants en tant que Directeur eau"
-          ],
-          "rang": 20
-        },
-        "global": {
-          "score_global": 27.41,
-          "verdict": "défavorable",
-          "resume": "Wilfrid Pascal Andjayi montre une inadéquation par rapport aux exigences du poste, principalement en raison d'un manque de compétences en management et en leadership, ainsi que de résultats décevants dans ses fonctions antérieures. Ces faiblesses sont incompatibles avec la transformation ambitieuse que l'entreprise vise dans le cadre de sa vision 2025-2035.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Manque de compétences en management et leadership",
-            "Résultats insatisfaisants en tant que Directeur eau"
-          ],
-          "rang": 20
-        }
+        "Score_moyen": 35.33,
+        "niveau": "Le score de MTP du candidat est défavorable, ce qui indique des lacunes dans ses compétences et son approche. Ces insuffisances seront un obstacle pour rejoindre une entreprise ayant une vision ambitieuse pour la SEEG.",
+        "verdict": "défavorable",
+        "raison": "Le score moyen du candidat est largement inférieur à la moyenne minimum requise pour atteindre les objectifs de transformation de l'entreprise.",
+        "points_forts": [
+          "Capacité à intégrer des retours d'expérience pour des prises de décisions éclairées.",
+          "Compétences en gestion de conflits qui peuvent être cruciales dans un environnement tendu.",
+          "Compréhension des enjeux liés à la gouvernance et à la transparence, essentielle pour un poste de coordination."
+        ],
+        "points_a_travailler": [
+          "Améliorer significativement les compétences techniques dans le domaine de l'électricité et de l'eau.",
+          "Développer des compétences en leadership pour gérer les équipes et les projets de manière efficace.",
+          "Renforcer la capacité d'adaptation aux changements de paradigme dans la gestion des ressources."
+        ],
+        "rang": 15
       },
-      "Wilfrid Andjayi": {
-        "prenom": "Wilfrid",
-        "nom": "Andjayi",
-        "conformite": {},
-        "mtp": {
-          "nom": "ANDJAYI",
-          "prenom": "Wilfrid",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.36,
-            "Talent": 0.35,
-            "Paradigme": 0.52
-          },
-          "Score_moyen": 41.0,
-          "niveau": "Le score moyen de 41.0 indique une faible adéquation avec la vision de l'entreprise. L'alignement sur les stratégies opérationnelles et les attentes de la SEEG est insuffisant.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est en dessous de 43.5, ce qui montre une inadéquation avec les exigences et la vision stratégique de la SEEG.",
-          "points_forts": [
-            "Capacité à comprendre les enjeux opérationnels liés à la modernisation des infrastructures.",
-            "Connaissance des défis de gestion des ressources dans un contexte de crise.",
-            "Ouverture à l'intégration des nouvelles technologies pour améliorer les services."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences en gestion de projet pour la mise en œuvre des plans d'investissement.",
-            "Renforcer la compréhension des mécanismes de gouvernance d'entreprise et des procédures internes.",
-            "Développer des compétences en communication pour faciliter le dialogue entre les parties prenantes."
-          ],
-          "rang": 3
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 10.25,
-          "verdict": "défavorable",
-          "resume": "Le candidat ne répond pas aux critères requis pour le poste en raison de son faible taux de conformité documentaire et de complétude. Son faible score global et l'absence de feedback positif posent question quant à sa capacité à remplir les exigences du rôle de Coordonnateur des Régions, dans le cadre de la vision stratégique de restructuration de SEEG.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude des documents requis"
-          ],
-          "rang": 21
-        }
-      },
-      "Remus Mbouogho": {
-        "prenom": "Remus",
-        "nom": "Mbouogho",
-        "conformite": {},
-        "mtp": {
-          "nom": "MBOUOGHO",
-          "prenom": "Remus",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.36,
-            "Talent": 0.35,
-            "Paradigme": 0.52
-          },
-          "Score_moyen": 41.0,
-          "niveau": "Le score moyen du candidat indique une performance globale inférieure aux attentes de l'entreprise. Cela suggère un besoin d'amélioration significatif pour s'aligner avec la vision stratégique de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen étant de 41.0, il est en dessous du seuil minimum requis de 43.5, ce qui le rend inadapté aux exigences de l'entreprise.",
-          "points_forts": [
-            "Compréhension des enjeux et défis stratégiques du secteur énergétique.",
-            "Capacité à s'engager dans une transformation organisationnelle.",
-            "Ouverture à l'intégration de nouvelles technologies."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences techniques spécifiques au domaine de l'énergie.",
-            "Améliorer les capacités de gestion de projet et de leadership.",
-            "Développer une approche plus proactive face à la gouvernance et à la transparence."
-          ],
-          "rang": 2
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 10.25,
-          "verdict": "défavorable",
-          "resume": "Remus Mbouogho a reçu un faible score global, indiquant des lacunes importantes tant sur la conformité documentaire que sur la complétude de sa candidature par rapport à l'offre. Le feedback RH n'est pas favorable, ce qui souligne les attentes non satisfaites par le candidat en termes d'alignement avec la vision transformatrice de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "conformité documentaire",
-            "complétude du dossier",
-            "alignement avec la vision stratégique de l'entreprise"
-          ],
-          "rang": 22
-        }
-      },
-      "Maria Ze Ebe": {
-        "prenom": "Maria",
-        "nom": "Ze Ebe",
-        "conformite": {},
-        "mtp": {
-          "nom": "ZE EBE",
-          "prenom": "Maria",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.34,
-            "Talent": 0.34,
-            "Paradigme": 0.5
-          },
-          "Score_moyen": 39.33,
-          "niveau": "Le candidat présente un score moyen défavorable, indiquant des lacunes importantes par rapport à la vision de l'entreprise. Sa capacité à contribuer à la réalisation des objectifs stratégiques de la SEEG semble limitée dans le contexte actuel.",
-          "verdict": "défavorable",
-          "raison": "Le score moyen est largement en dessous du seuil minimum de 43.5, ce qui indique une inadéquation significative avec les exigences du poste et les attentes de l'entreprise.",
-          "points_forts": [
-            "Capacité à identifier les problématiques liées aux infrastructures vieillissantes.",
-            "Compréhension des enjeux de gouvernance et de transparence.",
-            "Motivation à intégrer les retours d'expériences passées pour améliorer la situation actuelle."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences techniques et managériales nécessaires à la réhabilitation des infrastructures.",
-            "Améliorer la compréhension des systèmes de gestion conforme aux pratiques de l'industrie.",
-            "Développer des capacités d'analyse financière pour contribuer au plan d'investissement ambitieux."
-          ],
-          "rang": 4
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 9.83,
-          "verdict": "défavorable",
-          "resume": "Le profil de Maria Ze Ebe ne semble pas aligné avec les exigences stratégiques et opérationnelles du poste de Coordonnateur des Régions à la SEEG. Les scores de conformité documentaire et de complémentarité par rapport à l'offre sont nuls, et le feedback RH est absent, ce qui suggère un manque de préparation ou d'adéquation aux attentes de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude du dossier de candidature"
-          ],
-          "rang": 23
-        }
-      },
-      "Jean Ondo Mayi": {
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 13.83,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente des scores très faibles, notamment un feedback RH inexistant, ce qui est préoccupant pour un poste de coordination, surtout dans le contexte de restructuration et de transformation stratégique de la SEEG. Sa candidature ne semble pas alignée avec les besoins critiques de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire"
+        ],
+        "points_a_ameliorer": [
+          "Feedback RH inexistant",
+          "Altériorité par rapport à la complétude et adéquation du profil avec l'offre"
+        ],
+        "rang": 13
+      }
+    },
+    "Jean Fabrice Ondo Mayi": {
+      "prenom": "Jean",
+      "nom": "Fabrice Ondo Mayi",
+      "conformite": {
         "prenom": "Jean",
-        "nom": "Ondo Mayi",
-        "conformite": {},
-        "mtp": {
-          "nom": "ONDO MAYI",
-          "prenom": "Jean",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.33,
-            "Talent": 0.32,
-            "Paradigme": 0.48
-          },
-          "Score_moyen": 37.67,
-          "niveau": "Le candidat montre un potentiel faible au regard des compétences et des talents requis pour le poste. Ses scores indiquent un besoin urgent de développement et d'acquisition de compétences aux niveaux fondamentaux.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 37.67 est bien en dessous du seuil requis, ce qui suggère que le candidat ne représente pas une adéquation suffisante avec la vision de l'entreprise.",
-          "points_forts": [
-            "Sensibilité aux enjeux structurels, malgré un score limité.",
-            "Volonté d'orientation vers des paradigmes innovants.",
-            "Potentiel d'évolution dans un environnement formateur."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences techniques liées au métier visé.",
-            "Renforcer les talents en management et leadership.",
-            "Accroître la compréhension des enjeux de gouvernance et transparence."
-          ],
-          "rang": 9
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 9.42,
-          "verdict": "défavorable",
-          "resume": "Jean Ondo Mayi présente un profil qui n'est pas aligné avec les exigences du poste de coordonnateur et la vision de transformation de la SEEG, principalement en raison de scores très faibles en conformité documentaire et en complétude. Le feedback RH suggère un manque de préparation appropriée pour aborder les défis stratégiques prévus par la vision de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude (CV+LM vs Offre)"
-          ],
-          "rang": 24
-        }
+        "nom": "Fabrice ONDO MAYI",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
       },
-      "Louis Mboulou Assoumou": {
+      "mtp": {},
+      "completude": {
+        "nom": "ONDO MAYI",
+        "prenom": "Jean Fabrice",
+        "poste": "Coordonnateur des Régions",
+        "score": 38.7,
+        "resume_experience": "Plus de 15 ans d'expérience, principalement en audit interne, gestion clientèle et management d'équipes.",
+        "verdict": "favorable",
+        "raison": "Jean Fabrice ONDO MAYI possède une expérience significative en gestion et supervision d'équipes, ainsi qu'une expertise en audits et contrôles internes. Son passage en exploitation lui a permis d'acquérir des compétences opérationnelles et décisionnelles, nécessaires pour le poste de Coordonnateur des Régions.",
+        "points_forts": [
+          "Expérience significative en audit et contrôle, renforcement des pratiques et minimisation des risques financiers.",
+          "Capacité à gérer des équipes et à fédérer autour d'objectifs communs.",
+          "Compétences en reporting et gestion de performance."
+        ],
+        "points_a_travailler": [
+          "Adaptation aux nouvelles évolutions réglementaires dans le domaine de l'eau et de l'électricité.",
+          "Approfondissement des compétences en veille réglementaire et conformité.",
+          "Développement d'une expertise plus approfondie en gestion commerciale inter-régionale."
+        ],
+        "rang": 3
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 12.74,
+        "verdict": "défavorable",
+        "resume": "Malgré une conformité documentaire exemplaire, le candidat présente des lacunes importantes, notamment une faible adéquation de son dossier par rapport aux exigences du poste. Le feedback RH étant défavorable, cela soulève des doutes quant à sa capacité à répondre aux besoins de transformation et de gouvernance propres à la vision SEEG 2025-2035.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Adequación du CV et de la lettre de motivation par rapport à l'offre",
+          "Absence de feedback RH positif"
+        ],
+        "rang": 14
+      }
+    },
+    "Elvis Ella Okwe": {
+      "prenom": "Elvis",
+      "nom": "Ella Okwe",
+      "conformite": {
+        "prenom": "ELVIS",
+        "nom": "ELLA OKWE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "ELLA OKWE",
+        "prenom": "Elvis",
+        "poste": "Coordonnateur des Régions",
+        "score": 37.4,
+        "resume_experience": "17 ans d'expérience dans la production et distribution d'eau et d'électricité",
+        "verdict": "moyen",
+        "points_forts": [
+          "Expérience étendue dans la production et distribution d'eau et d'électricité",
+          "Bonne connaissance des opérations régionales",
+          "Capacité à proposer et implémenter des axes d'amélioration"
+        ],
+        "points_a_travailler": [
+          "Amélioration des compétences en anglais",
+          "Expérience limitée exposée dans l'optimisation des coûts",
+          "Renforcement des compétences en planification stratégique"
+        ],
+        "rang": 5
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 12.48,
+        "verdict": "défavorable",
+        "resume": "Elvis Ella Okwe présente un profil qui, malgré sa conformité documentaire, manque de complétude et de feedback positif, ce qui conduit à un score global défavorable. Le candidat semble avoir des lacunes importantes en termes de préparation et d'alignement avec les attentes du poste et la vision de transformation stratégique de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire parfaitement respectée"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH positif",
+          "Faible complétude de la candidature par rapport à l'offre"
+        ],
+        "rang": 15
+      }
+    },
+    "Remus Arnold Mbouogho": {
+      "prenom": "Remus",
+      "nom": "Arnold Mbouogho",
+      "conformite": {
+        "prenom": "Remus",
+        "nom": "Arnold  MBOUOGHO",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "MBOUOGHO",
+        "prenom": "Remus Arnold",
+        "poste": "Coordonnateur des Régions",
+        "score": 34.3,
+        "resume_experience": "10 ans d'expérience en ingénierie électrique et gestion de projets électriques, spécialisant dans la distribution électrique.",
+        "verdict": "défavorable",
+        "raison": "Le score de similarité de 34.300 est en dessous du seuil requis pour ce poste, suggérant un alignement insuffisant avec les exigences spécifiques du poste de Coordonnateur des Régions.",
+        "points_forts": [
+          "Compétence avérée en gestion de projets énergétiques et coordination inter-équipe.",
+          "Solide expérience dans la supervision et l'encadrement des équipes techniques.",
+          "Maîtrise de la planification stratégique et suivi des indicateurs de performance dans le secteur de l'électricité."
+        ],
+        "points_a_travailler": [
+          "Expérience limitée dans la coordination inter-régionale au-delà du secteur électrique.",
+          "Adaptation aux aspects réglementaires et de coordination nationale au-delà de la SEEG.",
+          "Renforcement des compétences linguistiques en anglais pour faciliter les interactions internationales."
+        ],
+        "rang": 7
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 11.86,
+        "verdict": "défavorable",
+        "resume": "La candidature de Remus Arnold Mbouogho ne répond pas suffisamment aux attentes de l'entreprise, notamment en termes de feedback RH, malgré une bonne conformité documentaire. Le manque de complétude et d'adéquation avec les exigences spécifiques du poste sont préoccupants.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Faible feedback RH",
+          "Complétude insuffisante"
+        ],
+        "rang": 16
+      }
+    },
+    "Maria Evans Ze Ebe": {
+      "prenom": "Maria",
+      "nom": "Evans Ze Ebe",
+      "conformite": {
+        "prenom": "Maria",
+        "nom": "Evans ZE EBE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "ZE EBE",
+        "prenom": "Maria Evans",
+        "poste": "Coordonnateur des Régions",
+        "score": 30.6,
+        "resume_experience": "15 ans d'expérience en ingénierie et gestion de production dans le secteur électrique.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score de similarité est nettement inférieur au seuil requis pour un avis favorable, indiquant un manque d'alignement avec les exigences du poste.",
+        "points_forts": [
+          "Solide expérience en gestion de projets de maintenance et de réhabilitation.",
+          "Compétences éprouvées en encadrement et supervision d'équipes techniques.",
+          "Capacité démontrée à coordonner des opérations complexes dans le secteur électrique."
+        ],
+        "points_a_travailler": [
+          "Renforcement des compétences en coordination commerciale, nécessaire pour un poste inter-régional.",
+          "Développement des compétences en langues étrangères pour une meilleure communication avec divers partenaires.",
+          "Amélioration des compétences en pilotage stratégique et en suivi des indicateurs de performance inter-régionaux."
+        ],
+        "rang": 15
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 11.12,
+        "verdict": "défavorable",
+        "resume": "Malgré une conformité documentaire parfaite, les scores de complétude et de feedback RH sont faibles, indiquant potentiellement un manque d'adéquation avec le poste souhaité et les exigences de la vision stratégique de SEEG.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Faible complétude du dossier (CV+LM vs Offre)",
+          "Absence de feedback RH"
+        ],
+        "rang": 17
+      }
+    },
+    "Louis De Gonzague Mboulou Assoumou": {
+      "prenom": "Louis",
+      "nom": "De Gonzague Mboulou Assoumou",
+      "conformite": {
         "prenom": "Louis",
+        "nom": "de Gonzague  Mboulou Assoumou",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
         "nom": "Mboulou Assoumou",
-        "conformite": {},
-        "mtp": {
-          "nom": "Mboulou Assoumou",
-          "prenom": "Louis",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.31,
-            "Talent": 0.3,
-            "Paradigme": 0.5
-          },
-          "Score_moyen": 37.0,
-          "niveau": "Le score moyen de 37.0 reflète une inadéquation forte avec les attentes de l'entreprise. Le candidat ne semble pas aligné avec la vision stratégique développée pour la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen étant strictement inférieur à 43.5, cela indique un faible potentiel d'adéquation avec les objectifs de transformation de l'entreprise.",
-          "points_forts": [
-            "Possède une conscience des problématiques de l'entreprise et de ses enjeux majeurs.",
-            "Montre une compréhension des défis liés à la modernisation des infrastructures.",
-            "Démontre une capacité d'analyse en matière de gestion des ressources."
-          ],
-          "points_a_travailler": [
-            "Nécessite un renforcement des compétences techniques dans le domaine métier spécifique.",
-            "Doit améliorer ses aptitudes en matière de leadership et de gestion des équipes.",
-            "A besoin de développer une vision stratégique claire et adaptée aux enjeux actuels de l'entreprise."
-          ],
-          "rang": 13
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 9.25,
-          "verdict": "défavorable",
-          "resume": "Le profil de Louis Mboulou Assoumou ne répond pas aux exigences du poste de Coordonnateur des Régions. L'absence de conformité documentaire et les faibles scores en complétude et feedback RH indiquent des lacunes importantes dans l'alignement avec la vision transformatrice de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude par rapport à l'offre",
-            "Feedback RH"
-          ],
-          "rang": 25
-        }
+        "prenom": "Louis de Gonzague",
+        "poste": "Coordonnateur des Régions",
+        "score": 29.6,
+        "resume_experience": "25 années dans le domaine de l'énergie et de l'eau avec une spécialité en exploitation et maintenance d'équipements électriques et production d'électricité",
+        "verdict": "défavorable. Le score est bien en dessous du seuil favorable, indiquant une incompatibilité possible avec les exigences spécifiques du poste visé.",
+        "points_forts": [
+          "Vaste expérience en gestion et exploitation d'installations électriques",
+          "Compétences solides en élaboration et suivi de budgets",
+          "Expérience en gestion de la sécurité et santé au travail"
+        ],
+        "points_a_travailler": [
+          "Coordination inter-régionale des projets",
+          "Mise en pratique de la politique commerciale dans les régions",
+          "Suivi et pilotage des indicateurs de performance régionaux"
+        ],
+        "rang": 17
       },
-      "Steve N'Nang": {
+      "feedback": {},
+      "global": {
+        "score_global": 10.92,
+        "verdict": "défavorable",
+        "resume": "Le profil de Louis De Gonzague Mboulou Assoumou présente des lacunes significatives, notamment un score de feedback RH inexistant et une faible complétude par rapport à l'offre. Ces éléments suggèrent que sa candidature n'est pas en adéquation avec les exigences du poste de Coordonnateur des Régions.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Score de feedback RH",
+          "Complétude du dossier par rapport à l'offre"
+        ],
+        "rang": 18
+      }
+    },
+    "Wilfrid Pascal Andjayi": {
+      "prenom": "Wilfrid",
+      "nom": "Pascal Andjayi",
+      "conformite": {
+        "prenom": "Wilfrid",
+        "nom": "Pascal ANDJAYI",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "ANDJAYI",
+        "prenom": "Wilfrid Pascal",
+        "poste": "Coordonnateur des Régions",
+        "score": 29.2,
+        "resume_experience": "21 ans d'expérience dans le secteur de l'eau et l'énergie, principalement axée sur la gestion de la distribution et de la production d'eau.",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Solide expérience dans la direction de projets dans le secteur de l'eau.",
+          "Compétences avérées en supervision d'équipes techniques.",
+          "Bonne connaissance des normes et procédures liées à la distribution d'eau."
+        ],
+        "points_a_travailler": [
+          "Expérience limitée dans la coordination inter-régionale.",
+          "Moins d'expérience documentée en planification stratégique et optimisation des coûts inter-régionaux.",
+          "Faiblesse dans l'expérience commerciale et administrative requise pour le poste."
+        ],
+        "rang": 18
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 10.84,
+        "verdict": "défavorable",
+        "resume": "Wilfrid Pascal Andjayi présente un dossier défavorable pour le poste en raison de son score global pondéré très bas et de l'absence de feedback RH positif. Sa candidature manque de complétude par rapport aux exigences spécifiques du poste et de la vision ambitieuse de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Complétude insuffisante par rapport à l'offre",
+          "Absence de feedback RH positif"
+        ],
+        "rang": 19
+      }
+    },
+    "Steve Olivier N'Nang": {
+      "prenom": "Steve",
+      "nom": "Olivier N'Nang",
+      "conformite": {
         "prenom": "Steve",
-        "nom": "N'Nang",
-        "conformite": {},
-        "mtp": {
-          "nom": "N'NANG",
-          "prenom": "Steve",
-          "poste": "Coordination Régions",
-          "scores": {
-            "Metier": 0.31,
-            "Talent": 0.31,
-            "Paradigme": 0.45
-          },
-          "Score_moyen": 35.67,
-          "niveau": "Le score moyen du candidat est inférieure à 43.5, indiquant une inadéquation avec les attentes de l'entreprise. Son profil ne répond pas aux exigences de la vision stratégique de la SEEG pour les années à venir.",
-          "verdict": "défavorable",
-          "raison": "Le candidat présente un score global trop faible pour correspondre aux besoins de transformation de l'entreprise.",
-          "points_forts": [
-            "Capacité à comprendre les enjeux de la gestion d'infrastructures vieillissantes.",
-            "Potentiel pour intégrer les retours d'expérience et les leçons du passé dans la gestion régionale.",
-            "Peut jouer un rôle dans la mobilisation des équipes pour répondre à des défis complexes."
-          ],
-          "points_a_travailler": [
-            "Améliorer ses compétences techniques et managériales pour mieux s'adapter aux nouvelles technologies et aux méthodes de travail modernes.",
-            "Renforcer sa capacité d'analyse pour mieux évaluer les performances et les attentes des parties prenantes.",
-            "Développer une solide compréhension des mécanismes de gouvernance et de contrôle pour mieux gérer les ressources de l'entreprise."
-          ],
-          "rang": 17
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 8.92,
-          "verdict": "défavorable",
-          "resume": "Le candidat Steve N'Nang présente des faiblesses notables dans la conformité documentaire et la complétude de sa candidature par rapport à l'offre. Le score global pondéré reste défavorable même si ses compétences managériales et techniques peuvent être intéressantes pour le poste.",
-          "points_forts": [
-            "Compétences managériales potentielles",
-            "Expérience technique dans le secteur de l'énergie",
-            "Adaptabilité aux nouvelles technologies"
-          ],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude de la candidature par rapport à l'offre"
-          ],
-          "rang": 26
-        }
+        "nom": "Olivier N'NANG",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
       },
-      "Aubain Abessolo": {
-        "prenom": "Aubain",
-        "nom": "Abessolo",
-        "conformite": {},
-        "mtp": {},
-        "completude": {
-          "nom": "Abessolo",
-          "prenom": "Aubain",
-          "poste": "Coordonnateur des Régions",
-          "score": 34.7,
-          "resume_experience": "26 ans d'expérience en gestion et coordination des activités dans le domaine de l'énergie et de l'eau",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score de similarité est inférieur au seuil exigé, indiquant une adéquation insuffisante des compétences spécifiquement requises pour le poste de Coordonnateur des Régions.",
-          "points_forts": [
-            "Expérience extensive dans la gestion de grandes équipes et de multiples régions",
-            "Compétences avérées en gestion de projets complexes dans le secteur de l'énergie et de l'eau",
-            "Solide expérience en conformité réglementaire et veille réglementaire"
-          ],
-          "points_a_travailler": [
-            "Amélioration de l'alignement stratégique avec les orientations nationales",
-            "Renforcement des compétences en optimisation des coûts et performance budgétaire",
-            "Développement des capacités de mutualisation des ressources régionales"
-          ],
-          "rang": 8
-        },
-        "feedback": {},
-        "global": {
-          "score_global": 6.94,
-          "verdict": "défavorable",
-          "resume": "Le candidat Aubain Abessolo présente un profil défavorable pour le poste de Coordonnateur des Régions, avec un score global bas et des lacunes significatives en de nombreux aspects requis pour la position et les ambitions de transformation de l'entreprise SEEG.",
-          "points_forts": [
-            "Aucune information sur les points forts du candidat n'est disponible, car le feedback RH est absent."
-          ],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Adéquation des compétences à la mission de réhabilitation et restructuration de SEEG"
-          ],
-          "rang": 27
-        }
+      "mtp": {},
+      "completude": {
+        "nom": "N'NANG",
+        "prenom": "Steve Olivier",
+        "poste": "Coordonnateur des Régions",
+        "score": 27.5,
+        "resume_experience": "27 ans en génie électromécanique",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Grande expérience en gestion et production d'énergie",
+          "Solide expérience en supervision d'équipes",
+          "Connaissance approfondie des infrastructures électriques"
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences en gestion commerciale",
+          "Accroître la compréhension des politiques inter-régionales",
+          "Développer des compétences en veille réglementaire"
+        ],
+        "rang": 20
       },
-      "Ulrich Moundonga Boukinda": {
+      "feedback": {},
+      "global": {
+        "score_global": 10.5,
+        "verdict": "défavorable",
+        "resume": "Le candidat Steve Olivier N'Nang présente un faible score global pour le poste de Coordonnateur des Régions à la SEEG. En particulier, l'absence de feedback RH et un score de complétude bas indiquent un profil peu aligné avec les exigences du poste et la vision stratégique de transformation de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire impeccable",
+          "Connaissance théorique des processus organisationnels"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible score de complétude par rapport à l'offre"
+        ],
+        "rang": 20
+      }
+    },
+    "Remus Mbouogho": {
+      "prenom": "Remus",
+      "nom": "Mbouogho",
+      "conformite": {},
+      "mtp": {
+        "nom": "MBOUOGHO",
+        "prenom": "Remus",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.36,
+          "Talent": 0.35,
+          "Paradigme": 0.5
+        },
+        "Score_moyen": 40.33,
+        "niveau": "Le score moyen du candidat est défavorable, indiquant qu'il ne répond pas aux attentes de l'entreprise. Ce résultat suggère un manque d'alignement avec la vision transformatrice et les exigences stratégiques de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est en dessous du seuil minimal requis, ce qui indique un manque d'adéquation avec les objectifs de la SEEG.",
+        "points_forts": [
+          "Capacité d'analyse des enjeux liés au marché de l'énergie et de l'eau.",
+          "Connaissance des tendances technologiques au sein de l'industrie.",
+          "Compréhension des enjeux de gouvernance et de transparence."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences techniques dans la gestion des infrastructures.",
+          "Renforcer la capacité à mobiliser les équipes autour de la vision stratégique.",
+          "Développer des approches innovantes pour moderniser les services."
+        ],
+        "rang": 2
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.08,
+        "verdict": "défavorable",
+        "resume": "Le candidat Remus Mbouogho ne semble pas aligné avec les exigences du poste ni avec la vision transformatrice de la SEEG. Le score global de 10.08 indique une inaptitude à répondre aux attentes de la SEEG pour une gestion efficace des projets régionaux et la capacité à opérer un changement significatif.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude des documents de candidature"
+        ],
+        "rang": 21
+      }
+    },
+    "Wilfrid Andjayi": {
+      "prenom": "Wilfrid",
+      "nom": "Andjayi",
+      "conformite": {},
+      "mtp": {
+        "nom": "ANDJAYI",
+        "prenom": "Wilfrid",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Métier": 0.36,
+          "Talent": 0.35,
+          "Paradigme": 0.46
+        },
+        "Score_moyen": 39.0,
+        "niveau": "Le score moyen du candidat est défavorable, indiquant une inadéquation avec les attentes stratégiques de l'entreprise. Il est essentiel qu'un candidat à ce poste ait des compétences et des talents élevés pour contribuer à la transformation de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est largement en dessous du seuil requis pour une évaluation positive.",
+        "points_forts": [
+          "Compétences techniques dans le secteur de l'énergie et de l'eau.",
+          "Expérience dans des rôles nécessitant des compétences organisationnelles nuancées.",
+          "Connaissance des défis réglementaires et opérationnels en matière de gestion des services publics."
+        ],
+        "points_a_travailler": [
+          "Améliorer la capacité d'adaptation aux innovations technologiques requises pour le modernisation des infrastructures.",
+          "Développer des compétences relationnelles pour favoriser le dialogue constructif entre les parties prenantes.",
+          "Accroître l'expertise en gestion des ressources et en gouvernance pour répondre aux enjeux de transparence."
+        ],
+        "rang": 3
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 9.75,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente un score global défavorable, ne correspondant pas aux attentes pour le poste. Il n'a pas soumis des documents conformes ni complété les exigences de l'offre, ce qui affecte sa candidature de manière significative.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude des documents soumis"
+        ],
+        "rang": 22
+      }
+    },
+    "Maria Evans": {
+      "prenom": "Maria",
+      "nom": "Evans",
+      "conformite": {},
+      "mtp": {
+        "nom": "Evans",
+        "prenom": "Maria",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.34,
+          "Talent": 0.34,
+          "Paradigme": 0.44
+        },
+        "Score_moyen": 37.33,
+        "niveau": "Le score moyen du candidat est largement en dessous du seuil défavorable de 43.5. Cela indique qu'il ne correspond pas aux attentes en matière de compétences et d'adaptabilité aux défis de l'entreprise.",
+        "verdict": "défavorable",
+        "raison_verdict": "Son score moyen indique un manque de préparation et d'aptitude à contribuer à la vision stratégique de la SEEG.",
+        "points_forts": [
+          "Sensibilité aux enjeux environnementaux, démontrée par une compréhension des défis hydriques du Gabon.",
+          "Capacité à identifier les faiblesses au niveau des infrastructures et aux besoins de modernisation.",
+          "Connaissance des problèmes de gouvernance et d'attentes de transparence dans les opérations."
+        ],
+        "points_a_travailler": [
+          "Améliorer ses compétences techniques liées à la gestion d'infrastructures et d'opérations dans le secteur énergétique.",
+          "Développer des aptitudes en gestion stratégique pour mieux répondre à la réorganisation requise.",
+          "Renforcer ses capacités en leadership pour mobiliser et motiver les parties prenantes autour des objectifs de l'entreprise."
+        ],
+        "rang": 8
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 9.33,
+        "verdict": "défavorable",
+        "resume": "Le profil de Maria Evans ne répond pas aux exigences du poste, notamment en matière de conformité documentaire et de complétude du dossier. Le feedback RH marque également l'absence de qualifications ou d'expérience pertinentes pour soutenir les objectifs ambitieux de transformation et de modernisation de la SEEG.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude du dossier (CV+LM)",
+          "Adéquation avec les objectifs de l'entreprise"
+        ],
+        "rang": 23
+      }
+    },
+    "Jean Ondo Mayi": {
+      "prenom": "Jean",
+      "nom": "Ondo Mayi",
+      "conformite": {},
+      "mtp": {
+        "nom": "ONDO MAYI",
+        "prenom": "Jean",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Métier": 0.33,
+          "Talent": 0.32,
+          "Paradigme": 0.43
+        },
+        "Score_moyen": 36.0,
+        "niveau": "Le candidat ne semble pas aligné avec les exigences clés pour le poste de Coordination Régions. Son score moyen suggère des lacunes significatives dans les domaines critiques définis par l'entreprise.",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le score moyen de 36.0 est bien en dessous du seuil requis, indiquant des compétences insuffisantes pour contribuer efficacement à la vision de la SEEG.",
+        "points_forts": [
+          "Capacité d'analyse des problématiques opérationnelles.",
+          "Connaissance du secteur des infrastructures et des enjeux techniques.",
+          "Compréhension des défis liés à la gouvernance et à la transparence."
+        ],
+        "points_a_travailler": [
+          "Renforcer ses compétences en gestion de projet et de ressources humaines.",
+          "Améliorer sa connaissance des innovations technologiques et leur mise en œuvre.",
+          "Développer des compétences en communication et en gestion des parties prenantes."
+        ],
+        "rang": 11
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 9.0,
+        "verdict": "défavorable",
+        "resume": "Le candidat Jean Ondo Mayi ne semble pas répondre aux exigences du poste de Coordonnateur des Régions à la SEEG. Le faible score global et l'absence de feedback détaillé de la part du service RH indiquent des lacunes importantes dans sa candidature. Les attentes élevées et les défis critiques au sein de la SEEG nécessitent un profil hautement qualifié, ce qui n'est pas reflété dans son dossier actuel.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Inadéquation du profil avec les exigences du poste",
+          "Absence de feedback RH positif"
+        ],
+        "rang": 24
+      }
+    },
+    "Elvis Okwe": {
+      "prenom": "Elvis",
+      "nom": "Okwe",
+      "conformite": {},
+      "mtp": {
+        "nom": "OKWE",
+        "prenom": "ELVIS",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.31,
+          "Talent": 0.31,
+          "Paradigme": 0.45
+        },
+        "Score_moyen": 35.67,
+        "niveau": "Le candidat présente un score moyen très en dessous des attentes, indiquant une inadéquation avec les exigences de la fonction visée. Une réévaluation de ses compétences à la lumière de notre vision d'entreprise est nécessaire.",
+        "verdict": "défavorable",
+        "raison": "Le score moyen est trop faible pour envisager une intégration dans notre équipe, réduisant considérablement les chances d'apporter une réelle valeur ajoutée.",
+        "points_forts": [],
+        "points_a_travailler": [
+          "Renforcement des compétences techniques et métier adaptées au secteur énergétique et à la gestion des infrastructures.",
+          "Développement des compétences managériales pour une meilleure coordination et leadership au sein des équipes.",
+          "Acquisition d'une compréhension approfondie des enjeux stratégiques et économiques spécifiques au domaine de l'énergie et de l'eau."
+        ],
+        "rang": 13
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 8.92,
+        "verdict": "défavorable",
+        "resume": "Le candidat Elvis Okwe présente un profil en adéquation limitative avec les besoins du poste de Coordonnateur des Régions, mais son score de feedback RH, ainsi que d'autres indicateurs de performance, sont défavorables. Son dossier présente un manque de conformité et de complétude par rapport aux exigences du poste.",
+        "points_forts": [
+          "Capacité à s'adapter dans des environnements en transformation",
+          "Potentiel pour acquérir rapidement des compétences techniques"
+        ],
+        "points_a_ameliorer": [
+          "Conformité documentaire et présentation du dossier",
+          "Complétude du CV et Lettre de Motivation"
+        ],
+        "rang": 25
+      }
+    },
+    "Louis Mboulou Assoumou": {
+      "prenom": "Louis",
+      "nom": "Mboulou Assoumou",
+      "conformite": {},
+      "mtp": {
+        "nom": "Mboulou Assoumou",
+        "prenom": "Louis",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.31,
+          "Talent": 0.3,
+          "Paradigme": 0.45
+        },
+        "Score_moyen": 35.33,
+        "niveau": "Le candidat présente un score moyen défavorable, indiquant des lacunes importantes par rapport aux attentes de l'entreprise. Sa compréhension des enjeux stratégiques de la SEEG semble limitée par rapport aux défis à relever.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen en dessous de 43.5 illustre un manque de préparation et d'alignement avec la vision de la SEEG.",
+        "points_forts": [
+          "Capacité à identifier des enjeux liés à la gestion des ressources.",
+          "Sensibilité aux problématiques d'amélioration de la qualité de service.",
+          "Des compétences en gestion de projets d'infrastructure."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques en gestion opérationnelle.",
+          "Développer une vision stratégique alignée avec les ambitions de la SEEG.",
+          "Améliorer la compréhension des mécanismes de gouvernance."
+        ],
+        "rang": 16
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 8.83,
+        "verdict": "défavorable",
+        "resume": "Le candidat ne répond pas aux exigences requises pour le poste à responsabilités de Coordonnateur des Régions, compte tenu de l'absence de conformité documentaire et de complétude. Le score de feedback RH est également défavorable, ce qui compromet davantage sa candidature pour le rôle visé.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude du dossier de candidature"
+        ],
+        "rang": 26
+      }
+    },
+    "Steve N'Nang": {
+      "prenom": "Steve",
+      "nom": "N'Nang",
+      "conformite": {},
+      "mtp": {
+        "nom": "N'NANG",
+        "prenom": "Steve",
+        "poste": "Coordination Régions",
+        "scores": {
+          "Metier": 0.31,
+          "Talent": 0.31,
+          "Paradigme": 0.43
+        },
+        "Score_moyen": 35.0,
+        "niveau": "Le score moyen est faible, ce qui indique que le candidat a des lacunes significatives par rapport aux exigences du poste. Il est essentiel pour la réussite de la SEEG d'avoir des candidats alignés avec la vision transformationnelle de l'entreprise.",
+        "verdict": "défavorables",
+        "raison_du_verdict": "Le score moyen est bien en dessous du seuil requis, indiquant un manque de compétences et d'expérience adaptées au rôle visé.",
+        "points_forts": [
+          "Une certaine compétence en Paradigme, suggérant une compréhension des enjeux organisationnels.",
+          "Capacité à intégrer des retours d'expérience ce qui pourrait aider dans le cadre de la gouvernance renforcée.",
+          "Potentiel d'amélioration dans des domaines tels que la modernisation des infrastructures."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences techniques et métier pour une meilleure compréhension des opérations de la SEEG.",
+          "Développer ses talents en gestion de projet pour répondre aux besoins de coordination dans le processus de transformation.",
+          "Renforcer la compréhension des normes et standards pratiques de l'industrie pour répondre aux attentes organisationnelles."
+        ],
+        "rang": 18
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 8.75,
+        "verdict": "défavorable",
+        "resume": "Le score global du candidat Steve N'Nang est défavorable, en grande partie en raison de sa non-conformité documentaire et de l'absence de complétude dans son CV et sa lettre de motivation par rapport à l'offre. Aucune rétroaction RH n'est disponible pour évaluer ses performances ou sa compatibilité avec le poste proposé.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude du dossier de candidature"
+        ],
+        "rang": 27
+      }
+    },
+    "Ulrich Moundonga": {
+      "prenom": "Ulrich",
+      "nom": "Moundonga",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "MOUNDONGA",
         "prenom": "Ulrich",
-        "nom": "Moundonga Boukinda",
-        "conformite": {},
-        "mtp": {},
-        "completude": {
-          "nom": "MOUNDONGA BOUKINDA",
-          "prenom": "Ulrich",
-          "poste": "Coordonnateur des Régions",
-          "score": 32.0,
-          "resume_experience": "15 ans en ingénierie et gestion de projets dans les secteurs de l'eau et de l'électricité",
-          "verdict": "défavorable",
-          "raison_du_verdict": "Malgré une solide expérience en gestion de projets techniques et d'équipes, le score de similarité indique que les compétences et expériences du candidat ne sont pas suffisamment alignées avec les exigences spécifiques du poste de Coordonnateur des Régions.",
-          "points_forts": [
-            "Compétences en élaboration de tableaux de bord et suivi des indicateurs de performance",
-            "Expérience en gestion d'équipes et motivation des collaborateurs",
-            "Connaissance approfondie des systèmes d'alimentation en eau et de l'électricité industrielle"
-          ],
-          "points_a_travailler": [
-            "Adaptation aux exigences de coordination inter-régionale et au pilotage des opérations à un niveau stratégique",
-            "Développement de compétences commerciales pour proposer des axes d'amélioration adaptés aux régions",
-            "Capacité à servir de liaison efficace avec les directions générales et les partenaires extérieurs dans le domaine commercial"
-          ],
-          "rang": 14
-        },
-        "feedback": {},
-        "global": {
-          "score_global": 6.4,
-          "verdict": "défavorable",
-          "resume": "Le profil d'Ulrich Moundonga Boukinda ne semble pas satisfaire aux exigences du poste de Coordonnateur des Régions. Le manque de conformité documentaire et l'absence de feedback RH favorable suggèrent une inadéquation avec la vision stratégique et les attentes transformationnelles de la SEEG.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Absence de retour positif de l'équipe RH"
-          ],
-          "rang": 28
-        }
+        "poste": "Coordonnateur des Régions",
+        "score": 31.0,
+        "resume_experience": "15 ans d'expérience en gestion de projets eau et électricité, notamment dans des rôles de gestion d'équipes et de budgets.",
+        "verdict": "défavorable",
+        "raison": "Le score de similarité est trop bas, indiquant un manque d'alignement entre l'expérience et les exigences du poste de Coordonnateur des Régions.",
+        "points_forts": [
+          "Excellentes compétences en gestion de projets dans le domaine de l'eau.",
+          "Expérience notable en gestion d'équipes et supervision des opérations techniques.",
+          "Solides compétences en élaboration et suivi de tableaux de bord et indicateurs de performance."
+        ],
+        "points_a_travailler": [
+          "Acquisition de compétences spécifiques en coordination inter-régionale et administrative.",
+          "Développement de compétences particulières pour l'élaboration des stratégies commerciales régionales.",
+          "Renforcement des compétences en représentation institutionnelle et en interface avec des partenaires stratégiques."
+        ],
+        "rang": 14
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 6.2,
+        "verdict": "défavorable",
+        "resume": "Le candidat Ulrich Moundonga présente des lacunes en termes de feedback RH, avec un score global défavorable. Bien que son dossier contienne certains éléments pertinents par rapport à l'offre, il manque des aspects critiques tels que la conformité documentaire et une adéquation complète avec les exigences du poste.",
+        "points_forts": [
+          "Complétude de certains éléments du CV par rapport à l'offre"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH positif",
+          "Non-conformité documentaire"
+        ],
+        "rang": 28
+      }
+    },
+    "Ida Prisca Toga": {
+      "prenom": "Ida",
+      "nom": "Prisca Toga",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "TOGA",
+        "prenom": "Ida Prisca",
+        "poste": "Coordonnateur des Régions",
+        "score": 28.7,
+        "resume_experience": "18 ans d'expérience dans le secteur énergétique avec une spécialité en électricité.",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Expérience significative en gestion des services électriques.",
+          "Capacité à superviser et encadrer les équipes.",
+          "Bonne connaissance du secteur énergétique au Gabon."
+        ],
+        "points_a_travailler": [
+          "Renforcez les compétences dans la coordination inter-régionale.",
+          "Développez plus de compétences en stratégie commerciale.",
+          "Améliorez la connaissance des normes d'eau en plus de l'électricité."
+        ],
+        "rang": 19
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 5.74,
+        "verdict": "défavorable",
+        "resume": "Ida Prisca Toga présente un profil qui ne satisfait pas aux exigences du poste de Coordonnateur des Régions chez SEEG. Les scores indiquent un manque de conformité documentaire et une faible complétude par rapport à l'offre, ainsi qu'une absence de feedback RH détaillé, ce qui rend le profil défavorable pour une vision stratégique axée sur la réorganisation et la transformation de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude du profil par rapport à l'offre",
+          "Absence de feedback RH"
+        ],
+        "rang": 29
+      }
+    },
+    "Juvenal Onanga": {
+      "prenom": "Juvenal",
+      "nom": "Onanga",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "ONANGA",
+        "prenom": "JUVENAL",
+        "poste": "Coordonnateur des Régions",
+        "resume_experience": "Non détecté",
+        "verdict": [],
+        "points_forts": "Analyse échouée (Error code: 429 - {'error': {'message': 'Rate limit reached for gpt-4o in organization org-aoRA7l9j5rQZ7YfhVeRvIBw8 on tokens per min (TPM): Limit 30000, Used 27120, Requested 4913. Please try again in 4.066s. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}})",
+        "points_a_travailler": [],
+        "rang": 12
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 0.0,
+        "verdict": "défavorable",
+        "resume": "Le candidat Juvena l Onanga a obtenu un score global défavorable, avec des lacunes importantes en termes de conformité documentaire, complétude et retour d'expérience pertinent pour le rôle envisagé. Son profil ne présente pas une adéquation suffisante avec les exigences et la vision stratégique de la SEEG.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Non-conformité documentaire",
+          "Absence de complétude par rapport aux requis du poste",
+          "Manque de retours d'expérience crédibles pour aligner avec la vision stratégique de l'entreprise"
+        ],
+        "rang": 30
       }
     }
   }
+}
