@@ -1,0 +1,677 @@
+{
+    "Directeur Finances et Comptabilité": {
+      "Abeng Emilie": {
+        "prenom": "Abeng",
+        "nom": "Emilie",
+        "conformite": {
+          "prenom": "ABENG",
+          "nom": "Emilie",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {},
+        "feedback": {
+          "prenom": "Abeng",
+          "nom": "EMILIE",
+          "score": 82.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre une solide expérience managériale, une appréciation positive de ses collaborateurs, et une compétence avérée en gestion financière grâce à son expérience en cabinet. Ses qualités correspondent bien aux besoins de transformation de la SEEG.",
+          "Points forces": [
+            "Excellente réputation managériale et appréciation par les collaborateurs",
+            "Expérience en cabinet garantissant rigueur et clarté dans la gestion",
+            "Capacité à mener des projets complexes et à optimiser les coûts"
+          ],
+          "Points à travailler": [
+            "Renforcement des compétences en governance et en transparence",
+            "Adaptation à l'environnement sectoriel spécifique de l'eau et de l'électricité"
+          ],
+          "rang": 1
+        },
+        "global": {
+          "score_global": 46.25,
+          "verdict": "moyen",
+          "resume": "Emilie Abeng possède une solide expérience managériale et est hautement appréciée pour sa capacité à mener des projets complexes, ce qui correspond bien aux besoins de transformation de la SEEG. Cependant, elle doit renforcer ses compétences en gouvernance et s'adapter au secteur de l'énergie et de l'eau.",
+          "points_forts": [
+            "Excellente réputation managériale et appréciation par les collaborateurs",
+            "Expérience en cabinet garantissant rigueur et clarté dans la gestion",
+            "Capacité à mener des projets complexes et à optimiser les coûts"
+          ],
+          "points_a_ameliorer": [
+            "Renforcement des compétences en governance et en transparence",
+            "Adaptation à l'environnement sectoriel spécifique de l'eau et de l'électricité"
+          ],
+          "rang": 1
+        }
+      },
+      "Aude Tania Akoure Eyang": {
+        "prenom": "Aude",
+        "nom": "Tania Akoure Eyang",
+        "conformite": {
+          "prenom": "AUDE",
+          "nom": "TANIA AKOURE EYANG",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {},
+        "feedback": {
+          "prenom": "Aude",
+          "nom": "TANIA AKOURE EYANG",
+          "score": 42.75,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des faiblesses significatives en termes d'empathie et de protection de l'entreprise, ce qui est crucial dans un rôle stratégique tel que Directeur Finances et Comptabilité. Son absence de vision claire et ses manquements dans la gestion de l'audit interne sont également préoccupants.",
+          "Points forces": [
+            "Expérience professionnelle antérieure dans des environnements complexes",
+            "Compétences techniques en finance et comptabilité"
+          ],
+          "Points à travailler": [
+            "Développer ses compétences en communication et en empathie",
+            "Améliorer sa capacité à protéger les intérêts de l'entreprise et à gérer les informations sensibles"
+          ],
+          "rang": 2
+        },
+        "global": {
+          "score_global": 26.38,
+          "verdict": "défavorable",
+          "resume": "Le candidat ne semble pas être un bon ajustement pour le rôle de Directeur Finances et Comptabilité, principalement en raison de faiblesses significatives dans des domaines cruciaux comme l'empathie et la protection des intérêts de l'entreprise. Bien qu'il possède une expérience dans des environnements complexes et des compétences techniques en finance, son manque de vision claire et de compétences en gestion d'audit interne est préoccupant dans un contexte de transformation stratégique tel que celui de la SEEG.",
+          "points_forts": [
+            "Expérience professionnelle antérieure dans des environnements complexes",
+            "Compétences techniques en finance et comptabilité"
+          ],
+          "points_a_ameliorer": [
+            "Développer ses compétences en communication et en empathie",
+            "Améliorer sa capacité à protéger les intérêts de l'entreprise et à gérer les informations sensibles"
+          ],
+          "rang": 2
+        }
+      },
+      "Aude Eyang": {
+        "prenom": "Aude",
+        "nom": "Eyang",
+        "conformite": {},
+        "mtp": {
+          "nom": "EYANG",
+          "prenom": "AUDE",
+          "poste": "Direction Finances & Comptabilité",
+          "scores": {
+            "Metier": 0.38,
+            "Talent": 0.4,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 42.0,
+          "niveau": "Le score moyen de 42.0 indique que le candidat n'atteint pas les attentes minimales pour le poste. Cela révèle une inadéquation significative avec les exigences stratégiques de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_du_verdict": "Le score est strictement inférieur à 43.5, indiquant une inadéquation avec la vision et les valeurs de l'entreprise.",
+          "points_forts": [
+            "Capacité à identifier et gérer des problèmes financiers complexes.",
+            "Potentiel pour travailler en équipe grâce aux compétences en talent.",
+            "Connaissance de l'importance de la conformité et des procédures dans la gestion d'entreprise."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences techniques spécifiques au secteur financier.",
+            "Développer une approche stratégique pour mieux aligner les actions sur la vision de l'entreprise.",
+            "Renforcer la compréhension des paradigmes de gouvernance et de transparence."
+          ],
+          "rang": 1
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 10.5,
+          "verdict": "défavorable",
+          "resume": "Aude Eyang présente un profil qui ne s'aligne pas avec les exigences du poste ni avec la vision stratégique de l'entreprise SEEG. Le candidat nécessite des améliorations substantielles en termes de conformité documentaire et de complétude par rapport à l'offre d'emploi.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité aux exigences documentaires",
+            "Complétude du dossier par rapport à l'offre"
+          ],
+          "rang": 3
+        }
+      },
+      "Emilie Abeng": {
+        "prenom": "Emilie",
+        "nom": "Abeng",
+        "conformite": {},
+        "mtp": {
+          "nom": "ABENG",
+          "prenom": "Emilie",
+          "poste": "Direction Finances & Comptabilité",
+          "scores": {
+            "Metier": 0.35,
+            "Talent": 0.38,
+            "Paradigme": 0.42
+          },
+          "Score_moyen": 38.33,
+          "niveau": "Le score moyen du candidat se situe en dessous de la barre minimale d'acceptabilité, ce qui indique une inadéquation avec les exigences du poste. Il est crucial d'aligner ses compétences sur les attentes stratégiques de l'entreprise pour renforcer sa candidature.",
+          "verdict": "défavorable",
+          "raison_verdict": "Son score moyen est bien en dessous du seuil requis, ce qui le rend inadapté à la vision de l'entreprise.",
+          "points_forts": [
+            "Bonne connaissance des processus financiers malgré un score modéré.",
+            "Capacité à identifier les faiblesses structurelles dans la gestion financière.",
+            "Intérêt démontré pour la gouvernance et la transparence financière."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences techniques spécifiques au domaine des finances et de la comptabilité.",
+            "Développer des compétences en gestion de crise pour répondre aux défis stratégiques.",
+            "Renforcer sa compréhension des processus de modernisation et d'investissement essentiel à l'entreprise."
+          ],
+          "rang": 2
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 9.58,
+          "verdict": "défavorable",
+          "resume": "Emilie Abeng a présenté un profil qui, globalement, ne satisfait pas les critères de l'entreprise pour le poste de Directeur Finances et Comptabilité. Le faible score global pondéré et l'absence de feedback positif du service RH soulignent des inadéquations essentielles avec la vision de transformation stratégique de la SEEG.",
+          "points_forts": [
+            "Bonne maîtrise potentielle des concepts financiers",
+            "Expérience dans la gestion de budgets"
+          ],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Alignement des compétences avec les exigences du poste",
+            "Capacité à s'intégrer dans la vision stratégique de l'entreprise"
+          ],
+          "rang": 4
+        }
+      },
+      "Jeanne Marie Agathe Ondo": {
+        "prenom": "Jeanne",
+        "nom": "Marie Agathe Ondo",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "ONDO",
+          "prenom": "Jeanne Marie Agathe",
+          "poste": "Directeur Technique Eau",
+          "score": 44.3,
+          "resume_experience": "Professionnelle confirmée avec plus de 25 ans d'expérience dans le secteur de l'eau, spécialisée en Production, Distribution, Traitement et Innovation.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expertise technique en traitement et distribution d'eau",
+            "Solide expérience en supervision d'usines de grande capacité",
+            "Capacité à encadrer et dynamiser les équipes techniques"
+          ],
+          "points_a_travailler": [
+            "Amélioration de compétences en gestion organisationnelle et financière",
+            "Optimisation des stratégies de coût d'exploitation",
+            "Meilleure intégration des évolutions technologiques dans les stratégies techniques"
+          ],
+          "rang": 1
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.86,
+          "verdict": "défavorable",
+          "resume": "Jeanne Marie Agathe Ondo a un profil qui n'est pas en phase avec les attentes stratégiques de la SEEG. Les scores en matière de conformité documentaire et de feedback RH sont tous deux à zéro, reflétant un manque d'adéquation et d'expérience visible pour les défis complexes proposés par l'entreprise, notamment dans la gestion des finances et de la comptabilité dans un contexte de transformation organisationnelle et de rigueur financière.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Faible conformité documentaire",
+            "Absence de feedback RH positif"
+          ],
+          "rang": 5
+        }
+      },
+      "Pascal Dende": {
+        "prenom": "Pascal",
+        "nom": "Dende",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "DENDE",
+          "prenom": "Pascal",
+          "poste": "Directeur Technique Eau",
+          "score": 44.2,
+          "resume_experience": "10+ ans d'expérience en hydraulique urbaine",
+          "verdict": "favorable",
+          "points_forts": [
+            "Excellente expertise en modélisation et conception de réseaux hydrauliques",
+            "Solides compétences en gestion budgétaire des projets hydrauliques",
+            "Expérience avérée en management d'équipes pluridisciplinaires"
+          ],
+          "points_a_travailler": [
+            "Amélioration continue des compétences en innovation technologique",
+            "Renforcement de l'approche stratégique pour la conformité environnementale",
+            "Augmentation de la proactivité face aux nouvelles règlementations"
+          ],
+          "rang": 2
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.84,
+          "verdict": "défavorable",
+          "resume": "Le profil de Pascal Dende présente un score global défavorable. Aucun feedback RH détaillé n'est fourni, ce qui limite l'évaluation. Sa conformité documentaire et son MTP sont extrêmement faibles, pointant vers des lacunes potentielles dans l'adéquation avec les exigences du poste.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Faible conformité documentaire",
+            "Score de complétude relativement bas"
+          ],
+          "rang": 6
+        }
+      },
+      "Aimée Ntchandi Tevenet": {
+        "prenom": "Aimée",
+        "nom": "Ntchandi Tevenet",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "NTCHANDI TEVENET",
+          "prenom": "Aimée",
+          "poste": "Directeur Technique Eau",
+          "score": 42.5,
+          "resume_experience": "13 ans d'expérience en génie civil et hydraulique",
+          "verdict": "favorable",
+          "points_forts": [
+            "Forte expertise en gestion de projets et exploitation de réseaux hydrauliques",
+            "Compétences solides en planification stratégique, supervision et optimisation des coûts",
+            "Expérience avérée en management d'équipes techniques et coordination de projets complexes"
+          ],
+          "points_a_travailler": [
+            "Approfondir l'intégration des évolutions technologiques et réglementaires dans les stratégies",
+            "Renforcer l'expérience spécifique en conformité des équipements aux normes sanitaires et environnementales",
+            "Élargir la collaboration avec diverses parties prenantes pour une vision plus holistique des enjeux"
+          ],
+          "rang": 4
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.5,
+          "verdict": "défavorable",
+          "resume": "Le profil d'Aimée Ntchandi Tevenet ne répond actuellement pas aux exigences du poste de Directeur Finances et Comptabilité au sein de la SEEG. Les scores de conformité documentaire et de feedback RH sont préoccupants, ce qui impacte négativement son potentiel pour participer au redressement financier attendu par l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Faible conformité documentaire au poste requis",
+            "Absence de feedback RH positif"
+          ],
+          "rang": 7
+        }
+      },
+      "Armel Gérard Davy Okouaghe": {
+        "prenom": "Armel",
+        "nom": "Gérard Davy Okouaghe",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "OKOUAGHE",
+          "prenom": "Armel Gérard Davy",
+          "poste": "Directeur Technique Eau",
+          "score": 42.5,
+          "resume_experience": "20 années dans le domaine de l'eau, ingénieur hydraulicien",
+          "verdict": "favorable",
+          "raison": "Armel possède une vaste expérience de 20 ans dans le secteur de l'eau, ce qui dépasse le critère favorable des 60 points. Ses expériences montrent une expertise avérée et un leadership fort, bien adaptés au poste de Directeur Technique.",
+          "points_forts": [
+            "Expertise technique dans la conception, la mise en œuvre et la gestion des équipements d'eau.",
+            "Excellentes compétences en management d'équipes et gestion de projets.",
+            "Bonne compréhension des normes sanitaires et environnementales."
+          ],
+          "points_a_travailler": [
+            "Améliorer la maîtrise de l'anglais pour mieux communiquer à l'international.",
+            "Renforcer les compétences en nouvelles technologies pour intégrer les dernières innovations.",
+            "Optimiser les approches de gestion des risques et de résilience des équipements."
+          ],
+          "rang": 3
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.5,
+          "verdict": "défavorable",
+          "resume": "Le candidat présente un profil inadapté aux exigences stratégiques et opérationnelles clés du poste, notamment en ce qui concerne les compétences en gouvernance renforcée et gestion financière. Son score global est défavorable, signalant une incomplétude documentaire et un feedback RH inexistant.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Incomplétude documentaire",
+            "Absence de feedback RH",
+            "Inadéquation avec les besoins stratégiques de la SEEG"
+          ],
+          "rang": 8
+        }
+      },
+      "Ulrich Moundounga Boukinda": {
+        "prenom": "Ulrich",
+        "nom": "Moundounga Boukinda",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "Moundounga Boukinda",
+          "prenom": "Ulrich",
+          "poste": "Directeur Technique Eau",
+          "score": 41.4,
+          "resume_experience": "15 ans en ingénierie hydraulique et infrastructures",
+          "verdict": "favorable, le candidat dispose d'une expérience significative avec 15 ans dans le domaine pertinent et des compétences en gestion de projets et management des équipes.",
+          "points_forts": [
+            "Expérience en gestion de projets hydrauliques",
+            "Compétences en management d'équipes",
+            "Capacité à analyser et interpréter des indicateurs de performance"
+          ],
+          "points_a_travailler": [
+            "Connaissances à approfondir en conformité environnementale et sanitaire",
+            "Optimiser l'intégration des innovations techniques",
+            "Renforcer les compétences en anglais pour une meilleure communication internationale"
+          ],
+          "rang": 5
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.28,
+          "verdict": "défavorable",
+          "resume": "Le candidat ne satisfait pas aux exigences documentaires et son faible score global reflète des lacunes importantes par rapport aux attentes pour le poste de Directeur Finances et Comptabilité. Son profil ne semble pas aligné avec la vision transformante de l'entreprise pour la période 2025-2035.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Faible conformité documentaire",
+            "Inadéquation entre le profil et la vision stratégique de l'entreprise"
+          ],
+          "rang": 9
+        }
+      },
+      "Hermann Tanda Nkombe": {
+        "prenom": "Hermann",
+        "nom": "Tanda Nkombe",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "TANDA NKOMBE",
+          "prenom": "Hermann",
+          "poste": "Directeur Technique Eau",
+          "score": 41.1,
+          "resume_experience": "15 ans d'expérience en systèmes d'adduction d'eau potable et gestion hydrauliques",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expertise en systèmes d'adduction d'eau potable",
+            "Expérience en gestion et direction de services hydrauliques",
+            "Conduite et gestion de projets hydrauliques à rayonnement national"
+          ],
+          "points_a_travailler": [
+            "Renforcement de la maîtrise des innovations technologiques et réglementaires récentes",
+            "Approfondissement des compétences en audit de conformité et excellence opérationnelle",
+            "Leadership stratégique pour l'optimisation de la gestion budgétaire et des investissements"
+          ],
+          "rang": 7
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.22,
+          "verdict": "défavorable",
+          "resume": "Le profil d'Hermann Tanda Nkombe ne semble pas répondre aux attentes du poste de Directeur Finances et Comptabilité. L'absence de feedback RH positif et un score global pondéré très faible limitent les chances de succès du candidat dans un environnement complexe nécessitant une réorganisation financière et une gestion exemplaire.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire inexistante",
+            "Absence de feedback RH positif"
+          ],
+          "rang": 10
+        }
+      },
+      "Eric Serge Obounou": {
+        "prenom": "Eric",
+        "nom": "Serge Obounou",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "OBOUNOU",
+          "prenom": "Eric Serge",
+          "poste": "Directeur Technique Eau",
+          "score": 41.1,
+          "resume_experience": "24 années, principalement dans le secteur de l'eau avec une spécialisation en gestion des réseaux et conduite de projets",
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide expérience en gestion des réseaux d'eau et maîtrise d'œuvre",
+            "Compétences avérées en management et leadership",
+            "Connaissance approfondie des normes sanitaires et environnementales"
+          ],
+          "points_a_travailler": [
+            "Optimisation de l'usage des outils et systèmes existants",
+            "Renforcement de la gestion des performances et des innovations",
+            "Amélioration de la communication interservices pour une meilleure intégration des équipes"
+          ],
+          "rang": 6
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.22,
+          "verdict": "défavorable",
+          "resume": "Le candidat Eric Serge Obounou présente un profil qui ne répond pas suffisamment aux exigences du poste de Directeur Finances et Comptabilité chez SEEG. Son absence de feedback positif et les notes faibles en termes de conformité et de complétude du dossier soulignent un manque de préparation pertinent pour le rôle stratégique visé par l’entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Absence de feedback RH positif",
+            "Faible score de complétude du dossier"
+          ],
+          "rang": 11
+        }
+      },
+      "Claudia Andeme Ondo": {
+        "prenom": "Claudia",
+        "nom": "Andeme Ondo",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "ANDEME ONDO",
+          "prenom": "Claudia",
+          "poste": "Directeur Technique Eau",
+          "score": 40.5,
+          "resume_experience": {
+            "annees": 10,
+            "specialite": "Gestion et optimisation du système d’alimentation en eau potable"
+          },
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide expertise technique et managériale dans l’exploitation et la maintenance des systèmes d'eau",
+            "Expérience significative dans le pilotage des projets stratégiques d'eau",
+            "Connaissances approfondies des normes locales et internationales relatives à l’eau potable et à l’environnement"
+          ],
+          "points_a_travailler": [
+            "Approfondir les compétences en gestion organisationnelle et financière",
+            "Renforcer les connaissances en intégration des évolutions technologiques et réglementaires",
+            "Améliorer la planification et la coordination des projets techniques à une échelle plus vaste"
+          ],
+          "rang": 8
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.1,
+          "verdict": "défavorable",
+          "resume": "Le profil de Claudia Andeme Ondo semble ne pas être pleinement aligné avec les exigences stratégiques et le niveau de transformation requis par la vision 2025-2035 de la SEEG. Le faible score global et l'absence de feedback RH positif indiquent un manque de compatibilité avec les attentes du poste.",
+          "points_forts": [
+            "Expérience en gestion comptable",
+            "Connaissance du secteur énergétique",
+            "Capacité à travailler dans un environnement en transformation"
+          ],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Impression générale par les RH"
+          ],
+          "rang": 12
+        }
+      },
+      "Aude Murielle Akoe Mba": {
+        "prenom": "Aude",
+        "nom": "Murielle Akoe Mba",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "AKOE MBA",
+          "prenom": "Aude Murielle",
+          "poste": "Directeur Technique Eau",
+          "score": 40.0,
+          "resume_experience": "Près de 20 ans dans la gestion de la qualité de l'eau et normalisation.",
+          "verdict": "favorable",
+          "phrase_raison": "Le score est favorable et l'expérience du candidat dans la qualité de l'eau et la gestion technique est en adéquation avec les exigences du poste.",
+          "points_forts": [
+            "Expérience avérée dans la qualité et la gestion de l'eau.",
+            "Gestion d'équipes pluridisciplinaires sur tout le territoire gabonais.",
+            "Expertise en conformité technique et normes ISO."
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en gestion budgétaire et financière.",
+            "Adaptation aux dernières innovations technologiques.",
+            "Développement d'une stratégie plus intégrée pour la conduite de projets."
+          ],
+          "rang": 9
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 8.0,
+          "verdict": "défavorable",
+          "resume": "Le profil d'Aude Murielle Akoe Mba présente de sérieuses lacunes par rapport aux attentes du poste de Directeur Finances et Comptabilité. Aucun élément de son feedback RH ne vient équilibrer le score défavorable globalement attribué, ce qui remet en question sa capacité à contribuer efficacement à la vision transformatrice et aux défis de gouvernance de la SEEG.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Absence de conformité documentaire",
+            "Manque de préparation technique et pratique (MTP)"
+          ],
+          "rang": 13
+        }
+      },
+      "Wilfrid Pascal Andjayi": {
+        "prenom": "Wilfrid",
+        "nom": "Pascal Andjayi",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "ANDJAYI",
+          "prenom": "Wilfrid Pascal",
+          "poste": "Directeur Technique Eau",
+          "score": 39.5,
+          "resume_experience": "Plus de 15 ans d'expérience dans la gestion et la supervision des réseaux d'eau au Gabon, principalement chez SEEG.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expérience significative en gestion de réseaux de distribution d'eau",
+            "Connaissance approfondie des enjeux sanitaires et environnementaux",
+            "Compétences en encadrement et formation d'équipes techniques"
+          ],
+          "points_a_travailler": [
+            "Amplitude de l'expérience principalement centrée au Gabon",
+            "Compréhension des innovations technologiques récentes hors Gabon",
+            "Développement de stratégies de gestion budgétaire avancées"
+          ],
+          "rang": 10
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 7.9,
+          "verdict": "défavorable",
+          "resume": "Malgré une expérience possiblement pertinente, le profil de Wilfrid Pascal Andjayi ne répond pas adéquatement aux exigences de transformation radicale de l'entreprise. Le manque de feedback RH et de conformité documentaire l'empêche de se démarquer pour ce poste stratégique.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "L'absence de feedback RH détaillé ne permet pas de valider ses compétences managériales.",
+            "Les documents fournis ne sont pas conformes, ce qui soulève des doutes sur son engagement ou sa préparation."
+          ],
+          "rang": 14
+        }
+      },
+      "Sylvain Boussoungou": {
+        "prenom": "Sylvain",
+        "nom": "Boussoungou",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "BOUSSOUNGOU",
+          "prenom": "Sylvain",
+          "poste": "Directeur Technique Eau",
+          "score": 37.8,
+          "resume_experience": "Plusieurs années d'expérience dans le domaine technique, avec une expertise dans la conduite et le suivi de programmes structurants pour l'accès universel à l'eau.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expérience solide dans la conduite de projets d'envergure liés à l'accès à l'eau.",
+            "Capacité reconnue à travailler sous pression et à piloter des projets stratégiques.",
+            "Compétence éprouvée en coordination avec des partenaires institutionnels et financiers."
+          ],
+          "points_a_travailler": [
+            "Absence d'informations spécifiques sur la gestion organisationnelle et financière.",
+            "Nécessité de démontrer des résultats concrets concernant l'amélioration de la performance des budgets spécifiques.",
+            "Manque de précision sur l'intégration des évolutions technologiques et réglementaires."
+          ],
+          "rang": 11
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 7.56,
+          "verdict": "défavorable",
+          "resume": "Le candidat présente des lacunes significatives en termes de complétude de dossier et de conformité documentaire. Le manque de feedback RH ajoute à l'incertitude concernant sa capacité à soutenir la vision de transformation ambitieuse de la SEEG.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Absence de feedback RH"
+          ],
+          "rang": 15
+        }
+      },
+      "Lucie Ollomo": {
+        "prenom": "Lucie",
+        "nom": "Ollomo",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "OLLOMO",
+          "prenom": "Lucie",
+          "poste": "Directeur Technique Eau",
+          "score": 37.4,
+          "resume_experience": "24 ans d'expérience en ingénierie hydraulique et génie civil",
+          "verdict": "moyen",
+          "raison": "Le score de 37.400 est légèrement au-dessus de la moyenne, indiquant que le candidat possède une expérience significative mais doit renforcer certains aspects de ses compétences et de son expérience pour pleinement répondre aux exigences du poste.",
+          "points_forts": [
+            "Expérience solide en génie hydraulique et génie civil",
+            "Capacité démontrée en modélisation numérique et gestion des risques",
+            "Présence dans des rôles de supervision et de gestion technique"
+          ],
+          "points_a_travailler": [
+            "Optimisation des compétences organisationnelles et budgétaires",
+            "Renforcement de l'intégration des évolutions technologiques",
+            "Amélioration des compétences linguistiques en anglais parlé"
+          ],
+          "rang": 12
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 7.48,
+          "verdict": "défavorable",
+          "resume": "Le profil de Lucie Ollomo ne correspond pas aux exigences du poste de Directeur Finances et Comptabilité chez SEEG. L'absence de feedback RH et une faible complétude du dossier indiquent un manque d'adéquation avec la vision transformative de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Complétude du dossier",
+            "Conformité documentaire"
+          ],
+          "rang": 16
+        }
+      },
+      "Murielle Rose Missie": {
+        "prenom": "Murielle",
+        "nom": "Rose Missie",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "MISSIE",
+          "prenom": "Murielle Rose",
+          "poste": "Directeur Technique Eau",
+          "score": 29.6,
+          "resume_experience": "21 ans d'expérience en ingénierie eau potable et assainissement",
+          "verdict": "défavorable",
+          "raison": "Le score de similarité de 29.6 est inférieur au seuil favorable et moyen, indiquant une inadéquation significative avec les exigences du poste.",
+          "points_forts": [
+            "Expérience étendue dans la production et la distribution d'eau potable",
+            "Connaissance avérée des normes sanitaires et environnementales",
+            "Solide expérience en gestion de projets techniques"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en gestion budgétaire et optimisation des coûts",
+            "Développement de compétences en intégration technologique et innovation",
+            "Amélioration des compétences en management d'équipes multidisciplinaires"
+          ],
+          "rang": 13
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 5.92,
+          "verdict": "défavorable",
+          "resume": "Le profil de Murielle Rose Missie présente des lacunes importantes en termes de conformité documentaire et de feedback RH, ce qui soulève des doutes quant à son adéquation pour le poste de Directeur Finances et Comptabilité. Son dossier est jugé défavorable pour l'instant vu les exigences élevées de l'entreprise en termes de transformation et de gestion financière rigoureuse.",
+          "points_forts": [
+            "Expérience potentielle dans la direction financière",
+            "Connaissance possible du contexte local au Gabon",
+            "Motivation pour contribuer à la transformation de l'entreprise"
+          ],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Amélioration du feedback RH"
+          ],
+          "rang": 17
+        }
+      }
+    }
+  }
