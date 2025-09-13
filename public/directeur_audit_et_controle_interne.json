@@ -278,9 +278,9 @@
           "prenom": "Jean",
           "poste": "Directeur Audit & Contrôle interne",
           "scores": {
-            "Metier": 39,
-            "Talent": 39,
-            "Paradigme": 55
+            "Metier": 0.39,
+            "Talent": 0.39,
+            "Paradigme": 0.55
           },
           "Score_moyen": 44.33,
           "niveau": "Le score moyen de Jean ONDO MAYI indique une évaluation défavorable de son adéquation avec la vision stratégique de l'entreprise. Ses compétences nécessitent un développement significatif pour répondre aux standards attendus pour le poste visé.",
@@ -532,8 +532,31 @@
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
-        "completude": {},
+        "mtp": {
+          "nom": "MENGUE",
+          "prenom": "Bénédicte",
+          "poste": "Directeur Audit & Contrôle interne",
+          "scores": {
+            "Metier": 38,
+            "Talent": 38,
+            "Paradigme": 50
+          },
+          "Score_moyen": 42.0,
+          "niveau": "Le score moyen de 42.0 indique un niveau défavorable pour le candidat. Cela suggère que ses compétences et son alignement avec la vision de l'entreprise nécessitent des améliorations significatives.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score obtenu est en dessous du seuil critique, ce qui indique que le candidat n'est pas en adéquation avec les attentes de l'entreprise.",
+          "points_forts": [
+            "Connaissance des enjeux réglementaires liés à l'audit et à la gouvernance.",
+            "Compétence en gestion des processus, ce qui est crucial pour la réorganisation de la SEEG.",
+            "Capacité à détecter et évaluer les risques au sein des opérations."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences techniques spécifiques au secteur de l'énergie et de l'eau.",
+            "Développer une meilleure compréhension des enjeux de modernisation des infrastructures.",
+            "Améliorer les capacités de leadership et de gestion d'équipe pour répondre aux exigences de la transformation de l'entreprise."
+          ],
+          "rang": 5
+         },
         "feedback": {
           "prenom": "Mengue",
           "nom": "BÉNÉDICTE",
@@ -718,7 +741,7 @@
       "nb_candidats": 8,
       "distribution_verdicts": {
         "moyen": 5,
-        "défavorable": 5
+        "défavorable": 3
       },
       "top_raisons": [
         "Le candidat a un profil prometteur avec des qualités managériales, mais son manque de leadership affirmé et la nécessité de développement personnel limitent son alignement avec les objectifs complexes de transformation de l'entreprise.",
