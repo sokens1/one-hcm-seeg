@@ -601,7 +601,26 @@
           ],
           "rang": 4
         },
-        "completude": {},
+        "completude": {
+          "nom": "NAMBO WEZET",
+          "prenom": "Marie Ange",
+          "poste": "Directeur Audit & Contrôle interne",
+          "score": 40.4,
+          "resume_experience": "27 ans, spécialiste en contrôle interne et audit au sein de la SEEG",
+          "verdict": "favorable",
+          "raison": "Avec plus de 27 ans d'expérience dans le contrôle interne et l'audit, Marie Ange a démontré une expertise alignée avec les responsabilités du poste ciblé. Sa compréhension approfondie des processus internes de la SEEG, combinée à sa capacité à diriger et à surveiller des audits complexes, en fait une candidate solide pour ce rôle stratégique.",
+          "points_forts": [
+            "Expérience approfondie en contrôle interne et audit selon les référentiels COSO et SOX",
+            "Compétences en gestion des risques et élaboration de recommandations stratégiques",
+            "Leadership avéré dans la conduite de projets transversaux complexes"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences dans l'intégration des solutions technologiques avancées comme SCADA",
+            "Augmentation de l'implication des équipes dans la culture du risque",
+            "Amélioration continue de la communication des résultats d'audit aux parties prenantes extérieures"
+          ],
+          "rang": 2
+        },
         "feedback": {
           "prenom": "Marie",
           "nom": "ANGE NAMBO WEZET NÉE MBOUROU LAMASSE",
