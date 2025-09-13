@@ -1383,7 +1383,31 @@
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
+        "mtp": {
+          "nom": "Maria Evans",
+          "prenom": "ZE EBE",
+          "poste": "Coordonnateur des Régions",
+          "scores": {
+            "Metier": 0.34,
+            "Talent": 0.34,
+            "Paradigme": 0.55
+          },
+          "Score_moyen": 41.0,
+          "niveau": "Le score moyen du candidat est en dessous du seuil défavorable, indiquant un manque d'alignement avec les compétences exigées par le poste. Cela pourrait poser des défis dans l'exécution des tâches essentielles décrites dans la vision de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen étant en dessous de 43.5, cela montre que le candidat ne correspond pas aux exigences nécessaires pour soutenir la vision de SEEG.",
+          "points_forts": [
+            "Le candidat démontre un bon potentiel dans la compréhension des Paradigmes nécessaires pour une transformation organisationnelle.",
+            "Sa capacité à initier des discussions sur les talents pourrait favoriser l'engagement d’une équipe dédiée.",
+            "Une approche analytique qui pourrait aider à identifier les lacunes dans les infrastructures existantes."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences techniques et de métier pour assurer une meilleure gestion des infrastructures électriques et hydrauliques.",
+            "Améliorer sa capacité à mobiliser les ressources humaines et non humaines pour respecter les objectifs de réduction des coûts.",
+            "Développer des notions de gouvernance et de transparence nécessaires à la mise en œuvre d'une gestion efficace des projets."
+          ],
+          "rang": 4
+        },
         "completude": {
           "nom": "ZE EBE",
           "prenom": "Maria Evans",
