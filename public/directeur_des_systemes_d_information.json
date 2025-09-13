@@ -1,510 +1,159 @@
 {
-    "Directeur des Systèmes d’Information": {
-      "Sebastien Mbot": {
-        "prenom": "Sebastien",
-        "nom": "Mbot",
-        "conformite": {
-          "prenom": "Sebastien",
-          "nom": "MBOT",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "MBOT",
-          "prenom": "Sebastien",
-          "poste": "Direction des Systèmes d'Informations",
-          "scores": {
-            "Metier": 0.35,
-            "Talent": 0.33,
-            "Paradigme": 0.34
-          },
-          "Score_moyen": 34.0,
-          "niveau": "Le score moyen de 34.0 indique une inadéquation par rapport aux attentes de l'entreprise. Il semble que le candidat présente des lacunes significatives pour s'aligner avec la vision stratégique de la SEEG.",
-          "verdict": "défavorable",
-          "raison_du_verdict": "Le score moyen du candidat est largement en dessous du seuil critique de 43.5, indiquant une inadéquation avec les exigences du poste et la vision de l'entreprise.",
-          "points_forts": [
-            "Capacité à identifier des solutions concrètes pour des problèmes complexes dans le secteur de l'énergie.",
-            "Potentiel de transformation basé sur des approches innovantes dans la gestion des systèmes d'informations.",
-            "Compréhension des enjeux sectoriels et capacité à contribuer à la restructuration organisationnelle."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences techniques et opérationnelles en gestion des systèmes d'informations.",
-            "Renforcer la capacité de leadership et de management pour gérer des équipes dans un environnement en mutation.",
-            "Développer des compétences en gestion de projet pour aligner les initiatives IT avec les objectifs stratégiques de la SEEG."
-          ],
-          "rang": 9
-        },
-        "completude": {
-          "nom": "MBOT",
-          "prenom": "Sebastien",
-          "poste": "Directeur des Systèmes d’Information",
-          "score": 41.4,
-          "resume_experience": "Plus de 15 ans d'expérience en informatique dans les secteurs de l'énergie, des télécoms et du e-commerce",
-          "verdict": "favorable",
-          "reason": "Sebastien MBOT présente une riche expérience en gestion de systèmes d'information, notamment dans l'énergie, alignée avec les besoins stratégiques et techniques du poste.",
-          "points_forts": [
-            "Expérience en gestion de projet et stratégie IT, essentielle pour le rôle proposé",
-            "Connaissance approfondie d'ERP, CRM et autres systèmes critiques pour l'entreprise",
-            "Compétence en gestion du changement et conduite de projets digitaux"
-          ],
-          "points_a_travailler": [
-            "Mise à jour sur les dernières réglementations de cybersécurité",
-            "Renforcement de l'expérience en transformation digitale à grande échelle",
-            "Approfondissement de la connaissance des tendances récentes en veille technologique"
-          ],
-          "rang": 7
-        },
-        "feedback": {
-          "prenom": "Sebastien",
-          "nom": "MBOT",
-          "score": 75.6,
-          "verdict": "Favorable",
-          "raisons": "Le candidat présente un potentiel de transformation significatif, malgré quelques tensions relationnelles. Sa capacité à apporter une approche innovante est alignée avec la vision de transformation de la SEEG.",
-          "Points forces": [
-            "Expérience en gestion d'entreprise",
-            "Capacité à initier des projets stratégiques"
-          ],
-          "Points à travailler": [
-            "Améliorer la communication et la gestion relationnelle",
-            "Gérer la résistance au changement au sein de son équipe"
-          ],
-          "rang": 1
-        },
-        "global": {
-          "score_global": 59.58,
-          "verdict": "favorable",
-          "resume": "Sebastien Mbot est un candidat avec un potentiel de transformation significatif, aligné avec la vision de la SEEG de 2025-2035. Il a démontré une capacité à initier des projets stratégiques tout en présentant des tensions relationnelles à surmonter pour réussir efficacement.",
-          "points_forts": [
-            "Expérience en gestion d'entreprise",
-            "Capacité à initier des projets stratégiques",
-            "Approche innovante"
-          ],
-          "points_a_ameliorer": [
-            "Améliorer la communication et la gestion relationnelle",
-            "Gérer la résistance au changement au sein de son équipe"
-          ],
-          "rang": 1
-        }
-      },
+  "Directeur des Systèmes d’Information": {
+    "candidats": {
       "Thierry Angoue Bekale": {
         "prenom": "Thierry",
         "nom": "Angoue Bekale",
         "conformite": {
           "prenom": "Thierry",
           "nom": "ANGOUE BEKALE",
+          "poste": "Directeur des Systèmes d’Information",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
           "nom": "ANGOUE BEKALE",
           "prenom": "Thierry",
-          "poste": "Direction des Systèmes d'Informations",
+          "poste": "Directeur des Systèmes d’Information",
           "scores": {
             "Metier": 0.45,
             "Talent": 0.42,
-            "Paradigme": 0.43
+            "Paradigme": 0.47
           },
-          "Score_moyen": 43.33,
-          "niveau": "Le score moyen du candidat est en dessous du seuil défavorable, indiquant un alignement limité avec la vision de l'entreprise. Cela suggère des lacunes potentielles dans les compétences et qualités requises pour jouer un rôle clé dans la transformation de la SEEG.",
+          "Score_moyen": 44.67,
+          "niveau": "Le candidat présente un score moyen qui se classe dans la catégorie défavorable. Cela indique une inadéquation avec les attentes stratégiques de l'entreprise en termes de compétences et de vision.",
           "verdict": "défavorable",
-          "raison_verdict": "Le score moyen étant 43.33, cela reflète un potentiel insuffisant à répondre aux défis stratégiques de la SEEG.",
+          "raison_du_verdict": "Le score moyen de 44.67 est inférieur à 43.5, ce qui traduit un manque d'alignement avec la vision de l'entreprise.",
           "points_forts": [
-            "Connaissance des enjeux technologiques liés aux systèmes d'information.",
-            "Capacité d'analyse des systèmes en place et identification des points critiques.",
-            "Aptitude à travailler en équipe pour des projets de modernisation."
+            "Connaissances en gestion des infrastructures techniques et réhabilitation, cruciales pour la vision du projet de modernisation.",
+            "Capacité à dialoguer avec des partenaires techniques, indiquant une compétence en gestion de projets complexes.",
+            "Compréhension des enjeux de transparence et gouvernance, essentiels dans un contexte de tensions avec l'État."
           ],
           "points_a_travailler": [
-            "Développer des compétences en gestion de projets complexes.",
-            "Améliorer la compréhension des enjeux de gouvernance et de responsabilité.",
-            "Accroître les capacités d’innovation dans les infrastructures technologiques."
+            "Renforcer les compétences en management et leadership, nécessaires pour diriger une organisation en transformation.",
+            "Améliorer la compréhension des enjeux économiques globaux, notamment en matière de tarification et de facturation.",
+            "Développer des aptitudes à intégrer des technologies innovantes et durables, afin de répondre aux défis de la transition énergétique."
           ],
           "rang": 3
         },
         "completude": {
-          "nom": "ANGOUE BEKALE",
+          "nom": "ANGOE BEKALE",
           "prenom": "Thierry",
           "poste": "Directeur des Systèmes d’Information",
-          "score": 41.2,
-          "resume_experience": "28 ans d'expérience en informatique et systèmes d'information",
+          "score": 46.2,
+          "resume_experience": "28 ans d'expérience, principalement dans la transformation digitale et gestion des systèmes d'information",
           "verdict": "favorable",
           "points_forts": [
-            "Expérience confirmée en gestion des systèmes d'information",
-            "Compétence dans la transformation digitale et gestion des projets informatiques",
-            "Leadership prouvé dans l'optimisation des systèmes d'information"
+            "Grande expérience de 28 ans dans le domaine IT",
+            "Expertise en transformation digitale et innovation",
+            "Connaissance approfondie des systèmes d'information et de la gouvernance SI"
           ],
           "points_a_travailler": [
-            "Mise à jour des compétences en nouvelles normes de sécurité",
-            "Amélioration continue des compétences en stratégie IT",
-            "Renforcement des compétences en gestion d'équipes multidisciplinaires"
-          ],
-          "rang": 8
-        },
-        "feedback": {
-          "prenom": "Thierry",
-          "nom": "ANGOUE BEKALE",
-          "score": 49.5,
-          "verdict": "Moyen",
-          "raisons": "Le candidat présente des capacités managériales, mais un leadership à confirmer. Ses compétences doivent être renforcées pour répondre aux exigences stratégiques de la SEEG.",
-          "Points forces": [
-            "Expérience managériale",
-            "Compétences techniques potentielles"
-          ],
-          "Points à travailler": [
-            "Leadership à confirmer",
-            "Absence de vision stratégique claire"
-          ],
-          "rang": 2
-        },
-        "global": {
-          "score_global": 48.82,
-          "verdict": "moyen",
-          "resume": "Thierry Angoue Bekale possède une expérience managériale qui pourrait être bénéfique à la transformation numérique de la SEEG. Toutefois, son leadership doit être davantage confirmé, et il est important qu'il développe une vision stratégique claire alignée sur les attentes robustes de l'entreprise d'ici 2030.",
-          "points_forts": [
-            "Expérience managériale",
-            "Compétences techniques potentielles"
-          ],
-          "points_a_ameliorer": [
-            "Leadership à confirmer",
-            "Absence de vision stratégique claire"
-          ],
-          "rang": 2
-        }
-      },
-      "Pacôme Tsonga": {
-        "prenom": "Pacôme",
-        "nom": "Tsonga",
-        "conformite": {
-          "prenom": "Pacôme",
-          "nom": " TSONGA",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "TSONGA",
-          "prenom": "Pacôme",
-          "poste": "Direction des Systèmes d'Informations",
-          "scores": {
-            "Metier": 0.38,
-            "Talent": 0.37,
-            "Paradigme": 0.41
-          },
-          "Score_moyen": 38.67,
-          "niveau": "Le score moyen du candidat est en dessous de la moyenne, indiquant un besoin d'amélioration significatif pour s'aligner avec la vision stratégique de l'entreprise. Son profil montre qu'il ne répond pas aux attentes en matière de compétences techniques et managériales nécessaires pour le poste visé.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est en dessous du seuil minimum requis pour répondre aux critères de sélection.",
-          "points_forts": [
-            "Connaissance des enjeux technologiques dans le domaine des systèmes d'informations.",
-            "Capabilities d'adaptation rapide aux changements, indispensable dans un environnement dynamique.",
-            "Potentiel à développer des solutions innovantes pour la modernisation des infrastructures."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences techniques spécifiques liées à la gestion des systèmes d'informations.",
-            "Améliorer les compétences en leadership et en gestion d'équipe pour répondre aux défis organisationnels.",
-            "Développer une compréhension approfondie de la gouvernance et de la transparence nécessaires au sein de l'entreprise."
-          ],
-          "rang": 7
-        },
-        "completude": {
-          "nom": "TSONGA",
-          "prenom": "Pacôme",
-          "poste": "Directeur des Systèmes d’Information",
-          "score": 42.6,
-          "resume_experience": "23 ans d’expérience en cybersécurité et gestion des risques IT.",
-          "verdict": "favorable",
-          "raison": "Pacôme Tsonga a une vaste expérience en cybersécurité, gestion de projet et gouvernance IT, ce qui le rend apte à assumer la responsabilité stratégique requise pour ce poste.",
-          "points_forts": [
-            "Expertise en cybersécurité et gestion des risques, alignée avec les normes ISO.",
-            "Compétence dans la conduite et la transformation numérique.",
-            "Expérience en gestion d'équipes et projets transverses complexes."
-          ],
-          "points_a_travailler": [
-            "Augmenter l'expérience spécifique en stratégie IT globale.",
-            "Approfondir les compétences en innovation pour IT/OT/IoT.",
-            "Renforcer les connaissances en gestion complète du cycle de vie des applications métiers comme ERP."
-          ],
-          "rang": 3
-        },
-        "feedback": {
-          "prenom": "Pacôme",
-          "nom": "TSONGA",
-          "score": 42.5,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat présente des faiblesses significatives en management et leadership, ce qui est crucial pour le poste. Son incapacité à traduire des paroles en actions soulève des doutes quant à sa capacité à répondre aux exigences de transformation stratégique de la SEEG.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Leadership",
-            "Capacité à mettre en œuvre des actions concrètes"
-          ],
-          "rang": 6
-        },
-        "global": {
-          "score_global": 44.44,
-          "verdict": "défavorable",
-          "resume": "Pacôme Tsonga présente des faiblesses significatives en management et leadership, essentielles pour répondre aux exigences de transformation stratégique de la SEEG. Son incapacité à traduire les paroles en actions concrètes limite sa capacité à mener des initiatives de changement dans une organisation en pleine restructuration.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Leadership",
-            "Capacité à mettre en œuvre des actions concrètes"
-          ],
-          "rang": 3
-        }
-      },
-      "Serge Bouchard": {
-        "prenom": "Serge",
-        "nom": "Bouchard",
-        "conformite": {
-          "prenom": "Serge",
-          "nom": " Bouchard",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "Bouchard",
-          "prenom": "Serge",
-          "poste": "Direction des Systèmes d'Informations",
-          "scores": {
-            "Metier": 0.48,
-            "Talent": 0.41,
-            "Paradigme": 0.39
-          },
-          "Score_moyen": 42.67,
-          "niveau": "Le candidat présente un score moyen défavorable, ce qui indique un manque d'adéquation avec la vision de l'entreprise. Ses compétences ne répondent pas aux exigences critiques pour un poste de direction stratégique au sein de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 42.67 est en dessous du seuil requis, indiquant des lacunes significatives dans les compétences métier, talent et paradigme.",
-          "points_forts": [
-            "Bonne connaissance théorique des systèmes d'information.",
-            "Capacité à mobiliser une équipe autour d'objectifs techniques.",
-            "Expérience antérieure dans des environnements de travail en transformation."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en gestion opérationnelle et stratégique.",
-            "Améliorer la compréhension des enjeux de gouvernance et de transparence.",
-            "Développer des compétences en management des ressources humaines et en optimisation des processus."
-          ],
-          "rang": 5
-        },
-        "completude": {
-          "nom": "Bouchard",
-          "prenom": "Serge",
-          "poste": "Directeur des Systèmes d’Information",
-          "score": 44.4,
-          "resume_experience": "Plus de 20 ans dans la gestion et l’optimisation des systèmes informatiques et de la sécurité.",
-          "verdict": "favorable",
-          "points_forts": [
-            "Expérience significative en supervision de missions d’audits techniques et élaboration de pratiques de sécurité.",
-            "Compétence avérée en gestion de projets informatiques, incluant l’optimisation des performances des systèmes et de la sécurité.",
-            "Connaissance approfondie des normes de conformité telles qu’ITIL, NIST, et ISO 27001."
-          ],
-          "points_a_travailler": [
-            "Améliorer le niveau d’anglais pour faciliter la communication internationale et la veille technologique mondiale.",
-            "Renforcer les compétences en stratégie numérique et transformation digitale.",
-            "Accroître l’expérience spécifique en gouvernance des systèmes d’information."
+            "Renforcer la maîtrise de l'anglais pour une communication optimale à l'international",
+            "Approfondir les compétences en cybersécurité pour les évolutions futures",
+            "Développer des compétences supplémentaires dans la veille technologique pour anticiper les innovations du marché"
           ],
           "rang": 1
         },
         "feedback": {
-          "prenom": "Serge",
-          "nom": "BOUCHARD",
-          "score": 32.5,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat présente un manque de leadership et de capacité managériale, ce qui est crucial pour le poste dans un contexte de réorganisation et de transformation de la SEEG.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Manque de leadership",
-            "Absence de vision stratégique"
+          "prenom": "Thierry",
+          "nom": "ANGOUE BEKALE",
+          "score": 52.3,
+          "verdict": "Moyen",
+          "raisons": "Le candidat présente des compétences managériales, mais son leadership reste à confirmer. Son absence de vision stratégique pour le poste et l'absence de feedback positif des équipes pourraient freiner sa capacité à mener la transformation nécessaire à la SEEG.",
+          "Points forces": [
+            "Bonne expérience managériale",
+            "Connaissance des enjeux du secteur de l'eau et de l'électricité"
           ],
-          "rang": 9
+          "Points à travailler": [
+            "Leadership à confirmer",
+            "Vision stratégique à développer"
+          ],
+          "rang": 2
         },
         "global": {
-          "score_global": 40.8,
-          "verdict": "défavorable",
-          "resume": "Le candidat Serge Bouchard est considéré défavorable pour le poste de Directeur des Systèmes d’Information à la SEEG. Le feedback RH met en évidence son manque de leadership et de capacité managériale, des compétences cruciales dans un contexte de réorganisation et de transformation de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Manque de leadership",
-            "Absence de vision stratégique"
+          "score_global": 51.56,
+          "verdict": "moyen",
+          "raison_verdict": "Le candidat présente des compétences managériales mais son manque de vision stratégique et d'appuis positifs des équipes limitent sa capacité à impulser la transformation attendue par la SEEG.",
+          "resume": "Thierry Angoue Bekale a une bonne expérience managériale et connaît les enjeux du secteur de l'eau et de l'électricité. Cependant, son leadership reste à confirmer et il manque de vision stratégique, ce qui pourrait freiner sa capacité à mener la transformation nécessaire à la SEEG.",
+          "points_forts": [
+            "Bonne expérience managériale",
+            "Connaissance des enjeux du secteur de l'eau et de l'électricité"
           ],
-          "rang": 4
+          "points_a_ameliorer": [
+            "Leadership à confirmer",
+            "Vision stratégique à développer"
+          ],
+          "rang": 1
         }
       },
-      "Derille Ovono Ename": {
-        "prenom": "Derille",
-        "nom": "Ovono Ename",
+      "Sebastien Mbot": {
+        "prenom": "Sebastien",
+        "nom": "Mbot",
         "conformite": {
-          "prenom": "DERILLE",
-          "nom": "OVONO ENAME",
+          "prenom": "Sebastien",
+          "nom": "MBOT",
+          "poste": "Directeur des Systèmes d’Information",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
-          "nom": "OVONO ENAME",
-          "prenom": "DERILLE",
-          "poste": "Direction des Systèmes d'Informations",
+          "nom": "MBOT",
+          "prenom": "Sebastien",
+          "poste": "Directeur des Systèmes d’Information",
           "scores": {
-            "Metier": 0.43,
-            "Talent": 0.39,
-            "Paradigme": 0.49
+            "Metier": 0.35,
+            "Talent": 0.33,
+            "Paradigme": 0.38
           },
-          "Score_moyen": 43.67,
-          "niveau": "Le candidat présente un score moyen, ce qui indique une adéquation partielle avec la vision de l'entreprise. Ses scores suggèrent une certaine compréhension des enjeux, mais un manque de profondeur dans les compétences requises.",
-          "verdict": "moyen",
-          "raison_verdict": "Le score moyen de 43.67 indique que le candidat a besoin de renforcer ses compétences pour pleinement répondre aux attentes de la SEEG dans sa démarche de transformation.",
+          "Score_moyen": 35.33,
+          "niveau": "Le candidat affiche un score moyen défavorable, indiquant une inadéquation avec les attentes élevées de la vision de l'entreprise. Des compétences clés semblent manquer pour réussir dans un environnement en pleine transformation.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est largement en dessous du seuil défavorable, ce qui indique des lacunes significatives.",
           "points_forts": [
-            "Capacité à comprendre les enjeux technologiques dominants dans le secteur des systèmes d'information.",
-            "Maturité dans l'identification des besoins de modernisation des infrastructures.",
-            "Aptitude à intégrer des solutions innovantes dans la gestion des systèmes."
+            "Solide compréhension des enjeux techniques liés aux systèmes d'information.",
+            "Capacité à analyser les besoins organisationnels pour des solutions IT.",
+            "Expérience antérieure dans des projets de transformation digitale."
           ],
           "points_a_travailler": [
-            "Améliorer les compétences techniques et opérationnelles liées à la gestion des systèmes d'information.",
-            "Développer une meilleure capacité à naviguer dans les processus de gouvernance d'entreprise.",
-            "Renforcer les compétences en communication pour coordonner efficacement avec les parties prenantes externes."
+            "Renforcer les compétences en leadership pour diriger efficacement dans un contexte de changement.",
+            "Améliorer la gestion des ressources humaines pour optimiser l'organisation.",
+            "Acquérir une vision stratégique à long terme pour contribuer à la modernisation des infrastructures."
           ],
-          "rang": 2
+          "rang": 9
         },
         "completude": {},
         "feedback": {
-          "prenom": "Derille",
-          "nom": "OVONO ENAME",
-          "score": 42.5,
-          "verdict": "Défavorable",
-          "raisons": "Le feedback du candidat sur son manque de leadership et sa perception d'un comportement insatisfaisant soulève des inquiétudes quant à sa capacité à diriger positivement une organisation en crise.",
+          "prenom": "Sebastien",
+          "nom": "MBOT",
+          "score": 67.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre un potentiel de transformation significatif malgré certains défis relationnels. Son expérience et sa volonté de moderniser les processus sont en adéquation avec la vision stratégique de la SEEG.",
           "Points forces": [
-            "Connaissance technique dans le domaine des systèmes d'information",
-            "Capacité à gérer des projets complexes"
+            "Capacité de leadership affirmé et direct",
+            "Expérience en gestion d'entreprise et potentiel de transformation"
           ],
           "Points à travailler": [
-            "Développement des compétences en leadership",
-            "Amélioration de la communication et de la collaboration avec les équipes"
+            "Compétences en communication et gestion relationnelle",
+            "Capacité à embarquer les équipes vers le changement"
           ],
-          "rang": 4
+          "rang": 1
         },
         "global": {
-          "score_global": 37.17,
-          "verdict": "défavorable",
-          "resume": "Derille Ovono Ename possède des compétences techniques solides dans le domaine des systèmes d'information, mais des préoccupations importantes subsistent quant à ses capacités de leadership et à son comportement perçu comme insatisfaisant. Ces aspects sont critiques dans un contexte de transformation organisationnelle tel que celui envisagé par la SEEG.",
-          "points_forts": [
-            "Connaissance technique dans le domaine des systèmes d'information",
-            "Capacité à gérer des projets complexes"
-          ],
-          "points_a_ameliorer": [
-            "Développement des compétences en leadership",
-            "Amélioration de la communication et de la collaboration avec les équipes"
-          ],
-          "rang": 5
-        }
-      },
-      "Guy Armel Koumba": {
-        "prenom": "Guy",
-        "nom": "Armel Koumba",
-        "conformite": {
-          "prenom": "Guy",
-          "nom": "Armel Koumba",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {
-          "nom": "Koumba",
-          "prenom": "Guy Armel",
-          "poste": "Directeur des Systèmes d’Information",
-          "score": 41.9,
-          "resume_experience": "24 ans dans le domaine des systèmes d'information",
+          "score_global": 47.58,
           "verdict": "moyen",
+          "raison_verdict": "Bien qu'il démontre un potentiel de transformation, des défis restent dans la communication et la gestion relationnelle, ce qui impacte son score global moyen.",
+          "resume": "Sebastien Mbot montre un potentiel significatif pour transformer et moderniser les processus de la SEEG, bien que ses compétences en communication et en gestion relationnelle nécessitent des améliorations. Son expérience en gestion d'entreprise est alignée avec la vision stratégique de la SEEG.",
           "points_forts": [
-            "Solide expérience en gestion de projets informatiques et management d'équipes pluridisciplinaires",
-            "Bonne connaissance des enjeux technologiques et des infrastructures informatiques",
-            "Compétence en conduite du changement et alignement stratégique"
-          ],
-          "points_a_travailler": [
-            "Renforcement des compétences en cybersécurité spécifiques aux nouvelles exigences",
-            "Approfondissement des stratégies pour l'optimisation des ressources dans un contexte de transformation numérique",
-            "Adaptation aux nouvelles technologies disruptives pouvant impacter l'industrie de l'énergie et de l'eau"
-          ],
-          "rang": 6
-        },
-        "feedback": {
-          "prenom": "Guy",
-          "nom": "ARMEL KOUMBA",
-          "score": 42.7,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat présente des qualités managériales, mais son manque de leadership ainsi que les suspicions sur son intégrité et sa réticence face aux problèmes le rendent inadapté au poste de DSI dans un contexte de transformation nécessitant une gouvernance renforcée.",
-          "Points forces": [
-            "Expérience en management",
-            "Connaissance métier approfondie"
-          ],
-          "Points à travailler": [
-            "Leadership insuffisant",
-            "Gestion des conflits et des problèmes"
-          ],
-          "rang": 3
-        },
-        "global": {
-          "score_global": 34.73,
-          "verdict": "défavorable",
-          "resume": "Guy Armel Koumba possède une expérience en management et une connaissance approfondie du métier, mais ses compétences en leadership sont insuffisantes pour le contexte actuel de transformation de la SEEG. Son intégrité est mise en question et il montre de la réticence à affronter les problèmes, ce qui le rend inadapté pour un rôle nécessitant une gouvernance renforcée.",
-          "points_forts": [
-            "Expérience en management",
-            "Connaissance métier approfondie"
+            "Capacité de leadership affirmé et direct",
+            "Expérience en gestion d'entreprise",
+            "Potentiel de transformation"
           ],
           "points_a_ameliorer": [
-            "Leadership insuffisant",
-            "Gestion des conflits et des problèmes"
+            "Compétences en communication et gestion relationnelle",
+            "Capacité à embarquer les équipes vers le changement"
           ],
-          "rang": 6
-        }
-      },
-      "Emery Patrick Nkouele Mve": {
-        "prenom": "Emery",
-        "nom": "Patrick Nkouele Mve",
-        "conformite": {
-          "prenom": "Emery",
-          "nom": "Patrick NKOUELE MVE",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {
-          "nom": "NKOUELE MVE",
-          "prenom": "Emery Patrick",
-          "poste": "Directeur des Systèmes d’Information",
-          "score": 42.1,
-          "resume_experience": "Plus de 20 ans dans l'administration de systèmes, le support utilisateur et la gestion de projets informatiques.",
-          "verdict": "favorable",
-          "points_forts": [
-            "Excellente connaissance de la SEEG et de ses systèmes d'information.",
-            "Expérience confirmée en gestion d'équipes et projets IT, notamment en coordination de projets complexes comme SINGA.",
-            "Bonne maîtrise des aspects techniques liés à l'administration et à la sécurité des systèmes d'information."
-          ],
-          "points_a_travailler": [
-            "Améliorer le niveau d'anglais pour favoriser les interactions internationales.",
-            "Renforcer davantage la vision stratégique en matière d'innovation numérique.",
-            "Développement de compétences en cybersécurité avancée, conformément aux nouvelles menaces."
-          ],
-          "rang": 5
-        },
-        "feedback": {
-          "prenom": "Emery",
-          "nom": "PATRICK NKOUELE MVE",
-          "score": 42.5,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat montre un manque de clarté dans sa vision et une attitude négative envers la hiérarchie, ce qui est incompatible avec les besoins de transformation de l'entreprise.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Développer une vision stratégique claire et inspirante",
-            "Améliorer la communication et le respect des relations hiérarchiques"
-          ],
-          "rang": 5
-        },
-        "global": {
-          "score_global": 34.67,
-          "verdict": "défavorable",
-          "resume": "Le candidat présente un profil inadéquat pour le poste de Directeur des Systèmes d'Information. Son manque de clarté stratégique et ses difficultés de communication et de respect hiérarchique ne correspondent pas aux besoins de transformation de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Développer une vision stratégique claire et inspirante",
-            "Améliorer la communication et le respect des relations hiérarchiques"
-          ],
-          "rang": 7
+          "rang": 2
         }
       },
       "Steeve Ydrice Malouki Mouyapou": {
@@ -513,53 +162,414 @@
         "conformite": {
           "prenom": "Steeve",
           "nom": "Ydrice MALOUKI MOUYAPOU",
+          "poste": "Directeur des Systèmes d’Information",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
+        "mtp": {
+          "nom": "MALOUKI MOUYAPOU",
+          "prenom": "Steeve",
+          "poste": "Directeur des Systèmes d’Information",
+          "scores": {
+            "Metier": 0.45,
+            "Talent": 0.42,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 45.0,
+          "niveau": "Le score moyen de 45.0 indique une performance moyenne du candidat dans ses compétences clés. Cette évaluation souligne des domaines d'amélioration nécessaires pour aligner ses capacités avec la vision stratégique de l'entreprise.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen situé entre 43.5 et 60 est qualifié de moyen, suggérant que le candidat a encore des efforts à fournir pour répondre pleinement aux attentes de la SEEG.",
+          "points_forts": [
+            "Compétences professionnelles suffisantes dans le domaine du métier.",
+            "Capacité à aborder des méthodes innovantes en matière de transition énergétique et d'innovation.",
+            "Compréhension des enjeux de gouvernance et de transparence."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion des ressources humaines pour améliorer la structure organisationnelle.",
+            "Améliorer l'alignement stratégique avec les thématiques de modernisation des infrastructures.",
+            "Développer des compétences en digitalisation des processus pour optimiser l'efficacité opérationnelle."
+          ],
+          "rang": 1
+        },
         "completude": {
           "nom": "MALOUKI MOUYAPOU",
           "prenom": "Steeve Ydrice",
           "poste": "Directeur des Systèmes d’Information",
-          "score": 42.2,
-          "resume_experience": "14+ années dans la direction des systèmes d'information, principalement à la SEEG.",
+          "score": 41.1,
+          "resume_experience": "Plus de 14 ans dans la gestion des systèmes d'information",
           "verdict": "favorable",
-          "raison_verdict": "Avec plus de quatorze ans d'expérience pertinente, Steeve possède une vaste expérience en gestion des systèmes d'information et en supervision de projets informatiques complexes, ce qui cadre bien avec les exigences du poste.",
+          "raison_verdict": "Expérience significative dans la direction de projets IT et compétences pluridisciplinaires pertinentes pour le poste de DSI.",
           "points_forts": [
-            "Expérience étendue en gestion d'équipes et de projets IT",
-            "Compétences développées en stratégie IT et transformation digitale",
+            "Expérience extensive en gestion de projets IT, notamment ERP et applications métiers",
+            "Compétences en management et direction d'équipes pluridisciplinaires",
             "Expertise en sécurité informatique et conformité"
           ],
           "points_a_travailler": [
-            "Approfondir les connaissances en technologies émergentes pour mieux anticiper les évolutions du marché",
-            "Développer des compétences en management de la transformation culturelle numérique",
-            "Améliorer les compétences en gestion de la relation avec les parties prenantes extérieures"
+            "Renforcement de l'expérience en innovation digitale pour la transformation numérique",
+            "Intégration plus avancée des nouvelles technologies de gestion de données",
+            "Développement de compétences additionnelles en stratégie IT globale"
           ],
-          "rang": 4
+          "rang": 5
         },
         "feedback": {
           "prenom": "Steeve",
           "nom": "YDRICE MALOUKI MOUYAPOU",
-          "score": 38.75,
+          "score": 42.7,
           "verdict": "Défavorable",
-          "raisons": "Le candidat présente une perception négative de ses compétences en management et leadership, ce qui est en contradiction avec les attentes élevées du poste de Directeur des Systèmes d'Information pour transformer la SEEG.",
+          "raisons": "Le candidat présente un manque de leadership et de vision stratégique, ce qui est essentiel pour le poste. Son retour d'expérience personnel laisse craindre qu'il ne soit pas en mesure de guider l'entreprise dans sa transformation nécessaire.",
+          "Points forces": [
+            "Connaissance technique des systèmes d'information",
+            "Capacité à identifier les problèmes organisationnels"
+          ],
+          "Points à travailler": [
+            "Manque de compétences managériales",
+            "Absence de vision stratégique et de leadership"
+          ],
+          "rang": 6
+        },
+        "global": {
+          "score_global": 45.82,
+          "verdict": "moyen",
+          "raison_verdict": "Malgré des compétences techniques solides, le manque de leadership et de vision stratégique rend le candidat moyennement adapté pour accompagner l'entreprise dans sa transformation.",
+          "resume": "Le candidat présente une bonne maîtrise technique des systèmes d'information et une capacité à identifier les problèmes organisationnels. Cependant, un manque de leadership et de vision stratégique, essentiels pour le poste, a été noté par les RH, ce qui remet en question sa capacité à diriger la transformation nécessaire de l'entreprise.",
+          "points_forts": [
+            "Connaissance technique des systèmes d'information",
+            "Capacité à identifier les problèmes organisationnels"
+          ],
+          "points_a_ameliorer": [
+            "Manque de compétences managériales",
+            "Absence de vision stratégique et de leadership"
+          ],
+          "rang": 3
+        }
+      },
+      "Guy Armel Koumba": {
+        "prenom": "Guy",
+        "nom": "Armel Koumba",
+        "conformite": {
+          "prenom": "Guy",
+          "nom": "Armel Koumba",
+          "poste": "Directeur des Systèmes d’Information",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "Koumba",
+          "prenom": "Guy",
+          "poste": "Directeur des Systèmes d’Information",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.4,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 44.67,
+          "niveau": "Le candidat a un score moyen inférieur à 43.5, indiquant des difficultés à pleinement répondre aux attentes de l'organisation. Dans l'ensemble, l'adéquation de son profil avec la vision de l'entreprise semble limitée.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen du candidat est en dessous du seuil critique, ce qui suggère un manque d'alignement avec la vision de l'entreprise.",
+          "points_forts": [
+            "Bonne compréhension des défis métiers liés à la modernisation des infrastructures.",
+            "Compétence en gestion de projets techniques, qui sera utile pour les investissements durables.",
+            "Capacité à travailler sur des processus digitaux qui favorisent la transparence et la gouvernance."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion du changement pour mieux accompagner les employés dans la transition.",
+            "Améliorer la maîtrise des enjeux de gouvernance et conformité nécessaires pour la restructuration.",
+            "Développer des compétences stratégiques pour contribuer à la vision à long terme d'autosuffisance énergétique."
+          ],
+          "rang": 2
+        },
+        "completude": {
+          "nom": "Koumba",
+          "prenom": "Guy Armel",
+          "poste": "Directeur des Systèmes d’Information",
+          "score": 39.3,
+          "resume_experience": "24 années d'expérience dans les systèmes d'information avec une spécialité en direction des systèmes informatiques et gestion de projets",
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide connaissance des infrastructures et des enjeux technologiques de la SEEG",
+            "Expérience significative en gestion de projets complexes et conduite de changements",
+            "Expertise en sécurité informatique et normes de cybersécurité"
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en anglais pour une meilleure communication internationale",
+            "Développer la culture numérique au sein de l'équipe pour favoriser l'innovation",
+            "Améliorer l'intégration des innovations technologiques dans les processus existants"
+          ],
+          "rang": 8
+        },
+        "feedback": {
+          "prenom": "Guy",
+          "nom": "ARMEL KOUMBA",
+          "score": 42.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des faiblesses notables en termes de leadership, ce qui ne cadre pas avec les exigences d'un Directeur des Systèmes d'Information dans un contexte de transformation. Les suspicions de mauvaise gestion et de relations tendues sont également préoccupantes.",
+          "Points forces": [
+            "Bon potentiel technique dans le domaine",
+            "Expérience managériale"
+          ],
+          "Points à travailler": [
+            "Manque de leadership affirmé",
+            "Gestion des conflits et prise de décision sous pression"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 45.38,
+          "verdict": "moyen",
+          "raison_verdict": "Bien que Guy ait des compétences techniques et managériales, ses faiblesses en leadership et en gestion des conflits le rendent inadapté pour un rôle crucial nécessitant une transformation au sein de l'entreprise.",
+          "resume": "Guy Armel Koumba possède un bon potentiel technique et une expérience en gestion, mais présente des lacunes importantes en leadership, essentielles pour diriger efficacement dans un contexte de transformation. De plus, des suspicions de mauvaise gestion et des relations tendues soulèvent des inquiétudes.",
+          "points_forts": [
+            "Bon potentiel technique dans le domaine",
+            "Expérience managériale"
+          ],
+          "points_a_ameliorer": [
+            "Manque de leadership affirmé",
+            "Gestion des conflits et prise de décision sous pression"
+          ],
+          "rang": 4
+        }
+      },
+      "Pacôme Tsonga": {
+        "prenom": "Pacôme",
+        "nom": "Tsonga",
+        "conformite": {
+          "prenom": "Pacôme",
+          "nom": " TSONGA",
+          "poste": "Directeur des Systèmes d’Information",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "TSONGA",
+          "prenom": "Pacôme",
+          "poste": "Directeur des Systèmes d’Information",
+          "scores": {
+            "Metier": 0.38,
+            "Talent": 0.37,
+            "Paradigme": 0.43
+          },
+          "Score_moyen": 39.33,
+          "niveau": "Le score moyen de 39.33 indique un score défavorable, ce qui suggère que le candidat ne répond pas aux attentes de l'entreprise. Il semble manquer des compétences clés et une adéquation avec la vision de transformation nécessaire pour la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est en dessous du seuil de 43.5, ce qui reflète un manque d’adéquation avec la vision et les besoins organisationnels.",
+          "points_forts": [
+            "Capacité à identifier des paradigmes à moderniser dans l'entreprise.",
+            "Une certaine compréhension des enjeux liés aux talents et à leur développement.",
+            "Expérience potentielle dans la gestion des infrastructures malgré un score faible."
+          ],
+          "points_a_travailler": [
+            "Développer des compétences métier spécifiques aux Systèmes d'Information et à leur gestion dans un contexte de transformation.",
+            "Améliorer la capacité à attirer et retenir des talents qualifiés pour répondre aux besoins de l'entreprise.",
+            "Renforcer la compréhension des paradigmes d'innovation et d'adaptabilité face aux évolutions industrielles."
+          ],
+          "rang": 8
+        },
+        "completude": {
+          "nom": "TSONGA",
+          "prenom": "Pacôme",
+          "poste": "Directeur des Systèmes d’Information",
+          "score": 42.6,
+          "resume_experience": "23 ans d'expériences avec une spécialité en cybersécurité et gestion des risques",
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat possède une solide expérience en cybersécurité, stratégies IT et management de projets qui sont essentielles pour le poste.",
+          "points_forts": [
+            "Expertise en gouvernance des systèmes d'information et en cybersécurité",
+            "Solide expérience en pilotage de projets IT transverses",
+            "Capacité à intégrer l'innovation et la transformation numérique"
+          ],
+          "points_a_travailler": [
+            "Amélioration continue des compétences en transformation digitale",
+            "Renforcement de la gestion de la culture numérique au sein de l'entreprise",
+            "Optimisation des ressources pour maximiser l'efficacité"
+          ],
+          "rang": 3
+        },
+        "feedback": {
+          "prenom": "Pacôme",
+          "nom": "TSONGA",
+          "score": 42.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat démontre un manque de leadership et d'initiative, essentiel pour le poste, et reçoit un feedback négatif concernant sa capacité à agir après avoir discuté des idées.",
           "Points forces": [],
           "Points à travailler": [
-            "Manque de compétences en management",
-            "Absence de vision stratégique et de leadership"
+            "Améliorer ses compétences en leadership et gestion d'équipe",
+            "Mettre en place des actions concrètes suite aux discussions et propositions"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 44.7,
+          "verdict": "défavorable",
+          "raison_verdict": "Le candidat n'a pas démontré les compétences en leadership et l'initiative nécessaires pour diriger efficacement les systèmes d'information dans un contexte économique et technologique exigeant.",
+          "resume": "Le candidat Pacôme Tsonga présente certaines faiblesses critiques comme un manque de leadership et d'initiative, essentielles pour le poste de Directeur des Systèmes d'Information à la SEEG, entreprise en quête d'amélioration et de transformation. Bien que son profil soit complet et conforme sur le plan documentaire, les retours RH sont défavorables en raison de sa difficulté à concrétiser les idées discutées.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Améliorer ses compétences en leadership et gestion d'équipe",
+            "Mettre en place des actions concrètes suite aux discussions et propositions"
+          ],
+          "rang": 5
+        }
+      },
+      "Emery Patrick Nkouele Mve": {
+        "prenom": "Emery",
+        "nom": "Patrick Nkouele Mve",
+        "conformite": {
+          "prenom": "Emery",
+          "nom": "Patrick NKOUELE MVE",
+          "poste": "Directeur des Systèmes d’Information",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "NKOUELE MVE",
+          "prenom": "Emery",
+          "poste": "Directeur des Systèmes d’Information",
+          "scores": {
+            "Metier": 0.4,
+            "Talent": 0.37,
+            "Paradigme": 0.43
+          },
+          "Score_moyen": 40.0,
+          "niveau": "Le score moyen de ce candidat est clairement défavorable pour le poste visé. Cela indique un manque d'alignement avec la vision stratégique de l'entreprise SEEG pour les années à venir.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 40.0 est en dessous du seuil de 43.5, indiquant un manque de compétences et d'aptitudes requises pour le poste.",
+          "points_forts": [
+            "Capacité à analyser les processus existants et identifier les points d'amélioration.",
+            "Compréhension des défis infrastructurels et organisationnels à surmonter.",
+            "Volonté d'engager un dialogue constructif avec les parties prenantes."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en leadership et en gestion des équipes.",
+            "Développer une compréhension approfondie des nouvelles technologies et leur application dans le secteur.",
+            "Améliorer les capacités d'innovation et de transformation digitale."
           ],
           "rang": 7
         },
+        "completude": {
+          "nom": "NKOUELE MVE",
+          "prenom": "Emery Patrick",
+          "poste": "Directeur des Systèmes d’Information",
+          "score": 39.8,
+          "resume_experience": "Plus de 20 ans d'expérience en gestion informatique, spécialisation en réseaux et administration des systèmes d'information.",
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat possède une expérience substantielle et une connaissance approfondie du fonctionnement et des attentes de la SEEG, ainsi qu'une expertise technique avérée dans l'administration et la sécurité des systèmes d'information.",
+          "points_forts": [
+            "Parfaite connaissance de la SEEG et de sa culture d'entreprise.",
+            "Expérience en gestion d'équipes informatiques et de budget.",
+            "Connaissance approfondie des systèmes d'information, notamment le SINGA."
+          ],
+          "points_a_travailler": [
+            "Renforcer l'expertise dans la transformation digitale complète.",
+            "Acquérir une expérience directe en stratégie IT au-delà de la SEEG.",
+            "Augmenter l'engagement vers l'innovation continue et la veille technologique."
+          ],
+          "rang": 7
+        },
+        "feedback": {
+          "prenom": "Emery",
+          "nom": "PATRICK NKOUELE MVE",
+          "score": 42.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des lacunes dans sa communication et son respect de la hiérarchie, ce qui est critique dans un rôle de direction. Sa vision semble manquante, contrariant les exigences stratégiques de la SEEG.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Manque d'affirmation et de vision stratégique",
+            "Manque de respect envers la hiérarchie"
+          ],
+          "rang": 3
+        },
         "global": {
-          "score_global": 32.81,
+          "score_global": 44.31,
           "verdict": "défavorable",
-          "resume": "Le candidat, Steeve Ydrice Malouki Mouyapou, ne semble pas réellement équipé pour répondre aux exigences du poste de Directeur des Systèmes d’Information pour la SEEG. Les retours indiquent un manque significatif dans les compétences attendues en management et en leadership, essentielles pour la transformation stratégique requise par l'entreprise.",
+          "raison_verdict": "Le candidat ne possède pas la vision stratégique requise et ne respecte pas suffisamment la hiérarchie, ce qui est crucial pour le poste de Directeur des Systèmes d’Information dans le cadre des ambitions de transformation de la SEEG.",
+          "resume": "Emery Patrick Nkouele Mve présente des lacunes en communication et en respect de la hiérarchie, compromettant sa capacité à remplir efficacement un rôle directeur. Ses compétences stratégiques semblent insuffisantes pour répondre aux besoins de transformation et de modernisation de la SEEG.",
           "points_forts": [],
           "points_a_ameliorer": [
-            "Manque de compétences en management",
-            "Absence de vision stratégique et de leadership"
+            "Manque d'affirmation et de vision stratégique",
+            "Manque de respect envers la hiérarchie"
           ],
-          "rang": 8
+          "rang": 6
+        }
+      },
+      "Serge Bouchard": {
+        "prenom": "Serge",
+        "nom": "Bouchard",
+        "conformite": {
+          "prenom": "Serge",
+          "nom": " Bouchard",
+          "poste": "Directeur des Systèmes d’Information",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "Bouchard",
+          "prenom": "Serge",
+          "poste": "Directeur des Systèmes d’Information",
+          "scores": {
+            "Metier": 0.48,
+            "Talent": 0.41,
+            "Paradigme": 0.44
+          },
+          "Score_moyen": 44.33,
+          "niveau": "Le candidat présente un score moyen qui lui confère une évaluation défavorable. Cela indique qu'il pourrait avoir des lacunes importantes pour répondre aux exigences du poste et à la vision stratégique de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Son score moyen est en dessous du seuil requis, ce qui soulève des préoccupations sur son adéquation au poste visé.",
+          "points_forts": [
+            "Bonne connaissance des processus techniques en lien avec les systèmes d'information.",
+            "Capacité à identifier des solutions innovantes pour l'amélioration des infrastructures.",
+            "Compétences en gestion de projets liés à la transformation numérique."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences en leadership et en management d'équipe.",
+            "Développer une meilleure compréhension des enjeux gouvernance et transparence.",
+            "Améliorer ses compétences en stratégie d'optimisation des coûts."
+          ],
+          "rang": 4
+        },
+        "completude": {
+          "nom": "Bouchard",
+          "prenom": "Serge",
+          "poste": "Directeur des Systèmes d’Information",
+          "score": 41.8,
+          "resume_experience": "Plus de 25 ans d'expérience en systèmes informatiques, spécialisé en audit et sécurité informatique",
+          "verdict": "favorable",
+          "verdict_raison": "Serge Bouchard possède une solide expérience de plus de 25 ans dans le domaine des systèmes informatiques, avec une spécialisation en audit et sécurité qui est cruciale pour le poste de Directeur des Systèmes d’Information. Son profil correspond bien aux exigences stratégiques, d'innovation et de sécurité du poste.",
+          "points_forts": [
+            "Grande expérience en audit des systèmes d'information, ce qui est essentiel pour assurer la sécurité et la conformité.",
+            "Expérience en gestion de projets informatiques et stratégie de transformation digitale.",
+            "Compétence avérée en optimisation des infrastructures informatiques et sécurité des SI."
+          ],
+          "points_a_travailler": [
+            "Améliorer son niveau d'anglais pour faciliter les collaborations internationales.",
+            "Augmenter sa participation active dans la définition de stratégies numériques complètes incluant la transformation.",
+            "Renforcer la culture numérique et l'innovation en entreprise à travers des initiatives structurées."
+          ],
+          "rang": 4
+        },
+        "feedback": {
+          "prenom": "Serge",
+          "nom": "BOUCHARD",
+          "score": 32.4,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente un faible potentiel en matière de leadership et de management, ce qui est essentiel pour la transformation de la SEEG.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Leadership et management",
+            "Vision stratégique claire"
+          ],
+          "rang": 9
+        },
+        "global": {
+          "score_global": 40.64,
+          "verdict": "défavorable",
+          "raison_verdict": "Le candidat montre un faible potentiel en leadership et en management, des compétences cruciales pour la transformation envisagée par la SEEG.",
+          "resume": "Serge Bouchard présente un profil globalement défavorable pour le poste de Directeur des Systèmes d’Information, principalement en raison d'un potentiel limité en leadership et en management, qui sont essentiels pour orchestrer la transformation de l'entreprise conformément à la vision ambitieuse de la SEEG.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Leadership et management",
+            "Vision stratégique claire"
+          ],
+          "rang": 7
         }
       },
       "Alain Roger Koumba Vi": {
@@ -568,254 +578,232 @@
         "conformite": {
           "prenom": "Alain",
           "nom": "Roger KOUMBA VI",
+          "poste": "Directeur des Systèmes d’Information",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
-        "completude": {},
+        "mtp": {
+          "nom": "KOUMBA VI",
+          "prenom": "Alain",
+          "poste": "Directeur des Systèmes d’Information",
+          "scores": {
+            "Metier": 0.43,
+            "Talent": 0.37,
+            "Paradigme": 0.49
+          },
+          "Score_moyen": 43.0,
+          "niveau": "Le candidat présente un score moyen de 43.0, ce qui indique un niveau d'appartenance défavorable à la vision de l'entreprise. Ses compétences ne sont pas alignées avec les attentes stratégiques de la SEEG pour la transformation nécessaire dans le contexte actuel.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui le classe dans la catégorie défavorable. Cela indique que le candidat n'a pas les compétences requises pour soutenir la vision de transformation de la SEEG.",
+          "points_forts": [
+            "Bonne compréhension des enjeux techniques liés aux infrastructures.",
+            "Capacité à communiquer des idées sur la gouvernance renforcée.",
+            "Connaissance des technologies innovantes, nécessaire pour la transition énergétique."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion des talents pour optimiser les ressources humaines.",
+            "Renforcer la capacité à élaborer des stratégies de modernisation infrastructurelle.",
+            "Développer une meilleure compréhension des pratiques de gouvernance et de transparence."
+          ],
+          "rang": 6
+        },
+        "completude": {
+          "nom": "KOUMBA VI",
+          "prenom": "Alain Roger",
+          "poste": "Directeur des Systèmes d’Information",
+          "score": 40.5,
+          "resume_experience": "26 ans d'expérience en informatique, réseaux et télécommunications, avec spécialisation en systèmes d'information et communication.",
+          "verdict": "favorable",
+          "verdict_raison": "Alain Roger KOUMBA VI a une vaste expérience et une connaissance approfondie des réseaux, de la cybersécurité, et de la gestion des systèmes d'information, ce qui correspond bien aux attentes du rôle de DSI.",
+          "points_forts": [
+            "Expérience significative en tant que cadre supérieur dans le domaine des systèmes d'information.",
+            "Compétences avérées en matière de transformation numérique et de digitalisation.",
+            "Expertise en cybersécurité et gouvernance des systèmes d'information."
+          ],
+          "points_a_travailler": [
+            "Renforcer la connaissance des réglementations spécifiques au secteur de l'énergie.",
+            "Développer des compétences en gestion de la culture numérique dans les grandes organisations.",
+            "Accroître l'expérience en élaboration de stratégies IT alignées sur les objectifs de l'entreprise."
+          ],
+          "rang": 6
+        },
         "feedback": {
           "prenom": "Alain",
           "nom": "ROGER KOUMBA VI",
           "score": 32.5,
           "verdict": "Défavorable",
-          "raisons": "Le candidat montre un manque de leadership et de direction, ce qui est en contradiction avec la vision d'une SEEG nécessitant une gouvernance renforcée et une transformation radicale.",
-          "Points forces": [
-            "Aucune mention",
-            "Aucune mention"
-          ],
+          "raisons": "Le candidat présente des lacunes importantes en leadership et en vision stratégique, éléments essentiels pour le poste. Le feedback reçu indique un manque d'initiative et d'engagement flagrant.",
+          "Points forces": [],
           "Points à travailler": [
-            "Problème de leadership",
-            "Manque de vision stratégique"
+            "Leadership",
+            "Vision stratégique"
+          ],
+          "rang": 7
+        },
+        "global": {
+          "score_global": 40.1,
+          "verdict": "défavorable",
+          "raison_verdict": "Le candidat montre des lacunes significatives en leadership et en vision stratégique, cruciales pour le poste, ce qui entraîne une évaluation globale défavorable.",
+          "resume": "Alain Roger Koumba Vi présente un profil incompatible avec les exigences stratégiques et de leadership nécessaires pour accompagner la transformation de la SEEG. Son manque d'initiative et d'engagement, conjugué à de faibles scores en MTP et complétude, ne répond pas aux attentes de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Leadership",
+            "Vision stratégique"
+          ],
+          "rang": 8
+        }
+      },
+      "Derille Ovono Ename": {
+        "prenom": "Derille",
+        "nom": "Ovono Ename",
+        "conformite": {
+          "prenom": "DERILLE",
+          "nom": "OVONO ENAME",
+          "poste": "Directeur des Systèmes d’Information",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OVONO ENAME",
+          "prenom": "DERILLE",
+          "poste": "Directeur des Systèmes d’Information",
+          "scores": {
+            "Metier": 0.43,
+            "Talent": 0.39,
+            "Paradigme": 0.5
+          },
+          "Score_moyen": 44.0,
+          "niveau": "Le score moyen de 44.0 indique une synthèse des compétences professionnelles qui pourrait ne pas répondre pleinement aux aspirations de l'entreprise. Il est important d'améliorer certains aspects pour mieux s'aligner avec la vision stratégique de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est inférieur à 43.5, indiquant que le candidat ne montre pas suffisamment de compatibilité avec la vision de l'entreprise.",
+          "points_forts": [
+            "Possède une certaine compréhension des enjeux liés à la gestion des systèmes d'information.",
+            "Aptitude à identifier les besoins en infrastructures et en technologies adaptées.",
+            "Capacité à aborder les questions organisationnelles avec une perspective d'amélioration structurante."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion de projet et en leadership pour mieux diriger les équipes.",
+            "Améliorer les connaissances en matière de gouvernance et de transparence dans les opérations.",
+            "Développer des capacités d'adaptation face aux nouvelles technologies et aux innovations dans le secteur de l'énergie."
+          ],
+          "rang": 5
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Derille",
+          "nom": "OVONO ENAME",
+          "score": 32.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat montre un manque de leadership, ce qui est incompatible avec les exigences du poste pour mener à bien la transformation de la SEEG. Son feedback révèle des lacunes en matière de vision et de gestion adéquate des ressources.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Leadership",
+            "Vision stratégique",
+            "Gestion des ressources"
           ],
           "rang": 8
         },
         "global": {
-          "score_global": 21.25,
+          "score_global": 32.25,
           "verdict": "défavorable",
-          "resume": "Le candidat ne semble pas répondre aux exigences de leadership et de vision stratégique nécessaires pour accompagner la transformation souhaitée par la SEEG. Son feedback RH est particulièrement défavorable, soulignant des lacunes en gouvernance et en direction stratégique.",
+          "raison_verdict": "Derille Ovono Ename montre des insuffisances en leadership et gestion de la vision stratégique, essentielles pour la transformation attendue de la SEEG.",
+          "resume": "Le candidat Derille Ovono Ename ne répond pas aux attentes élevées de la SEEG en matière de transformation organisationnelle et technologique, étant donné le manque de leadership et de vision stratégique nécessaire pour diriger cette évolution.",
           "points_forts": [],
           "points_a_ameliorer": [
-            "Problème de leadership",
-            "Manque de vision stratégique"
+            "Leadership",
+            "Vision stratégique",
+            "Gestion des ressources"
           ],
           "rang": 9
         }
-      },
-      "Steeve Malouki Mouyapou": {
-        "prenom": "Steeve",
-        "nom": "Malouki Mouyapou",
-        "conformite": {},
-        "mtp": {
-          "nom": "MALOUKI MOUYAPOU",
-          "prenom": "Steeve",
-          "poste": "Direction des Systèmes d'Informations",
-          "scores": {
-            "Metier": 0.45,
-            "Talent": 0.42,
-            "Paradigme": 0.45
-          },
-          "Score_moyen": 44.0,
-          "niveau": "Le score moyen de 44.0 indique un potentiel limité pour correspondre à la vision de l'entreprise. Le candidat devra renforcer ses compétences pour s'aligner sur les attentes stratégiques de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est inférieur à 43.5, ce qui ne répond pas aux exigences de la vision de l'entreprise.",
-          "points_forts": [
-            "Compréhension des infrastructures et de leur importance pour le fonctionnement de l'entreprise.",
-            "Capacité à analyser et comprendre les enjeux organisationnels.",
-            "Réflexion sur des solutions innovantes dans le domaine numérique."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences techniques en gestion de systèmes d'information.",
-            "Développer des compétences en leadership et en gestion d'équipe.",
-            "Renforcer la compréhension des enjeux économiques et financiers liés à la SEEG."
-          ],
-          "rang": 1
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 11.0,
-          "verdict": "défavorable",
-          "resume": "Steeve Malouki Mouyapou apparaît comme un candidat dont le profil ne correspond pas aux attentes du poste de Directeur des Systèmes d’Information. Les scores faibles, notamment en termes de conformité documentaire et de complétude, suggèrent un décalage entre les compétences du candidat et les exigences spécifiques de la SEEG.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude des documents du dossier de candidature"
-          ],
-          "rang": 10
-        }
-      },
-      "Guy Koumba": {
-        "prenom": "Guy",
-        "nom": "Koumba",
-        "conformite": {},
-        "mtp": {
-          "nom": "Koumba",
-          "prenom": "Guy",
-          "poste": "Direction des Systèmes d'Informations",
-          "scores": {
-            "Metier": 0.46,
-            "Talent": 0.4,
-            "Paradigme": 0.42
-          },
-          "Score_moyen": 42.67,
-          "niveau": "Le score moyen de ce candidat est inférieur à la moyenne minimale recommandée, indiquant un alignement faible avec la vision de l'entreprise. Il est en déficit de compétences clés nécessaires pour mener à bien les objectifs stratégiques de la SEEG.",
-          "verdict": "défavorable",
-          "raison_du_verdict": "Le score moyen de 42.67 indique un manque d'adéquation avec la vision et les besoins de performance de l'entreprise.",
-          "points_forts": [
-            "Une connaissance des enjeux technologiques modernes qui peut être bénéfique dans le cadre de la digitalisation des processus.",
-            "Une potentielle capacité d'analyse des systèmes d'information qui pourrait contribuer à une meilleure gouvernance.",
-            "Une compréhension des besoins en modernisation des infrastructures."
-          ],
-          "points_a_travailler": [
-            "Développer des compétences en stratégie de gestion des ressources et des procédures internes.",
-            "Améliorer la gestion du personnel et des équipes pour répondre aux exigences d'efficacité opérationnelle.",
-            "Renforcer la capacité à développer des partenariats techniques avec des entités pertinentes."
-          ],
-          "rang": 4
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 10.67,
-          "verdict": "défavorable",
-          "resume": "Le profil de Guy Koumba ne répond pas aux exigences du poste de Directeur des Systèmes d'Information tel que défini par la vision ambitieuse de la SEEG. Le faible score global, incluant une conformité documentaire et une complétude inadéquate, indique des lacunes importantes dans l'alignement du candidat avec la stratégie de transformation de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire insuffisante",
-            "Inadéquation du CV et de la lettre de motivation avec l'offre"
-          ],
-          "rang": 11
-        }
-      },
-      "Alain Koumba Vi": {
-        "prenom": "Alain",
-        "nom": "Koumba Vi",
-        "conformite": {},
-        "mtp": {
-          "nom": "KOUMBA VI",
-          "prenom": "Alain",
-          "poste": "Direction des Systèmes d'Informations",
-          "scores": {
-            "Metier": 0.43,
-            "Talent": 0.37,
-            "Paradigme": 0.47
-          },
-          "Score_moyen": 42.33,
-          "niveau": "Le candidat présente des scores indiquant une faible adéquation à la vision de l'entreprise. Compte tenu de son score moyen, il est nécessaire d'évaluer les raisons derrière cette performance pour déterminer son potentiel futur dans l'organisation.",
-          "verdict": "défavorable",
-          "raison_du_verdict": "Le score moyen est en dessous du seuil minimal requis de 43.5, ce qui indique une inadéquation avec les attentes de l'entreprise.",
-          "points_forts": [
-            "Possède une connaissance technique de base dans les systèmes d'information.",
-            "Montre un intérêt pour l'innovation, ce qui pourrait être utile pour l'intégration des technologies intelligentes.",
-            "Peut apporter une perspective fraîche grâce à des compétences en phase avec les enjeux modernes de la digitalisation."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences en gestion de projet, particulièrement dans un contexte de réhabilitation d'infrastructures.",
-            "Développer des compétences relationnelles pour favoriser la collaboration entre les différents acteurs de l'entreprise.",
-            "Renforcer sa compréhension des enjeux économiques mondiaux et nationaux pour mieux s'aligner avec les objectifs de la SEEG."
-          ],
-          "rang": 6
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 10.58,
-          "verdict": "défavorable",
-          "resume": "Le candidat Alain Koumba Vi ne semble pas en conformité avec les attentes stratégiques de la SEEG, notamment en matière de transformation numérique et de gestion de l'information. Le score de feedback RH étant de 0, cela reflète des lacunes importantes dans son adaptation potentielle à la vision et aux besoins de restructuration de l'entreprise.",
-          "points_forts": [
-            "Expérience préalable dans des postes de direction",
-            "Connaissance générale des systèmes d'information"
-          ],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Manque d'alignement avec la vision stratégique de la SEEG"
-          ],
-          "rang": 12
-        }
-      },
-      "Emery Nkouele Mve": {
-        "prenom": "Emery",
-        "nom": "Nkouele Mve",
-        "conformite": {},
-        "mtp": {
-          "nom": "NKOUELE MVE",
-          "prenom": "Emery",
-          "poste": "Direction des Systèmes d'Informations",
-          "scores": {
-            "Metier": 0.4,
-            "Talent": 0.36,
-            "Paradigme": 0.39
-          },
-          "Score_moyen": 38.33,
-          "niveau": "Le candidat présente des scores en-dessous des attentes, indiquant une lacune significative en compétences et en adéquation avec les exigences du poste. Sa compréhension des enjeux stratégiques de l'entreprise semble limitée.",
-          "verdict": "défavorable",
-          "raison_du_verdict": "Le candidat a un score moyen de 38.33,   ce qui est bien en dessous du seuil минимальный requis.",
-          "points_forts": [
-            "Capacité à identifier les faiblesses opérationnelles",
-            "Motivation potentielle pour se former dans des domaines techniques",
-            "Connaissance limitée des enjeux de gouvernance"
-          ],
-          "points_a_travailler": [
-            "Approfondir les compétences en gestion des infrastructures technologiques",
-            "Développer une meilleure compréhension des enjeux de gouvernance et de transparence",
-            "Renforcer les capacités en management stratégique et en leadership"
-          ],
-          "rang": 8
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 9.58,
-          "verdict": "défavorable",
-          "resume": "Le candidat ne répond pas aux attentes du poste vis-à-vis de la transformation numérique et de modernisation souhaitée par la SEEG, en raison de scores bas dans plusieurs critères d'évaluation. L'absence de feedback RH et de conformité documentaire montre un manque de préparation ou d'adaptation au contexte spécifique de ce poste crucial.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude du dossier de candidature",
-            "Engagement démontré envers la vision et les objectifs stratégiques de l'entreprise"
-          ],
-          "rang": 13
-        }
-      },
-      "Dérille Ovono Ename": {
-        "prenom": "Dérille",
-        "nom": "Ovono Ename",
-        "conformite": {},
-        "mtp": {},
-        "completude": {
-          "nom": "OVONO ENAME",
-          "prenom": "Dérille",
-          "poste": "Directeur des Systèmes d’Information",
-          "score": 43.2,
-          "resume_experience": "16 années d'expérience dans les systèmes informatiques et la gestion de l'exploitation informatique.",
-          "verdict": "favorable",
-          "reason": "Le candidat présente une grande expérience en gestion des SI et a déjà occupé des rôles de gestion stratégique au sein de SEEG.",
-          "points_forts": [
-            "Expérience avérée en gestion de crises informatiques.",
-            "Compétence en stratégie de transformation digitale.",
-            "Capacité de leadership et de management des équipes."
-          ],
-          "points_a_travailler": [
-            "Développement des compétences en innovation continue pour anticiper les évolutions technologiques.",
-            "Renforcement des connaissances en réglementation IT pour la conformité.",
-            "Amélioration de la maîtrise des langues, en particulier l'espagnol."
-          ],
-          "rang": 2
-        },
-        "feedback": {},
-        "global": {
-          "score_global": 8.64,
-          "verdict": "défavorable",
-          "resume": "Le profil de Dérille Ovono Ename ne satisfait pas aux exigences de la SEEG pour le poste de Directeur des Systèmes d’Information. Son score global est défavorable, indiquant de potentiels manques de pertinence en termes de compétences ou d'expérience pour le poste, ainsi qu'une faible conformité documentaire.",
-          "points_forts": [
-            "Aucune information sur les forces spécifiques grâce à l’absence de feedback détaillé"
-          ],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Mise en adéquation du CV et de la lettre de motivation avec l'offre"
-          ],
-          "rang": 14
-        }
       }
+    },
+    "classement": [
+      {
+        "rang": 1,
+        "nom": "Angoue Bekale",
+        "prenom": "Thierry",
+        "score_global": 51.56,
+        "verdict": "moyen",
+        "raison_verdict": "Le candidat présente des compétences managériales mais son manque de vision stratégique et d'appuis positifs des équipes limitent sa capacité à impulser la transformation attendue par la SEEG."
+      },
+      {
+        "rang": 2,
+        "nom": "Mbot",
+        "prenom": "Sebastien",
+        "score_global": 47.58,
+        "verdict": "moyen",
+        "raison_verdict": "Bien qu'il démontre un potentiel de transformation, des défis restent dans la communication et la gestion relationnelle, ce qui impacte son score global moyen."
+      },
+      {
+        "rang": 3,
+        "nom": "Ydrice Malouki Mouyapou",
+        "prenom": "Steeve",
+        "score_global": 45.82,
+        "verdict": "moyen",
+        "raison_verdict": "Malgré des compétences techniques solides, le manque de leadership et de vision stratégique rend le candidat moyennement adapté pour accompagner l'entreprise dans sa transformation."
+      },
+      {
+        "rang": 4,
+        "nom": "Armel Koumba",
+        "prenom": "Guy",
+        "score_global": 45.38,
+        "verdict": "moyen",
+        "raison_verdict": "Bien que Guy ait des compétences techniques et managériales, ses faiblesses en leadership et en gestion des conflits le rendent inadapté pour un rôle crucial nécessitant une transformation au sein de l'entreprise."
+      },
+      {
+        "rang": 5,
+        "nom": "Tsonga",
+        "prenom": "Pacôme",
+        "score_global": 44.7,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat n'a pas démontré les compétences en leadership et l'initiative nécessaires pour diriger efficacement les systèmes d'information dans un contexte économique et technologique exigeant."
+      },
+      {
+        "rang": 6,
+        "nom": "Patrick Nkouele Mve",
+        "prenom": "Emery",
+        "score_global": 44.31,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat ne possède pas la vision stratégique requise et ne respecte pas suffisamment la hiérarchie, ce qui est crucial pour le poste de Directeur des Systèmes d’Information dans le cadre des ambitions de transformation de la SEEG."
+      },
+      {
+        "rang": 7,
+        "nom": "Bouchard",
+        "prenom": "Serge",
+        "score_global": 40.64,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat montre un faible potentiel en leadership et en management, des compétences cruciales pour la transformation envisagée par la SEEG."
+      },
+      {
+        "rang": 8,
+        "nom": "Roger Koumba Vi",
+        "prenom": "Alain",
+        "score_global": 40.1,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat montre des lacunes significatives en leadership et en vision stratégique, cruciales pour le poste, ce qui entraîne une évaluation globale défavorable."
+      },
+      {
+        "rang": 9,
+        "nom": "Ovono Ename",
+        "prenom": "Derille",
+        "score_global": 32.25,
+        "verdict": "défavorable",
+        "raison_verdict": "Derille Ovono Ename montre des insuffisances en leadership et gestion de la vision stratégique, essentielles pour la transformation attendue de la SEEG."
+      }
+    ],
+    "rapport_poste": {
+      "nb_candidats": 9,
+      "distribution_verdicts": {
+        "moyen": 4,
+        "défavorable": 6
+      },
+      "top_raisons": [
+        "Le candidat présente des compétences managériales mais son manque de vision stratégique et d'appuis positifs des équipes limitent sa capacité à impulser la transformation attendue par la SEEG.",
+        "Bien qu'il démontre un potentiel de transformation, des défis restent dans la communication et la gestion relationnelle, ce qui impacte son score global moyen.",
+        "Malgré des compétences techniques solides, le manque de leadership et de vision stratégique rend le candidat moyennement adapté pour accompagner l'entreprise dans sa transformation."
+      ],
+      "incoherences": []
     }
   }
+}
