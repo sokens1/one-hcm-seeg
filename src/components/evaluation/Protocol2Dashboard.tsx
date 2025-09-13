@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,15 +16,15 @@ interface StarRatingProps {
   disabled?: boolean;
 }
 
-const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disabled = false }) => {
-  const handleStarClick = (starValue: number) => {
+const StarRating: React.FC<StarRatingProps> = React.memo(({ value, onChange, label, disabled = false }) => {
+  const handleStarClick = useCallback((starValue: number) => {
     if (disabled) return;
     
     // Empêcher les clics involontaires en vérifiant si c'est un clic intentionnel
     // console.log('⭐ [STAR DEBUG] Clic sur étoile:', starValue, 'pour', label);
     
     onChange(starValue);
-  };
+  }, [disabled, onChange]);
 
   return (
     <div className="space-y-2">
@@ -61,7 +61,30 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
       <span className="text-xs text-muted-foreground">{value}/5</span>
     </div>
   );
-};
+});
+
+// Composant mémorisé pour les textareas
+const MemoizedTextarea = React.memo(({ 
+  placeholder, 
+  value, 
+  onChange, 
+  className, 
+  readOnly 
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  className: string;
+  readOnly: boolean;
+}) => (
+  <Textarea
+    placeholder={placeholder}
+    value={value}
+    onChange={onChange}
+    className={className}
+    readOnly={readOnly}
+  />
+));
 
 interface Protocol2DashboardProps {
   candidateName: string;
@@ -112,7 +135,7 @@ const translateStatus = (status: string) => {
   }
 };
 
-export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false }: Protocol2DashboardProps) {
+export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false }: Protocol2DashboardProps) {
   const {
     evaluationData,
     updateEvaluation,
@@ -121,16 +144,13 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
     isSaving,
     reload
   } = useOptimizedProtocol2Evaluation(applicationId);
-  // Pas de gestion de scroll comme le protocole 1 - plus simple et plus stable
 
   const handleDecision = (decision: 'embauche' | 'refuse') => {
     onStatusChange(decision);
   };
 
-  // Fonction de mise à jour simplifiée comme dans le protocole 1
-  const updateProtocol2 = (section: string, field: string, value: string | number) => {
-    // console.log('🎯 updateProtocol2 appelé:', { section, field, value });
-    
+  // Fonction de mise à jour exactement comme dans le protocole 1 avec useCallback
+  const updateProtocol2 = useCallback((section: string, field: string, value: string | number) => {
     updateEvaluation(prev => {
       const newData = { ...prev };
       const [category, subCategory] = field.split('.');
@@ -163,15 +183,9 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
         newData.status = 'in_progress';
       }
 
-      // console.log('📈 Données après mise à jour:', {
-      //   jeu_de_role: newData.mise_en_situation.jeu_de_role.score,
-      //   jeu_codir: newData.mise_en_situation.jeu_codir.score,
-      //   status: newData.status
-      // });
-
       return newData;
     });
-  };
+  }, [updateEvaluation]);
 
 
   // Calculer les scores directement comme dans le protocole 1
@@ -283,7 +297,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Jeu de rôle fonctionnel"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur le jeu de rôle..."
                 value={evaluationData.mise_en_situation.jeu_de_role.comments}
                 onChange={(e) => !isReadOnly && updateProtocol2('mise_en_situation', 'jeu_de_role.comments', e.target.value)}
@@ -299,7 +313,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Jeu de rôle CODIR"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur le jeu de rôle CODIR..."
                 value={evaluationData.mise_en_situation.jeu_codir.comments}
                 onChange={(e) => !isReadOnly && updateProtocol2('mise_en_situation', 'jeu_codir.comments', e.target.value)}
@@ -333,7 +347,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Key Performance Indicators (KPI's)"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur les KPI's..."
                 value={evaluationData.validation_operationnelle.fiche_kpis.comments}
                 onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
@@ -349,7 +363,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Key Risque Indicators (KRI's)"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur les KRI's..."
                 value={evaluationData.validation_operationnelle.fiche_kris?.comments || ''}
                 onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kris.comments', e.target.value)}
@@ -365,7 +379,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Key Control Indicators (KCI's)"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur les KCI's..."
                 value={evaluationData.validation_operationnelle.fiche_kcis?.comments || ''}
                 onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kcis.comments', e.target.value)}
@@ -399,7 +413,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Gap de compétences"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur l'analyse des compétences..."
                 value={evaluationData.analyse_competences.gap_competences.comments}
                 onChange={(e) => !isReadOnly && updateProtocol2('analyse_competences', 'gap_competences.comments', e.target.value)}
@@ -411,7 +425,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <div className="space-y-2">
                 <h5 className="font-medium text-sm">Formation requise et Justification</h5>
-                <Textarea
+                <MemoizedTextarea
                   placeholder="Commentaires sur la formation requise et justification..."
                   value={evaluationData.analyse_competences.plan_formation.comments}
                   onChange={(e) => !isReadOnly && updateProtocol2('analyse_competences', 'plan_formation.comments', e.target.value)}
@@ -457,4 +471,4 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
 
     </div>
   );
-}
+});

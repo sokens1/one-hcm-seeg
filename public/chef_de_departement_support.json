@@ -1,820 +1,1063 @@
 {
   "Chef de Département Support": {
-    "Thierry Angoue Bekale": {
-      "prenom": "Thierry",
-      "nom": "Angoue Bekale",
-      "conformite": {
-        "prenom": "Thierry",
-        "nom": "ANGOUE BEKALE",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {
-        "nom": "ANGOUE BEKALE",
-        "prenom": "Thierry",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.41,
-          "Talent": 0.41,
-          "Paradigme": 0.44
+    "candidats": {
+      "Patrick Essone Bibang": {
+        "prenom": "Patrick",
+        "nom": "Essone Bibang",
+        "conformite": {
+          "prenom": "Patrick",
+          "nom": "ESSONE BIBANG",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
         },
-        "Score_moyen": 42.0,
-        "niveau": "Le candidat présente un score moyen qui indique une performance inférieure aux attentes. Cela suggère qu'il doit renforcer ses compétences techniques et managériales pour aligner ses capacités à la vision de l'entreprise.",
-        "verdict": "défavorables",
-        "raison_du_verdict": "Le score moyen de 42.0 est strictement inférieur à 43.5, ce qui ne correspond pas aux exigences de l'entreprise dans son processus de transformation.",
-        "points_forts": [
-          "Connaissance des enjeux liés à la gestion des infrastructures.",
-          "Capacité à travailler en équipe et à communiquer avec divers acteurs.",
-          "Compréhension des défis techniques dans le secteur de l'énergie et de l'eau."
-        ],
-        "points_a_travailler": [
-          "Développer des compétences en gestion de projet afin d'initier et de suivre des travaux d'infrastructures.",
-          "Renforcer les capacités en gouvernance et gestion acquise pour améliorer la transparence.",
-          "Améliorer la compréhension des pratiques de régulation pour mieux répondre aux exigences de l'État."
-        ],
-        "rang": 4
-      },
-      "completude": {
-        "nom": "ANGOUE BEKALE",
-        "prenom": "Thierry",
-        "poste": "Chef de Département Support",
-        "score": 33.9,
-        "resume_experience": "28 ans d'expérience en management et informatique",
-        "verdict": "défavorable",
-        "points_forts": [
-          "Grande expérience en management des équipes",
-          "Compétences démontrées dans la mise en place de systèmes d'information et gestion de projets digitaux",
-          "Expertise en évaluations des risques financiers"
-        ],
-        "points_a_travailler": [
-          "Expérience limitée dans la coordination des directions commerciales et finances",
-          "Manque de mise en avant des réalisations en matière de KPIs et de tableaux de bord généraux",
-          "Nécessité de mettre l'accent sur l'amélioration continue des procédures de support globalisées"
-        ],
-        "rang": 6
-      },
-      "feedback": {},
-      "global": {
-        "score_global": 22.28,
-        "verdict": "défavorable",
-        "resume": "Thierry Angoue Bekale a des lacunes significatives, notamment un score de feedback RH nul, ce qui soulève des préoccupations quant à sa capacité à aligner ses compétences avec les attentes stratégiques et opérationnelles de l'entreprise. Son profil ne semble pas adapté aux défis complexes posés par la vision transformationnelle de la SEEG.",
-        "points_forts": [
-          "Conformité documentaire rigoureuse",
-          "Expérience potentielle dans le secteur énergétique"
-        ],
-        "points_a_ameliorer": [
-          "Manque de feedback RH favorable",
-          "Faible pertinence entre CV/LM et l’offre"
-        ],
-        "rang": 1
-      }
-    },
-    "Sleydge Olimbi-A-Bamba": {
-      "prenom": "Sleydge",
-      "nom": "Olimbi-A-Bamba",
-      "conformite": {
-        "prenom": "Sleydge",
-        "nom": "OLIMBI-A-BAMBA",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {
-        "nom": "OLIMBI-A-BAMBA",
-        "prenom": "Sleydge",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.38,
-          "Talent": 0.38,
-          "Paradigme": 0.39
+        "mtp": {
+          "nom": "ESSONE BIBANG",
+          "prenom": "Patrick",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Métier": 0.36,
+            "Talent": 0.38,
+            "Paradigme": 0.44
+          },
+          "Score_moyen": 39.33,
+          "niveau": "Le candidat montre des compétences insuffisantes pour intégrer la vision stratégique de l'entreprise. Son score indique un besoin majeur d'amélioration pour répondre aux exigences du poste visé.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est inférieur à 43.5, ce qui le rend inadapté pour le poste de Chef de Département Support.",
+          "points_forts": [
+            "Compréhension des enjeux liés aux infrastructures vieillissantes.",
+            "Capacité à identifier la nécessité d'une modernisation des processus.",
+            "Connaissance des problématiques de gouvernance et de transparence."
+          ],
+          "points_a_travailler": [
+            "Acquérir des compétences pratiques liées à la gestion de projets techniques.",
+            "Renforcer ses capacités en management et leadership d'équipe.",
+            "Développer une meilleure compréhension des normes et pratiques de l'industrie de l'énergie."
+          ],
+          "rang": 6
         },
-        "Score_moyen": 38.33,
-        "niveau": "Le candidat présente une performance qui est nettement en dessous des attentes pour le poste visé. Ses scores faibles indiquent un inadéquation avec les exigences de la vision de l'entreprise, notamment en matière de réorganisation et d'innovation.",
-        "verdict": "défavorable",
-        "raison_verdict": "Le score moyen de 38.33 est largement en dessous du seuil minimum de 43.5, indiquant une inadéquation avec la vision de transformation de l'entreprise.",
-        "points_forts": [
-          "Capacité à identifier les problèmes critiques au sein de l'organisation.",
-          "Motivation à améliorer les infrastructures et services.",
-          "Compréhension des défis de gouvernance et de gestion de ressources."
-        ],
-        "points_a_travailler": [
-          "Renforcer les compétences techniques et managériales pour répondre aux changements demandés.",
-          "Développer une approche proactive en matière de gestion des ressources et d'optimisation des coûts.",
-          "Accroître la compréhension des processus digitaux pour améliorer la transparence et l'efficacité dans la facturation."
-        ],
-        "rang": 7
-      },
-      "completude": {
-        "nom": "OLIMBI-A-BAMBA",
-        "prenom": "Sleydge",
-        "poste": "Chef de Département Support",
-        "score": 38.2,
-        "resume_experience": "18 années d'expérience dans le domaine de la Finance",
-        "verdict": "moyen",
-        "points_forts": [
-          "Forte expérience en évaluation et gestion des risques financiers",
-          "Solides compétences managériales et en gestion de projets",
-          "Capacité à diriger et motiver des équipes"
-        ],
-        "points_a_travailler": [
-          "Expérience limitée dans la coordination de plusieurs grandes directions support",
-          "Nécessite un approfondissement en mise en place de procédures internes spécifiques au Support",
-          "Besoin de renforcer l’expérience pratique en élaboration de tableaux de bord pour les directions support"
-        ],
-        "rang": 3
-      },
-      "feedback": {},
-      "global": {
-        "score_global": 22.22,
-        "verdict": "défavorable",
-        "resume": "Le candidat présente un profil qui ne répond pas aux attentes de l'entreprise, surtout en raison de son score de feedback RH nul. La SEEG vise une transformation majeure, et le candidat manque des compétences nécessaires pour contribuer efficacement à cette mission.",
-        "points_forts": [
-          "Conformité documentaire impeccable"
-        ],
-        "points_a_ameliorer": [
-          "Amélioration nécessaire du feedback RH",
-          "Alignement aux objectifs stratégiques de l'entreprise"
-        ],
-        "rang": 2
-      }
-    },
-    "Juvenal Awori Onanga": {
-      "prenom": "Juvenal",
-      "nom": "Awori Onanga",
-      "conformite": {
-        "prenom": "JUVENAL",
-        "nom": "AWORI ONANGA",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {
-        "nom": "AWORI ONANGA",
-        "prenom": "JUVENAL",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.39,
-          "Talent": 0.42,
-          "Paradigme": 0.45
+        "completude": {
+          "nom": "ESSONE BIBANG",
+          "prenom": "Patrick",
+          "poste": "Chef de Département Support",
+          "score": 41,
+          "resume_experience": "Plus de 20 ans d'expérience, spécialisé en gestion de la relation client, facturation, recouvrement et études économiques.",
+          "verdict": "favorable",
+          "verdict_raison": "Patrick a une vaste expérience pertinente de plus de 20 ans, y compris dans des fonctions de direction et de gestion d'équipes, ce qui correspond bien aux exigences du poste.",
+          "points_forts": [
+            "Expertise en gestion de la relation client et recouvrement",
+            "Expérience en élaboration de stratégies commerciales et pilotage de la performance",
+            "Compétence en direction commerciale et gestion de portefeuilles stratégiques"
+          ],
+          "points_a_travailler": [
+            "Amélioration continue des compétences en gestion financière et budgétaire",
+            "Renforcement des connaissances en coordination des fonctions support",
+            "Perfectionnement des compétences linguistiques en anglais et espagnol pour une communication internationale efficace"
+          ],
+          "rang": 8
         },
-        "Score_moyen": 42.0,
-        "niveau": "Le score moyen du candidat est considéré comme défavorable. Il est en deçà des attentes requises pour adhérer à la vision de l'entreprise.",
-        "verdict": "défavorable",
-        "raison_verdict": "Le score moyen de 42.0 indique un manque d'adéquation avec les exigences de la vision de l'entreprise.",
-        "points_forts": [
-          "Capacité d'analyse des problèmes opérationnels.",
-          "Compréhension des enjeux de gouvernance dans le secteur.",
-          "Motivation à participer à des améliorations stratégiques au sein de l'entreprise."
-        ],
-        "points_a_travailler": [
-          "Améliorer les compétences techniques spécifiques au secteur de l'énergie.",
-          "Développer une meilleure compréhension des processus de gestion des ressources.",
-          "Renforcer les aptitudes en leadership et en gestion d'équipe."
-        ],
-        "rang": 3
+        "feedback": {
+          "prenom": "Patrick",
+          "nom": "ESSONE BIBANG",
+          "score": 73.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre des qualités de leadership affirmé, ce qui est essentiel pour piloter des efforts de transformation au sein de la SEEG. Sa capacité à envisager des rôles de direction supplémentaires indique une vision stratégique qui peut contribuer à la modernisation et à la gouvernance renforcée de l'entreprise.",
+          "Points forces": [
+            "Leadership affirmé, essentiel pour la réorganisation et la modernisation de l'infrastructure.",
+            "Capacités stratégiques, avec potentiel pour diriger des initiatives de recouvrement et de conformité."
+          ],
+          "Points à travailler": [
+            "Expérience directe dans le domaine technique, notamment en matière de gestion des infrastructures.",
+            "Compétences en gestion de crise pour faire face aux défis historiques de la SEEG."
+          ],
+          "rang": 1
+        },
+        "global": {
+          "score_global": 59.78,
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat démontre les compétences nécessaires en leadership et stratégie, ce qui est crucial pour parvenir aux transformations prévues par la SEEG.",
+          "resume": "Patrick Essone Bibang est un candidat qualifié pour le poste de Chef de Département Support, grâce à ses qualités de leadership affirmé et ses capacités stratégiques. Cependant, il devra améliorer son expérience technique et sa gestion de crise pour pleinement répondre aux défis de la SEEG.",
+          "points_forts": [
+            "Leadership affirmé, essentiel pour la réorganisation.",
+            "Capacités stratégiques pour diriger des initiatives."
+          ],
+          "points_a_ameliorer": [
+            "Expérience directe dans le domaine technique.",
+            "Compétences en gestion de crise."
+          ],
+          "rang": 1
+        }
       },
-      "completude": {
-        "nom": "AWORI ONANGA",
+      "Germaine Bouyomba Mougola": {
+        "prenom": "Germaine",
+        "nom": "Bouyomba Mougola",
+        "conformite": {
+          "prenom": "Germaine",
+          "nom": "BOUYOMBA MOUGOLA",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "BOUYOMBA MOUGOLA",
+          "prenom": "Germaine",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.39,
+            "Talent": 0.4,
+            "Paradigme": 0.49
+          },
+          "Score_moyen": 42.67,
+          "niveau": "Le score moyen de 42.67 est strictement inférieur à la norme acceptée, indiquant des lacunes significatives dans les compétences et la vision du candidat. Cela suggère également une inadéquation avec les valeurs et objectifs stratégiques de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score faible indique une absence d'alignement avec la vision transformationnelle requise par la SEEG.",
+          "points_forts": [
+            "Connaissance des enjeux organisationnels et possibilité d'apport en matière de restructuration.",
+            "Capacité d'adaptation aux processus de transformation.",
+            "Aptitude à travailler avec des équipes multidisciplinaires."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences techniques spécifiques à l'industrie de l'eau et de l'électricité.",
+            "Développer des capacités en leadership et en gestion du changement.",
+            "Acquérir une meilleure compréhension des enjeux de gouvernance et de transparence."
+          ],
+          "rang": 2
+        },
+        "completude": {
+          "nom": "BOUYOMBA MOUGOLA",
+          "prenom": "Germaine",
+          "poste": "Chef de Département Support",
+          "score": 41.4,
+          "resume_experience": "Près de 20 ans d’expérience managériale, notamment en gestion des ressources humaines et support clientèle.",
+          "verdict": "favorable",
+          "raison": "Germaine possède une expérience managériale diversifiée avec une forte orientation vers la gestion des ressources humaines, des indicateurs de performance et la coordination des fonctions support, qui sont essentielles pour le poste de Chef de Département Support.",
+          "points_forts": [
+            "Expérience en gestion des ressources humaines et formation",
+            "Compétences en gestion stratégique et optimisation des ressources",
+            "Capacités éprouvées dans le suivi des indicateurs de performance et l'analyse organisationnelle"
+          ],
+          "points_a_travailler": [
+            "Amélioration de l'expérience en analyse des risques liés aux directions supervisées",
+            "Renforcement des compétences en élaboration et suivi de budgets départementaux",
+            "Approfondissement des connaissances en amélioration continue et actions correctives"
+          ],
+          "rang": 7
+        },
+        "feedback": {
+          "prenom": "Germaine",
+          "nom": "BOUYOMBA MOUGOLA",
+          "score": 68.7,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente un bon leadership et une orientation vers les résultats, ce qui est crucial pour le rôle de Chef de Département Support dans une période de transformation. Son expérience antérieure dans un poste similaire vient renforcer sa crédibilité. Toutefois, il existe des préoccupations sur certaines procédures de recrutement.",
+          "Points forces": [
+            "Leadership affirmé avec une capacité à impliquer les collaborateurs",
+            "Expérience pertinente en poste de direction, connaissance des enjeux"
+          ],
+          "Points à travailler": [
+            "Clarifier les suspicions autour des pratiques de recrutement",
+            "S'assurer d'une conformité totale avec les politiques de gestion des ressources humaines"
+          ],
+          "rang": 2
+        },
+        "global": {
+          "score_global": 58.3,
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat présente un bon leadership et une orientation vers les résultats, essentiels pour accompagner la transformation de l'entreprise.",
+          "resume": "Germaine Bouyomba Mougola est un candidat favorable pour le poste de Chef de Département Support, avec un bon leadership et une expérience pertinente en poste de direction. Cependant, des questions sur certaines procédures de recrutement nécessitent clarification.",
+          "points_forts": [
+            "Leadership affirmé avec une capacité à impliquer les collaborateurs",
+            "Expérience pertinente en poste de direction",
+            "Connaissance des enjeux"
+          ],
+          "points_a_ameliorer": [
+            "Clarifier les suspicions autour des pratiques de recrutement",
+            "S'assurer d'une conformité totale avec les politiques de gestion des ressources humaines"
+          ],
+          "rang": 2
+        }
+      },
+      "Wilfried Jimmy Moukoumi": {
+        "prenom": "Wilfried",
+        "nom": "Jimmy Moukoumi",
+        "conformite": {
+          "prenom": "Wilfried",
+          "nom": "Jimmy MOUKOUMI",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MOUKOUMI",
+          "prenom": "Wilfried",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.35,
+            "Talent": 0.34,
+            "Paradigme": 0.47
+          },
+          "Score_moyen": 38.67,
+          "niveau": "Le score moyen de 38.67 indique une forte inadéquation avec la vision de l'entreprise. Ce résultat met en évidence des manques significatifs dans les compétences et la compréhension nécessaires pour répondre aux défis stratégiques de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score est bien en dessous du seuil acceptable, ce qui reflète des lacunes dans les domaines critiques de compétence et de talent.",
+          "points_forts": [
+            "Possède une certaine capacité d'adaptation face aux défis organisationnels.",
+            "Montre un intérêt pour les questions de gouvernance et de transparence.",
+            "Compréhension des enjeux liés à la gestion des ressources."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences techniques liées au métier spécifiquement dans le secteur de l'énergie et de l'eau.",
+            "Développer des talents en leadership pour mieux gérer une équipe et réduire les tensions organisationnelles.",
+            "Renforcer la compréhension de la stratégie et des enjeux financiers de l'entreprise pour contribuer efficacement."
+          ],
+          "rang": 7
+        },
+        "completude": {
+          "nom": "MOUKOUMI",
+          "prenom": "Wilfried Jimmy",
+          "poste": "Chef de Département Support",
+          "score": 46.4,
+          "resume_experience": "24 ans en audit financier, finance, supply chain management, et management",
+          "verdict": "moyen",
+          "phrase_verdict": "Le candidat a un bon score de similarité avec de l'expérience pertinente, mais son score reste moyen du fait de certaines lacunes en lien direct avec les exigences du poste.",
+          "points_forts": [
+            "Expérience significative en supervision financière et comptable",
+            "Compétences en optimisation des coûts et management général",
+            "Connaissance approfondie des systèmes de gestion et des procédures"
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion des ressources humaines",
+            "Améliorer l'expérience en définition et suivi des indicateurs de performance",
+            "Développer des compétences spécifiques en gestion des directions commerciales et recouvrement"
+          ],
+          "rang": 2
+        },
+        "feedback": {
+          "prenom": "Wilfried",
+          "nom": "JIMMY MOUKOUMI",
+          "score": 67.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente des qualités managériales solides et une forte personnalité, essentielles pour le poste de Chef de Département Support. Son feedback positif montre une capacité à s'adapter et à se projeter dans des environnements complexes, utiles dans le cadre de la transformation de la SEEG.",
+          "Points forces": [
+            "Bonnes compétences managériales",
+            "Capacité à travailler dans un environnement complexe"
+          ],
+          "Points à travailler": [
+            "Amélioration des compétences techniques liées au secteur de l'eau et de l'électricité",
+            "Vision stratégique plus précise alignée sur le plan d'investissement ambitieux"
+          ],
+          "rang": 3
+        },
+        "global": {
+          "score_global": 57.7,
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat est bien placé pour le poste grâce à son expertise managériale et sa capacité à naviguer dans des environnements complexes, ce qui est crucial pour la transformation en cours à la SEEG.",
+          "resume": "Wilfried Jimmy Moukoumi dispose de solides compétences managériales et d'une forte personnalité, qui sont essentielles pour le rôle de Chef de Département Support. Bien qu'il excelle dans la gestion de situations complexes, il doit encore améliorer ses compétences techniques spécifiques au secteur de l'eau et de l'électricité pour mieux s'aligner avec le plan d'investissement ambitieux de la SEEG.",
+          "points_forts": [
+            "Bonnes compétences managériales",
+            "Capacité à travailler dans un environnement complexe"
+          ],
+          "points_a_ameliorer": [
+            "Amélioration des compétences techniques liées au secteur de l'eau et de l'électricité",
+            "Vision stratégique plus précise alignée sur le plan d'investissement ambitieux"
+          ],
+          "rang": 3
+        }
+      },
+      "Juvenal Awori Onanga": {
         "prenom": "Juvenal",
-        "poste": "Chef de Département Support",
-        "score": 33.6,
-        "resume_experience": "26 années d'expérience, principalement dans le secteur de l'énergie et de l'eau.",
-        "verdict": "défavorable",
-        "points_forts": [
-          "Solide expérience en gestion d'équipes et de direction de département",
-          "Compétences avérées en gestion de portefeuilles financiers importants",
-          "Expérience en élaboration et suivi de budgets de fonctionnement et d'investissement"
-        ],
-        "points_a_travailler": [
-          "Accroître la polyvalence dans des domaines autres que les utilités pour un poste de Chef de Département Support",
-          "Développer des compétences spécifiques en analyse des risques au niveau multi-direction",
-          "Améliorer l'expérience en gestion des indicateurs de performance (KPIs) dans divers départements"
-        ],
-        "rang": 8
-      },
-      "feedback": {},
-      "global": {
-        "score_global": 22.22,
-        "verdict": "défavorable",
-        "resume": "Le candidat présente des lacunes significatives en termes de pertinence pour le poste, avec un score global défavorable reflétant un manque de complétude et un feedback RH inexistant. Le profil ne satisfait pas les critères essentiels nécessaires pour répondre aux ambitions de transformation de la SEEG.",
-        "points_forts": [],
-        "points_a_ameliorer": [
-          "Pertinence du profil par rapport au poste",
-          "Feedback RH inexistant",
-          "Complétude du dossier de candidature"
-        ],
-        "rang": 3
-      }
-    },
-    "Germaine Bouyomba Mougola": {
-      "prenom": "Germaine",
-      "nom": "Bouyomba Mougola",
-      "conformite": {
-        "prenom": "Germaine",
-        "nom": "BOUYOMBA MOUGOLA",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {
-        "nom": "BOUYOMBA MOUGOLA",
-        "prenom": "Germaine",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.39,
-          "Talent": 0.4,
-          "Paradigme": 0.48
+        "nom": "Awori Onanga",
+        "conformite": {
+          "prenom": "JUVENAL",
+          "nom": "AWORI ONANGA",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
         },
-        "Score_moyen": 42.33,
-        "niveau": "Le score moyen de 42.33 est défavorable, indiquant une inadéquation avec les critères et attentes de la vision de l'entreprise. Une amélioration significative est nécessaire pour aligner les compétences avec les objectifs stratégiques de la SEEG.",
-        "verdict": "défavorable",
-        "raison_verdict": "Le score moyen est en dessous du seuil de compétence requis pour le poste prévu.",
-        "points_forts": [
-          "Bonne compréhension des enjeux métiers liés au support au sein de l'entreprise.",
-          "Capacité à apprendre rapidement et à s'adapter aux environnements professionnels.",
-          "Avantages potentiels grâce à sa vision de transformation dans le domaine du support."
-        ],
-        "points_a_travailler": [
-          "Renforcer les compétences spécifiques liées à la gestion des infrastructures vieillissantes et à leur modernisation.",
-          "Améliorer les aptitudes en gouvernance et en transparence des processus pour répondre aux exigences stratégiques.",
-          "Développer une vision technique et économique plus robuste afin de participer activement au plan d'investissement."
-        ],
-        "rang": 2
-      },
-      "completude": {
-        "nom": "BOUYOMBA MOUGOLA",
-        "prenom": "Germaine",
-        "poste": "Chef de Département Support",
-        "score": 32.7,
-        "resume_experience": "16 ans d'expérience en gestion de service client, ressources humaines et support",
-        "verdict": "défavorable",
-        "points_forts": [
-          "Expérience en gestion de budget",
-          "Compétences en ressources humaines",
-          "Compétences en gestion de projet"
-        ],
-        "points_a_travailler": [
-          "Faible similarité avec les fonctions spécifiques du poste visé",
-          "Besoin de renforcer les compétences en analyse des risques",
-          "Amélioration nécessaire dans l'établissement de KPIs pour les départements support"
-        ],
-        "rang": 9
-      },
-      "feedback": {},
-      "global": {
-        "score_global": 22.12,
-        "verdict": "défavorable",
-        "resume": "Le profil de Germaine Bouyomba Mougola ne correspond pas suffisamment aux exigences du poste de Chef de Département Support, en particulier face aux ambitions de transformation et d'efficacité requises par la SEEG. L'absence de feedback RH positif et les scores bas au niveau de la complétude et de la mise en pratique des compétences limitent la candidature.",
-        "points_forts": [
-          "Conformité documentaire exemplaire avec un score de 100"
-        ],
-        "points_a_ameliorer": [
-          "Faible mise en pratique des compétences (MTP: 42.33)",
-          "Complétude CV et Lettre de Motivation par rapport à l'offre faible (32.7)"
-        ],
-        "rang": 4
-      }
-    },
-    "Jean-Michel Sipamio-Berre": {
-      "prenom": "Jean-Michel",
-      "nom": "Sipamio-Berre",
-      "conformite": {
-        "prenom": "Jean-Michel",
-        "nom": "SIPAMIO-BERRE",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {
-        "nom": "SIPAMIO-BERRE",
-        "prenom": "Jean-Michel",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.35,
-          "Talent": 0.34,
-          "Paradigme": 0.4
+        "mtp": {
+          "nom": "AWORI ONANGA",
+          "prenom": "JUVENAL",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.39,
+            "Talent": 0.42,
+            "Paradigme": 0.47
+          },
+          "Score_moyen": 42.67,
+          "niveau": "Le candidat présente un score moyen en dessous des attentes de l'entreprise, indiquant des lacunes dans plusieurs domaines clés. Cela pourrait poser des défis dans la mise en oeuvre de la vision stratégique de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 42.67 est strictement inférieur à la barre souhaitée, ce qui indique une inadéquation avec la vision de l'entreprise.",
+          "points_forts": [
+            "Capacité à adapter ses compétences techniques aux besoins du secteur énergétique.",
+            "Engagement potentiel envers l'amélioration des processus de support.",
+            "Sensibilité aux enjeux de gouvernance et de transparence."
+          ],
+          "points_a_travailler": [
+            "Développer des compétences managériales pour la réorganisation et la gestion d'équipe.",
+            "Renforcer la connaissance des enjeux économiques et de rentabilité dans le secteur.",
+            "Améliorer la compréhension des technologies innovantes et de la transition énergétique."
+          ],
+          "rang": 3
         },
-        "Score_moyen": 36.33,
-        "niveau": "Le score moyen de ce candidat est clairement en dessous des attentes. Son adhésion à la vision de l'entreprise et sa capacité à répondre aux défis actuels semblent limitées.",
-        "verdict": "défavorable",
-        "raison": "Le score moyen de 36.33 est bien en dessous du seuil défini, indiquant un manque d'alignement avec la vision transformationnelle de l'entreprise.",
-        "points_forts": [
-          "Excellente compréhension des enjeux du secteur de l'eau et de l'électricité.",
-          "Capacité à identifier les faiblesses structurelles nécessitant une révision.",
-          "Approche analytique pour une amélioration continue des processus."
-        ],
-        "points_a_travailler": [
-          "Renforcer ses compétences en gestion de projet pour la mise en œuvre des investissements urgents.",
-          "Développer sa compréhension des pratiques de gouvernance pour améliorer la transparence.",
-          "Améliorer ses capacités en leadership pour motiver et inspirer les équipes."
-        ],
-        "rang": 9
-      },
-      "completude": {
-        "nom": "SIPAMIO-BERRE",
-        "prenom": "Jean-Michel",
-        "poste": "Chef de Département Support",
-        "score": 39.6,
-        "resume_experience": "30 ans, gestion opérationnelle et transformation d'entreprise",
-        "verdict": "favorable",
-        "points_forts": [
-          "Expérience approfondie au sein de la SEEG et compréhension des processus internes",
-          "Compétences en optimisation opérationnelle et facturation",
-          "Leadership avéré et capacité à fédérer les équipes"
-        ],
-        "points_a_travailler": [
-          "Augmenter la compétence en gestion des ressources humaines étant donnée l'étendue du rôle de supervision",
-          "Élargir la compréhension des KPIs stratégiques pour les quatre Directions",
-          "Rechercher des innovations supplémentaires en digitalisation et systèmes d'information"
-        ],
-        "rang": 2
-      },
-      "feedback": {},
-      "global": {
-        "score_global": 22.0,
-        "verdict": "défavorable",
-        "resume": "Jean-Michel Sipamio-Berre présente un profil insuffisant pour le poste de Chef de Département Support à la SEEG. Le score global est défavorable avec un feedback RH inexistant, ce qui indique potentiellement une inadéquation avec les exigences critiques du poste, notamment dans un contexte de transformation organisationnelle.",
-        "points_forts": [
-          "Conformité documentaire impeccable"
-        ],
-        "points_a_ameliorer": [
-          "Absence de feedback RH",
-          "Inadéquation potentielle avec la vision stratégique"
-        ],
-        "rang": 5
-      }
-    },
-    "Patrick Essone Bibang": {
-      "prenom": "Patrick",
-      "nom": "Essone Bibang",
-      "conformite": {
-        "prenom": "Patrick",
-        "nom": "ESSONE BIBANG",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {
-        "nom": "ESSONE BIBANG",
-        "prenom": "Patrick",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.36,
-          "Talent": 0.38,
-          "Paradigme": 0.42
+        "completude": {
+          "nom": "AWORI ONANGA",
+          "prenom": "Juvenal",
+          "poste": "Chef de Département Support",
+          "score": 41.8,
+          "resume_experience": "25 années en gestion des départements et coordination de projets dans le secteur de l'eau et de l'énergie, gestion de budgets importants et supervision de grandes équipes",
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide expérience en gestion et coordination de projets importants",
+            "Compétences en management de la qualité et environnement",
+            "Connaissances approfondies du secteur de la SEEG et des processus internes"
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences linguistiques en anglais pour internationalisation",
+            "Optimiser les connaissances en outils de suivi et d'analyse modernes",
+            "Approfondir la compréhension des nouvelles méthodologies de gestion de la performance"
+          ],
+          "rang": 6
         },
-        "Score_moyen": 38.67,
-        "niveau": "Le score moyen de Patrick est défavorable, indiquant une inadéquation significative avec la vision de l'entreprise. Ses performances dans les domaines du métier, du talent et du paradigme restent largement en deçà des attentes requises pour le poste visé.",
-        "verdict": "défavorable",
-        "raison_du_verdict": "Le score moyen de 38.67 est strictement inférieur à la seuil de 43.5, ce qui suggère une capacité insuffisante à contribuer positivement à la vision stratégique de la SEEG.",
-        "points_forts": [
-          "Capacité à identifier des problèmes dans la gestion opérationnelle, tel que mentionné dans les scores.",
-          "Connaissance des défis spécifiques liés à l'infrastructure vieillissante et au besoin de modernisation.",
-          "Compréhension des exigences d'un service de qualité et fiable, essentiel pour le secteur de l'énergie."
-        ],
-        "points_a_travailler": [
-          "Améliorer les compétences techniques liées au métier pour répondre aux exigences de sa future fonction.",
-          "Développer davantage de capacités en gestion de projet pour la mise en œuvre des projets d'infrastructure.",
-          "Travailler sur des compétences relationnelles pour faciliter la communication avec les parties prenantes."
-        ],
-        "rang": 6
-      },
-      "completude": {
-        "nom": "ESSONE BIBANG",
-        "prenom": "Patrick",
-        "poste": "Chef de Département Support",
-        "score": 33.9,
-        "resume_experience": "Plus de 20 ans d’expérience en gestion clientèle, ventes, recouvrement, et gestion de portefeuilles stratégiques. Expérience en direction commerciale, et en animation d'équipes.",
-        "verdict": "défavorable",
-        "raison": "Le candidat a une grande expérience en direction commerciale, gestion clientèle et ventes, mais le score de similarité avec les responsabilités du poste est en dessous du seuil favorable, indiquant un manque d'adéquation avec le poste de Chef de Département Support qui nécessite une expérience plus axée sur la coordination de fonctions support et le développement stratégique de procédures internes.",
-        "points_forts": [
-          "Expertise en pilotage de performance et reporting décisionnel",
-          "Solide expérience en gestion de portefeuilles stratégiques",
-          "Compétences en leadership et gestion d'équipes"
-        ],
-        "points_a_travailler": [
-          "Expérience limitée dans la supervision de Directions diverses (RH, Finance, Générale)",
-          "Expérience dans l'élaboration et le suivi du budget global et des indicateurs de performance pour des départements non-commerciaux",
-          "Compréhension et mise en œuvre de la stratégie globale de l’entreprise au-delà de la perspective commerciale"
-        ],
-        "rang": 5
-      },
-      "feedback": {},
-      "global": {
-        "score_global": 21.45,
-        "verdict": "défavorable",
-        "resume": "Le candidat présente un profil peu adapté à la vision stratégique ambitieuse de la SEEG. L'absence de feedback RH positif et le faible score global pondéré démontrent une inadéquation avec les besoins du poste, particulièrement dans un contexte demandant des compétences managériales solides et une compréhension des enjeux de transformation.",
-        "points_forts": [
-          "Conformité documentaire élevée"
-        ],
-        "points_a_ameliorer": [
-          "Absence de feedback RH positif",
-          "Faible complétude du CV et de la lettre de motivation par rapport à l'offre"
-        ],
-        "rang": 6
-      }
-    },
-    "Étienne Mintsa Mi Nkoume": {
-      "prenom": "Étienne",
-      "nom": "Mintsa Mi Nkoume",
-      "conformite": {
-        "prenom": "Étienne",
-        "nom": " MINTSA MI NKOUME",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {
-        "nom": "MINTSA MI NKOUME",
-        "prenom": "Étienne",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Métier": 0.38,
-          "Talent": 0.39,
-          "Paradigme": 0.46
+        "feedback": {
+          "prenom": "Juvenal",
+          "nom": "AWORI ONANGA",
+          "score": 62.35,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre des qualités de leadership affirmées et un bon comportement, qui sont essentiels pour un rôle de gestion dans une période de restructuration et de transformation. Cependant, il devra approfondir sa compréhension des enjeux stratégiques de l'entreprise et des défis opérationnels.",
+          "Points forces": [
+            "Leadership affirmé",
+            "Bon comportement avec les équipes"
+          ],
+          "Points à travailler": [
+            "Compréhension des enjeux stratégiques",
+            "Connaissance des défis opérationnels et de gouvernance"
+          ],
+          "rang": 6
         },
-        "Score_moyen": 41.0,
-        "niveau": "Le candidat présente un score moyen défavorable qui indique un besoin d'amélioration significatif dans ses compétences professionnelles. Sa vision ne semble pas alignée avec les exigences stratégiques de l'entreprise pour la transformation nécessaire dans le contexte actuel de crise.",
-        "verdict": "défavorable",
-        "raison_verdict": "Le score moyen de 41.0 est inférieur à 43.5, ce qui indique un manque d'adéquation avec la vision de l'entreprise.",
-        "points_forts": [
-          "Capacité d'analyse des besoins opérationnels au sein du département Support.",
-          "Compétences interpersonnelles qui pourraient favoriser la communication et la collaboration au sein des équipes.",
-          "Motivation à comprendre les enjeux et défis liés au secteur de l'énergie et de l'eau."
-        ],
-        "points_a_travailler": [
-          "Renforcer ses compétences techniques spécifiques au secteur de l'énergie et de l'hydraulique.",
-          "Améliorer sa compréhension des processus de gestion financière et de gouvernance.",
-          "Développer une vision stratégique plus large en lien avec les investissements et la réhabilitation des infrastructures."
-        ],
-        "rang": 5
+        "global": {
+          "score_global": 55.2,
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat est favorable car il possède les qualités essentielles de leadership et d'interaction avec les équipes nécessaires pour réussir dans un rôle de gestion pendant une période de restructuration et de transformation. Cependant, il lui est conseillé de renforcer sa compréhension des défis stratégiques et opérationnels.",
+          "resume": "Juvenal Awori Onanga est évalué favorablement pour le poste de Chef de Département Support avec un score global de 55.2. Il démontre des qualités de leadership et une bonne interaction avec les équipes, essentielles dans le contexte de transformation de la SEEG. Il doit cependant approfondir sa compréhension des enjeux stratégiques et opérationnels.",
+          "points_forts": [
+            "Leadership affirmé",
+            "Bon comportement avec les équipes"
+          ],
+          "points_a_ameliorer": [
+            "Compréhension des enjeux stratégiques",
+            "Connaissance des défis opérationnels et de gouvernance"
+          ],
+          "rang": 4
+        }
       },
-      "completude": {
-        "nom": "MINTSA MI NKOUME",
-        "prenom": "Étienne",
-        "poste": "Chef de Département Support",
-        "score": 20.8,
-        "resume_experience": "",
-        "verdict": "défavorable",
-        "points_forts": [
-          "Aucun point fort notable par rapport au poste"
-        ],
-        "points_a_travailler": [
-          "Augmenter la similitude des compétences par rapport au poste",
-          "Développer des compétences en gestion de département",
-          "Améliorer les compétences analytiques pour l'analyse des risques"
-        ],
-        "rang": 11
-      },
-      "feedback": {},
-      "global": {
-        "score_global": 19.41,
-        "verdict": "défavorable",
-        "resume": "Étienne Mintsa Mi Nkoume n'a pas satisfait aux exigences de l'offre pour le poste de Chef de Département Support à la SEEG. Malgré une bonne conformité documentaire, ses scores de 'MTP' et de 'Complétude' sont faibles, et un feedback RH inexistant entrave toute évaluation positive. Il devra impérativement améliorer certains aspects pour correspondre à la vision transformatrice de l'entreprise.",
-        "points_forts": [
-          "Bonne conformité documentaire, score de 100"
-        ],
-        "points_a_ameliorer": [
-          "Faible adéquation entre le CV et la lettre de motivation par rapport à l'offre",
-          "Absence de feedback RH compromettant l'évaluation"
-        ],
-        "rang": 7
-      }
-    },
-    "Wivine Mengue": {
-      "prenom": "Wivine",
-      "nom": "Mengue",
-      "conformite": {
+      "Wivine Mengue": {
         "prenom": "Wivine",
-        "nom": "MENGUE",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {
-        "nom": "MENGUE",
-        "prenom": "Wivine",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.33,
-          "Talent": 0.31,
-          "Paradigme": 0.45
+        "nom": "Mengue",
+        "conformite": {
+          "prenom": "Wivine",
+          "nom": "MENGUE",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
         },
-        "Score_moyen": 36.33,
-        "niveau": "Le candidat présente des scores relativement bas dans tous les domaines évalués. Cela indique une adéquation limitée avec les attentes stratégiques de l'entreprise.",
-        "verdict": "défavorable",
-        "raison_verdict": "Son score moyen en dessous de 43.5 reflète une inadéquation avec les valeurs et les attentes de la vision de l'entreprise.",
-        "points_forts": [
-          "Capacité d'analyse des défis organisationnels.",
-          "Connaissance des enjeux liés à la gestion de l'eau et de l'électricité.",
-          "Compréhension des besoins en modernisation des infrastructures."
-        ],
-        "points_a_travailler": [
-          "Renforcer les compétences techniques spécifiques au secteur.",
-          "Développer des talents en gestion de projet et d'équipe.",
-          "Améliorer la compréhension des pratiques de gouvernance et de transparence."
-        ],
-        "rang": 10
+        "mtp": {
+          "nom": "MENGUE",
+          "prenom": "Wivine",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.33,
+            "Talent": 0.31,
+            "Paradigme": 0.47
+          },
+          "Score_moyen": 37.0,
+          "niveau": "Le score moyen de 37.0 indique une faible adéquation avec la vision de l'entreprise. Cela montre que le candidat n'est pas en phase avec les exigences actuelles et futures de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est très en dessous du seuil acceptable de 43.5, ce qui montre des lacunes importantes.",
+          "points_forts": [
+            "Connaissance des enjeux liés à la réhabilitation des infrastructures.",
+            "Compréhension des défis de gouvernance et d'audit qui sont cruciaux pour la SEEG.",
+            "Capacité à comprendre l'importance de la formation et de la motivation des employés."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion de projet pour contribuer aux rénovations prévues.",
+            "Développer une culture de transparence et d'accountabilité au sein des équipes.",
+            "Accroître les compétences techniques liées aux nouvelles technologies de monitoring et d'optimisation des coûts."
+          ],
+          "rang": 10
+        },
+        "completude": {
+          "nom": "MENGUE",
+          "prenom": "Wivine",
+          "poste": "Chef de Département Support",
+          "score": 43.2,
+          "resume_experience": "13 ans d'expérience dans la production, le transport et la distribution de l'électricité, la planification et normalisation, le contrôle commande, la gestion QHSE et la gestion de projets stratégiques.",
+          "verdict": "favorable",
+          "raison": "Le candidat possède une expérience de plus de 13 ans dans des domaines pertinents et a démontré des compétences en gestion stratégique et opérationnelle, ce qui favorise sa candidature pour le poste de Chef de Département Support.",
+          "points_forts": [
+            "Expérience solide en gestion de projets stratégiques.",
+            "Compétences en planification stratégique et opérationnelle.",
+            "Leadership et capacité à piloter des équipes et des activités."
+          ],
+          "points_a_travailler": [
+            "Acquisition de plus d'expérience directe en gestion budgétaire à l'échelle d'un département complet.",
+            "Renforcement des compétences spécifiques dans l'optimisation des coûts et du bien-être des employés.",
+            "Développement d'une approche plus axée sur l'analyse des risques des directions supervisées."
+          ],
+          "rang": 3
+        },
+        "feedback": {
+          "prenom": "Wivine",
+          "nom": "MENGUE",
+          "score": 62.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente un bon potentiel en tant que manager, avec un comportement très positif et une capacité d'adaptation. Cependant, son leadership doit encore se consolider pour répondre aux attentes élevées de la SEEG dans sa transformation. Cela donne un score au-dessus de la moyenne.",
+          "Points forces": [
+            "Bon comportement managérial",
+            "Potentiel de développement"
+          ],
+          "Points à travailler": [
+            "Affirmer son leadership",
+            "Expérience spécifique en électricité"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 54.14,
+          "verdict": "moyen",
+          "raison_verdict": "Le candidat présente un potentiel intéressant mais doit consolider son leadership et acquérir plus d'expérience en électricité pour répondre aux exigences élevées de la transformation de la SEEG.",
+          "resume": "Wivine Mengue possède un potentiel de développement significatif et un comportement managérial positif, ce qui en fait un candidat prometteur pour la SEEG. Toutefois, pour contribuer pleinement à la transformation stratégique et ambitieuse de l'entreprise, son leadership doit être renforcé et son expérience en électricité améliorée.",
+          "points_forts": [
+            "Bon comportement managérial",
+            "Potentiel de développement"
+          ],
+          "points_a_ameliorer": [
+            "Affirmer son leadership",
+            "Expérience spécifique en électricité"
+          ],
+          "rang": 5
+        }
       },
-      "completude": {
-        "nom": "MENGUE",
-        "prenom": "Wivine",
-        "poste": "Chef de Département Support",
-        "resume_experience": "Non détecté",
-        "verdict": [],
-        "points_forts": "Analyse échouée (Error code: 429 - {'error': {'message': 'Rate limit reached for gpt-4o in organization org-aoRA7l9j5rQZ7YfhVeRvIBw8 on tokens per min (TPM): Limit 30000, Used 28868, Requested 2445. Please try again in 2.626s. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}})",
-        "points_a_travailler": [],
-        "rang": 10
+      "Jean-Michel Sipamio-Berre": {
+        "prenom": "Jean-Michel",
+        "nom": "Sipamio-Berre",
+        "conformite": {
+          "prenom": "Jean-Michel",
+          "nom": "SIPAMIO-BERRE",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "SIPAMIO-BERRE",
+          "prenom": "Jean-Michel",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.35,
+            "Talent": 0.34,
+            "Paradigme": 0.42
+          },
+          "Score_moyen": 37.0,
+          "niveau": "Le candidat présente un score moyen défavorable, indiquant un manque d'alignement avec les exigences de la vision de l'entreprise. Ses qualifications dans les domaines de métier, talent et paradigme ne répondent pas aux attentes nécessaires pour le poste visé.",
+          "verdict": "défavorable",
+          "raison_du_verdict": "Le score moyen du candidat est inférieur à 43.5, ce qui indique une inadéquation avec la vision de transformation et d'amélioration de la SEEG.",
+          "points_forts": [
+            "Potentialité d'apporter une approche innovante à la gestion des ressources",
+            "Capacités d'analyse pour identifier les lacunes dans les infrastructures",
+            "Compréhension des enjeux de gouvernance et de transparence dans le secteur"
+          ],
+          "points_a_travailler": [
+            "Améliorer la gestion des compétences techniques spécifiques au secteur énergétique",
+            "Renforcer ses connaissances sur les stratégies de modernisation des infrastructures",
+            "Développer des compétences en leadership pour mieux encadrer les équipes dans un environnement en mutation"
+          ],
+          "rang": 9
+        },
+        "completude": {
+          "nom": "SIPAMIO-BERRE",
+          "prenom": "Jean-Michel",
+          "poste": "Chef de Département Support",
+          "score": 40.0,
+          "resume_experience": "30 années d'expérience dans le management stratégique, spécialité en gestion opérationnelle des systèmes d'information dans le secteur de l'eau et de l'électricité.",
+          "verdict": "favorable",
+          "phrase_verdict": "Jean-Michel a une solide expérience de 30 ans à la SEEG, ce qui lui confère une connaissance approfondie de l'entreprise et des compétences adéquates pour le poste.",
+          "points_forts": [
+            "Expérience en leadership et capacité à fédérer les équipes",
+            "Compétence stratégique et opérationnelle éprouvée dans le secteur de l'énergie",
+            "Connaissance approfondie des systèmes d'information et de la gestion des processus"
+          ],
+          "points_a_travailler": [
+            "Amélioration des compétences en gestion des ressources humaines transversales",
+            "Optimisation des compétences en élaboration et suivi de budget",
+            "Renforcement des capacités d'innovation en marketing"
+          ],
+          "rang": 9
+        },
+        "feedback": {
+          "prenom": "Jean-michel",
+          "nom": "SIPAMIO-BERRE",
+          "score": 62.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre une expertise métier solide et une capacité managériale, mais présente des lacunes en leadership qui pourraient freiner son efficacité dans un environnement complexe. Cependant, son comportement positif compense certaines faiblesses.",
+          "Points forces": [
+            "Expertise métier approfondie",
+            "Bonne gestion d'équipe"
+          ],
+          "Points à travailler": [
+            "Manque de leadership",
+            "Difficulté à gérer des personnalités fortes"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 53.5,
+          "verdict": "moyen",
+          "raison_verdict": "Le candidat a une base solide en termes de compétences et d'expérience, mais des lacunes en leadership pourraient entraver son efficacité face aux défis de l'entreprise.",
+          "resume": "Jean-Michel Sipamio-Berre possède une expertise métier solide et des compétences en gestion d'équipe, mais manque de leadership dans des environnements complexes, ce qui pourrait être un défi pour la vision de transformation de la SEEG. Son comportement positif est un atout mais pourrait ne pas suffire à compenser ses lacunes en leadership.",
+          "points_forts": [
+            "Expertise métier approfondie",
+            "Bonne gestion d'équipe"
+          ],
+          "points_a_ameliorer": [
+            "Manque de leadership",
+            "Difficulté à gérer des personnalités fortes"
+          ],
+          "rang": 6
+        }
       },
-      "feedback": {},
-      "global": {
-        "score_global": 14.08,
-        "verdict": "défavorable",
-        "resume": "Le score global de Wivine Mengue, notamment le feedback RH de 0, indique une inadéquation avec les exigences du poste proposé et la vision stratégique de la SEEG. Le manque de complétude dans les documents soumis aggrave cette perception, soulignant des lacunes importantes à combler.",
-        "points_forts": [
-          "Conformité documentaire"
-        ],
-        "points_a_ameliorer": [
-          "Mauvaise note de complétude (CV et lettre de motivation non alignés avec l'offre)",
-          "Score de feedback RH null",
-          "Incohérence avec la vision et les priorités stratégiques de la SEEG"
-        ],
-        "rang": 8
-      }
-    },
-    "Esther - Rodrigue Olanga": {
-      "prenom": "Esther",
-      "nom": "- Rodrigue Olanga",
-      "conformite": {
-        "prenom": "ESTHER",
-        "nom": "- RODRIGUE OLANGA",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
+      "Thierry Angoue Bekale": {
+        "prenom": "Thierry",
+        "nom": "Angoue Bekale",
+        "conformite": {
+          "prenom": "Thierry",
+          "nom": "ANGOUE BEKALE",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "ANGOUE BEKALE",
+          "prenom": "Thierry",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.41,
+            "Talent": 0.41,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 42.33,
+          "niveau": "Le candidat présente un score moyen défavorable, ce qui indique un écart par rapport aux attentes de l'entreprise. Son profil semble insuffisant pour répondre aux défis stratégiques qu'engendre la réforme de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui indique une insuffisance dans les compétences requises.",
+          "points_forts": [
+            "Compétences en gestion de projet dans un environnement complexe.",
+            "Capacité d'analyse des problématiques organisationnelles.",
+            "Connaissance des enjeux liés aux infrastructures énergétiques."
+          ],
+          "points_a_travailler": [
+            "Améliorer la maîtrise des procédures internes de gestion.",
+            "Renforcer les compétences en gestion financière et de gouvernance.",
+            "Développer une vision stratégique plus alignée sur les ambitions de la SEEG."
+          ],
+          "rang": 4
+        },
+        "completude": {
+          "nom": "ANGOUE BEKALE",
+          "prenom": "Thierry",
+          "poste": "Chef de Département Support",
+          "score": 46.8,
+          "resume_experience": "28 années d’expérience dans le secteur Énergie, Eau et métiers supports",
+          "verdict": "favorable",
+          "raison": "Le candidat dispose d'une vaste expérience pertinente pour le poste, en plus de compétences managériales éprouvées et une capacité démontrée à gérer des projets complexes.",
+          "points_forts": [
+            "Solide expertise en stratégie de recouvrement et suivi budgétaire",
+            "Compétence en gestion des risques et développement de processus",
+            "Grand sens du leadership et expérience interdirectionnelle"
+          ],
+          "points_a_travailler": [
+            "Besoin de renforcement en langues étrangères notamment en maîtrise de l'Anglais",
+            "Adaptation aux dernières tendances en transformation digitale",
+            "Approfondir l'expérience directe en gestion des ressources humaines"
+          ],
+          "rang": 1
+        },
+        "feedback": {
+          "prenom": "Thierry",
+          "nom": "ANGOUE BEKALE",
+          "score": 52.3,
+          "verdict": "Moyen",
+          "raisons": "Le candidat présente des qualités managériales mais manque de leadership confirmé, ce qui est essentiel pour le poste en question. Sa capacité à naviguer dans la complexité de la vision SEEG 2025-2035 reste à démontrer.",
+          "Points forces": [
+            "Bon comportement",
+            "Expérience en management"
+          ],
+          "Points à travailler": [
+            "Leadership à confirmer",
+            "Vision stratégique à affiner"
+          ],
+          "rang": 8
+        },
+        "global": {
+          "score_global": 51.09,
+          "verdict": "moyen",
+          "raison_verdict": "Le candidat présente des qualités managériales mais manque de leadership confirmé, ce qui est essentiel pour le poste en question et pour naviguer vers la vision de la SEEG 2025-2035.",
+          "resume": "Thierry Angoue Bekale possède des compétences managériales solides et un bon comportement, mais présente un manque de leadership avéré, crucial pour le poste de Chef de Département Support. Sa capacité à réaliser la vision ambitieuse de la SEEG pour 2025-2035 nécessite des améliorations stratégiques supplémentaires.",
+          "points_forts": [
+            "Bon comportement",
+            "Expérience en management"
+          ],
+          "points_a_ameliorer": [
+            "Leadership à confirmer",
+            "Vision stratégique à affiner"
+          ],
+          "rang": 7
+        }
       },
-      "mtp": {},
-      "completude": {
-        "nom": "OLANGA",
-        "prenom": "Esther - Rodrigue",
-        "poste": "Chef de Département Support",
-        "score": 40.6,
-        "resume_experience": "27 ans dans l'administration, la qualité, et les ressources humaines.",
-        "verdict": "favorable",
-        "verdict_raison": "Le candidat possède une vaste expérience dans les différents domaines couverts par le poste et a démontré des compétences stratégiques et opérationnelles claires, avec des réalisations qui correspondent aux besoins du poste.",
-        "points_forts": [
-          "Vaste expérience en gestion administrative et qualité incluant DRH et finances.",
-          "Capacité avérée à réduire les coûts et à améliorer l'efficacité organisationnelle.",
-          "Compétences éprouvées en gestion des relations clients et avec les parties prenantes."
-        ],
-        "points_a_travailler": [
-          "Renforcer la mise en place d’indicateurs de performance adaptés aux nouvelles attentes du poste.",
-          "Développer davantage la stratégie d’amélioration continue des processus internes.",
-          "Approfondir l'expérience en coordination interdirectionnelle pour une meilleure synergie."
-        ],
-        "rang": 1
+      "Étienne Mintsa Mi Nkoume": {
+        "prenom": "Étienne",
+        "nom": "Mintsa Mi Nkoume",
+        "conformite": {
+          "prenom": "Étienne",
+          "nom": " MINTSA MI NKOUME",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MINTSA MI NKOUME",
+          "prenom": "Étienne",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.38,
+            "Talent": 0.39,
+            "Paradigme": 0.47
+          },
+          "Score_moyen": 41.33,
+          "niveau": "Le candidat présente un score moyen inférieur aux attentes de l'entreprise. Cela indique des lacunes importantes dans ses compétences et sa capacité à adhérer à la vision stratégique de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen du candidat est en dessous de 43.5, ce qui le rend inadapté aux exigences de la fonction visée.",
+          "points_forts": [
+            "Potentiel de développement dans le domaine technique grâce à son score en Paradigme.",
+            "Capacité à réfléchir à des solutions innovantes pour le support.",
+            "Volonté d'intégration des retours d'expérience dans son approche."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences techniques spécifiques au secteur de l'énergie et de l'eau.",
+            "Améliorer ses capacités en gestion de projets pour répondre aux défis de transformation.",
+            "Développer une compréhension approfondie des enjeux de gouvernance et de transparence."
+          ],
+          "rang": 5
+        },
+        "completude": {
+          "nom": "MINTSA MI NKOUME",
+          "prenom": "Étienne",
+          "poste": "Chef de Département Support",
+          "score": 38.0,
+          "resume_experience": "28 ans d'expérience en comptabilité, finance, et approvisionnement principalement à la SEEG",
+          "verdict": "moyen",
+          "points_forts": [
+            "Grande expérience en comptabilité et finance, ce qui est crucial pour définir et suivre les budgets du Département Support.",
+            "Expérience significative dans le management des équipes et la coordination des fonctions financières complexes.",
+            "Compétence prouvée dans le reporting et l'analyse financière, nécessaire pour créer des tableaux de bord avec des indicateurs de performance."
+          ],
+          "points_a_travailler": [
+            "Expérience limitée spécifiquement en supervision multi-départementale à grande échelle, telle que proposée pour le poste visé.",
+            "Nécessité de renforcer l'expérience en gestion des ressources humaines et en optimisation du bien-être des employés, car c'est un aspect important du poste.",
+            "Mise à jour ou approfondissement des compétences en amélioration continue et gestion des dysfonctionnements à travers les différentes directions supervisées."
+          ],
+          "rang": 10
+        },
+        "feedback": {
+          "prenom": "Étienne",
+          "nom": "MINTSA MI NKOUME",
+          "score": 42.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente une absence de leadership et des doutes sur sa capacité à fédérer l'équipe. Son historique en charge des finances est positif mais ne compense pas les manquements en management et vision stratégique.",
+          "Points forces": [
+            "Bon comportement général dans son rôle précédent",
+            "Expérience en gestion financière"
+          ],
+          "Points à travailler": [
+            "Absence de leadership",
+            "Incapacité à fédérer l'équipe",
+            "Manque de vision pour le futur"
+          ],
+          "rang": 9
+        },
+        "global": {
+          "score_global": 44.18,
+          "verdict": "défavorable",
+          "raison_verdict": "Le candidat ne répond pas aux attentes en matière de leadership et de vision stratégique nécessaires pour catalyser le changement dans un environnement en transformation.",
+          "resume": "Étienne Mintsa Mi Nkoume présente une solide expérience en gestion financière, mais manque de compétences en leadership et en capacité à fédérer une équipe, ce qui est essentiel pour la vision stratégique de transformation de l'entreprise.",
+          "points_forts": [
+            "Bon comportement général dans son rôle précédent",
+            "Expérience en gestion financière"
+          ],
+          "points_a_ameliorer": [
+            "Absence de leadership",
+            "Incapacité à fédérer l'équipe",
+            "Manque de vision pour le futur"
+          ],
+          "rang": 8
+        }
       },
-      "feedback": {},
-      "global": {
-        "score_global": 13.12,
-        "verdict": "défavorable",
-        "resume": "Le candidat a un profil assez faible selon le score global, particulièrement en raison d'un feedback RH inexistant. La vision stratégique de l'entreprise nécessite un leadership efficace et une expérience probante en réorganisation et modernisation, ce que le candidat semble ne pas démontrer suffisamment.",
-        "points_forts": [
-          "Conformité documentaire parfaite"
-        ],
-        "points_a_ameliorer": [
-          "Faible complétude par rapport à l'offre",
-          "Manque de retour RH et d'expérience démontrée pertinente pour le poste"
-        ],
-        "rang": 9
-      }
-    },
-    "Wilfried Jimmy Moukoumi": {
-      "prenom": "Wilfried",
-      "nom": "Jimmy Moukoumi",
-      "conformite": {
-        "prenom": "Wilfried",
-        "nom": "Jimmy MOUKOUMI",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
+      "Esther - Rodrigue Olanga": {
+        "prenom": "Esther",
+        "nom": "- Rodrigue Olanga",
+        "conformite": {
+          "prenom": "ESTHER",
+          "nom": "- RODRIGUE OLANGA",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OLANGA",
+          "prenom": "ESTHER",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.36,
+            "Talent": 0.35,
+            "Paradigme": 0.37
+          },
+          "Score_moyen": 36.0,
+          "niveau": "Le score moyen de 36.0 est strictement inférieur à 43.5, ce qui indique une inadéquation avec les attentes de l'entreprise. Il est essentiel pour une transformation réussie d'avoir des compétences solides et une vision alignée avec les objectifs de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est insuffisant pour répondre aux attentes stratégiques de la SEEG.",
+          "points_forts": [
+            "Capacité à identifier les faiblesses dans les processus existants.",
+            "Connaissance des défis organisationnels que présente le secteur.",
+            "Engagement potentiel à s'améliorer pour atteindre les objectifs de l'entreprise."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences techniques relatives aux opérations de soutien.",
+            "Développer des capacités de leadership pour gérer les changements organisationnels.",
+            "Renforcer l'adaptabilité aux nouveaux paradigmes technologiques et de gouvernance."
+          ],
+          "rang": 11
+        },
+        "completude": {
+          "nom": "OLANGA",
+          "prenom": "Esther - Rodrigue",
+          "poste": "Chef de Département Support",
+          "score": 41.9,
+          "resume_experience": "27 ans dans divers secteurs incluant l'administration, qualité, achats, stocks et projets pétroliers.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide expérience en administration et gestion des ressources humaines",
+            "Expertise démontrée en gestion de projets et amélioration de processus",
+            "Compétences éprouvées en réhabilitation et modernisation d'infrastructures"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en coordination multidirectionnelle",
+            "Optimisation des stratégies de gestion du capital humain",
+            "Approfondissement des analyses de risque financières"
+          ],
+          "rang": 5
+        },
+        "feedback": {
+          "prenom": "Esther",
+          "nom": "- RODRIGUE OLANGA",
+          "score": 37.5,
+          "verdict": "Défavorable",
+          "raisons": "Le retour négatif sur le leadership et l'absence d'engagement envers la SEEG soulèvent des préoccupations majeures quant à sa capacité à transformer le département Support conformément à la vision stratégique de l'entreprise.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Leadership insuffisant",
+            "Manque d'engagement envers l'entreprise",
+            "Absence de suivi des actions",
+            "Suspicions de collusion avec des directeurs sortants"
+          ],
+          "rang": 10
+        },
+        "global": {
+          "score_global": 41.13,
+          "verdict": "défavorable",
+          "raison_verdict": "Le retour négatif sur le leadership et l'absence d'engagement soulèvent des préoccupations majeures pour transformer le département conformément à la vision stratégique de la SEEG.",
+          "resume": "Le candidat présente un profil défavorable pour le poste de Chef de Département Support. Malgré une bonne conformité documentaire, des problèmes de leadership, un manque d'engagement et une absence de suivi des actions sont préoccupants. Ces éléments sont cruciaux dans le contexte de transformation stratégique de la SEEG.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Leadership insuffisant",
+            "Manque d'engagement envers l'entreprise",
+            "Absence de suivi des actions",
+            "Suspicions de collusion avec des directeurs sortants"
+          ],
+          "rang": 9
+        }
       },
-      "mtp": {},
-      "completude": {
-        "nom": "MOUKOUMI",
-        "prenom": "Wilfried Jimmy",
-        "poste": "Chef de Département Support",
-        "score": 33.8,
-        "resume_experience": "24 ans d'expérience en finance, audit et contrôle de gestion",
-        "verdict": "défavorable",
-        "raison": "Le score de similarité est inférieur à 35, ce qui indique que les compétences et l'expérience du candidat ne correspondent pas bien aux exigences du poste visé.",
-        "points_forts": [
-          "Solide expérience en finance et comptabilité",
-          "Capacité démontrée en optimisation des coûts",
-          "Compétences en gestion de projets et procédure"
-        ],
-        "points_a_travailler": [
-          "Expérience limitée dans la définition et le suivi des KPIs",
-          "Peu de preuves de gestion directe d'un département avec des responsabilités aussi variées",
-          "Manque de focus sur la coordination transversale des fonctions support"
-        ],
-        "rang": 7
+      "Sleydge Olimbi-A-Bamba": {
+        "prenom": "Sleydge",
+        "nom": "Olimbi-A-Bamba",
+        "conformite": {
+          "prenom": "Sleydge",
+          "nom": "OLIMBI-A-BAMBA",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OLIMBI-A-BAMBA",
+          "prenom": "Sleydge",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.38,
+            "Talent": 0.37,
+            "Paradigme": 0.4
+          },
+          "Score_moyen": 38.33,
+          "niveau": "Le candidat présente un score moyen défavorable, ce qui montre un manque d'alignement avec la vision stratégique de l'entreprise. Cela indique également un besoin pressant de développement dans les domaines essentiels à la transformation de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est inférieur à 43.5, ce qui indique une inadéquation significative aux exigences du poste et à la vision de l'entreprise.",
+          "points_forts": [
+            "Compétences techniques apparemment solides, bien que faiblement valorisées.",
+            "Capacité à identifier des besoins dans le soutien opérationnel.",
+            "Une certaine flexibilité dans l'adaptation aux nouvelles méthodes de travail."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion de projet et en leadership pour mieux soutenir la transformation stratégique.",
+            "Renforcer l'analyse des enjeux organisationnels et techniques pour anticiper et gérer les crises.",
+            "Développer une culture d'innovation afin de favoriser l'intégration des nouvelles technologies."
+          ],
+          "rang": 8
+        },
+        "completude": {
+          "nom": "Olimbi-A-Bamba",
+          "prenom": "Sleydge",
+          "poste": "Chef de Département Support",
+          "score": 31.8,
+          "resume_experience": "Plusieurs années d'expérience en finance comptabilité et gestion avec une formation continue mentionnée.",
+          "verdict": "défavorable",
+          "points_forts": [
+            "Maîtrise de l'analyse financière",
+            "Capacité à diriger et motiver des équipes",
+            "Polyvalence et résolution de problèmes"
+          ],
+          "points_a_travailler": [
+            "Expérience pratique dans la mise en œuvre de la stratégie globale d'entreprise",
+            "Expérience en gestion de direction support non mentionnée",
+            "Compétences spécifiques en gestion de la performance des budgets"
+          ],
+          "rang": 11,
+          "raison_verdict": "Le score de similarité est en dessous de 35, ce qui indique que le profil actuel ne correspond pas suffisamment aux exigences du poste, notamment en termes d'expérience directe dans les fonctions support et de gestion des directions multiples."
+        },
+        "feedback": {
+          "prenom": "Sleydge",
+          "nom": "OLIMBI-A-BAMBA",
+          "score": 32.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat montre un manque de compétences managériales et de leadership, ce qui est essentiel pour le poste. Son comportement et sa performance jugés insatisfaisants soulèvent des inquiétudes quant à sa capacité à contribuer à la réorganisation et à la transformation de la SEEG.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Compétences managériales",
+            "Leadership",
+            "Gestion des équipes",
+            "Sens de la hiérarchie"
+          ],
+          "rang": 11
+        },
+        "global": {
+          "score_global": 37.19,
+          "verdict": "défavorable",
+          "raison_verdict": "Le candidat manque de compétences managériales et de leadership, ce qui soulève des inquiétudes quant à sa capacité à contribuer efficacement à la réorganisation et transformation de la SEEG.",
+          "resume": "Le candidat présente un profil insuffisant pour le poste de Chef de Département Support au sein de la SEEG. Les scores dans les dimensions de complétude et de MTP sont faibles, et le feedback RH souligne un manque de compétences managériales et de leadership, essentiels pour contribuer à la transformation de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Compétences managériales",
+            "Leadership",
+            "Gestion des équipes",
+            "Sens de la hiérarchie"
+          ],
+          "rang": 10
+        }
       },
-      "feedback": {},
-      "global": {
-        "score_global": 11.76,
-        "verdict": "défavorable",
-        "resume": "Le candidat Wilfried Jimmy Moukoumi présente des lacunes importantes en matière de conformité avec les exigences du poste, comme en témoigne son score global défavorable. Son absence de feedback RH positif et un manque de complétude de sa candidature par rapport à l'offre indiquent une inadéquation avec la vision stratégique de transformation de la SEEG.",
-        "points_forts": [],
-        "points_a_ameliorer": [
-          "Absence de feedback RH positif",
-          "Faible complétude par rapport à l'offre"
-        ],
-        "rang": 10
-      }
-    },
-    "Georges Tigoue": {
-      "prenom": "Georges",
-      "nom": "Tigoue",
-      "conformite": {},
-      "mtp": {
-        "nom": "TIGOUE",
+      "Georges Jacques S Tigoue": {
         "prenom": "Georges",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.4,
-          "Talent": 0.41,
-          "Paradigme": 0.48
+        "nom": "Jacques S Tigoue",
+        "conformite": {
+          "prenom": "Georges",
+          "nom": "Jacques S TIGOUE",
+          "poste": "Chef de Département Support",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
         },
-        "Score_moyen": 43.0,
-        "niveau": "Le candidat présente un score moyen jugé défavorable, ce qui indique des lacunes importantes par rapport aux attentes de l'entreprise. Cela pourrait impacter sa capacité à contribuer efficacement à la transformation de la SEEG.",
-        "verdict": "défavorable",
-        "raison_verdict": "Le score moyen de 43.0 est inférieur au seuil de 43.5, indiquant un manque d'alignement sur la vision stratégique de l'entreprise.",
-        "points_forts": [
-          "Grande capacité d'analyse des systèmes de soutien aux opérations.",
-          "Expérience potentielle dans la gestion de projets complexes, essentielle pour la réhabilitation des infrastructures.",
-          "Compréhension des besoins organisationnels en matière de gouvernance et de transparence."
-        ],
-        "points_a_travailler": [
-          "Améliorer ses compétences en gestion de personnel pour répondre aux besoins de réorganisation indiqués dans la vision stratégique.",
-          "Renforcer ses capacités dans l'optimisation des ressources et des coûts, conformément aux attentes du plan financier.",
-          "Développer une expertise en gestion des projets d'infrastructure pour s'assurer de l'exécution efficace des investissements prévus."
-        ],
-        "rang": 1
-      },
-      "completude": {},
-      "feedback": {},
-      "global": {
-        "score_global": 10.75,
-        "verdict": "défavorable",
-        "resume": "Georges Tigoue ne semble pas répondre aux attentes pour le poste de Chef de Département Support. Son score global est défavorable, notamment en raison d'un feedback RH inexistant et d'une conformité documentaire nulle. La candidature nécessite des améliorations significatives.",
-        "points_forts": [],
-        "points_a_ameliorer": [
-          "Absence de feedback RH",
-          "Non-conformité documentaire",
-          "Faible complétude des documents"
-        ],
-        "rang": 11
+        "mtp": {
+          "nom": "Jacques S TIGOUE",
+          "prenom": "Georges",
+          "poste": "Chef de Département Support",
+          "scores": {
+            "Metier": 0.4,
+            "Talent": 0.41,
+            "Paradigme": 0.49
+          },
+          "Score_moyen": 43.33,
+          "niveau": "Le score moyen de 43.33 indique une performance en deçà des attentes. Cela suggère que le candidat doit améliorer ses compétences pour pouvoir s'aligner sur la vision de l'entreprise.",
+          "verdict": "défavorable",
+          "raison": "Le score moyen est en dessous du seuil de 43.5, révélant une inadéquation avec les exigences de la SEEG.",
+          "points_forts": [
+            "Bons fondements dans les connaissances techniques de base.",
+            "Capacité à travailler sous pression et à aborder des tâches complexes.",
+            "Potentiel à comprendre les processus administratifs et opérationnels."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences en gestion des projets et des équipes.",
+            "Renforcer la compréhension des normes de service et de qualité.",
+            "Développer une vision stratégique plus alignée avec l'innovation et la modernisation des infrastructures."
+          ],
+          "rang": 1
+        },
+        "completude": {
+          "nom": "TIGOUE",
+          "prenom": "Georges Jacques S",
+          "poste": "Chef de Département Support",
+          "score": 42.2,
+          "resume_experience": "28 ans de carrière dont 22 ans à la SEEG",
+          "verdict": "favorable",
+          "verdict_raison": "Avec une longue expérience et une connaissance approfondie des métiers et des enjeux stratégiques, Georges Jacques S TIGOUE dispose des compétences et de l'expérience nécessaires pour superviser efficacement le département support.",
+          "points_forts": [
+            "Grande expérience en leadership et management d'équipe",
+            "Excellente connaissance du secteur de l'énergie et de l'eau",
+            "Compétences en gestion budgétaire et mesure de performances"
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en anglais, notamment pour les interactions internationales",
+            "Développer davantage de stratégies innovantes pour l'optimisation des ressources",
+            "Renforcer les compétences en techniques de négociation pour des résultats optimaux"
+          ],
+          "rang": 4
+        },
+        "feedback": {
+          "prenom": "Georges",
+          "nom": "JACQUES S TIGOUE",
+          "score": 52.5,
+          "verdict": "Moyen",
+          "raisons": "Le candidat présente des compétences techniques mais des doutes sur son leadership et comportement managérial. Cela soulève des inquiétudes quant à sa capacité à conduire le changement nécessaire à la SEEG.",
+          "Points forces": [
+            "Expertise technique appréciée au cabinet ADG",
+            "Respectueux dans ses interactions avec les autres"
+          ],
+          "Points à travailler": [
+            "Manque de leadership",
+            "Suspicions concernant un potentiel branchement frauduleux"
+          ],
+          "rang": 7
+        },
+        "global": {
+          "score_global": 31.25,
+          "verdict": "défavorable",
+          "raison_verdict": "Le défaut de leadership et les doutes managériaux de Georges Jacques S Tigoue soulèvent des inquiétudes quant à sa capacité à implémenter les transformations exigées par la vision SEEG 2025-2035.",
+          "resume": "Georges Jacques S Tigoue a une expertise technique reconnue mais présente des inquiétudes dans le domaine du leadership et du comportement managérial. Ces aspects sont cruciaux pour conduire le changement stratégique nécessaire au sein de la SEEG.",
+          "points_forts": [
+            "Expertise technique appréciée au cabinet ADG",
+            "Respectueux dans ses interactions avec les autres"
+          ],
+          "points_a_ameliorer": [
+            "Manque de leadership",
+            "Suspicions concernant un potentiel branchement frauduleux"
+          ],
+          "rang": 11
+        }
       }
     },
-    "Wilfried Moukoumi": {
-      "prenom": "Wilfried",
-      "nom": "Moukoumi",
-      "conformite": {},
-      "mtp": {
-        "nom": "MOUKOUMI",
+    "classement": [
+      {
+        "rang": 1,
+        "nom": "Essone Bibang",
+        "prenom": "Patrick",
+        "score_global": 59.78,
+        "verdict": "favorable",
+        "raison_verdict": "Le candidat démontre les compétences nécessaires en leadership et stratégie, ce qui est crucial pour parvenir aux transformations prévues par la SEEG."
+      },
+      {
+        "rang": 2,
+        "nom": "Bouyomba Mougola",
+        "prenom": "Germaine",
+        "score_global": 58.3,
+        "verdict": "favorable",
+        "raison_verdict": "Le candidat présente un bon leadership et une orientation vers les résultats, essentiels pour accompagner la transformation de l'entreprise."
+      },
+      {
+        "rang": 3,
+        "nom": "Jimmy Moukoumi",
         "prenom": "Wilfried",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.34,
-          "Talent": 0.34,
-          "Paradigme": 0.46
-        },
-        "Score_moyen": 38.0,
-        "niveau": "Le score moyen de 38.0 indique une performance inférieure aux attentes. Ainsi, le candidat montre des lacunes significatives qui doivent être abordées pour correspondre à la vision de l'entreprise.",
-        "verdict": "défavorable",
-        "raison_du_verdict": "Le score moyen est strictement inférieur à 43.5, suggérant que le candidat ne répond pas aux critères nécessaires pour le poste visé.",
-        "points_forts": [
-          "Aptitude à travailler dans des environnements complexes.",
-          "Capacité à s'adapter aux changements organisationnels.",
-          "Potentiel pour comprendre et analyser les systèmes."
-        ],
-        "points_a_travailler": [
-          "Améliorer les compétences techniques liées au métier pour être plus efficace.",
-          "Développer des talents de leadership pour mieux gérer des équipes.",
-          "Renforcer la compréhension des paradigmes modernes de gouvernance et de gestion des ressources."
-        ],
-        "rang": 8
+        "score_global": 57.7,
+        "verdict": "favorable",
+        "raison_verdict": "Le candidat est bien placé pour le poste grâce à son expertise managériale et sa capacité à naviguer dans des environnements complexes, ce qui est crucial pour la transformation en cours à la SEEG."
       },
-      "completude": {},
-      "feedback": {},
-      "global": {
-        "score_global": 9.5,
-        "verdict": "défavorable",
-        "resume": "Le candidat Wilfried Moukoumi ne satisfait pas aux critères de sélection exigés pour le poste, comme en témoigne son faible score global pondéré. L'absence de conformité documentaire et la manque de complétude de son dossier constituent des freins majeurs. De plus, le feedback RH inexistant renforce l'évaluation défavorable de sa candidature.",
-        "points_forts": [],
-        "points_a_ameliorer": [
-          "Absence de conformité documentaire",
-          "Dossier incomplet"
-        ],
-        "rang": 12
-      }
-    },
-    "Esther Olanga": {
-      "prenom": "Esther",
-      "nom": "Olanga",
-      "conformite": {},
-      "mtp": {
-        "nom": "OLANGA",
-        "prenom": "ESTHER",
-        "poste": "Chef de Département Support",
-        "scores": {
-          "Metier": 0.35,
-          "Talent": 0.35,
-          "Paradigme": 0.37
-        },
-        "Score_moyen": 35.67,
-        "niveau": "Le score moyen de 35.67 indique une position défavorable par rapport à la vision de l’entreprise. Un ajustement significatif est nécessaire pour répondre aux attentes organisationnelles.",
-        "verdict": "défavorable",
-        "raison_verdict": "Le candidat n'atteint pas le score moyen requis pour s'aligner avec la vision stratégique de la SEEG.",
-        "points_forts": [
-          "Capacité à comprendre les enjeux opérationnels liés à la gestion du support.",
-          "Sensibilisation aux défis structurels qui affectent les services.",
-          "Volonté de contribuer à la réorganisation en cours au sein de l'entreprise."
-        ],
-        "points_a_travailler": [
-          "Développer des compétences en leadership et en gestion d'équipe pour une meilleure réorganisation des effectifs.",
-          "Renforcer les connaissances en matière d'optimisation des ressources pour améliorer la performance financière.",
-          "Améliorer la compréhension des processus de digitalisation et leur mise en œuvre pour la transparence."
-        ],
-        "rang": 11
+      {
+        "rang": 4,
+        "nom": "Awori Onanga",
+        "prenom": "Juvenal",
+        "score_global": 55.2,
+        "verdict": "favorable",
+        "raison_verdict": "Le candidat est favorable car il possède les qualités essentielles de leadership et d'interaction avec les équipes nécessaires pour réussir dans un rôle de gestion pendant une période de restructuration et de transformation. Cependant, il lui est conseillé de renforcer sa compréhension des défis stratégiques et opérationnels."
       },
-      "completude": {},
-      "feedback": {},
-      "global": {
-        "score_global": 8.92,
-        "verdict": "défavorable",
-        "resume": "Le profil d'Esther Olanga présente plusieurs lacunes quant à la conformité documentaire et à la complétude des informations fournies par rapport à l'offre. Son score global pondéré est défavorable, ce qui est accentué par un feedback RH inexistant et une mauvaise adéquation avec les exigences de la vision stratégique de l'entreprise.",
-        "points_forts": [],
-        "points_a_ameliorer": [
-          "Augmenter le niveau de conformité documentaire",
-          "Fournir un dossier complet en rapport avec l'offre"
-        ],
-        "rang": 13
-      }
-    },
-    "Georges Jacques S Tigoué": {
-      "prenom": "Georges",
-      "nom": "Jacques S Tigoué",
-      "conformite": {},
-      "mtp": {},
-      "completude": {
-        "nom": "TIGOUÉ",
-        "prenom": "Georges Jacques S",
-        "poste": "Chef de Département Support",
-        "score": 37.0,
-        "resume_experience": "Plus de 20 ans d'expérience, principalement dans le secteur de l'énergie et de l'eau avec une montée progressive vers des postes de direction.",
+      {
+        "rang": 5,
+        "nom": "Mengue",
+        "prenom": "Wivine",
+        "score_global": 54.14,
         "verdict": "moyen",
-        "points_forts": [
-          "Grande expérience en gestion budgétaire et reporting",
-          "Compétences éprouvées en leadership et gestion d'équipe",
-          "Capacité à fédérer et à piloter des dynamiques de performance"
-        ],
-        "points_a_travailler": [
-          "Accroître la maîtrise en anglais pour des interactions internationales",
-          "Diversification de l'expérience en dehors du secteur de l'énergie et l'eau",
-          "Renforcement des compétences dans la gestion intégrée des fonctions support"
-        ],
-        "rang": 4
+        "raison_verdict": "Le candidat présente un potentiel intéressant mais doit consolider son leadership et acquérir plus d'expérience en électricité pour répondre aux exigences élevées de la transformation de la SEEG."
       },
-      "feedback": {},
-      "global": {
-        "score_global": 7.4,
+      {
+        "rang": 6,
+        "nom": "Sipamio-Berre",
+        "prenom": "Jean-Michel",
+        "score_global": 53.5,
+        "verdict": "moyen",
+        "raison_verdict": "Le candidat a une base solide en termes de compétences et d'expérience, mais des lacunes en leadership pourraient entraver son efficacité face aux défis de l'entreprise."
+      },
+      {
+        "rang": 7,
+        "nom": "Angoue Bekale",
+        "prenom": "Thierry",
+        "score_global": 51.09,
+        "verdict": "moyen",
+        "raison_verdict": "Le candidat présente des qualités managériales mais manque de leadership confirmé, ce qui est essentiel pour le poste en question et pour naviguer vers la vision de la SEEG 2025-2035."
+      },
+      {
+        "rang": 8,
+        "nom": "Mintsa Mi Nkoume",
+        "prenom": "Étienne",
+        "score_global": 44.18,
         "verdict": "défavorable",
-        "resume": "Le candidat Georges Jacques S Tigoué présente un profil qui ne correspond pas, selon les scores de conformité documentaire et le feedback RH inexistant, aux exigences pour le poste de Chef de Département Support. Le manque de complétude et de détails dans sa candidature reflète une inadéquation avec la vision stratégique et les objectifs de modernisation et d'efficacité de la SEEG.",
-        "points_forts": [],
-        "points_a_ameliorer": [
-          "Manque de conformité documentaire",
-          "Absence de feedback RH"
-        ],
-        "rang": 14
-      }
-    },
-    "Georges Jacques S Tigoue": {
-      "prenom": "Georges",
-      "nom": "Jacques S Tigoue",
-      "conformite": {
+        "raison_verdict": "Le candidat ne répond pas aux attentes en matière de leadership et de vision stratégique nécessaires pour catalyser le changement dans un environnement en transformation."
+      },
+      {
+        "rang": 9,
+        "nom": "- Rodrigue Olanga",
+        "prenom": "Esther",
+        "score_global": 41.13,
+        "verdict": "défavorable",
+        "raison_verdict": "Le retour négatif sur le leadership et l'absence d'engagement soulèvent des préoccupations majeures pour transformer le département conformément à la vision stratégique de la SEEG."
+      },
+      {
+        "rang": 10,
+        "nom": "Olimbi-A-Bamba",
+        "prenom": "Sleydge",
+        "score_global": 37.19,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat manque de compétences managériales et de leadership, ce qui soulève des inquiétudes quant à sa capacité à contribuer efficacement à la réorganisation et transformation de la SEEG."
+      },
+      {
+        "rang": 11,
+        "nom": "Jacques S Tigoue",
         "prenom": "Georges",
-        "nom": "Jacques S TIGOUE",
-        "score_conformité": 100,
-        "commentaire": "Tous les documents ont été fournis."
-      },
-      "mtp": {},
-      "completude": {},
-      "feedback": {},
-      "global": {
-        "score_global": 5.0,
+        "score_global": 31.25,
         "verdict": "défavorable",
-        "resume": "Le candidat, Georges Jacques S Tigoue, a un score global défavorable principalement en raison de son manque de conformité par rapport aux critères requis pour le poste. Une absence notable de correspondance entre ses compétences et les exigences de la vision stratégique de l'entreprise, ainsi que l'absence de retour d'expérience concernant les défis structurels de la SEEG, ont été soulignées. Le feedback RH, bien que non fourni, est essentiel pour expliquer le score faible.",
-        "points_forts": [
-          "Conformité documentaire"
-        ],
-        "points_a_ameliorer": [
-          "Alignement avec la vision stratégique de l'entreprise",
-          "Expérience en gestion des infrastructures vieillissantes et modernisation"
-        ],
-        "rang": 15
+        "raison_verdict": "Le défaut de leadership et les doutes managériaux de Georges Jacques S Tigoue soulèvent des inquiétudes quant à sa capacité à implémenter les transformations exigées par la vision SEEG 2025-2035."
       }
+    ],
+    "rapport_poste": {
+      "nb_candidats": 11,
+      "distribution_verdicts": {
+        "favorable": 4,
+        "moyen": 3,
+        "défavorable": 4
+      },
+      "top_raisons": [
+        "Le candidat démontre les compétences nécessaires en leadership et stratégie, ce qui est crucial pour parvenir aux transformations prévues par la SEEG.",
+        "Le candidat présente un bon leadership et une orientation vers les résultats, essentiels pour accompagner la transformation de l'entreprise.",
+        "Le candidat est bien placé pour le poste grâce à son expertise managériale et sa capacité à naviguer dans des environnements complexes, ce qui est crucial pour la transformation en cours à la SEEG."
+      ],
+      "incoherences": []
     }
   }
 }
