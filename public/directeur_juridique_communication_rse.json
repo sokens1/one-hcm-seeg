@@ -387,7 +387,25 @@
           ],
           "rang": 3
         },
-        "completude": {},
+        "completude": {
+          "nom": "ENGO MENIE",
+          "prenom": "Jean Robert",
+          "poste": "Directeur Juridique, Communication & RSE",
+          "score": 42.7,
+          "resume_experience": "10 ans d'expérience en droit des affaires et des entreprises, principalement à la SEEG.",
+          "verdict": "moyen",
+          "points_forts": [
+            "Excellente connaissance du secteur juridique gabonais, notamment dans l'énergie et l'eau.",
+            "Expérience avérée en gestion de contrats et de contentieux.",
+            "Bonne compréhension des politiques RSE, déjà appliquées dans le cadre de son travail actuel."
+          ],
+          "points_a_travailler": [
+            "Peu d'expérience directe en communication d'entreprise.",
+            "Compétence en anglais considérée comme moyenne, peut-être un obstacle dans des relations internationales.",
+            "Doit développer davantage de compétences en stratégie de communication et gestion de crise."
+          ],
+          "rang": 1
+        },
         "feedback": {
           "prenom": "Engo",
           "nom": "MENIE JEAN ROBERT",
