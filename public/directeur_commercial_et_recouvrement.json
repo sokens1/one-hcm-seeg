@@ -800,7 +800,13 @@
       "Reine Gerlina Ninga": {
         "prenom": "Reine",
         "nom": "Gerlina Ninga",
-        "conformite": {},
+        "conformite": {
+          "prenom": "Reine",
+          "nom": "GERLINA NINGA",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
         "mtp": {
           "nom": "NINGA",
           "prenom": "Reine Gerlina",

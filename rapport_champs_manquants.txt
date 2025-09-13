@@ -1,0 +1,163 @@
+ANALYSE COMPLÈTE DES 16 FICHIERS JSON
+=====================================
+
+RÉSUMÉ GLOBAL
+=============
+- Total de personnes avec des champs manquants : 35 personnes
+- Fichiers analysés : 16 fichiers JSON
+- Sections analysées : conformité, mtp, complétude, feedback, global
+
+DÉTAIL PAR SECTION MANQUANTE
+============================
+
+SECTION "conformite" MANQUANTE (4 personnes)
+============================================
+1. Reine Gerlina Ninga - directeur_commercial_et_recouvrement.json
+2. Emilie Abeng - directeur_finances_et_comptabilite.json
+3. Rose Murielle Missie - directeur_technique_electricité.json
+4. Jean Martin - moyens_generaux_complet.json
+
+SECTION "mtp" MANQUANTE (5 personnes)
+====================================
+1. Maria Evans Ze Ebe - coordonnateur_des_regions.json
+2. Mengue Bénédicte - directeur_audit_et_controle_interne.json
+3. Hermann Tanda Nkombe - directeur_exploitation_eau.json
+4. Murielle Rose Missie - directeur_technique_electricité.json
+5. Jean Martin - moyens_generaux_complet.json
+
+SECTION "completude" MANQUANTE (29 personnes)
+=============================================
+1. Guy-Noël Ondo Ekomy - chef_departement_electricite.json
+2. Pépin Jonas Ozela Nguema - chef_departement_electricite.json
+3. Ulrich Moundounga - coordonnateur_des_regions.json
+4. Abessolo Aubain - coordonnateur_des_regions.json
+5. Mengue Bénédicte - directeur_audit_et_controle_interne.json
+6. Marie Ange Nambo Wezet Née Mbourou Lamasse - directeur_audit_et_controle_interne.json
+7. Thomas Essingone Memiaghe - directeur_commercial_et_recouvrement.json
+8. Georges Jacques S Tigoue - directeur_commercial_et_recouvrement.json
+9. Sebastien Mbot - directeur_des_systemes_d_information.json
+10. Derille Ovono Ename - directeur_des_systemes_d_information.json
+11. Ulrich Ombande Otombe - directeur_du_capital_humain.json
+12. Murielle Rose Missie - directeur_exploitation_eau.json
+13. Abaghe Durandal - directeur_exploitation_electricite.json
+14. Emilie Abeng - directeur_finances_et_comptabilite.json
+15. Engo Menie Jean Robert - directeur_juridique_communication_rse.json
+16. Wivine Mengue - directeur_qualite_hygiene_securite_environnement.json
+17. Rosy Blondel Madoungou Nziengui - directeur_qualite_hygiene_securite_environnement.json
+18. Edwige Dilebou - directeur_qualite_hygiene_securite_environnement.json
+19. Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam - directeur_qualite_hygiene_securite_environnement.json
+20. Pulcherie Nicole Assame Née Nigouegouni - directeur_qualite_hygiene_securite_environnement.json
+21. Jean Christian Ibouily - directeur_technique_eau.json
+22. Murielle Rose Missie - directeur_technique_eau.json
+23. Jean Christian Ibouily - directeur_technique_electricité.json
+24. Murielle Rose Missie - directeur_technique_electricité.json
+25. Rose Murielle Missie - directeur_technique_electricité.json
+26. Raissa Aimee Nse Obiang - moyens_generaux_complet.json
+27. Pulcherie Nicole Assame Née Nigouegouni - moyens_generaux_complet.json
+28. Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam - moyens_generaux_complet.json
+29. Jean Martin - moyens_generaux_complet.json
+
+SECTION "feedback" MANQUANTE (5 personnes)
+==========================================
+1. Jean Fabrice Ondo Mayi - coordonnateur_des_regions.json
+2. Juste-Paulin Eloue - directeur_commercial_et_recouvrement.json
+3. Reine Gerlina Ninga - directeur_commercial_et_recouvrement.json
+4. Rose Murielle Missie - directeur_technique_electricité.json
+5. Olivia Duboze - moyens_generaux_complet.json
+
+DÉTAIL PAR FICHIER
+==================
+
+chef_departement_eau.json (Chef de Département Eau)
+- Aucune personne avec des champs manquants
+
+chef_departement_electricite.json (Chef de Département Electricité)
+- Guy-Noël Ondo Ekomy - Sections manquantes: completude
+- Pépin Jonas Ozela Nguema - Sections manquantes: completude
+
+coordonnateur_des_regions.json (Coordonnateur des Régions)
+- Maria Evans Ze Ebe - Sections manquantes: mtp
+- Ulrich Moundounga - Sections manquantes: completude
+- Abessolo Aubain - Sections manquantes: completude
+- Jean Fabrice Ondo Mayi - Sections manquantes: feedback
+
+directeur_audit_et_controle_interne.json (Directeur Audit & Contrôle interne)
+- Mengue Bénédicte - Sections manquantes: mtp, completude
+- Marie Ange Nambo Wezet Née Mbourou Lamasse - Sections manquantes: completude
+
+directeur_commercial_et_recouvrement.json (Directeur Commercial et Recouvrement)
+- Thomas Essingone Memiaghe - Sections manquantes: completude
+- Georges Jacques S Tigoue - Sections manquantes: completude
+- Juste-Paulin Eloue - Sections manquantes: feedback
+- Reine Gerlina Ninga - Sections manquantes: conformite, feedback
+
+directeur_des_systemes_d_information.json (Directeur des Systèmes d'Information)
+- Sebastien Mbot - Sections manquantes: completude
+- Derille Ovono Ename - Sections manquantes: completude
+
+directeur_du_capital_humain.json (Directeur du Capital Humain)
+- Ulrich Ombande Otombe - Sections manquantes: completude
+
+directeur_exploitation_eau.json (Directeur Exploitation Eau)
+- Hermann Tanda Nkombe - Sections manquantes: mtp
+- Murielle Rose Missie - Sections manquantes: completude
+
+directeur_exploitation_electricite.json (Directeur Exploitation Electricité)
+- Abaghe Durandal - Sections manquantes: completude
+
+directeur_finances_et_comptabilite.json (Directeur Finances et Comptabilité)
+- Emilie Abeng - Sections manquantes: conformite, completude
+
+directeur_juridique_communication_rse.json (Directeur Juridique, Communication & RSE)
+- Engo Menie Jean Robert - Sections manquantes: completude
+
+directeur_qualite_hygiene_securite_environnement.json (Directeur Qualité, Hygiène, Sécurité & Environnement)
+- Wivine Mengue - Sections manquantes: completude
+- Rosy Blondel Madoungou Nziengui - Sections manquantes: completude
+- Edwige Dilebou - Sections manquantes: completude
+- Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam - Sections manquantes: completude
+- Pulcherie Nicole Assame Née Nigouegouni - Sections manquantes: completude
+
+directeur_technique_eau.json (Directeur Technique Eau)
+- Jean Christian Ibouily - Sections manquantes: completude
+- Murielle Rose Missie - Sections manquantes: completude
+
+directeur_technique_electricité.json (Directeur Technique Eau)
+- Jean Christian Ibouily - Sections manquantes: completude
+- Murielle Rose Missie - Sections manquantes: mtp, completude
+- Rose Murielle Missie - Sections manquantes: conformite, completude, feedback
+
+chef_de_departement_support.json (Chef de Département Support)
+- Aucune personne avec des champs manquants
+
+moyens_generaux_complet.json (Directeur Moyens Généraux)
+- Raissa Aimee Nse Obiang - Sections manquantes: completude
+- Pulcherie Nicole Assame Née Nigouegouni - Sections manquantes: completude
+- Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam - Sections manquantes: completude
+- Jean Martin - Sections manquantes: conformite, mtp, completude
+- Olivia Duboze - Sections manquantes: feedback
+
+STATISTIQUES PAR FICHIER
+========================
+
+Fichiers avec le plus de personnes ayant des champs manquants :
+1. directeur_qualite_hygiene_securite_environnement.json - 5 personnes
+2. moyens_generaux_complet.json - 5 personnes
+3. directeur_technique_electricité.json - 3 personnes
+4. directeur_commercial_et_recouvrement.json - 4 personnes
+5. coordonnateur_des_regions.json - 4 personnes
+
+Fichiers sans personnes avec des champs manquants :
+- chef_departement_eau.json
+- chef_de_departement_support.json
+
+OBSERVATIONS
+============
+- 29 personnes sur 35 (83%) ont la section "completude" manquante
+- 5 personnes sur 35 (14%) ont la section "mtp" manquante
+- 5 personnes sur 35 (14%) ont la section "feedback" manquante
+- 4 personnes sur 35 (11%) ont la section "conformite" manquante
+
+La section "completude" est de loin la plus problématique dans les données.
+
+Rapport généré le : ${new Date().toLocaleString('fr-FR')}

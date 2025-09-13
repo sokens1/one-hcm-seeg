@@ -1,0 +1,787 @@
+{
+  "metadata": {
+    "dateAnalyse": "2025-09-13T13:48:00.840Z",
+    "totalFichiersAnalyse": 16,
+    "totalPersonnesAvecChampsManquants": 35,
+    "sectionsAnalysees": [
+      "conformite",
+      "mtp",
+      "completude",
+      "feedback",
+      "global"
+    ]
+  },
+  "statistiques": {
+    "parSection": {
+      "conformite": 4,
+      "mtp": 5,
+      "completude": 29,
+      "feedback": 5,
+      "global": 0
+    },
+    "parFichier": {
+      "chef_departement_eau.json": {
+        "nomPoste": "Chef de Département Eau",
+        "totalCandidats": 9,
+        "personnesAvecChampsManquants": 0,
+        "details": []
+      },
+      "chef_departement_electricite.json": {
+        "nomPoste": "Chef de Département Electricité",
+        "totalCandidats": 9,
+        "personnesAvecChampsManquants": 2,
+        "details": [
+          {
+            "nom": "Guy-Noël Ondo Ekomy",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Pépin Jonas Ozela Nguema",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "coordonnateur_des_regions.json": {
+        "nomPoste": "Coordonnateur des Régions",
+        "totalCandidats": 20,
+        "personnesAvecChampsManquants": 4,
+        "details": [
+          {
+            "nom": "Maria Evans Ze Ebe",
+            "sectionsManquantes": [
+              "mtp"
+            ]
+          },
+          {
+            "nom": "Ulrich Moundounga",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Abessolo Aubain",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Jean Fabrice Ondo Mayi",
+            "sectionsManquantes": [
+              "feedback"
+            ]
+          }
+        ]
+      },
+      "directeur_audit_et_controle_interne.json": {
+        "nomPoste": "Directeur Audit & Contrôle interne",
+        "totalCandidats": 8,
+        "personnesAvecChampsManquants": 2,
+        "details": [
+          {
+            "nom": "Mengue Bénédicte",
+            "sectionsManquantes": [
+              "mtp",
+              "completude"
+            ]
+          },
+          {
+            "nom": "Marie Ange Nambo Wezet Née Mbourou Lamasse",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_commercial_et_recouvrement.json": {
+        "nomPoste": "Directeur Commercial et Recouvrement",
+        "totalCandidats": 11,
+        "personnesAvecChampsManquants": 4,
+        "details": [
+          {
+            "nom": "Thomas Essingone Memiaghe",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Georges Jacques S Tigoue",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Juste-Paulin Eloue",
+            "sectionsManquantes": [
+              "feedback"
+            ]
+          },
+          {
+            "nom": "Reine Gerlina Ninga",
+            "sectionsManquantes": [
+              "conformite",
+              "feedback"
+            ]
+          }
+        ]
+      },
+      "directeur_des_systemes_d_information.json": {
+        "nomPoste": "Directeur des Systèmes d’Information",
+        "totalCandidats": 9,
+        "personnesAvecChampsManquants": 2,
+        "details": [
+          {
+            "nom": "Sebastien Mbot",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Derille Ovono Ename",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_du_capital_humain.json": {
+        "nomPoste": "Directeur du Capital Humain",
+        "totalCandidats": 8,
+        "personnesAvecChampsManquants": 1,
+        "details": [
+          {
+            "nom": "Ulrich Ombande Otombe",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_exploitation_eau.json": {
+        "nomPoste": "Directeur Exploitation Eau",
+        "totalCandidats": 10,
+        "personnesAvecChampsManquants": 2,
+        "details": [
+          {
+            "nom": "Hermann Tanda Nkombe",
+            "sectionsManquantes": [
+              "mtp"
+            ]
+          },
+          {
+            "nom": "Murielle Rose Missie",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_exploitation_electricite.json": {
+        "nomPoste": "Directeur Exploitation Electricité",
+        "totalCandidats": 17,
+        "personnesAvecChampsManquants": 1,
+        "details": [
+          {
+            "nom": "Abaghe Durandal",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_finances_et_comptabilite.json": {
+        "nomPoste": "Directeur Finances et Comptabilité",
+        "totalCandidats": 2,
+        "personnesAvecChampsManquants": 1,
+        "details": [
+          {
+            "nom": "Emilie Abeng",
+            "sectionsManquantes": [
+              "conformite",
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_juridique_communication_rse.json": {
+        "nomPoste": "Directeur Juridique, Communication & RSE",
+        "totalCandidats": 5,
+        "personnesAvecChampsManquants": 1,
+        "details": [
+          {
+            "nom": "Engo Menie Jean Robert",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_qualite_hygiene_securite_environnement.json": {
+        "nomPoste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+        "totalCandidats": 11,
+        "personnesAvecChampsManquants": 5,
+        "details": [
+          {
+            "nom": "Wivine Mengue",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Rosy Blondel Madoungou Nziengui",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Edwige Dilebou",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Pulcherie Nicole Assame Née Nigouegouni",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_technique_eau.json": {
+        "nomPoste": "Directeur Technique Eau",
+        "totalCandidats": 14,
+        "personnesAvecChampsManquants": 2,
+        "details": [
+          {
+            "nom": "Jean Christian Ibouily",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Murielle Rose Missie",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          }
+        ]
+      },
+      "directeur_technique_electricité.json": {
+        "nomPoste": "Directeur Technique Eau",
+        "totalCandidats": 15,
+        "personnesAvecChampsManquants": 3,
+        "details": [
+          {
+            "nom": "Jean Christian Ibouily",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Murielle Rose Missie",
+            "sectionsManquantes": [
+              "mtp",
+              "completude"
+            ]
+          },
+          {
+            "nom": "Rose Murielle Missie",
+            "sectionsManquantes": [
+              "conformite",
+              "completude",
+              "feedback"
+            ]
+          }
+        ]
+      },
+      "chef_de_departement_support.json": {
+        "nomPoste": "Chef de Département Support",
+        "totalCandidats": 11,
+        "personnesAvecChampsManquants": 0,
+        "details": []
+      },
+      "moyens_generaux_complet.json": {
+        "nomPoste": "Directeur Moyens Généraux",
+        "totalCandidats": 21,
+        "personnesAvecChampsManquants": 5,
+        "details": [
+          {
+            "nom": "Raissa Aimee Nse Obiang",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Pulcherie Nicole Assame Née Nigouegouni",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam",
+            "sectionsManquantes": [
+              "completude"
+            ]
+          },
+          {
+            "nom": "Jean Martin",
+            "sectionsManquantes": [
+              "conformite",
+              "mtp",
+              "completude"
+            ]
+          },
+          {
+            "nom": "Olivia Duboze",
+            "sectionsManquantes": [
+              "feedback"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "personnesAvecChampsManquants": [
+    {
+      "fichier": "chef_departement_electricite.json",
+      "poste": "Chef de Département Electricité",
+      "nomComplet": "Guy-Noël Ondo Ekomy",
+      "prenom": "Guy-Noël",
+      "nomFamille": "Ondo Ekomy",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 53.62,
+      "verdictGlobal": "moyen"
+    },
+    {
+      "fichier": "chef_departement_electricite.json",
+      "poste": "Chef de Département Electricité",
+      "nomComplet": "Pépin Jonas Ozela Nguema",
+      "prenom": "Pépin",
+      "nomFamille": "Jonas Ozela Nguema",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 41.17,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "coordonnateur_des_regions.json",
+      "poste": "Coordonnateur des Régions",
+      "nomComplet": "Maria Evans Ze Ebe",
+      "prenom": "Maria",
+      "nomFamille": "Evans Ze Ebe",
+      "sectionsManquantes": [
+        "mtp"
+      ],
+      "scoreGlobal": 38.25,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "coordonnateur_des_regions.json",
+      "poste": "Coordonnateur des Régions",
+      "nomComplet": "Ulrich Moundounga",
+      "prenom": "Ulrich",
+      "nomFamille": "Moundounga",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 35.75,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "coordonnateur_des_regions.json",
+      "poste": "Coordonnateur des Régions",
+      "nomComplet": "Abessolo Aubain",
+      "prenom": "Abessolo",
+      "nomFamille": "Aubain",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 35.42,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "coordonnateur_des_regions.json",
+      "poste": "Coordonnateur des Régions",
+      "nomComplet": "Jean Fabrice Ondo Mayi",
+      "prenom": "Jean",
+      "nomFamille": "Fabrice Ondo Mayi",
+      "sectionsManquantes": [
+        "feedback"
+      ],
+      "scoreGlobal": 22.78,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_audit_et_controle_interne.json",
+      "poste": "Directeur Audit & Contrôle interne",
+      "nomComplet": "Mengue Bénédicte",
+      "prenom": "Mengue",
+      "nomFamille": "Bénédicte",
+      "sectionsManquantes": [
+        "mtp",
+        "completude"
+      ],
+      "scoreGlobal": 36.25,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_audit_et_controle_interne.json",
+      "poste": "Directeur Audit & Contrôle interne",
+      "nomComplet": "Marie Ange Nambo Wezet Née Mbourou Lamasse",
+      "prenom": "Marie",
+      "nomFamille": "Ange Nambo Wezet Née Mbourou Lamasse",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 32.1,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_commercial_et_recouvrement.json",
+      "poste": "Directeur Commercial et Recouvrement",
+      "nomComplet": "Thomas Essingone Memiaghe",
+      "prenom": "Thomas",
+      "nomFamille": "Essingone Memiaghe",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 45.85,
+      "verdictGlobal": "moyen"
+    },
+    {
+      "fichier": "directeur_commercial_et_recouvrement.json",
+      "poste": "Directeur Commercial et Recouvrement",
+      "nomComplet": "Georges Jacques S Tigoue",
+      "prenom": "Georges",
+      "nomFamille": "Jacques S Tigoue",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 42.93,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_commercial_et_recouvrement.json",
+      "poste": "Directeur Commercial et Recouvrement",
+      "nomComplet": "Juste-Paulin Eloue",
+      "prenom": "Juste-Paulin",
+      "nomFamille": "Eloue",
+      "sectionsManquantes": [
+        "feedback"
+      ],
+      "scoreGlobal": 24.77,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_commercial_et_recouvrement.json",
+      "poste": "Directeur Commercial et Recouvrement",
+      "nomComplet": "Reine Gerlina Ninga",
+      "prenom": "Reine",
+      "nomFamille": "Gerlina Ninga",
+      "sectionsManquantes": [
+        "conformite",
+        "feedback"
+      ],
+      "scoreGlobal": 19.08,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_des_systemes_d_information.json",
+      "poste": "Directeur des Systèmes d’Information",
+      "nomComplet": "Sebastien Mbot",
+      "prenom": "Sebastien",
+      "nomFamille": "Mbot",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 47.58,
+      "verdictGlobal": "moyen"
+    },
+    {
+      "fichier": "directeur_des_systemes_d_information.json",
+      "poste": "Directeur des Systèmes d’Information",
+      "nomComplet": "Derille Ovono Ename",
+      "prenom": "Derille",
+      "nomFamille": "Ovono Ename",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 32.25,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_du_capital_humain.json",
+      "poste": "Directeur du Capital Humain",
+      "nomComplet": "Ulrich Ombande Otombe",
+      "prenom": "Ulrich",
+      "nomFamille": "Ombande Otombe",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 24.17,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_exploitation_eau.json",
+      "poste": "Directeur Exploitation Eau",
+      "nomComplet": "Hermann Tanda Nkombe",
+      "prenom": "Hermann",
+      "nomFamille": "Tanda Nkombe",
+      "sectionsManquantes": [
+        "mtp"
+      ],
+      "scoreGlobal": 44.95,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_exploitation_eau.json",
+      "poste": "Directeur Exploitation Eau",
+      "nomComplet": "Murielle Rose Missie",
+      "prenom": "Murielle",
+      "nomFamille": "Rose Missie",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 30.83,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_exploitation_electricite.json",
+      "poste": "Directeur Exploitation Electricité",
+      "nomComplet": "Abaghe Durandal",
+      "prenom": "Abaghe",
+      "nomFamille": "Durandal",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 32.42,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_finances_et_comptabilite.json",
+      "poste": "Directeur Finances et Comptabilité",
+      "nomComplet": "Emilie Abeng",
+      "prenom": "Emilie",
+      "nomFamille": "Abeng",
+      "sectionsManquantes": [
+        "conformite",
+        "completude"
+      ],
+      "scoreGlobal": 48.75,
+      "verdictGlobal": "moyen"
+    },
+    {
+      "fichier": "directeur_juridique_communication_rse.json",
+      "poste": "Directeur Juridique, Communication & RSE",
+      "nomComplet": "Engo Menie Jean Robert",
+      "prenom": "Engo",
+      "nomFamille": "Menie Jean Robert",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 42.73,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_qualite_hygiene_securite_environnement.json",
+      "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+      "nomComplet": "Wivine Mengue",
+      "prenom": "Wivine",
+      "nomFamille": "Mengue",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 49.96,
+      "verdictGlobal": "moyen"
+    },
+    {
+      "fichier": "directeur_qualite_hygiene_securite_environnement.json",
+      "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+      "nomComplet": "Rosy Blondel Madoungou Nziengui",
+      "prenom": "Rosy",
+      "nomFamille": "Blondel Madoungou Nziengui",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 40.02,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_qualite_hygiene_securite_environnement.json",
+      "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+      "nomComplet": "Edwige Dilebou",
+      "prenom": "Edwige",
+      "nomFamille": "Dilebou",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 39.77,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_qualite_hygiene_securite_environnement.json",
+      "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+      "nomComplet": "Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam",
+      "prenom": "Augusta",
+      "nomFamille": "Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 37.42,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_qualite_hygiene_securite_environnement.json",
+      "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+      "nomComplet": "Pulcherie Nicole Assame Née Nigouegouni",
+      "prenom": "Pulcherie",
+      "nomFamille": "Nicole Assame Née Nigouegouni",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 37.02,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_technique_eau.json",
+      "poste": "Directeur Technique Eau",
+      "nomComplet": "Jean Christian Ibouily",
+      "prenom": "Jean",
+      "nomFamille": "Christian Ibouily",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 42.32,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_technique_eau.json",
+      "poste": "Directeur Technique Eau",
+      "nomComplet": "Murielle Rose Missie",
+      "prenom": "Murielle",
+      "nomFamille": "Rose Missie",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 37.83,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_technique_electricité.json",
+      "poste": "Directeur Technique Eau",
+      "nomComplet": "Jean Christian Ibouily",
+      "prenom": "Jean",
+      "nomFamille": "Christian Ibouily",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 42.32,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_technique_electricité.json",
+      "poste": "Directeur Technique Eau",
+      "nomComplet": "Murielle Rose Missie",
+      "prenom": "Murielle",
+      "nomFamille": "Rose Missie",
+      "sectionsManquantes": [
+        "mtp",
+        "completude"
+      ],
+      "scoreGlobal": 26.18,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "directeur_technique_electricité.json",
+      "poste": "Directeur Technique Eau",
+      "nomComplet": "Rose Murielle Missie",
+      "prenom": "Rose",
+      "nomFamille": "Murielle Missie",
+      "sectionsManquantes": [
+        "conformite",
+        "completude",
+        "feedback"
+      ],
+      "scoreGlobal": 11.58,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "moyens_generaux_complet.json",
+      "poste": "Directeur Moyens Généraux",
+      "nomComplet": "Raissa Aimee Nse Obiang",
+      "prenom": "Raissa",
+      "nomFamille": "Aimee Nse Obiang",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 40.52,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "moyens_generaux_complet.json",
+      "poste": "Directeur Moyens Généraux",
+      "nomComplet": "Pulcherie Nicole Assame Née Nigouegouni",
+      "prenom": "Pulcherie",
+      "nomFamille": "Nicole Assame Née Nigouegouni",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 36.85,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "moyens_generaux_complet.json",
+      "poste": "Directeur Moyens Généraux",
+      "nomComplet": "Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam",
+      "prenom": "Augusta",
+      "nomFamille": "Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam",
+      "sectionsManquantes": [
+        "completude"
+      ],
+      "scoreGlobal": 35.88,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "moyens_generaux_complet.json",
+      "poste": "Directeur Moyens Généraux",
+      "nomComplet": "Jean Martin",
+      "prenom": "Jean",
+      "nomFamille": "Martin",
+      "sectionsManquantes": [
+        "conformite",
+        "mtp",
+        "completude"
+      ],
+      "scoreGlobal": 26.25,
+      "verdictGlobal": "défavorable"
+    },
+    {
+      "fichier": "moyens_generaux_complet.json",
+      "poste": "Directeur Moyens Généraux",
+      "nomComplet": "Olivia Duboze",
+      "prenom": "Olivia",
+      "nomFamille": "Duboze",
+      "sectionsManquantes": [
+        "feedback"
+      ],
+      "scoreGlobal": 23.33,
+      "verdictGlobal": "défavorable"
+    }
+  ],
+  "resume": {
+    "sectionLaPlusProblematique": "completude",
+    "fichierLePlusProblematique": "moyens_generaux_complet.json"
+  }
+}
