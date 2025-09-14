@@ -211,7 +211,25 @@
           ],
           "rang": 6
         },
-        "completude": {},
+        "completude": {
+          "nom": "ONDO EKOMY",
+          "prenom": "Guy Noël",
+          "poste": "Chef de Département Electricité",
+          "score": 34.5,
+          "resume_experience": "23 ans en ingénierie et gestion de projets dans le domaine électrique",
+          "verdict": "défavorable",
+          "points_forts": [
+            "Expérience extensive en transport et distribution électrique",
+            "Expertise en gestion et coordination de projets électriques",
+            "Compétences en formation et encadrement des jeunes professionnels"
+          ],
+          "points_a_travailler": [
+            "Approfondir la maîtrise des indicateurs de performance spécifiques (KPIs)",
+            "Renforcement des compétences en optimisation budgétaire",
+            "Amélioration des stratégies d'analyse de risque"
+          ],
+          "rang": 8
+        },
         "feedback": {
           "prenom": "Guy-noël",
           "nom": "ONDO EKOMY",
