@@ -1384,8 +1384,8 @@
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
-          "nom": "Maria Evans",
-          "prenom": "ZE EBE",
+          "nom": "ZE EBE",
+          "prenom": "Maria",
           "poste": "Coordonnateur des Régions",
           "scores": {
             "Metier": 0.34,
@@ -1393,18 +1393,18 @@
             "Paradigme": 0.55
           },
           "Score_moyen": 41.0,
-          "niveau": "Le score moyen du candidat est en dessous du seuil défavorable, indiquant un manque d'alignement avec les compétences exigées par le poste. Cela pourrait poser des défis dans l'exécution des tâches essentielles décrites dans la vision de l'entreprise.",
+          "niveau": "Le score moyen de Maria est de 41.0, ce qui est en dessous du seuil requis pour une évaluation positive. Dans le contexte du poste de coordonnateur des régions, ce résultat indique qu'il y a des lacunes importantes à combler pour s'aligner avec la vision stratégique de l'entreprise.",
           "verdict": "défavorable",
-          "raison_verdict": "Le score moyen étant en dessous de 43.5, cela montre que le candidat ne correspond pas aux exigences nécessaires pour soutenir la vision de SEEG.",
+          "raison du verdict": "Le score moyen de Maria est inférieur à 43.5, ce qui indique une inadéquation avec la vision transformatrice de la SEEG. L'objectif de cette vision est en effet de faire évoluer l'entité vers une gestion plus efficace, transparente et innovante, ce qui nécessite des compétences robustes en matière de métier, de talent et de paradigme, que Maria doit encore renforcer.",
           "points_forts": [
-            "Le candidat démontre un bon potentiel dans la compréhension des Paradigmes nécessaires pour une transformation organisationnelle.",
-            "Sa capacité à initier des discussions sur les talents pourrait favoriser l'engagement d’une équipe dédiée.",
-            "Une approche analytique qui pourrait aider à identifier les lacunes dans les infrastructures existantes."
+            "Compréhension de la nécessité d'infrastructure moderne.",
+            "Conscience des enjeux de gouvernance.",
+            "Reconnaissance de l'importance des formations continues."
           ],
           "points_a_travailler": [
-            "Renforcer ses compétences techniques et de métier pour assurer une meilleure gestion des infrastructures électriques et hydrauliques.",
-            "Améliorer sa capacité à mobiliser les ressources humaines et non humaines pour respecter les objectifs de réduction des coûts.",
-            "Développer des notions de gouvernance et de transparence nécessaires à la mise en œuvre d'une gestion efficace des projets."
+            "Améliorer ses compétences techniques pour contribuer efficacement à la modernisation et réhabilitation des infrastructures.",
+            "Développer une meilleure gestion des talents pour soutenir l'optimisation des ressources humaines.",
+            "Adopter une vision plus orientée vers les énergies renouvelables et l'innovation technologique."
           ],
           "rang": 4
         },
@@ -1412,19 +1412,19 @@
           "nom": "ZE EBE",
           "prenom": "Maria Evans",
           "poste": "Coordonnateur des Régions",
-          "score": 35.5,
-          "resume_experience": "14 ans d'expérience en exploitation électrique et électromécanique notamment à SEEG avec expertise en coordination et supervision de projets.",
+          "score": 35.3,
+          "resume_experience": "14 ans, expert en électromécanique et exploitation hydrauliques",
           "verdict": "moyen",
-          "raison": "Le candidat a une solide expérience en gestion de projets industriels et une compréhension des infrastructures électriques qui sont pertinentes pour le poste. Cependant, son expérience spécifique en coordination commerciale inter-régionale et normative reste à prouver plus solidement.",
+          "raison_du_verdict": "Le score est légèrement en dessous du seuil favorable mais tout de même supérieur à 35, indiquant une adéquation partielle avec le poste. L'expérience en électromécanique et en gestion d'équipes est pertinente, mais une expertise plus poussée en coordination inter-régionale aurait été un avantage.",
           "points_forts": [
-            "Grande expérience dans la supervision et le leadership d'équipes en exploitation électrique.",
-            "Solides compétences en gestion de projets complexes.",
-            "Connaissance approfondie des systèmes de gestion de la qualité."
+            "Solide expérience en gestion et encadrement d'équipes techniques et de maintenance.",
+            "Expertise en gestion de projets de réhabilitation et d'infrastructure technique.",
+            "Capacité à piloter le Système de Management de la Qualité (SMQ) dans plusieurs processus."
           ],
           "points_a_travailler": [
-            "Renforcer les compétences en politique commerciale inter-régionale.",
-            "Améliorer la maîtrise des langues étrangères pour les interactions internationales.",
-            "Développer une plus grande expertise en veille réglementaire et conformité dans les contextes énergétiques inter-régionaux."
+            "Améliorer les compétences en langues étrangères, notamment l'anglais, pour faciliter la coordination avec des partenaires internationaux.",
+            "Développer une expertise plus approfondie en stratégie commerciale et administrative.",
+            "Augmenter l'expérience en coordination inter-régionale pour s'aligner davantage sur le poste visé."
           ],
           "rang": 18
         },
@@ -1445,19 +1445,19 @@
           "rang": 11
         },
         "global": {
-          "score_global": 38.25,
-          "verdict": "défavorable",
-          "raison_verdict": "Le manque d'expérience pertinente et la disponibilité limitée de Maria Evans Ze Ebe rendent son profil défavorable pour le poste de Coordonnateur des Régions, malgré des qualités personnelles positives.",
-          "resume": "Maria Evans Ze Ebe a montré un potentiel de leadership et un bon comportement. Cependant, son manque d'expérience dans le domaine de la distribution d'eau et d'électricité, ainsi que sa disponibilité limitée, posent des défis importants pour ce rôle exigeant.",
+          "score_global": 48.46,
+          "verdict": "moyen",
+          "raison_verdict": "Bien qu'elle présente un potentiel de leadership, le manque d'expérience et la disponibilité limitée de Maria pourraient empêcher sa pleine réussite dans un rôle nécessitant une expertise technique et un engagement fort.",
+          "resume": "Maria montre un potentiel de leadership et un bon comportement, mais son manque d'expérience dans la distribution d'eau et d'électricité et sa disponibilité limitée posent problème pour ce poste clé. Son implication pourrait être affectée par ces limitations dans un contexte aussi exigeant que celui de la SEEG.",
           "points_forts": [
             "Bon comportement",
-            "Potentiel de leadership identifié"
+            "Potentiel de leadership"
           ],
           "points_a_ameliorer": [
-            "Manque d'expérience en distribution eau et électricité",
+            "Manque d'expérience en distribution d'eau et électricité",
             "Leadership à confirmer dans un poste similaire"
           ],
-          "rang": 17
+          "rang": 10
         }
       },
       "Ulrich Moundounga": {
