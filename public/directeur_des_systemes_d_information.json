@@ -707,7 +707,26 @@
           ],
           "rang": 5
         },
-        "completude": {},
+        "completude": {
+          "nom": "OVONO ENAME",
+          "prenom": "Dérille",
+          "poste": "Directeur des Systèmes d’Information",
+          "score": 43.7,
+          "resume_experience": "18 ans, spécialisé en exploitation informatique et gestion de crise",
+          "verdict": "favorable",
+          "raison": "Le candidat présente une solide expérience en gestion des systèmes d'information à la SEEG et a démontré des compétences en gestion de crise et en optimisation des infrastructures informatiques.",
+          "points_forts": [
+            "Expérience avérée en gestion de crises informatiques critiques",
+            "Expertise en transformation digitale et optimisation des processus IT",
+            "Capacité stratégique avec expérience d'intérim comme Directeur des Systèmes d'Information"
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en langues étrangères pour une meilleure communication internationale",
+            "Approfondir la gestion de la cybersécurité pour garantir une protection maximale contre les menaces évolutives",
+            "Développer des compétences en leadership pour conduire des équipes plus larges"
+          ],
+          "rang": 2
+        },
         "feedback": {
           "prenom": "Derille",
           "nom": "OVONO ENAME",
