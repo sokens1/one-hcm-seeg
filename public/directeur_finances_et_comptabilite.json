@@ -36,7 +36,26 @@
           ],
           "rang": 2
         },
-        "completude": {},
+        "completude": {
+          "nom": "ABENG",
+          "prenom": "Emilie Danielle",
+          "poste": "Directeur Finances et Comptabilité",
+          "score": 31.5,
+          "resume_experience": "15 ans d'expérience en Finances, Comptabilité, Audit et Contrôle",
+          "verdict": "défavorable",
+          "raison": "Le score de similarité est inférieur au seuil requis, malgré l'expérience significative du candidat.",
+          "points_forts": [
+            "Expérience en supervision de comptabilité et élaboration de clôtures comptables",
+            "Capacité à élaborer et suivre le budget annuel de l’entreprise",
+            "Expérience dans la gestion des relations externes et négociation avec partenaires financiers"
+          ],
+          "points_a_travailler": [
+            "Approfondissement des connaissances en normes comptables internationales telles que IFRS",
+            "Renforcement de l'anglais pour une meilleure communication internationale",
+            "Optimisation des processus de reporting financier détaillé"
+          ],
+          "rang": 2
+        },
         "feedback": {
           "prenom": "Emilie",
           "nom": "Abeng",

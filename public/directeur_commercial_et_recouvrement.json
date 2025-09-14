@@ -299,7 +299,26 @@
           ],
           "rang": 2
         },
-        "completude": {},
+        "completude": {
+          "nom": "ESSINGONE MEMIAGHE",
+        "prenom": "Thomas",
+        "poste": "Directeur Commercial et Recouvrement",
+        "score": 35.9,
+        "resume_experience": "27 ans, dont plus de 15 ans en tant que responsable des unités commerciales et clientèles",
+        "verdict": "moyen",
+        "reason": "Thomas présente une expérience significative et pertinente au sein de SEEG, toutefois, le score de 35.900 représente une marge d'amélioration pour répondre pleinement aux exigences du poste.",
+        "points_forts": [
+          "Expérience approfondie dans la gestion commerciale et clientèle",
+          "Compétence en digitalisation des processus (notamment facturation)",
+          "Connaissance approfondie de l'environnement institutionnel du secteur de l'eau et de l'électricité"
+        ],
+        "points_a_travailler": [
+          "Renforcer ses compétences en évaluation et gestion de risques clients",
+          "Améliorer les techniques de recouvrement pour réduire davantage le taux d'impayés",
+          "Optimiser l'équilibre entre le développement commercial et la sécurisation financière"
+        ],
+        "rang": 9
+        },
         "feedback": {
           "prenom": "Thomas",
           "nom": "ESSINGONE MEMIAGHE",
@@ -798,8 +817,8 @@
         }
       },
       "NINGA Reine Gerlina": {
-        "prenom": "Reine Gerlina",
-        "nom": "Ninga",
+        "prenom": "Ninga",
+        "nom": "Reine Gerlina",
         "conformite": {
           "prenom": "NINGA",
           "nom": " Reine Gerlina",
@@ -809,48 +828,48 @@
         },
         "mtp": {
           "nom": "Ninga",
-          "prenom": "Reine Gerlina",
-          "poste": "Directeur Commercial et Recouvrement",
-          "scores": {
-            "Métier": 0.47,
-            "Talent": 0.35,
-            "Paradigme": 0.55
-          },
-          "Score_moyen": 45.67,
-          "niveau": "Reine Gerlina Ninga présente un score moyen situé dans la tranche moyenne, suggérant une compréhension et une aptitude moyennes par rapport aux attentes du poste visé. Il faudra néanmoins un effort additionnel pour renforcer son alignement avec les besoins stratégiques de la SEEG.",
-          "verdict": "moyen",
-          "raison du verdict": "Avec un score moyen de 45.67, Reine Gerlina Ninga est dans la catégorie moyenne. Cela indique une adéquation partielle avec la vision stratégique, mais elle devra développer davantage ses compétences pour répondre aux exigences élevées du poste et des réorganisations stratégiques à venir au sein de la SEEG.",
-          "points_forts": [
-            "Niveau de paradigme relativement élevé suggérant une ouverture à de nouvelles initiatives.",
-            "Capacité de percevoir et de s'adapter aux besoins changeants dans un environnement dynamique.",
-            "Compréhension de base des enjeux liés à l'énergie et à l'eau, ce qui est crucial pour la vision énergétique de la SEEG."
-          ],
-          "points_a_travailler": [
-            "Renforcement de ses compétences métiers pour mieux aligner avec les standards de l'industrie.",
-            "Augmentation du score de talent pour une meilleure adaptation aux pratiques commerciales et de recouvrement innovantes.",
-            "Amélioration de la gestion de la gouvernance et du suivi des processus pour s'aligner avec la transparence et l'efficacité attendues."
-          ],
-          "rang": 3
+    "prenom": "Reine Gerlina",
+    "poste": "Directeur Commercial et Recouvrement",
+    "scores": {
+      "Métier": 0.47,
+      "Talent": 0.35,
+      "Paradigme": 0.55
+    },
+    "Score_moyen": 45.67,
+    "niveau": "Reine Gerlina Ninga présente un score moyen situé dans la tranche moyenne, suggérant une compréhension et une aptitude moyennes par rapport aux attentes du poste visé. Il faudra néanmoins un effort additionnel pour renforcer son alignement avec les besoins stratégiques de la SEEG.",
+    "verdict": "moyen",
+    "raison du verdict": "Avec un score moyen de 45.67, Reine Gerlina Ninga est dans la catégorie moyenne. Cela indique une adéquation partielle avec la vision stratégique, mais elle devra développer davantage ses compétences pour répondre aux exigences élevées du poste et des réorganisations stratégiques à venir au sein de la SEEG.",
+    "points_forts": [
+      "Niveau de paradigme relativement élevé suggérant une ouverture à de nouvelles initiatives.",
+      "Capacité de percevoir et de s'adapter aux besoins changeants dans un environnement dynamique.",
+      "Compréhension de base des enjeux liés à l'énergie et à l'eau, ce qui est crucial pour la vision énergétique de la SEEG."
+    ],
+    "points_a_travailler": [
+      "Renforcement de ses compétences métiers pour mieux aligner avec les standards de l'industrie.",
+      "Augmentation du score de talent pour une meilleure adaptation aux pratiques commerciales et de recouvrement innovantes.",
+      "Amélioration de la gestion de la gouvernance et du suivi des processus pour s'aligner avec la transparence et l'efficacité attendues."
+    ],
+    "rang": 3
         },
         "completude": {
           "nom": "NINGA",
-          "prenom": "Reine Gerlina",
-          "poste": "Directeur Commercial et Recouvrement",
-          "score": 37.9,
-          "resume_experience": "13 ans d'expérience principalement dans le domaine commercial et marketing, spécialisée en gestion commerciale, stratégie marketing et développement commercial.",
-          "verdict": "moyen",
-          "raison_du_verdict": "Le score de similarité de 37.9 se situe tout juste au-dessus de la moyenne, indiquant que le profil du candidat correspond modérément aux exigences du poste. Bien que son expérience soit vaste et pertinente surtout dans le secteur commercial et marketing, il manque peut-être des éléments démontrant un focus clair sur la partie recouvrement. La position de rang 10 introduit également une nécessité de compétition face à d'autres candidats mieux alignés avec la vision stratégique du poste à pourvoir.",
-          "points_forts": [
-            "Expérience avérée en gestion commerciale et marketing",
-            "Compétences reconnues en développement commercial",
-            "Capacité à motiver et encadrer une équipe"
-          ],
-          "points_a_travailler": [
-            "Renforcement des compétences spécifiques en recouvrement",
-            "Amélioration de la stratégie de digitalisation des processus client",
-            "Approfondir l'expérience en gestion des litiges et contentieux"
-          ],
-          "rang": 10
+    "prenom": "Reine Gerlina",
+    "poste": "Directeur Commercial et Recouvrement",
+    "score": 37.9,
+    "resume_experience": "13 ans d'expérience principalement dans le domaine commercial et marketing, spécialisée en gestion commerciale, stratégie marketing et développement commercial.",
+    "verdict": "moyen",
+    "raison_du_verdict": "Le score de similarité de 37.9 se situe tout juste au-dessus de la moyenne, indiquant que le profil du candidat correspond modérément aux exigences du poste. Bien que son expérience soit vaste et pertinente surtout dans le secteur commercial et marketing, il manque peut-être des éléments démontrant un focus clair sur la partie recouvrement. La position de rang 10 introduit également une nécessité de compétition face à d'autres candidats mieux alignés avec la vision stratégique du poste à pourvoir.",
+    "points_forts": [
+      "Expérience avérée en gestion commerciale et marketing",
+      "Compétences reconnues en développement commercial",
+      "Capacité à motiver et encadrer une équipe"
+    ],
+    "points_a_travailler": [
+      "Renforcement des compétences spécifiques en recouvrement",
+      "Amélioration de la stratégie de digitalisation des processus client",
+      "Approfondir l'expérience en gestion des litiges et contentieux"
+    ],
+    "rang": 10
         },
         "feedback": {
           "prenom": "Ninga",
@@ -869,16 +888,19 @@
           "rang": 2
         },
         "global": {
-          "score_global": 19.0,
+          "score_global": 39.25,
           "verdict": "défavorable",
-          "raison_verdict": "Le faible score global et l'absence complète de conformité documentaire et de feedback RH impactent négativement la candidature de Reine Gerlina Ninga, la rendant défavorable pour le poste.",
-          "resume": "Le candidat, Reine Gerlina Ninga, présente un score global défavorable pour le poste de Directeur Commercial et Recouvrement à la SEEG. Le manque de conformité documentaire et l'absence de feedback RH sont des points critiques.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Absence de conformité documentaire",
-            "Absence de feedback RH"
+          "raison_verdict": "Le score global pondéré est faible et indique que le candidat n'est pas actuellement prêt à gérer les défis du poste, notamment en termes de management et leadership, essentiels pour le contexte de réorganisation et transformation stratégique de la SEEG.",
+          "resume": "Malgré une orientation vers les résultats et un bon comportement, le candidat manque d'expérience complète et d'alignement complet avec les exigences du poste. Des améliorations en management et leadership sont nécessaires pour assumer efficacement le rôle dans le contexte de transformation de la SEEG.",
+          "points_forts": [
+            "Orientée résultats",
+            "Bon comportement"
           ],
-          "rang": 11
+          "points_a_ameliorer": [
+            "Management",
+            "Leadership"
+          ],
+          "rang": 9
         }
       }
     },
