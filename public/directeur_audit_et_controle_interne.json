@@ -600,27 +600,26 @@
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
-          "nom": "NAMBO WEZET Née MBOUROU LAMASSE",
+          "nom": "Ange NAMBO WEZET Née MBOUROU LAMASSE",
           "prenom": "Marie",
           "poste": "Directeur Audit & Contrôle interne",
           "scores": {
-            "Metier": 0.37,
+            "Métier": 0.37,
             "Talent": 0.39,
             "Paradigme": 0.53
           },
           "Score_moyen": 43.0,
-          "niveau": "Le score moyen de 43.0 indique une faible adéquation avec les attentes de l'entreprise. Cela suggère que le candidat pourrait avoir des difficultés à s'aligner sur la vision stratégique de la SEEG.",
+          "niveau": "Le score moyen de Marie s'inscrit légèrement en dessous du seuil de 'moyen'. Elle présente une compréhension partielle des attentes pour le poste mais souligne des domaines où elle pourrait s'améliorer pour mieux répondre aux besoins stratégiques de la SEEG.",
           "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est en dessous du seuil de 43.5, ce qui remet en question la capacité du candidat à répondre aux défis globaux de l'entreprise.",
+          "raison du verdict": "Marie a un score moyen de 43.0, ce qui est juste en-dessous du seuil 'moyen' de 43.5. Ce score indique qu'elle pourrait avoir des difficultés à s'aligner pleinement sur la vision ambitieuse de transformation de la SEEG. Des efforts supplémentaires seront nécessaires pour qu'elle puisse contribuer efficacement aux impératifs de réorganisation et de gouvernance renforcée de l'entreprise.",
           "points_forts": [
-            "Connaissance du secteur de l'audit et du contrôle interne.",
-            "Capacité d'analyse des paradigmes organisationnels.",
-            "Approche réfléchie des infrastructures et des systèmes de gestion."
+            "Capacité à adopter un paradigme adaptable, comme le montre son score de Paradigme",
+            "Potentiel de compréhension des nouvelles technologies et approches de contrôle interne"
           ],
           "points_a_travailler": [
-            "Renforcer les compétences liées aux métiers spécifiques dans le secteur de l'énergie et de l'eau.",
-            "Développer des capacités de leadership et de gestion d'équipe afin d'implémenter efficacement la vision de l'entreprise.",
-            "Améliorer la compréhension des nouvelles technologies et de l'innovation dans le secteur."
+            "Renforcer ses compétences métier pour mieux contribuer aux objectifs de modernisation et de réhabilitation des infrastructures",
+            "Améliorer ses compétences en gestion du talent pour maximiser l'efficacité de son équipe",
+            "Accroître sa compréhension de la gouvernance et des pratiques financières pour s'aligner aux objectifs de transparence de la SEEG"
           ],
           "rang": 4
         },
@@ -629,18 +628,18 @@
           "prenom": "Marie Ange",
           "poste": "Directeur Audit & Contrôle interne",
           "score": 40.4,
-          "resume_experience": "27 ans, spécialiste en contrôle interne et audit au sein de la SEEG",
+          "resume_experience": "27 ans d'expérience en gestion et contrôle interne",
           "verdict": "favorable",
-          "raison": "Avec plus de 27 ans d'expérience dans le contrôle interne et l'audit, Marie Ange a démontré une expertise alignée avec les responsabilités du poste ciblé. Sa compréhension approfondie des processus internes de la SEEG, combinée à sa capacité à diriger et à surveiller des audits complexes, en fait une candidate solide pour ce rôle stratégique.",
+          "raison_du_verdict": "Marie Ange possède une vaste expérience de 27 ans dans le domaine du contrôle interne, ce qui correspond parfaitement aux exigences du poste. Bien que le score de similarité ne soit que de 40.4, ses antécédents professionnels solides et ses qualifications la rendent très apte à occuper ce poste stratégique. De plus, son engagement envers l'amélioration continue des processus et sa vision pour renforcer la fonction d'audit et de contrôle interne sont des atouts majeurs.",
           "points_forts": [
-            "Expérience approfondie en contrôle interne et audit selon les référentiels COSO et SOX",
-            "Compétences en gestion des risques et élaboration de recommandations stratégiques",
-            "Leadership avéré dans la conduite de projets transversaux complexes"
+            "27 ans d'expérience dans le contrôle interne et audit.",
+            "Expertise en gouvernance et gestion des risques alignée sur des référentiels internationaux comme COSO et ISO.",
+            "Leadership reconnu et capacité à piloter des équipes pluridisciplinaires."
           ],
           "points_a_travailler": [
-            "Renforcement des compétences dans l'intégration des solutions technologiques avancées comme SCADA",
-            "Augmentation de l'implication des équipes dans la culture du risque",
-            "Amélioration continue de la communication des résultats d'audit aux parties prenantes extérieures"
+            "Renforcement des compétences en anglais pour mieux intégrer les exigences internationales.",
+            "Mise à jour continue sur les nouvelles technologies de l'information et digitalisation des processus d'audit.",
+            "Approfondir la certification CIA pour plus de crédibilité dans le domaine d'audit interne."
           ],
           "rang": 2
         },
@@ -660,8 +659,8 @@
         "global": {
           "score_global": 32.1,
           "verdict": "défavorable",
-          "raison_verdict": "Le candidat ne satisfait pas aux attentes de gouvernance renforcée et de transparence, essentielles pour répondre aux enjeux stratégiques de la SEEG.",
-          "resume": "Marie Ange Nambo Wezet Née Mbourou Lamasse présente un profil défavorable pour le poste de Directeur Audit & Contrôle interne chez SEEG, principalement en raison d'un manque de compétences en management et de problèmes de comportement avec les collaborateurs, ce qui est critique pour une entreprise en restructuration cherchant à renforcer sa gouvernance.",
+          "raison_verdict": "Le profil présenté va à l'encontre des valeurs de gouvernance et de transparence recherchées pour la SEEG, en raison des lacunes en management et des problèmes relationnels.",
+          "resume": "Marie Ange Nambo Wezet n'est pas recommandée pour le poste de Directeur Audit & Contrôle interne à la SEEG. Le feedback RH souligne un manque critique de compétences en management et en leadership, ainsi que des comportements problématiques envers les collaborateurs, ce qui est essentiel pour un rôle de direction nécessitant des compétences en gouvernance et en transparence.",
           "points_forts": [],
           "points_a_ameliorer": [
             "Manque de compétences en management",
