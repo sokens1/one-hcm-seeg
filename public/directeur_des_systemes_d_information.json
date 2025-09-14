@@ -122,7 +122,26 @@
           ],
           "rang": 9
         },
-        "completude": {},
+        "completude": {
+          "nom": "MBOT",
+        "prenom": "Sebastien",
+        "poste": "Directeur des Systèmes d’Information",
+        "score": 41.4,
+        "resume_experience": "Plus de 15 ans d'expérience en informatique dans les secteurs de l'énergie, des télécoms et du e-commerce",
+        "verdict": "favorable",
+        "reason": "Sebastien MBOT présente une riche expérience en gestion de systèmes d'information, notamment dans l'énergie, alignée avec les besoins stratégiques et techniques du poste.",
+        "points_forts": [
+          "Expérience en gestion de projet et stratégie IT, essentielle pour le rôle proposé",
+          "Connaissance approfondie d'ERP, CRM et autres systèmes critiques pour l'entreprise",
+          "Compétence en gestion du changement et conduite de projets digitaux"
+        ],
+        "points_a_travailler": [
+          "Mise à jour sur les dernières réglementations de cybersécurité",
+          "Renforcement de l'expérience en transformation digitale à grande échelle",
+          "Approfondissement de la connaissance des tendances récentes en veille technologique"
+        ],
+        "rang": 7
+        },
         "feedback": {
           "prenom": "Sebastien",
           "nom": "MBOT",
