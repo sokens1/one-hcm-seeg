@@ -2,128 +2,125 @@
   "Directeur des Systèmes d’Information": {
     "candidats": {
       "Thierry Angoue Bekale": {
+       "prenom": "Thierry",
+      "nom": "Angoue Bekale",
+      "conformite": {
         "prenom": "Thierry",
-        "nom": "Angoue Bekale",
-        "conformite": {
-          "prenom": "Thierry",
-          "nom": "ANGOUE BEKALE",
-          "poste": "Directeur des Systèmes d’Information",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
+        "nom": "ANGOUE BEKALE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "ANGOUE BEKALE",
+        "prenom": "Thierry",
+        "poste": "Direction des Systèmes d'Informations",
+        "scores": {
+          "Metier": 0.45,
+          "Talent": 0.42,
+          "Paradigme": 0.43
         },
-        "mtp": {
-          "nom": "ANGOUE BEKALE",
-          "prenom": "Thierry",
-          "poste": "Directeur des Systèmes d’Information",
-          "scores": {
-            "Metier": 0.45,
-            "Talent": 0.42,
-            "Paradigme": 0.47
-          },
-          "Score_moyen": 44.67,
-          "niveau": "Le candidat présente un score moyen qui se classe dans la catégorie défavorable. Cela indique une inadéquation avec les attentes stratégiques de l'entreprise en termes de compétences et de vision.",
-          "verdict": "défavorable",
-          "raison_du_verdict": "Le score moyen de 44.67 est inférieur à 43.5, ce qui traduit un manque d'alignement avec la vision de l'entreprise.",
-          "points_forts": [
-            "Connaissances en gestion des infrastructures techniques et réhabilitation, cruciales pour la vision du projet de modernisation.",
-            "Capacité à dialoguer avec des partenaires techniques, indiquant une compétence en gestion de projets complexes.",
-            "Compréhension des enjeux de transparence et gouvernance, essentiels dans un contexte de tensions avec l'État."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en management et leadership, nécessaires pour diriger une organisation en transformation.",
-            "Améliorer la compréhension des enjeux économiques globaux, notamment en matière de tarification et de facturation.",
-            "Développer des aptitudes à intégrer des technologies innovantes et durables, afin de répondre aux défis de la transition énergétique."
-          ],
-          "rang": 3
-        },
-        "completude": {
-          "nom": "ANGOE BEKALE",
-          "prenom": "Thierry",
-          "poste": "Directeur des Systèmes d’Information",
-          "score": 46.2,
-          "resume_experience": "28 ans d'expérience, principalement dans la transformation digitale et gestion des systèmes d'information",
-          "verdict": "favorable",
-          "points_forts": [
-            "Grande expérience de 28 ans dans le domaine IT",
-            "Expertise en transformation digitale et innovation",
-            "Connaissance approfondie des systèmes d'information et de la gouvernance SI"
-          ],
-          "points_a_travailler": [
-            "Renforcer la maîtrise de l'anglais pour une communication optimale à l'international",
-            "Approfondir les compétences en cybersécurité pour les évolutions futures",
-            "Développer des compétences supplémentaires dans la veille technologique pour anticiper les innovations du marché"
-          ],
-          "rang": 1
-        },
-        "feedback": {
-          "prenom": "Thierry",
-          "nom": "ANGOUE BEKALE",
-          "score": 52.3,
-          "verdict": "Moyen",
-          "raisons": "Le candidat présente des compétences managériales, mais son leadership reste à confirmer. Son absence de vision stratégique pour le poste et l'absence de feedback positif des équipes pourraient freiner sa capacité à mener la transformation nécessaire à la SEEG.",
-          "Points forces": [
-            "Bonne expérience managériale",
-            "Connaissance des enjeux du secteur de l'eau et de l'électricité"
-          ],
-          "Points à travailler": [
-            "Leadership à confirmer",
-            "Vision stratégique à développer"
-          ],
-          "rang": 2
-        },
-        "global": {
-          "score_global": 51.56,
-          "verdict": "moyen",
-          "raison_verdict": "Le candidat présente des compétences managériales mais son manque de vision stratégique et d'appuis positifs des équipes limitent sa capacité à impulser la transformation attendue par la SEEG.",
-          "resume": "Thierry Angoue Bekale a une bonne expérience managériale et connaît les enjeux du secteur de l'eau et de l'électricité. Cependant, son leadership reste à confirmer et il manque de vision stratégique, ce qui pourrait freiner sa capacité à mener la transformation nécessaire à la SEEG.",
-          "points_forts": [
-            "Bonne expérience managériale",
-            "Connaissance des enjeux du secteur de l'eau et de l'électricité"
-          ],
-          "points_a_ameliorer": [
-            "Leadership à confirmer",
-            "Vision stratégique à développer"
-          ],
-          "rang": 1
-        }
+        "Score_moyen": 43.33,
+        "niveau": "Le score moyen du candidat est en dessous du seuil défavorable, indiquant un alignement limité avec la vision de l'entreprise. Cela suggère des lacunes potentielles dans les compétences et qualités requises pour jouer un rôle clé dans la transformation de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen étant 43.33, cela reflète un potentiel insuffisant à répondre aux défis stratégiques de la SEEG.",
+        "points_forts": [
+          "Connaissance des enjeux technologiques liés aux systèmes d'information.",
+          "Capacité d'analyse des systèmes en place et identification des points critiques.",
+          "Aptitude à travailler en équipe pour des projets de modernisation."
+        ],
+        "points_a_travailler": [
+          "Développer des compétences en gestion de projets complexes.",
+          "Améliorer la compréhension des enjeux de gouvernance et de responsabilité.",
+          "Accroître les capacités d’innovation dans les infrastructures technologiques."
+        ],
+        "rang": 3
+      },
+      "completude": {
+        "nom": "ANGOUE BEKALE",
+        "prenom": "Thierry",
+        "poste": "Directeur des Systèmes d’Information",
+        "score": 41.2,
+        "resume_experience": "28 ans d'expérience en informatique et systèmes d'information",
+        "verdict": "favorable",
+        "points_forts": [
+          "Expérience confirmée en gestion des systèmes d'information",
+          "Compétence dans la transformation digitale et gestion des projets informatiques",
+          "Leadership prouvé dans l'optimisation des systèmes d'information"
+        ],
+        "points_a_travailler": [
+          "Mise à jour des compétences en nouvelles normes de sécurité",
+          "Amélioration continue des compétences en stratégie IT",
+          "Renforcement des compétences en gestion d'équipes multidisciplinaires"
+        ],
+        "rang": 8
+      },
+      "feedback": {
+        "prenom": "Thierry",
+        "nom": "ANGOUE BEKALE",
+        "score": 49.5,
+        "verdict": "Moyen",
+        "raisons": "Le candidat présente des capacités managériales, mais un leadership à confirmer. Ses compétences doivent être renforcées pour répondre aux exigences stratégiques de la SEEG.",
+        "Points forces": [
+          "Expérience managériale",
+          "Compétences techniques potentielles"
+        ],
+        "Points à travailler": [
+          "Leadership à confirmer",
+          "Absence de vision stratégique claire"
+        ],
+        "rang": 2
+      },
+      "global": {
+        "score_global": 48.82,
+        "verdict": "moyen",
+        "resume": "Thierry Angoue Bekale possède une expérience managériale qui pourrait être bénéfique à la transformation numérique de la SEEG. Toutefois, son leadership doit être davantage confirmé, et il est important qu'il développe une vision stratégique claire alignée sur les attentes robustes de l'entreprise d'ici 2030.",
+        "points_forts": [
+          "Expérience managériale",
+          "Compétences techniques potentielles"
+        ],
+        "points_a_ameliorer": [
+          "Leadership à confirmer",
+          "Absence de vision stratégique claire"
+        ],
+        "rang": 2
+      }
       },
       "Sebastien Mbot": {
+       "prenom": "Sebastien",
+      "nom": "Mbot",
+      "conformite": {
         "prenom": "Sebastien",
-        "nom": "Mbot",
-        "conformite": {
-          "prenom": "Sebastien",
-          "nom": "MBOT",
-          "poste": "Directeur des Systèmes d’Information",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
+        "nom": "MBOT",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MBOT",
+        "prenom": "Sebastien",
+        "poste": "Direction des Systèmes d'Informations",
+        "scores": {
+          "Metier": 0.35,
+          "Talent": 0.33,
+          "Paradigme": 0.34
         },
-        "mtp": {
-          "nom": "MBOT",
-          "prenom": "Sebastien",
-          "poste": "Directeur des Systèmes d’Information",
-          "scores": {
-            "Metier": 0.35,
-            "Talent": 0.33,
-            "Paradigme": 0.38
-          },
-          "Score_moyen": 35.33,
-          "niveau": "Le candidat affiche un score moyen défavorable, indiquant une inadéquation avec les attentes élevées de la vision de l'entreprise. Des compétences clés semblent manquer pour réussir dans un environnement en pleine transformation.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est largement en dessous du seuil défavorable, ce qui indique des lacunes significatives.",
-          "points_forts": [
-            "Solide compréhension des enjeux techniques liés aux systèmes d'information.",
-            "Capacité à analyser les besoins organisationnels pour des solutions IT.",
-            "Expérience antérieure dans des projets de transformation digitale."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en leadership pour diriger efficacement dans un contexte de changement.",
-            "Améliorer la gestion des ressources humaines pour optimiser l'organisation.",
-            "Acquérir une vision stratégique à long terme pour contribuer à la modernisation des infrastructures."
-          ],
-          "rang": 9
-        },
-        "completude": {
-          "nom": "MBOT",
+        "Score_moyen": 34.0,
+        "niveau": "Le score moyen de 34.0 indique une inadéquation par rapport aux attentes de l'entreprise. Il semble que le candidat présente des lacunes significatives pour s'aligner avec la vision stratégique de la SEEG.",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le score moyen du candidat est largement en dessous du seuil critique de 43.5, indiquant une inadéquation avec les exigences du poste et la vision de l'entreprise.",
+        "points_forts": [
+          "Capacité à identifier des solutions concrètes pour des problèmes complexes dans le secteur de l'énergie.",
+          "Potentiel de transformation basé sur des approches innovantes dans la gestion des systèmes d'informations.",
+          "Compréhension des enjeux sectoriels et capacité à contribuer à la restructuration organisationnelle."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences techniques et opérationnelles en gestion des systèmes d'informations.",
+          "Renforcer la capacité de leadership et de management pour gérer des équipes dans un environnement en mutation.",
+          "Développer des compétences en gestion de projet pour aligner les initiatives IT avec les objectifs stratégiques de la SEEG."
+        ],
+        "rang": 9
+      },
+      "completude": {
+        "nom": "MBOT",
         "prenom": "Sebastien",
         "poste": "Directeur des Systèmes d’Information",
         "score": 41.4,
@@ -141,39 +138,38 @@
           "Approfondissement de la connaissance des tendances récentes en veille technologique"
         ],
         "rang": 7
-        },
-        "feedback": {
-          "prenom": "Sebastien",
-          "nom": "MBOT",
-          "score": 67.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat démontre un potentiel de transformation significatif malgré certains défis relationnels. Son expérience et sa volonté de moderniser les processus sont en adéquation avec la vision stratégique de la SEEG.",
-          "Points forces": [
-            "Capacité de leadership affirmé et direct",
-            "Expérience en gestion d'entreprise et potentiel de transformation"
-          ],
-          "Points à travailler": [
-            "Compétences en communication et gestion relationnelle",
-            "Capacité à embarquer les équipes vers le changement"
-          ],
-          "rang": 1
-        },
-        "global": {
-          "score_global": 47.58,
-          "verdict": "moyen",
-          "raison_verdict": "Bien qu'il démontre un potentiel de transformation, des défis restent dans la communication et la gestion relationnelle, ce qui impacte son score global moyen.",
-          "resume": "Sebastien Mbot montre un potentiel significatif pour transformer et moderniser les processus de la SEEG, bien que ses compétences en communication et en gestion relationnelle nécessitent des améliorations. Son expérience en gestion d'entreprise est alignée avec la vision stratégique de la SEEG.",
-          "points_forts": [
-            "Capacité de leadership affirmé et direct",
-            "Expérience en gestion d'entreprise",
-            "Potentiel de transformation"
-          ],
-          "points_a_ameliorer": [
-            "Compétences en communication et gestion relationnelle",
-            "Capacité à embarquer les équipes vers le changement"
-          ],
-          "rang": 2
-        }
+      },
+      "feedback": {
+        "prenom": "Sebastien",
+        "nom": "MBOT",
+        "score": 75.6,
+        "verdict": "Favorable",
+        "raisons": "Le candidat présente un potentiel de transformation significatif, malgré quelques tensions relationnelles. Sa capacité à apporter une approche innovante est alignée avec la vision de transformation de la SEEG.",
+        "Points forces": [
+          "Expérience en gestion d'entreprise",
+          "Capacité à initier des projets stratégiques"
+        ],
+        "Points à travailler": [
+          "Améliorer la communication et la gestion relationnelle",
+          "Gérer la résistance au changement au sein de son équipe"
+        ],
+        "rang": 1
+      },
+      "global": {
+        "score_global": 59.58,
+        "verdict": "favorable",
+        "resume": "Sebastien Mbot est un candidat avec un potentiel de transformation significatif, aligné avec la vision de la SEEG de 2025-2035. Il a démontré une capacité à initier des projets stratégiques tout en présentant des tensions relationnelles à surmonter pour réussir efficacement.",
+        "points_forts": [
+          "Expérience en gestion d'entreprise",
+          "Capacité à initier des projets stratégiques",
+          "Approche innovante"
+        ],
+        "points_a_ameliorer": [
+          "Améliorer la communication et la gestion relationnelle",
+          "Gérer la résistance au changement au sein de son équipe"
+        ],
+        "rang": 1
+      }
       },
       "Steeve Ydrice Malouki Mouyapou": {
         "prenom": "Steeve",
@@ -758,7 +754,7 @@
     },
     "classement": [
       {
-        "rang": 1,
+        "rang": 2,
         "nom": "Angoue Bekale",
         "prenom": "Thierry",
         "score_global": 51.56,
