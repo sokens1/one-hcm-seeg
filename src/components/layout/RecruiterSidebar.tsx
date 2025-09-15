@@ -25,11 +25,11 @@ const menuItems = [
     url: "/recruiter/candidates",
     icon: Users,
   },
-  // {
-  //   title: "Traitements IA",
-  //   url: "/recruiter/traitements-ia",
-  //   icon: Brain,
-  // },
+   {
+    title: "Traitements IA",
+    url: "/recruiter/traitements-ia",
+    icon: Brain,
+   },
   {
     title: "Postes à pourvoir",
     url: "/recruiter/jobs",
