@@ -60,7 +60,7 @@ export default function RecruiterDashboard() {
     error 
   } = useRecruiterDashboard();
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
-  const { isRecruiter } = useAuth();
+  const { isRecruiter, isObserver } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
   const [showPotentialAnalysis, setShowPotentialAnalysis] = useState(false);
@@ -120,7 +120,7 @@ export default function RecruiterDashboard() {
               Gérez vos Offres d'emploi et suivez vos candidatures en temps réel
             </p>
           </div>
-          {isRecruiter && (
+          {(isRecruiter || isObserver) && (
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               
               <Button 
@@ -729,6 +729,16 @@ export default function RecruiterDashboard() {
                         Créer une nouvelle offre
                       </Button>
                     </Link>
+                  )}
+                  {(isRecruiter || isObserver) && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start gap-2 text-xs sm:text-sm"
+                      onClick={() => setShowPotentialAnalysis(true)}
+                    >
+                      <BarChart3 className="w-3 h-3 sm:w-4" />
+                      Analyse des Potentiels
+                    </Button>
                   )}
                   <Link to="/recruiter/candidates" className="block">
                     <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
