@@ -18,11 +18,12 @@ interface Candidate {
   statusLabel: string;
   phone: string;
   experience: string;
-  status: 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme';
+  status: 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme' | 'simulation_programmee';
   score: number;
   applicationDate: string;
   email: string;
   interviewDate?: string; // Date de l'entretien programmé
+  simulationDate?: string; // Date de la simulation programmée
   globalScore?: number; // Score global de la synthèse
 
   gender?: string;
@@ -113,13 +114,13 @@ export default function JobPipeline() {
     
     const normalizedStatus = normalizeStatus(app.status);
     
-    const candidate = {
+    const candidate: Candidate = {
       id: app.id,
       name: `${app.users?.first_name || ''} ${app.users?.last_name || ''}`.trim(),
       statusLabel: getStatusLabel(app.status),
       phone: app.users?.phone || 'Non fourni',
       experience: '', // Placeholder for future use
-      status: normalizedStatus, // Utiliser le statut normalisé
+      status: normalizedStatus as 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme' | 'simulation_programmee', // Type assertion
       score: 0, // TODO: Calculate from evaluations
       applicationDate: formatDate(app.created_at),
       email: app.users?.email || '',
@@ -149,8 +150,7 @@ export default function JobPipeline() {
       // Inclure les candidats avec statut 'incubation' ET ceux avec simulation programmée
       return candidates.filter(candidate => 
         candidate.status === 'incubation' || 
-        candidate.status === 'simulation_programmee' ||
-        (candidate.status === 'incubation' && candidate.simulationDate)
+        candidate.status === 'simulation_programmee'
       );
     }
     return candidates.filter(candidate => candidate.status === status);

@@ -17,7 +17,8 @@ import {
   PieChart,
   Activity,
   Eye,
-  Edit
+  Edit,
+  X
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
@@ -62,6 +63,7 @@ export default function RecruiterDashboard() {
   const { isRecruiter } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
+  const [showPotentialAnalysis, setShowPotentialAnalysis] = useState(false);
 
   const handleEditJob = (jobId: string) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
@@ -119,12 +121,17 @@ export default function RecruiterDashboard() {
             </p>
           </div>
           {isRecruiter && (
-            <Link to="/recruiter/jobs/new">
-              <Button variant="hero" className="gap-2 w-full sm:w-auto">
-                <Plus className="w-4 h-4" />
-                Nouvelle offre
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              
+              <Button 
+                variant="hero" 
+                className="gap-2 w-full sm:w-auto"
+                onClick={() => setShowPotentialAnalysis(true)}
+              >
+                <BarChart3 className="w-4 h-4" />
+                Analyse des Potentiels
               </Button>
-            </Link>
+            </div>
           )}
         </div>
 
@@ -788,6 +795,111 @@ export default function RecruiterDashboard() {
           isOpen={isHistoryModalOpen}
           onClose={() => setIsHistoryModalOpen(false)}
         />
+
+        {/* Potential Analysis Modal */}
+        {showPotentialAnalysis && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-background rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+              <div className="flex items-center justify-between p-6 border-b">
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground">Analyse des Potentiels Candidats</h2>
+                  <p className="text-muted-foreground mt-1">
+                    Visualisation de la distribution des scores globaux par classe de potentiel
+                  </p>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => setShowPotentialAnalysis(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <div className="space-y-6">
+                  {/* Image du nuage de points */}
+                  <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg p-6 border">
+                                    
+                    {/* Image du nuage de points */}
+                    <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border">
+                      <img 
+                        src="/toutes_candidatures.png" 
+                        alt="Nuage de points - Classe de potentiel vs Score global"
+                        className="w-full h-auto rounded-lg"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Insights et recommandations */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Insights Clés</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-red-400 mt-2 flex-shrink-0"></div>
+                          <div>
+                            <p className="font-medium text-sm">Potentiel Faible</p>
+                            <p className="text-xs text-muted-foreground">5 candidats avec scores 22-25</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-orange-400 mt-2 flex-shrink-0"></div>
+                          <div>
+                            <p className="font-medium text-sm">Potentiel Moyen</p>
+                            <p className="text-xs text-muted-foreground">70-80 candidats concentrés autour de 40-45</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-green-400 mt-2 flex-shrink-0"></div>
+                          <div>
+                            <p className="font-medium text-sm">Potentiel Fort</p>
+                            <p className="text-xs text-muted-foreground">60-70 candidats avec scores 50-65</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Recommandations</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            🎯 Focus sur les candidats Forts
+                          </p>
+                          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                            Prioriser les candidats avec potentiel fort pour les postes critiques
+                          </p>
+                        </div>
+                        <div className="p-3 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                          <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
+                            📈 Formation Moyens
+                          </p>
+                          <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                            Développer des programmes de formation pour les candidats moyens
+                          </p>
+                        </div>
+                        <div className="p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+                          <p className="text-sm font-medium text-green-900 dark:text-green-100">
+                            ✅ Diversité des profils
+                          </p>
+                          <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                            Bonne répartition des potentiels dans votre vivier
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </RecruiterLayout>
   );
