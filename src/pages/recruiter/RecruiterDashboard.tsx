@@ -18,7 +18,13 @@ import {
   Activity,
   Eye,
   Edit,
-  X
+  X,
+  Star,
+  GraduationCap,
+  Users2,
+  Award,
+  BookOpen,
+  CheckCircle
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
@@ -858,7 +864,7 @@ export default function RecruiterDashboard() {
                           <div className="w-2 h-2 rounded-full bg-red-400 mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Potentiel Faible</p>
-                            <p className="text-xs text-muted-foreground">5 candidats avec scores 22-25</p>
+                            <p className="text-xs text-muted-foreground">5 candidats avec scores 0-35</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -872,7 +878,7 @@ export default function RecruiterDashboard() {
                           <div className="w-2 h-2 rounded-full bg-green-400 mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Potentiel Fort</p>
-                            <p className="text-xs text-muted-foreground">60-70 candidats avec scores 50-65</p>
+                            <p className="text-xs text-muted-foreground">60-70 candidats avec scores 56-70</p>
                           </div>
                         </div>
                       </CardContent>
@@ -884,28 +890,43 @@ export default function RecruiterDashboard() {
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                            🎯 Focus sur les candidats Forts
-                          </p>
-                          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1 leading-relaxed">
-                            Prioriser les candidats avec potentiel fort pour les postes critiques
-                          </p>
+                          <div className="flex items-start gap-3">
+                            <Award className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                Focus sur les candidats Forts
+                              </p>
+                              <p className="text-xs text-blue-700 dark:text-blue-300 mt-1 leading-relaxed">
+                                Prioriser les candidats avec potentiel fort pour les postes critiques
+                              </p>
+                            </div>
+                          </div>
                         </div>
                         <div className="p-3 bg-orange-50 dark:bg-orange-950 rounded-lg">
-                          <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
-                            📈 Formation Moyens
-                          </p>
-                          <p className="text-xs text-orange-700 dark:text-orange-300 mt-1 leading-relaxed">
-                            Développer des programmes de formation pour les candidats moyens
-                          </p>
+                          <div className="flex items-start gap-3">
+                            <GraduationCap className="h-5 w-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
+                                Formation des candidats Moyens
+                              </p>
+                              <p className="text-xs text-orange-700 dark:text-orange-300 mt-1 leading-relaxed">
+                                Développer des programmes de formation pour les candidats moyens
+                              </p>
+                            </div>
+                          </div>
                         </div>
                         <div className="p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-                          <p className="text-sm font-medium text-green-900 dark:text-green-100">
-                            ✅ Diversité des profils
-                          </p>
-                          <p className="text-xs text-green-700 dark:text-green-300 mt-1 leading-relaxed">
-                            Bonne répartition des potentiels dans votre vivier
-                          </p>
+                          <div className="flex items-start gap-3">
+                            <Users2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-green-900 dark:text-green-100">
+                                Diversité des profils
+                              </p>
+                              <p className="text-xs text-green-700 dark:text-green-300 mt-1 leading-relaxed">
+                                Bonne répartition des potentiels dans votre vivier de talents
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
