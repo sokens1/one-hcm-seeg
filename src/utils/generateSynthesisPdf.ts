@@ -291,7 +291,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     ];
 
     docEvaluation.forEach(item => {
-      if (yPos > doc.internal.pageSize.height - 40) {
+      if (yPos > doc.internal.pageSize.height - 60) {
         doc.addPage();
         yPos = 20;
       }
@@ -344,7 +344,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     ];
 
     mtpEvaluation.forEach(item => {
-      if (yPos > doc.internal.pageSize.height - 40) {
+      if (yPos > doc.internal.pageSize.height - 60) {
         doc.addPage();
         yPos = 20;
       }
@@ -407,7 +407,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       ];
 
       interviewEvaluation.forEach(item => {
-        if (yPos > doc.internal.pageSize.height - 40) {
+        if (yPos > doc.internal.pageSize.height - 60) {
           doc.addPage();
           yPos = 20;
         }
@@ -467,59 +467,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     yPos += 20;
     yPos = addSectionHeader(doc, 'Protocole 2 - Évaluation Approfondie', yPos, margin);
     
-    // Statuts des étapes du Protocole 2
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(30, 64, 175);
-    doc.text('Étapes d\'Évaluation', margin, yPos);
-    yPos += 15;
-
-    const protocol2Steps = [
-      { label: 'Visite Physique', completed: data.protocol2.physical_visit },
-      { label: 'Entretien Complété', completed: data.protocol2.interview_completed },
-      { label: 'QCM Rôle', completed: data.protocol2.qcm_role_completed },
-      { label: 'QCM CODIR', completed: data.protocol2.qcm_codir_completed },
-      { label: 'Fiche Poste Créée', completed: data.protocol2.job_sheet_created },
-      { label: 'Gap Compétences Évalué', completed: data.protocol2.skills_gap_assessed }
-    ];
-
-    // Affichage des étapes en grille
-    const stepWidth = (pageWidth - 2 * margin - 30) / 3;
-    let col = 0;
-    let row = 0;
-
-    protocol2Steps.forEach(step => {
-      const x = margin + col * (stepWidth + 10);
-      const y = yPos + row * 15;
-
-      if (y > doc.internal.pageSize.height - 40) {
-        doc.addPage();
-        yPos = 20;
-        row = 0;
-        col = 0;
-      }
-
-      // Icône de statut
-      doc.setFontSize(12);
-      doc.setTextColor(step.completed ? '#16a34a' : '#dc2626');
-      doc.text(step.completed ? '✓' : '✗', x, y);
-      
-      // Label de l'étape
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(75, 85, 99);
-      doc.text(step.label, x + 15, y);
-
-      col++;
-      if (col >= 3) {
-        col = 0;
-        row++;
-      }
-    });
-
-    yPos += Math.ceil(protocol2Steps.length / 3) * 15 + 20;
-
-    // Scores du Protocole 2
+    // Scores du Protocole 2 (sans Analyse Compétences)
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(30, 64, 175);
@@ -527,7 +475,6 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     yPos += 15;
 
     const protocol2Scores = [
-      { label: 'Analyse Compétences', score: data.protocol2.analyse_competences_score || 0, comments: data.protocol2.analyse_competences_comments },
       { label: 'Fiche KCIS', score: data.protocol2.fiche_kcis_score || 0, comments: data.protocol2.fiche_kcis_comments },
       { label: 'Fiche KPIS', score: data.protocol2.fiche_kpis_score || 0, comments: data.protocol2.fiche_kpis_comments },
       { label: 'Fiche KRIS', score: data.protocol2.fiche_kris_score || 0, comments: data.protocol2.fiche_kris_comments },
@@ -538,7 +485,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     ];
 
     protocol2Scores.forEach(item => {
-      if (yPos > doc.internal.pageSize.height - 40) {
+      if (yPos > doc.internal.pageSize.height - 60) { // Plus d'espace avant le footer
         doc.addPage();
         yPos = 20;
       }
@@ -688,8 +635,8 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
     
-    // Marge de 15px du bas de la page
-    const footerY = doc.internal.pageSize.height - 15;
+    // Marge de 25px du bas de la page pour éviter que le footer touche le contenu
+    const footerY = doc.internal.pageSize.height - 25;
     
     // Ligne de séparation
     doc.setDrawColor(229, 231, 235);
