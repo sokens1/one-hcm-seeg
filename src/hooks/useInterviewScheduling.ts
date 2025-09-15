@@ -357,6 +357,22 @@ export const useInterviewScheduling = (applicationId?: string) => {
         throw updateError;
       }
 
+      // Mettre à jour aussi la table protocol1_evaluations pour synchroniser les données
+      const { error: protocol1UpdateError } = await supabase
+        .from('protocol1_evaluations')
+        .update({
+          interview_date: interviewDateTime.toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('application_id', applicationId);
+
+      if (protocol1UpdateError) {
+        console.warn('⚠️ Erreur lors de la mise à jour de protocol1_evaluations:', protocol1UpdateError);
+        // Ne pas faire échouer la fonction pour cette erreur non critique
+      } else {
+        console.log('✅ Date d\'entretien synchronisée dans protocol1_evaluations');
+      }
+
       // Envoi email si demandé + toasts/logs
       if (options?.sendEmail) {
         try {

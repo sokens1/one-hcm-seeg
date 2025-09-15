@@ -1,0 +1,404 @@
+{
+  "Directeur Juridique, Communication & RSE": {
+    "Ulrich Ndong Eyi": {
+      "prenom": "Ulrich",
+      "nom": "Ndong Eyi",
+      "conformite": {
+        "prenom": "Ulrich",
+        "nom": "NDONG EYI",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "NDONG EYI",
+        "prenom": "Ulrich",
+        "poste": "Direction Juridique, Communication & RSE",
+        "scores": {
+          "Metier": 0.47,
+          "Talent": 0.43,
+          "Paradigme": 0.53
+        },
+        "Score_moyen": 47.67,
+        "niveau": "Le score moyen du candidat se situe dans la fourchette moyenne, indiquant une adéquation partielle avec les exigences et la vision de l'entreprise. Bien que le candidat présente des compétences pertinentes, il doit encore travailler sur certains aspects pour tirer pleinement parti de cette adéquation.",
+        "verdict": "moyen",
+        "raison_verdict": "Le score moyen de 47.67 indique une adéquation partielle avec la vision de l'entreprise, nécessitant des améliorations.",
+        "points_forts": [
+          "Connaissances solides en matière juridique, essentielles pour le respect des réglementations.",
+          "Capacité d'adaptation illustrée par un paradigme supérieur, indiquant une préparation aux changements organisationnels.",
+          "Sensibilité aux enjeux de communication, ce qui est crucial pour une interaction efficace avec les parties prenantes."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences commerciales et stratégiques pour mieux aligner les opérations sur les objectifs de l'entreprise.",
+          "Améliorer la gestion des talents afin d'assurer la motivation et la performance des équipes.",
+          "Travailler sur l'innovation et la créativité pour proposer des solutions novatrices adaptées à la vision de la SEEG."
+        ],
+        "rang": 1
+      },
+      "completude": {
+        "nom": "NDONG EYI",
+        "prenom": "Ulrich",
+        "poste": "Directeur Juridique, Communication & RSE",
+        "score": 41.1,
+        "resume_experience": "22 ans en droit des affaires, communications et RSE",
+        "verdict": "favorable",
+        "points_forts": [
+          "Expertise en droit des affaires et gestion des contentieux",
+          "Expérience significative en mise en place de stratégies RSE",
+          "Compétences établies en rédaction et négociation de contrats"
+        ],
+        "points_a_travailler": [
+          "Optimiser les compétences en communication de crise",
+          "Renforcer les relations presse et publiques",
+          "Booster le marketing digital et la gestion des réseaux sociaux"
+        ],
+        "rang": 3
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 25.14,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Ulrich Ndong Eyi présente une conformité documentaire impeccable, mais son feedback RH inexistant et un faible taux de complétude indique un manque d'adéquation avec les exigences du poste et la vision transformatrice de la SEEG. Malgré des compétences techniques probables, l'absence de retour RH positif est un indicateur majeur à considérer.",
+        "points_forts": [
+          "Conformité documentaire à 100%",
+          "Potentiel technique basé sur l'expérience passée"
+        ],
+        "points_a_ameliorer": [
+          "Feedback RH inexistant",
+          "Taux de complétude insuffisant"
+        ],
+        "rang": 1
+      }
+    },
+    "Victorine Iranga Makauta": {
+      "prenom": "Victorine",
+      "nom": "Iranga Makauta",
+      "conformite": {
+        "prenom": "Victorine",
+        "nom": "IRANGA MAKAUTA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "IRANGA MAKAUTA",
+        "prenom": "Victorine",
+        "poste": "Direction Juridique, Communication & RSE",
+        "scores": {
+          "Metier": 0.46,
+          "Talent": 0.41,
+          "Paradigme": 0.49
+        },
+        "Score_moyen": 45.33,
+        "niveau": "Le candidat a un score moyen de 45.33, ce qui indique une position défavorable par rapport aux attentes de l'entreprise. Bien qu'elle montre des qualités, plusieurs aspects nécessitent un développement pour s'aligner avec la vision stratégique.",
+        "verdict": "défavorable",
+        "raison": "La note de 45.33 est clairement en dessous du seuil acceptable de 43.5, indiquant un manque d'alignement avec les objectifs clés de la SEEG.",
+        "points_forts": [
+          "Connaissance du cadre juridique et réglementaire lié à la communication et à la RSE.",
+          "Capacité à identifier et à analyser les enjeux de gouvernance et de transparence.",
+          "Compétences en communication qui peuvent être bénéfiques pour renforcer les relations avec les parties prenantes."
+        ],
+        "points_a_travailler": [
+          "Améliorer la compréhension des défis techniques et opérationnels dans le secteur de l'énergie et de l'eau.",
+          "Renforcer les compétences en gestion de projet pour participer efficacement aux initiatives de réhabilitation des infrastructures.",
+          "Développer une vision stratégique à long terme pour aligner les objectifs RSE avec les transformations nécessaires chez SEEG."
+        ],
+        "rang": 3
+      },
+      "completude": {
+        "nom": "IRANGA MAKAUTA",
+        "prenom": "Victorine",
+        "poste": "Directeur Juridique, Communication & RSE",
+        "score": 31.8,
+        "resume_experience": "15 ans, spécialité en droit des affaires et passation des marchés publics",
+        "verdict": "défavorable",
+        "raisons_verdict": "Le candidat a une solide expérience en matière juridique, notamment dans le droit des affaires et les marchés publics, mais ses compétences et son expérience en communication et RSE, qui sont essentielles pour ce poste, ne sont pas suffisamment mises en avant.",
+        "points_forts": [
+          "Solide expérience en droit des affaires et gestion de contentieux",
+          "Expertise reconnue en passation et exécution des marchés publics",
+          "Capacité à fournir des conseils stratégiques et à gérer la conformité juridique"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée dans la gestion de la communication interne et externe",
+          "Absence d'engagement clair ou d'expérience démontrée en matière de RSE",
+          "Peu d'informations sur la gestion de crise et la réputation d'entreprise"
+        ],
+        "rang": 5
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 22.69,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente des lacunes notables en adéquation avec les exigences du poste, notamment en termes de complétude des documents soumis et de la gestion des relations humaines au sein du service. Le score de feedback RH est inexistant, ce qui soulève des préoccupations quant à sa capacité à s'aligner sur la vision stratégique de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Gestion des relations humaines",
+          "Adéquation globale avec les critères du poste"
+        ],
+        "rang": 2
+      }
+    },
+    "Engo Menie Jean Robert": {
+      "prenom": "Engo",
+      "nom": "Menie Jean Robert",
+      "conformite": {
+        "prenom": "ENGO",
+        "nom": "MENIE JEAN ROBERT",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MENIE JEAN ROBERT",
+        "prenom": "ENGO",
+        "poste": "Direction Juridique, Communication & RSE",
+        "scores": {
+          "Métier": 0.47,
+          "Talent": 0.39,
+          "Paradigme": 0.5
+        },
+        "Score_moyen": 45.33,
+        "niveau": "Le score moyen de 45.33 indique une performance jugée moyenne par rapport aux attentes de l'entreprise. Cela démontre une certaine adéquation avec la vision tout en laissant place à des améliorations.",
+        "verdict": "moyen",
+        "raison_du_verdict": "Le score moyen se situe dans la fourchette moyenne, ce qui montre une adéquation partielle avec les attentes de la vision de l'entreprise.",
+        "points_forts": [
+          "Connaissance approfondie du cadre juridique et réglementaire, essentiel pour la Direction Juridique.",
+          "Compétences en communication, renforçant la transparence et l'implication des parties prenantes.",
+          "Capacité à envisager des réformes programmatiques, en lien avec les besoins de modernisation des infrastructures."
+        ],
+        "points_a_travailler": [
+          "Améliorer la gestion des ressources et des processus internes pour répondre aux normes de l'industrie.",
+          "Renforcer les compétences en leadership pour mener des initiatives de transformation.",
+          "Développer une approche proactive pour l'implication des parties prenantes et le dialogue constructif avec l'État."
+        ],
+        "rang": 2
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 16.33,
+        "verdict": "défavorable",
+        "resume": "Engo Menie Jean Robert présente un profil qui ne répond pas aux exigences du poste, comme en témoigne son score global défavorable de 16.33. L'absence de feedback RH, ainsi qu'un manque de complétude dans les documents soumis, soulignent des lacunes importantes dans sa candidature.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Complétude des documents manquante"
+        ],
+        "rang": 3
+      }
+    },
+    "Boris Armel Zue Meye": {
+      "prenom": "Boris",
+      "nom": "Armel Zue Meye",
+      "conformite": {
+        "prenom": "Boris",
+        "nom": "Armel ZUE MEYE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "ZUE MEYE",
+        "prenom": "Boris Armel",
+        "poste": "Directeur Juridique, Communication & RSE",
+        "score": 41.6,
+        "resume_experience": "16 ans d'expérience en droit des affaires, contrats, conformité et gouvernance d'entreprise",
+        "verdict": "favorable",
+        "points_forts": [
+          "Solide expertise en droit des affaires et conformité",
+          "Expérience significative dans la gestion de contrats et contentieux",
+          "Bilingue et capacité à élaborer une stratégie RSE"
+        ],
+        "points_a_travailler": [
+          "Renforcement des compétences en communication externe et gestion des médias",
+          "Expérience pratique en stratégie RSE",
+          "Approfondissement des compétences en gestion de crise"
+        ],
+        "rang": 2
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 13.32,
+        "verdict": "défavorable",
+        "resume": "Boris Armel Zue Meye présente un profil qui n'est pas en adéquation avec les exigences du poste de Directeur Juridique, Communication & RSE au sein de la SEEG, surtout à la lumière de l'absence de feedback RH positif et d'un score global défavorable. La vision de la SEEG demande une transformation holistique qui nécessite des compétences stratégiques et managériales non démontrées dans ce profil.",
+        "points_forts": [
+          "Conformité documentaire complète"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH positif",
+          "Complétude des documents supportant la candidature"
+        ],
+        "rang": 4
+      }
+    },
+    "Sonia Matty Boussoughou": {
+      "prenom": "Sonia",
+      "nom": "Matty Boussoughou",
+      "conformite": {
+        "prenom": "Sonia",
+        "nom": "Matty BOUSSOUGHOU",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "BOUSSOUGHOU",
+        "prenom": "Sonia Matty",
+        "poste": "Directeur Juridique, Communication & RSE",
+        "score": 32.9,
+        "resume_experience": "17 ans, spécialité en gestion des contentieux et assurance",
+        "verdict": "défavorable",
+        "raison": "Le score de similarité est insuffisant pour le poste qui requiert une forte expérience en communication et RSE, celle-ci étant absente du profil.",
+        "points_forts": [
+          "Solide expérience en gestion de contentieux civils, pénaux et commerciaux",
+          "Compétences avérées en négociation et rédaction contractuelle",
+          "Capacité à superviser et gérer des équipes juridiques"
+        ],
+        "points_a_travailler": [
+          "Expérience en stratégie de communication et gestion de la réputation d'entreprise",
+          "Compétences spécifiques en RSE et intégration des enjeux de développement durable",
+          "Développement de compétences en gestion de communication de crise"
+        ],
+        "rang": 4
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 11.58,
+        "verdict": "défavorable",
+        "resume": "Le score global de Sonia est défavorable, notamment en raison d'un retour inexistant de la part des RH et d'une très faible complétude par rapport à l'offre de poste. Malgré une excellente conformité documentaire, l'absence de feedback RH positif et la faible correspondance avec les exigences du poste posent problème.",
+        "points_forts": [
+          "Excellente conformité documentaire"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible complétude par rapport à l'offre"
+        ],
+        "rang": 5
+      }
+    },
+    "Sonia Boussoughou": {
+      "prenom": "Sonia",
+      "nom": "Boussoughou",
+      "conformite": {},
+      "mtp": {
+        "nom": "BOUSSOUGHOU",
+        "prenom": "Sonia",
+        "poste": "Direction Juridique, Communication & RSE",
+        "scores": {
+          "Metier": 0.48,
+          "Talent": 0.41,
+          "Paradigme": 0.46
+        },
+        "Score_moyen": 45.0,
+        "niveau": "Le candidate a obtenu un score moyen dit moyen. Cela signifie qu'elle présente certaines compétences, mais que son adéquation avec la vision de l'entreprise pourrait être améliorée.",
+        "verdict": "moyen",
+        "raison_verdict": "Le score moyen de 45.0 indique que la candidate a des compétences pertinentes, mais ne répond pas entièrement aux attentes de l'entreprise.",
+        "points_forts": [
+          "Bonne connaissance des enjeux réglementaires et juridiques du secteur de l'énergie.",
+          "Capacités à gérer les relations avec les parties prenantes, notamment les acteurs gouvernementaux.",
+          "Aptitude à communiquer efficacement sur des sujets complexes, favorisant ainsi l'adhésion des équipes."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences en gestion de projets stratégiques, pour une meilleure mise en œuvre des investissements.",
+          "Développer une approche proactive face aux défis de gouvernance et de transparence.",
+          "Améliorer les compétences en gestion des ressources et des enjeux de performance organisationnelle."
+        ],
+        "rang": 4
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 11.25,
+        "verdict": "défavorable",
+        "resume": "Le profil de Sonia Boussoughou est globalement défavorable pour le poste de Directeur Juridique, Communication & RSE chez SEEG, en raison de scores insuffisants sur les critères de conformité documentaire et complétude. Le score global pondéré est faible, ce qui indique des lacunes significatives par rapport aux exigences de l'offre.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude du dossier de candidature",
+          "Feedback RH"
+        ],
+        "rang": 6
+      }
+    },
+    "Boris Zue Meye": {
+      "prenom": "Boris",
+      "nom": "Zue Meye",
+      "conformite": {},
+      "mtp": {
+        "nom": "ZUE MEYE",
+        "prenom": "Boris",
+        "poste": "Direction Juridique, Communication & RSE",
+        "scores": {
+          "Metier": 0.49,
+          "Talent": 0.43,
+          "Paradigme": 0.42
+        },
+        "Score_moyen": 44.67,
+        "niveau": "Le candidat présente un score moyen qui le place dans la catégorie des performances moyennes. Bien que certaines compétences soient présentes, elles ne répondent pas pleinement aux exigences élevées de la vision de l'entreprise.",
+        "verdict": "moyen",
+        "raison_verdict": "Le score moyen de 44.67 indique que le candidat a encore des progrès à faire pour s'aligner avec la vision transformative de la SEEG.",
+        "points_forts": [
+          "Bonne compréhension des enjeux stratégiques et des défis opérationnels liés à la gestion des infrastructures.",
+          "Une capacité à identifier les opportunités d'amélioration, notamment en matière de gouvernance et de transparence.",
+          "Une volonté d'engager un dialogue constructif avec les parties prenantes, ce qui est essentiel pour la RSE."
+        ],
+        "points_a_travailler": [
+          "Développer des compétences en leadership et en gestion du changement pour accompagner la transition nécessaire dans l'entreprise.",
+          "Améliorer les connaissances sur les pratiques contemporaines en matière de gestion d'entreprise, notamment dans le secteur de l'énergie.",
+          "Accentuer les capacités à élaborer et à mettre en œuvre des plans d'action concrets pour les investissements dans les infrastructures."
+        ],
+        "rang": 5
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 11.17,
+        "verdict": "défavorable",
+        "resume": "Le profil de Boris Zue Meye ne répond pas aux attentes pour le poste de Directeur Juridique, Communication & RSE à la SEEG. Les scores de conformité documentaire, complétude et feedback RH indiquent des faiblesses significatives. Le score global pondéré étant défavorable, cela suggère une inadéquation avec les exigences stratégiques de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude des documents par rapport à l'offre"
+        ],
+        "rang": 7
+      }
+    },
+    "Jean Robert Engo Menie": {
+      "prenom": "Jean",
+      "nom": "Robert Engo Menie",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "ENGO MENIE",
+        "prenom": "Jean Robert",
+        "poste": "Directeur Juridique, Communication & RSE",
+        "score": 42.5,
+        "resume_experience": "9 années en tant que Juriste d’entreprise spécialisé en droit des affaires et entreprises",
+        "verdict": "favorable",
+        "raison_du_verdict": "Jean Robert possède une solide expérience pertinente dans le domaine juridique avec une expertise notable en gestion contractuelle et contentieuse, ce qui correspond bien aux exigences du poste. Cependant, certaines compétences cruciales en communication et RSE disposent de moins d'informations précises.",
+        "points_forts": [
+          "Solide expérience en gestion des contrats et contentieux",
+          "Bonne connaissance de la législation sur le secteur de l’eau et de l’énergie",
+          "Expérience en stratégie et en administration juridique"
+        ],
+        "points_a_travailler": [
+          "Renforcement des compétences en communication de crise",
+          "Développement d’une stratégie RSE plus complète et intégrée",
+          "Amélioration du niveau d'anglais pour les relations presse internationales"
+        ],
+        "rang": 1
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 8.5,
+        "verdict": "défavorable",
+        "resume": "Jean Robert Engo Menie présente un profil globalement défavorable, reflété par un faible score global. Le manque de retour RH positif suggère des lacunes importantes par rapport aux attentes du poste. La complétude entre son CV et l'offre n'atteint que 42,5, ce qui souligne des incohérences ou des insuffisances dans le profil du candidat au regard des exigences de la SEEG.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Incohérences entre CV et exigences du poste",
+          "Absence de retour RH positif"
+        ],
+        "rang": 8
+      }
+    }
+  }
+}

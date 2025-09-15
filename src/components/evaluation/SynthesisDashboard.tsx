@@ -68,6 +68,7 @@ interface SynthesisDashboardProps {
   synthesisData: SynthesisData;
   isReadOnly?: boolean;
   onUpdate?: (data: Partial<SynthesisData>) => void;
+  saveSynthesisFields?: (fields: { pointsForts?: string; pointsAmelioration?: string; conclusion?: string }) => Promise<boolean>;
 }
 
 const getStatusIcon = (status: string) => {
@@ -106,7 +107,8 @@ export function SynthesisDashboard({
   applicationId, 
   synthesisData, 
   isReadOnly = false,
-  onUpdate
+  onUpdate,
+  saveSynthesisFields
 }: SynthesisDashboardProps) {
   const handleDownloadReport = () => {
     // TODO: Implémenter la génération et le téléchargement du rapport
@@ -251,7 +253,12 @@ export function SynthesisDashboard({
                 <h6 className="font-medium text-green-600 mb-2">Points forts :</h6>
               <Editor
                 value={synthesisData.pointsForts}
-                onChange={(value) => onUpdate?.({ pointsForts: value })}
+                onChange={async (value) => {
+                  onUpdate?.({ pointsForts: value });
+                  if (saveSynthesisFields) {
+                    await saveSynthesisFields({ pointsForts: value });
+                  }
+                }}
                 placeholder="Listez les points forts du candidat..."
                 disabled={isReadOnly}
               />
@@ -261,7 +268,12 @@ export function SynthesisDashboard({
                 <h6 className="font-medium text-orange-600 mb-2">Points d'amélioration :</h6>
               <Editor
                 value={synthesisData.pointsAmelioration}
-                onChange={(value) => onUpdate?.({ pointsAmelioration: value })}
+                onChange={async (value) => {
+                  onUpdate?.({ pointsAmelioration: value });
+                  if (saveSynthesisFields) {
+                    await saveSynthesisFields({ pointsAmelioration: value });
+                  }
+                }}
                 placeholder="Listez les points d'amélioration..."
                 disabled={isReadOnly}
               />
@@ -271,7 +283,12 @@ export function SynthesisDashboard({
               <h6 className="font-medium text-blue-600 mb-2">Conclusion :</h6>
               <Editor
                 value={synthesisData.conclusion || ''}
-                onChange={(value) => onUpdate?.({ conclusion: value })}
+                onChange={async (value) => {
+                  onUpdate?.({ conclusion: value });
+                  if (saveSynthesisFields) {
+                    await saveSynthesisFields({ conclusion: value });
+                  }
+                }}
                 placeholder="Rédigez la conclusion de l'évaluation..."
                 disabled={isReadOnly}
               />

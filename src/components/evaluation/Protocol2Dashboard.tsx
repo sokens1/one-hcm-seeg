@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -138,6 +138,8 @@ const translateStatus = (status: string) => {
 };
 
 export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false }: Protocol2DashboardProps) {
+  console.log('🔍 Protocol2Dashboard - isReadOnly:', isReadOnly, 'applicationId:', applicationId);
+  
   const {
     evaluationData,
     updateEvaluation,
@@ -165,19 +167,30 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
   // États pour la programmation de simulation
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [isSimulationPopoverOpen, setIsSimulationPopoverOpen] = useState(false);
 
   // Fonction pour programmer la simulation (sans changer le statut)
   const handleScheduleSimulation = useCallback(async () => {
-    if (!selectedDate || !selectedTime) return;
+    if (!selectedDate || !selectedTime) {
+      console.log('❌ Date ou heure manquante:', { selectedDate, selectedTime });
+      return;
+    }
+    
+    console.log('🚀 Début de la programmation de simulation:', { selectedDate, selectedTime, applicationId });
     
     try {
       const { supabase } = await import('@/integrations/supabase/client');
       const simulationDateTime = new Date(`${selectedDate}T${selectedTime}`);
       
+      console.log('📅 Date de simulation créée:', simulationDateTime.toISOString());
+      
       // Sauvegarder la date programmée en base de données (protocol2_evaluations)
-      await saveSimulationDate(selectedDate, selectedTime);
+      console.log('💾 Sauvegarde dans protocol2_evaluations...');
+      const saveResult = await saveSimulationDate(selectedDate, selectedTime);
+      console.log('✅ Résultat de la sauvegarde:', saveResult);
       
       // Mettre à jour seulement la date de simulation dans applications (garder le statut 'incubation')
+      console.log('🔄 Mise à jour de la table applications...');
       const { error: updateError } = await supabase
         .from('applications')
         .update({
@@ -190,8 +203,17 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
         console.error('❌ Erreur lors de la mise à jour de la date de simulation:', updateError);
         return;
       }
+      
+      console.log('✅ Table applications mise à jour avec succès');
 
       console.log('✅ Date de simulation mise à jour:', simulationDateTime.toISOString());
+      
+      // Afficher un message de succès avec toast
+      toast({
+        title: "Simulation programmée avec succès !",
+        description: `Simulation programmée pour le ${new Date(selectedDate).toLocaleDateString('fr-FR')} à ${selectedTime.slice(0, 5)}`,
+        variant: "default"
+      });
       
       // Envoyer un email de confirmation (optionnel)
       try {
@@ -205,19 +227,24 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
           .single();
 
         if (applicationDetails?.users && applicationDetails?.job_offers) {
-          const candidateName = `${applicationDetails.users.first_name} ${applicationDetails.users.last_name}`;
-          const jobTitle = applicationDetails.job_offers.title;
+          const user = Array.isArray(applicationDetails.users) ? applicationDetails.users[0] : applicationDetails.users;
+          const jobOffer = Array.isArray(applicationDetails.job_offers) ? applicationDetails.job_offers[0] : applicationDetails.job_offers;
           
-          // Envoyer email de simulation programmée
-          await supabase.functions.invoke('send-interview-email', {
-            body: {
-              to: applicationDetails.users.email,
-              candidateName,
-              jobTitle,
-              interviewDate: simulationDateTime.toISOString(),
-              interviewType: 'simulation'
-            }
-          });
+          if (user && jobOffer) {
+            const candidateName = `${user.first_name} ${user.last_name}`;
+            const jobTitle = jobOffer.title;
+            
+            // Envoyer email de simulation programmée
+            await supabase.functions.invoke('send-interview-email', {
+              body: {
+                to: user.email,
+                candidateName,
+                jobTitle,
+                interviewDate: simulationDateTime.toISOString(),
+                interviewType: 'simulation'
+              }
+            });
+          }
         }
       } catch (emailError) {
         console.warn('⚠️ Erreur lors de l\'envoi de l\'email:', emailError);
@@ -229,6 +256,7 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
       // Réinitialiser la sélection
       setSelectedDate('');
       setSelectedTime('');
+      setIsSimulationPopoverOpen(false);
       
     } catch (error) {
       console.error('❌ Erreur lors de la programmation de la simulation:', error);
@@ -245,22 +273,22 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
       const newData = { ...prev };
       const [category, subCategory] = field.split('.');
 
-      if (section === 'mise_en_situation') {
-        if (!newData.mise_en_situation[category as keyof typeof newData.mise_en_situation]) {
-          newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] = { score: 0, comments: '' } as any;
+        if (section === 'mise_en_situation') {
+          if (!newData.mise_en_situation[category as keyof typeof newData.mise_en_situation]) {
+            newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] = { score: 0, comments: '' };
+          }
+          (newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] as { score: number; comments: string })[subCategory] = value;
+        } else if (section === 'validation_operationnelle') {
+          if (!newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle]) {
+            newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] = { score: 0, comments: '' };
+          }
+          (newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] as { score: number; comments: string })[subCategory] = value;
+        } else if (section === 'analyse_competences') {
+          if (!newData.analyse_competences[category as keyof typeof newData.analyse_competences]) {
+            newData.analyse_competences[category as keyof typeof newData.analyse_competences] = { score: 0, comments: '', gapLevel: '' };
+          }
+          (newData.analyse_competences[category as keyof typeof newData.analyse_competences] as { score: number; comments: string; gapLevel: string })[subCategory] = value;
         }
-        newData.mise_en_situation[category as keyof typeof newData.mise_en_situation][subCategory] = value;
-      } else if (section === 'validation_operationnelle') {
-        if (!newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle]) {
-          newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] = { score: 0, comments: '' } as any;
-        }
-        newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle][subCategory] = value;
-      } else if (section === 'analyse_competences') {
-        if (!newData.analyse_competences[category as keyof typeof newData.analyse_competences]) {
-          newData.analyse_competences[category as keyof typeof newData.analyse_competences] = { score: 0, comments: '', gapLevel: '' } as any;
-        }
-        newData.analyse_competences[category as keyof typeof newData.analyse_competences][subCategory] = value;
-      }
 
       // Mettre à jour le statut basé sur les scores
       const hasScores = newData.mise_en_situation.jeu_de_role.score > 0 || 
@@ -278,8 +306,8 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
   }, [updateEvaluation]);
 
 
-  // Calculer les scores directement comme dans le protocole 1
-  const scores = calculateSectionScores(evaluationData);
+  // Calculer les scores avec useMemo pour éviter les recalculs inutiles
+  const scores = useMemo(() => calculateSectionScores(evaluationData), [evaluationData, calculateSectionScores]);
 
   if (isLoading) {
     return (
@@ -374,6 +402,9 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
               Simulation 
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.situation.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
@@ -399,12 +430,16 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
             
             {/* Bouton Programmer la simulation */}
             <div className="flex-shrink-0">
-              <Popover>
+              <Popover open={isSimulationPopoverOpen} onOpenChange={setIsSimulationPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button 
                     size="lg"
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
                     disabled={isReadOnly}
+                    onClick={() => {
+                      console.log('🔘 Bouton "Programmer la simulation" cliqué');
+                      setIsSimulationPopoverOpen(true);
+                    }}
                   >
                     <CalendarLucide className="w-4 h-4 sm:w-5 sm:h-5" />
                     Programmer la simulation
@@ -558,6 +593,9 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
               Performance
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.performance.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
@@ -624,6 +662,9 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
               Compétence
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.competence.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
