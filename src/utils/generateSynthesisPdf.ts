@@ -3,6 +3,31 @@ import 'jspdf-autotable';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
+// Fonction utilitaire pour nettoyer le HTML et les caractères spéciaux
+const cleanHtmlText = (text: string | null): string => {
+  if (!text || text.trim() === '') return '';
+  return text
+    .replace(/<p[^>]*>/g, '') // Supprime les balises <p>
+    .replace(/<\/p>/g, '') // Supprime les balises </p>
+    .replace(/&[a-zA-Z0-9#]+;/g, '') // Supprime les entités HTML
+    .replace(/[''""]/g, '"') // Normalise les guillemets
+    .replace(/[–—]/g, '-') // Normalise les tirets
+    .replace(/[àáâãäå]/g, 'a') // Normalise les caractères accentués
+    .replace(/[èéêë]/g, 'e')
+    .replace(/[ìíîï]/g, 'i')
+    .replace(/[òóôõö]/g, 'o')
+    .replace(/[ùúûü]/g, 'u')
+    .replace(/[ç]/g, 'c')
+    .replace(/[ÀÁÂÃÄÅ]/g, 'A')
+    .replace(/[ÈÉÊË]/g, 'E')
+    .replace(/[ÌÍÎÏ]/g, 'I')
+    .replace(/[ÒÓÔÕÖ]/g, 'O')
+    .replace(/[ÙÚÛÜ]/g, 'U')
+    .replace(/[Ç]/g, 'C')
+    .replace(/[^\x20-\x7E]/g, '') // Supprime tous les caractères non-ASCII imprimables
+    .trim();
+};
+
 interface Protocol1Data {
   id: string;
   application_id: string;
@@ -313,11 +338,12 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       doc.text(`${item.score}/5`, margin + 10, yPos + 20);
       
       // Commentaires
-      if (item.comments && item.comments.trim() !== '') {
+      const cleanComments = cleanHtmlText(item.comments);
+      if (cleanComments && cleanComments.trim() !== '') {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(9);
         doc.setTextColor(75, 85, 99);
-        const commentLines = doc.splitTextToSize(item.comments, pageWidth - 2 * margin - 80);
+        const commentLines = doc.splitTextToSize(cleanComments, pageWidth - 2 * margin - 80);
         doc.text(commentLines[0] || '', margin + 80, yPos + 10);
       } else {
         doc.setFont('helvetica', 'normal');
@@ -366,11 +392,12 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       doc.text(`${item.score}/5`, margin + 10, yPos + 20);
       
       // Commentaires
-      if (item.comments && item.comments.trim() !== '') {
+      const cleanComments = cleanHtmlText(item.comments);
+      if (cleanComments && cleanComments.trim() !== '') {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(9);
         doc.setTextColor(75, 85, 99);
-        const commentLines = doc.splitTextToSize(item.comments, pageWidth - 2 * margin - 80);
+        const commentLines = doc.splitTextToSize(cleanComments, pageWidth - 2 * margin - 80);
         doc.text(commentLines[0] || '', margin + 80, yPos + 10);
       } else {
         doc.setFont('helvetica', 'normal');
@@ -446,7 +473,8 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       });
 
       // Résumé général de l'entretien
-      if (data.protocol1.general_summary && data.protocol1.general_summary.trim() !== '') {
+      const cleanGeneralSummary = cleanHtmlText(data.protocol1.general_summary);
+      if (cleanGeneralSummary && cleanGeneralSummary.trim() !== '') {
         yPos += 10;
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(12);
@@ -457,7 +485,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(75, 85, 99);
-        yPos += addWrappedText(doc, data.protocol1.general_summary, margin, yPos, pageWidth - 2 * margin);
+        yPos += addWrappedText(doc, cleanGeneralSummary, margin, yPos, pageWidth - 2 * margin);
       }
     }
   }
@@ -507,11 +535,12 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       doc.text(`${item.score}/5`, margin + 10, yPos + 20);
       
       // Commentaires
-      if (item.comments && item.comments.trim() !== '') {
+      const cleanComments = cleanHtmlText(item.comments);
+      if (cleanComments && cleanComments.trim() !== '') {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(9);
         doc.setTextColor(75, 85, 99);
-        const commentLines = doc.splitTextToSize(item.comments, pageWidth - 2 * margin - 80);
+        const commentLines = doc.splitTextToSize(cleanComments, pageWidth - 2 * margin - 80);
         doc.text(commentLines[0] || '', margin + 80, yPos + 10);
       } else {
         doc.setFont('helvetica', 'normal');
@@ -524,7 +553,11 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     });
 
     // Notes générales du Protocole 2
-    const hasGeneralNotes = data.protocol2.interview_notes || data.protocol2.visit_notes || data.protocol2.skills_gap_notes;
+    const cleanInterviewNotes = cleanHtmlText(data.protocol2.interview_notes);
+    const cleanVisitNotes = cleanHtmlText(data.protocol2.visit_notes);
+    const cleanSkillsGapNotes = cleanHtmlText(data.protocol2.skills_gap_notes);
+    const hasGeneralNotes = cleanInterviewNotes || cleanVisitNotes || cleanSkillsGapNotes;
+    
     if (hasGeneralNotes) {
       yPos += 10;
       doc.setFont('helvetica', 'bold');
@@ -533,33 +566,33 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       doc.text('Notes Générales', margin, yPos);
       yPos += 15;
 
-      if (data.protocol2.interview_notes && data.protocol2.interview_notes.trim() !== '') {
+      if (cleanInterviewNotes && cleanInterviewNotes.trim() !== '') {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(75, 85, 99);
         doc.text('Notes Entretien:', margin, yPos);
         yPos += 5;
-        yPos += addWrappedText(doc, data.protocol2.interview_notes, margin, yPos, pageWidth - 2 * margin);
+        yPos += addWrappedText(doc, cleanInterviewNotes, margin, yPos, pageWidth - 2 * margin);
         yPos += 10;
       }
 
-      if (data.protocol2.visit_notes && data.protocol2.visit_notes.trim() !== '') {
+      if (cleanVisitNotes && cleanVisitNotes.trim() !== '') {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(75, 85, 99);
         doc.text('Notes Visite:', margin, yPos);
         yPos += 5;
-        yPos += addWrappedText(doc, data.protocol2.visit_notes, margin, yPos, pageWidth - 2 * margin);
+        yPos += addWrappedText(doc, cleanVisitNotes, margin, yPos, pageWidth - 2 * margin);
         yPos += 10;
       }
 
-      if (data.protocol2.skills_gap_notes && data.protocol2.skills_gap_notes.trim() !== '') {
+      if (cleanSkillsGapNotes && cleanSkillsGapNotes.trim() !== '') {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(75, 85, 99);
         doc.text('Notes Gap Compétences:', margin, yPos);
         yPos += 5;
-        yPos += addWrappedText(doc, data.protocol2.skills_gap_notes, margin, yPos, pageWidth - 2 * margin);
+        yPos += addWrappedText(doc, cleanSkillsGapNotes, margin, yPos, pageWidth - 2 * margin);
       }
     }
   }
@@ -569,7 +602,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   yPos = addSectionHeader(doc, 'Recommandations et Conclusion', yPos, margin);
 
   // Points forts
-  const pointsFortsText = data.pointsForts && data.pointsForts.trim() !== '' ? data.pointsForts : 'Non renseigné';
+  const pointsFortsText = cleanHtmlText(data.pointsForts) || 'Non renseigné';
   if (yPos > doc.internal.pageSize.height - 60) {
     doc.addPage();
     yPos = 20;
@@ -594,7 +627,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   yPos += 40;
 
   // Points d'amélioration
-  const pointsAmeliorationText = data.pointsAmelioration && data.pointsAmelioration.trim() !== '' ? data.pointsAmelioration : 'Non renseigné';
+  const pointsAmeliorationText = cleanHtmlText(data.pointsAmelioration) || 'Non renseigné';
   if (yPos > doc.internal.pageSize.height - 60) {
     doc.addPage();
     yPos = 20;
@@ -619,7 +652,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   yPos += 40;
 
   // Conclusion
-  const conclusionText = data.conclusion && data.conclusion.trim() !== '' ? data.conclusion : 'Non renseigné';
+  const conclusionText = cleanHtmlText(data.conclusion) || 'Non renseigné';
   if (yPos > doc.internal.pageSize.height - 60) {
     doc.addPage();
     yPos = 20;
