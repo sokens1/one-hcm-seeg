@@ -165,72 +165,113 @@ const addScoreBox = (doc: jsPDF, label: string, score: number, x: number, y: num
 export const generateSynthesisPdf = (data: SynthesisData) => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
-  const margin = 15;
+  const margin = 20;
   let yPos = 20;
 
-  // Header
+  // Header avec gradient bleu
+  doc.setFillColor(30, 64, 175); // Blue-800
+  doc.rect(0, 0, pageWidth, 50, 'F');
+  
+  // Logo/Title OneHCM
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.setTextColor(30, 64, 175);
-  doc.text('Rapport de Synthèse d\'Évaluation', pageWidth / 2, yPos, { align: 'center' });
+  doc.setFontSize(24);
+  doc.setTextColor(255, 255, 255);
+  doc.text('OneHCM', pageWidth / 2, 25, { align: 'center' });
   
-  yPos += 15;
+  doc.setFontSize(14);
+  doc.text('Rapport de Synthèse d\'Évaluation', pageWidth / 2, 35, { align: 'center' });
   
-  // Candidate info
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(12);
-  doc.setTextColor(75, 85, 99);
-  doc.text(`Candidat: ${data.candidate.firstName} ${data.candidate.lastName}`, margin, yPos);
-  yPos += 7;
-  doc.text(`Poste: ${data.candidate.jobTitle}`, margin, yPos);
-  yPos += 7;
-  doc.text(`Email: ${data.candidate.email}`, margin, yPos);
-  yPos += 7;
-  doc.text(`Date de génération: ${format(new Date(), 'dd MMMM yyyy à HH:mm', { locale: fr })}`, margin, yPos);
-  yPos += 15;
+  yPos = 70;
 
-  // Global Score Section
-  doc.setFillColor(239, 246, 255); // Blue-50
-  doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
-  doc.setDrawColor(59, 130, 246); // Blue-500
-  doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
+  // Informations candidat dans un encadré moderne
+  doc.setFillColor(249, 250, 251); // Gray-50
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 40, 'F');
+  doc.setDrawColor(229, 231, 235); // Gray-200
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 40);
   
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
   doc.setTextColor(30, 64, 175);
-  doc.text('Score Global', margin + 10, yPos + 12);
+  doc.text('Informations du Candidat', margin + 10, yPos + 15);
   
-  doc.setFontSize(24);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.setTextColor(75, 85, 99);
+  doc.text(`Nom: ${data.candidate.firstName} ${data.candidate.lastName}`, margin + 10, yPos + 25);
+  doc.text(`Poste: ${data.candidate.jobTitle}`, margin + 150, yPos + 25);
+  doc.text(`Email: ${data.candidate.email}`, margin + 10, yPos + 32);
+  doc.text(`Date de génération: ${format(new Date(), 'dd/MM/yyyy à HH:mm', { locale: fr })}`, margin + 150, yPos + 32);
+  
+  yPos += 50;
+
+  // Score Global avec design moderne
+  doc.setFillColor(239, 246, 255); // Blue-50
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 35, 'F');
+  doc.setDrawColor(59, 130, 246); // Blue-500
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 35);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.setTextColor(30, 64, 175);
+  doc.text('Score Global', margin + 15, yPos + 15);
+  
+  doc.setFontSize(28);
   doc.setTextColor(getScoreColor(data.globalScore));
-  doc.text(`${data.globalScore.toFixed(1)}%`, margin + 10, yPos + 25);
+  doc.text(`${data.globalScore.toFixed(1)}%`, margin + 15, yPos + 30);
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(12);
   doc.setTextColor(75, 85, 99);
-  doc.text(`Statut: ${getStatusText(data.finalStatus)}`, pageWidth - margin - 60, yPos + 12);
+  doc.text(`Évaluation complète du processus de recrutement`, pageWidth - margin - 10, yPos + 15, { align: 'right' });
   
-  yPos += 40;
+  yPos += 50;
 
-  // Protocol 1 Section
+  // Section Protocole 1
   if (data.protocol1) {
     yPos = addSectionHeader(doc, 'Protocole 1 - Évaluation Initiale', yPos, margin);
     
-    // Protocol 1 scores
-    const scoreBoxWidth = (pageWidth - 2 * margin - 20) / 3;
-    const scoreBoxHeight = 25;
-    
-    addScoreBox(doc, 'Documents', data.protocol1.documentary_score || 0, margin, yPos, scoreBoxWidth, scoreBoxHeight);
-    addScoreBox(doc, 'MTP', data.protocol1.mtp_score || 0, margin + scoreBoxWidth + 10, yPos, scoreBoxWidth, scoreBoxHeight);
-    addScoreBox(doc, 'Entretien', data.protocol1.interview_score || 0, margin + 2 * (scoreBoxWidth + 10), yPos, scoreBoxWidth, scoreBoxHeight);
-    
-    yPos += 35;
+    // Scores du Protocole 1 dans des cartes modernes
+    const protocol1Scores = [
+      { label: 'Documents', score: data.protocol1.documentary_score || 0, color: '#10b981' },
+      { label: 'Adhérence MTP', score: data.protocol1.mtp_score || 0, color: '#3b82f6' },
+      { label: 'Entretien', score: data.protocol1.interview_score || 0, color: '#8b5cf6' }
+    ];
 
-    // Document evaluation details
+    const cardWidth = (pageWidth - 2 * margin - 20) / 3;
+    
+    protocol1Scores.forEach((item, index) => {
+      const x = margin + index * (cardWidth + 10);
+      
+      // Carte avec ombre
+      doc.setFillColor(255, 255, 255);
+      doc.rect(x, yPos, cardWidth, 45, 'F');
+      doc.setDrawColor(229, 231, 235);
+      doc.rect(x, yPos, cardWidth, 45);
+      
+      // Titre de la carte
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(31, 41, 55);
+      doc.text(item.label, x + 10, yPos + 12);
+      
+      // Score
+      doc.setFontSize(20);
+      doc.setTextColor(item.color);
+      doc.text(`${item.score.toFixed(1)}%`, x + 10, yPos + 30);
+      
+      // Barre de progression
+      doc.setFillColor(item.color);
+      doc.rect(x + 10, yPos + 35, (item.score / 100) * (cardWidth - 20), 5, 'F');
+    });
+    
+    yPos += 60;
+
+    // Détails de l'évaluation documentaire
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(37, 99, 235);
+    doc.setFontSize(14);
+    doc.setTextColor(30, 64, 175);
     doc.text('Évaluation Documentaire', margin, yPos);
-    yPos += 8;
+    yPos += 15;
 
     const docEvaluation = [
       { label: 'CV', score: data.protocol1.cv_score, comments: data.protocol1.cv_comments },
@@ -238,33 +279,52 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       { label: 'Diplômes & Certificats', score: data.protocol1.diplomes_certificats_score, comments: data.protocol1.diplomes_certificats_comments }
     ];
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
     docEvaluation.forEach(item => {
-      if (yPos > doc.internal.pageSize.height - 30) {
+      if (yPos > doc.internal.pageSize.height - 40) {
         doc.addPage();
         yPos = 20;
       }
 
-      doc.setTextColor(31, 41, 55);
-      doc.text(`${item.label}: ${item.score}/5`, margin, yPos);
+      // Ligne d'évaluation
+      doc.setFillColor(249, 250, 251);
+      doc.rect(margin, yPos, pageWidth - 2 * margin, 25, 'F');
+      doc.setDrawColor(229, 231, 235);
+      doc.rect(margin, yPos, pageWidth - 2 * margin, 25);
       
+      // Label et score
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(31, 41, 55);
+      doc.text(`${item.label}:`, margin + 10, yPos + 10);
+      
+      doc.setFontSize(16);
+      doc.setTextColor(getScoreColor(item.score * 20));
+      doc.text(`${item.score}/5`, margin + 10, yPos + 20);
+      
+      // Commentaires
       if (item.comments && item.comments.trim() !== '') {
-        yPos += 5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
         doc.setTextColor(75, 85, 99);
-        yPos += addWrappedText(doc, item.comments, margin, yPos, pageWidth - 2 * margin);
+        const commentLines = doc.splitTextToSize(item.comments, pageWidth - 2 * margin - 80);
+        doc.text(commentLines[0] || '', margin + 80, yPos + 10);
+      } else {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(150, 150, 150);
+        doc.text("Aucun commentaire", margin + 80, yPos + 10);
       }
       
-      yPos += 8;
+      yPos += 30;
     });
 
-    // MTP evaluation
-    yPos += 5;
+    // Adhérence MTP
+    yPos += 10;
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(37, 99, 235);
+    doc.setFontSize(14);
+    doc.setTextColor(30, 64, 175);
     doc.text('Adhérence MTP', margin, yPos);
-    yPos += 8;
+    yPos += 15;
 
     const mtpEvaluation = [
       { label: 'Métier', score: data.protocol1.metier_score, comments: data.protocol1.metier_comments },
@@ -272,41 +332,62 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       { label: 'Paradigme', score: data.protocol1.paradigme_score, comments: data.protocol1.paradigme_comments }
     ];
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
     mtpEvaluation.forEach(item => {
-      if (yPos > doc.internal.pageSize.height - 30) {
+      if (yPos > doc.internal.pageSize.height - 40) {
         doc.addPage();
         yPos = 20;
       }
 
-      doc.setTextColor(31, 41, 55);
-      doc.text(`${item.label}: ${item.score}/5`, margin, yPos);
+      // Ligne d'évaluation
+      doc.setFillColor(249, 250, 251);
+      doc.rect(margin, yPos, pageWidth - 2 * margin, 25, 'F');
+      doc.setDrawColor(229, 231, 235);
+      doc.rect(margin, yPos, pageWidth - 2 * margin, 25);
       
+      // Label et score
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(31, 41, 55);
+      doc.text(`${item.label}:`, margin + 10, yPos + 10);
+      
+      doc.setFontSize(16);
+      doc.setTextColor(getScoreColor(item.score * 20));
+      doc.text(`${item.score}/5`, margin + 10, yPos + 20);
+      
+      // Commentaires
       if (item.comments && item.comments.trim() !== '') {
-        yPos += 5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
         doc.setTextColor(75, 85, 99);
-        yPos += addWrappedText(doc, item.comments, margin, yPos, pageWidth - 2 * margin);
+        const commentLines = doc.splitTextToSize(item.comments, pageWidth - 2 * margin - 80);
+        doc.text(commentLines[0] || '', margin + 80, yPos + 10);
+      } else {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(150, 150, 150);
+        doc.text("Aucun commentaire", margin + 80, yPos + 10);
       }
       
-      yPos += 8;
+      yPos += 30;
     });
 
-    // Interview details
+    // Détails de l'entretien si disponible
     if (data.protocol1.interview_date) {
-      yPos += 5;
+      yPos += 10;
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(37, 99, 235);
+      doc.setFontSize(14);
+      doc.setTextColor(30, 64, 175);
       doc.text('Détails de l\'Entretien', margin, yPos);
-      yPos += 8;
+      yPos += 15;
 
+      // Date de l'entretien
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(75, 85, 99);
       doc.text(`Date: ${format(new Date(data.protocol1.interview_date), 'dd MMMM yyyy à HH:mm', { locale: fr })}`, margin, yPos);
-      yPos += 8;
+      yPos += 10;
 
+      // Évaluation de l'entretien
       const interviewEvaluation = [
         { label: 'Métier (Entretien)', score: data.protocol1.interview_metier_score, comments: data.protocol1.interview_metier_comments },
         { label: 'Talent (Entretien)', score: data.protocol1.interview_talent_score, comments: data.protocol1.interview_talent_comments },
@@ -315,180 +396,166 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
       ];
 
       interviewEvaluation.forEach(item => {
-        if (yPos > doc.internal.pageSize.height - 30) {
+        if (yPos > doc.internal.pageSize.height - 40) {
           doc.addPage();
           yPos = 20;
         }
 
-        doc.setTextColor(31, 41, 55);
-        doc.text(`${item.label}: ${item.score}/5`, margin, yPos);
+        // Ligne d'évaluation
+        doc.setFillColor(249, 250, 251);
+        doc.rect(margin, yPos, pageWidth - 2 * margin, 25, 'F');
+        doc.setDrawColor(229, 231, 235);
+        doc.rect(margin, yPos, pageWidth - 2 * margin, 25);
         
+        // Label et score
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(31, 41, 55);
+        doc.text(`${item.label}:`, margin + 10, yPos + 10);
+        
+        doc.setFontSize(16);
+        doc.setTextColor(getScoreColor(item.score * 20));
+        doc.text(`${item.score}/5`, margin + 10, yPos + 20);
+        
+        // Commentaires
         if (item.comments && item.comments.trim() !== '') {
-          yPos += 5;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
           doc.setTextColor(75, 85, 99);
-          yPos += addWrappedText(doc, item.comments, margin, yPos, pageWidth - 2 * margin);
+          const commentLines = doc.splitTextToSize(item.comments, pageWidth - 2 * margin - 80);
+          doc.text(commentLines[0] || '', margin + 80, yPos + 10);
+        } else {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(150, 150, 150);
+          doc.text("Aucun commentaire", margin + 80, yPos + 10);
         }
         
-        yPos += 8;
+        yPos += 30;
       });
 
+      // Résumé général de l'entretien
       if (data.protocol1.general_summary && data.protocol1.general_summary.trim() !== '') {
-        yPos += 5;
+        yPos += 10;
         doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
         doc.setTextColor(31, 41, 55);
-        doc.text('Résumé Général de l\'Entretien:', margin, yPos);
+        doc.text('Résumé Général:', margin, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
         doc.setTextColor(75, 85, 99);
         yPos += addWrappedText(doc, data.protocol1.general_summary, margin, yPos, pageWidth - 2 * margin);
       }
     }
   }
 
-  // Protocol 2 Section
-  if (data.protocol2) {
-    yPos += 10;
-    yPos = addSectionHeader(doc, 'Protocole 2 - Évaluation Approfondie', yPos, margin);
-
-    // Protocol 2 status indicators
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(75, 85, 99);
-
-    const protocol2Status = [
-      { label: 'Visite Physique', completed: data.protocol2.physical_visit },
-      { label: 'Entretien Complété', completed: data.protocol2.interview_completed },
-      { label: 'QCM Rôle', completed: data.protocol2.qcm_role_completed },
-      { label: 'QCM CODIR', completed: data.protocol2.qcm_codir_completed },
-      { label: 'Fiche Poste Créée', completed: data.protocol2.job_sheet_created },
-      { label: 'Gap Compétences Évalué', completed: data.protocol2.skills_gap_assessed }
-    ];
-
-    const statusWidth = (pageWidth - 2 * margin - 30) / 3;
-    let col = 0;
-    let row = 0;
-
-    protocol2Status.forEach(status => {
-      const x = margin + col * (statusWidth + 10);
-      const y = yPos + row * 8;
-
-      if (y > doc.internal.pageSize.height - 20) {
-        doc.addPage();
-        yPos = 20;
-        row = 0;
-        col = 0;
-      }
-
-      doc.setTextColor(status.completed ? '#16a34a' : '#dc2626');
-      doc.text(`${status.completed ? '✓' : '✗'} ${status.label}`, x, y + row * 8);
-
-      col++;
-      if (col >= 3) {
-        col = 0;
-        row++;
-      }
-    });
-
-    yPos += Math.ceil(protocol2Status.length / 3) * 12 + 10;
-
-    // Protocol 2 scores
-    if (data.protocol2.overall_score > 0) {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(37, 99, 235);
-      doc.text('Scores Protocole 2', margin, yPos);
-      yPos += 8;
-
-      const protocol2Scores = [
-        { label: 'Analyse Compétences', score: data.protocol2.analyse_competences_score, comments: data.protocol2.analyse_competences_comments },
-        { label: 'Fiche KCIS', score: data.protocol2.fiche_kcis_score, comments: data.protocol2.fiche_kcis_comments },
-        { label: 'Fiche KPIS', score: data.protocol2.fiche_kpis_score, comments: data.protocol2.fiche_kpis_comments },
-        { label: 'Fiche KRIS', score: data.protocol2.fiche_kris_score, comments: data.protocol2.fiche_kris_comments },
-        { label: 'Gap Compétences', score: data.protocol2.gap_competences_score, comments: data.protocol2.gap_competences_comments }
-      ];
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      protocol2Scores.forEach(item => {
-        if (yPos > doc.internal.pageSize.height - 30) {
-          doc.addPage();
-          yPos = 20;
-        }
-
-        doc.setTextColor(31, 41, 55);
-        doc.text(`${item.label}: ${item.score}/5`, margin, yPos);
-        
-        if (item.comments && item.comments.trim() !== '') {
-          yPos += 5;
-          doc.setTextColor(75, 85, 99);
-          yPos += addWrappedText(doc, item.comments, margin, yPos, pageWidth - 2 * margin);
-        }
-        
-        yPos += 8;
-      });
-    }
-  }
-
-  // Recommendations Section
-  yPos += 15;
+  // Section Recommandations
+  yPos += 20;
   yPos = addSectionHeader(doc, 'Recommandations et Conclusion', yPos, margin);
 
   // Points forts
   if (data.pointsForts && data.pointsForts.trim() !== '') {
+    doc.setFillColor(240, 253, 244); // Green-50
+    doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
+    doc.setDrawColor(34, 197, 94); // Green-500
+    doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
+    
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(22, 163, 74);
-    doc.text('Points Forts:', margin, yPos);
-    yPos += 8;
-
+    doc.text('✓ Points Forts', margin + 10, yPos + 12);
+    
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(75, 85, 99);
-    yPos += addWrappedText(doc, data.pointsForts, margin, yPos, pageWidth - 2 * margin);
-    yPos += 10;
+    const pointsFortsLines = doc.splitTextToSize(data.pointsForts, pageWidth - 2 * margin - 20);
+    doc.text(pointsFortsLines[0] || '', margin + 10, yPos + 22);
+    
+    yPos += 40;
   }
 
   // Points d'amélioration
   if (data.pointsAmelioration && data.pointsAmelioration.trim() !== '') {
+    doc.setFillColor(255, 247, 237); // Orange-50
+    doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
+    doc.setDrawColor(249, 115, 22); // Orange-500
+    doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
+    
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(234, 88, 12);
-    doc.text('Points d\'Amélioration:', margin, yPos);
-    yPos += 8;
-
+    doc.text('⚠ Points d\'Amélioration', margin + 10, yPos + 12);
+    
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(75, 85, 99);
-    yPos += addWrappedText(doc, data.pointsAmelioration, margin, yPos, pageWidth - 2 * margin);
-    yPos += 10;
+    const pointsAmeliorationLines = doc.splitTextToSize(data.pointsAmelioration, pageWidth - 2 * margin - 20);
+    doc.text(pointsAmeliorationLines[0] || '', margin + 10, yPos + 22);
+    
+    yPos += 40;
   }
 
   // Conclusion
   if (data.conclusion && data.conclusion.trim() !== '') {
+    doc.setFillColor(239, 246, 255); // Blue-50
+    doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
+    doc.setDrawColor(59, 130, 246); // Blue-500
+    doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
+    
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(30, 64, 175);
-    doc.text('Conclusion:', margin, yPos);
-    yPos += 8;
-
+    doc.text('📋 Conclusion', margin + 10, yPos + 12);
+    
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(75, 85, 99);
-    yPos += addWrappedText(doc, data.conclusion, margin, yPos, pageWidth - 2 * margin);
+    const conclusionLines = doc.splitTextToSize(data.conclusion, pageWidth - 2 * margin - 20);
+    doc.text(conclusionLines[0] || '', margin + 10, yPos + 22);
   }
 
-  // Footer
+  // Move to bottom of page for footer
+  yPos = doc.internal.pageSize.height - 50;
+
+  // Footer moderne avec signature SEEG
   //@ts-expect-error fix it later
   const totalPages = doc.internal.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
+    
+    // Ligne de séparation
+    doc.setDrawColor(229, 231, 235);
+    doc.line(margin, doc.internal.pageSize.height - 25, pageWidth - margin, doc.internal.pageSize.height - 25);
+    
+    // Logo SEEG en bas à droite
+    try {
+      doc.setFillColor(30, 64, 175); // Blue-800
+      doc.rect(pageWidth - 70, doc.internal.pageSize.height - 20, 50, 15, 'F');
+      doc.setFontSize(10);
+      doc.setTextColor(255, 255, 255);
+      doc.text('SEEG', pageWidth - 45, doc.internal.pageSize.height - 11, { align: 'center' });
+    } catch (error) {
+      console.log('Could not add logo:', error);
+    }
+    
+    // Date et website en bas à gauche
+    doc.setFontSize(9);
     doc.setTextColor(107, 114, 128);
     doc.text(
-      `Page ${i} sur ${totalPages} - ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: fr })} - OneHCM`, 
+      `${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: fr })} - seeg-talentsource.com`, 
+      margin, 
+      doc.internal.pageSize.height - 11
+    );
+    
+    // Numéro de page centré
+    doc.setFontSize(9);
+    doc.setTextColor(107, 114, 128);
+    doc.text(
+      `Page ${i} sur ${totalPages}`, 
       pageWidth / 2, 
-      doc.internal.pageSize.getHeight() - 10,
+      doc.internal.pageSize.height - 11,
       { align: 'center' }
     );
   }
