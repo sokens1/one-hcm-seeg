@@ -210,8 +210,8 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
       
       // Afficher un message de succès avec toast
       toast({
-        title: "Simulation programmée",
-        description: `Simulation programmée avec succès pour le ${new Date(selectedDate).toLocaleDateString('fr-FR')} à ${selectedTime.slice(0, 5)}`,
+        title: "Simulation programmée avec succès !",
+        description: `Simulation programmée pour le ${new Date(selectedDate).toLocaleDateString('fr-FR')} à ${selectedTime.slice(0, 5)}`,
         variant: "default"
       });
       
