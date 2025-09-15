@@ -71,6 +71,7 @@ interface SynthesisData {
   finalStatus: string;
   pointsForts: string;
   pointsAmelioration: string;
+  conclusion: string;
 }
 
 const defaultSynthesisData: SynthesisData = {
@@ -93,7 +94,8 @@ const defaultSynthesisData: SynthesisData = {
   globalScore: 0,
   finalStatus: 'pending',
   pointsForts: '',
-  pointsAmelioration: ''
+  pointsAmelioration: '',
+  conclusion: ''
 };
 
 export function useSynthesisData(applicationId: string) {
@@ -102,13 +104,13 @@ export function useSynthesisData(applicationId: string) {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Calculer le score global à partir des deux protocoles
+  // Calculer le score global à partir des deux protocoles SANS arrondi
   const calculateGlobalScore = useCallback((protocol1Score: number, protocol2Score: number) => {
     // Moyenne pondérée : 40% Protocol 1, 60% Protocol 2
     // S'assurer que les scores ne dépassent jamais 100%
     const safeProtocol1Score = Math.min(protocol1Score, 100);
     const safeProtocol2Score = Math.min(protocol2Score, 100);
-    return Math.min(Math.round((safeProtocol1Score * 0.4 + safeProtocol2Score * 0.6) * 10) / 10, 100);
+    return Math.min(safeProtocol1Score * 0.4 + safeProtocol2Score * 0.6, 100);
   }, []);
 
   // Calculer la moyenne des étoiles (les scores sont déjà sur 5)
@@ -195,57 +197,110 @@ export function useSynthesisData(applicationId: string) {
 
       if (data) {
         const protocol2Data: Protocol2Data = {
-          status: data.completed ? 'completed' : 'in_progress',
+          status: data.status || (data.completed ? 'completed' : 'in_progress'),
           mise_en_situation: {
             jeu_de_role: {
-              score: data.qcm_role_score || 0,
-              comments: data.interview_notes || ''
+              score: data.jeu_de_role_score || 0,
+              comments: data.jeu_de_role_comments || ''
             },
             jeu_codir: {
-              score: data.qcm_codir_score || 0,
-              comments: data.visit_notes || ''
+              score: data.jeu_codir_score || 0,
+              comments: data.jeu_codir_comments || ''
             }
           },
           validation_operationnelle: {
             fiche_kpis: {
-              score: data.overall_score || 0,
-              comments: data.skills_gap_notes || ''
+              score: data.fiche_kpis_score || 0,
+              comments: data.fiche_kpis_comments || ''
+            },
+            fiche_kris: {
+              score: data.fiche_kris_score || 0,
+              comments: data.fiche_kris_comments || ''
+            },
+            fiche_kcis: {
+              score: data.fiche_kcis_score || 0,
+              comments: data.fiche_kcis_comments || ''
             }
           },
           analyse_competences: {
             gap_competences: {
-              score: data.overall_score || 0,
-              comments: data.skills_gap_notes || '',
-              gapLevel: data.skills_gap_level || ''
+              score: data.gap_competences_score || 0,
+              comments: data.gap_competences_comments || '',
+              gapLevel: data.gap_competences_level || ''
             },
             plan_formation: {
-              score: data.overall_score || 0,
-              comments: data.skills_gap_notes || ''
+              score: data.plan_formation_score || 0,
+              comments: data.plan_formation_comments || ''
             }
           }
         };
 
-        // console.log('🔍 [PROTOCOL 2 DEBUG] Données brutes:', {
-        //   overall_score: data.overall_score,
-        //   qcm_role_score: data.qcm_role_score,
-        //   qcm_codir_score: data.qcm_codir_score,
-        //   completed: data.completed
-        // });
+        console.log('🔍 [PROTOCOL 2 DEBUG] Données brutes:', {
+          overall_score: data.overall_score,
+          jeu_de_role_score: data.jeu_de_role_score,
+          jeu_codir_score: data.jeu_codir_score,
+          fiche_kpis_score: data.fiche_kpis_score,
+          gap_competences_score: data.gap_competences_score,
+          plan_formation_score: data.plan_formation_score,
+          status: data.status,
+          completed: data.completed
+        });
+
+        console.log('🔍 [PROTOCOL 2 SYNTHESIS] Score direct de la DB:', {
+          overall_score: data.overall_score,
+          total_score: data.total_score,
+          mise_en_situation_score: data.mise_en_situation_score,
+          validation_operationnelle_score: data.validation_operationnelle_score,
+          analyse_competences_score: data.analyse_competences_score
+        });
+
+        // Calculer le score exact comme dans le dashboard (même formule que calculateSectionScores)
+        const jeuDeRoleScore = Math.min(data.jeu_de_role_score || 0, 5);
+        const jeuCodirScore = Math.min(data.jeu_codir_score || 0, 5);
+        const ficheKpisScore = Math.min(data.fiche_kpis_score || 0, 5);
+        const ficheKrisScore = Math.min(data.fiche_kris_score || 0, 5);
+        const ficheKcisScore = Math.min(data.fiche_kcis_score || 0, 5);
+        const gapCompetencesScore = Math.min(data.gap_competences_score || 0, 5);
+        const planFormationScore = Math.min(data.plan_formation_score || 0, 5);
+
+        // Moyennes par section (sur 5)
+        const situationAvgOn5 = (jeuDeRoleScore + jeuCodirScore) / 2;
+        const performanceAvgOn5 = (ficheKpisScore + ficheKrisScore + ficheKcisScore) / 3;
+        const competenceAvgOn5 = (gapCompetencesScore + planFormationScore) / 2;
+
+        // Conversion en pourcentage
+        const situationPct = (situationAvgOn5 / 5) * 100;
+        const performancePct = (performanceAvgOn5 / 5) * 100;
+        const competencePct = (competenceAvgOn5 / 5) * 100;
+
+        // Pondération: 50% / 20% / 30% (même que dans le dashboard)
+        const exactGlobalScore = situationPct * 0.5 + performancePct * 0.2 + competencePct * 0.3;
+
+        console.log('🔍 [PROTOCOL 2 SYNTHESIS] Score final calculé:', {
+          score: data.overall_score || data.total_score || 0,
+          status: protocol2Data.status
+        });
+
+        console.log('🔍 [PROTOCOL 2 SYNTHESIS] Score exact calculé:', {
+          exactGlobalScore: exactGlobalScore,
+          situationPct: situationPct,
+          performancePct: performancePct,
+          competencePct: competencePct
+        });
 
         return {
           data: protocol2Data,
-          // Utiliser directement le score déjà calculé en pourcentage dans Protocol 2
-          score: data.overall_score || 0,
+          // Utiliser le score calculé exactement comme dans le dashboard
+          score: exactGlobalScore,
           status: protocol2Data.status,
           // Utiliser les scores individuels (0-5) pour les étoiles
           miseEnSituation: calculateStarAverage([
-            data.qcm_role_score || 0,
-            data.qcm_codir_score || 0
+            data.jeu_de_role_score || 0,
+            data.jeu_codir_score || 0
           ]),
-          // Pour validation opérationnelle, convertir le pourcentage en entier (0-5)
-          validationOperationnelle: data.overall_score ? Math.round(Math.min(data.overall_score / 20, 5)) : 0,
-          // Pour analyse des compétences, convertir le pourcentage en entier (0-5)
-          analyseCompetences: data.overall_score ? Math.round(Math.min(data.overall_score / 20, 5)) : 0
+          // Utiliser les scores calculés des sections (déjà en pourcentage, pas besoin de diviser)
+          validationOperationnelle: data.validation_operationnelle_score ? data.validation_operationnelle_score / 20 : 0,
+          analyseCompetences: data.analyse_competences_score ? data.analyse_competences_score / 20 : 0
         };
       }
 
@@ -256,15 +311,43 @@ export function useSynthesisData(applicationId: string) {
     }
   }, [applicationId, user, calculateStarAverage]);
 
+  // Charger les données de synthèse depuis la base de données
+  const loadSynthesisFields = useCallback(async () => {
+    if (!applicationId) return { pointsForts: '', pointsAmelioration: '', conclusion: '' };
+
+    try {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('synthesis_points_forts, synthesis_points_amelioration, synthesis_conclusion')
+        .eq('id', applicationId)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Erreur lors du chargement des champs de synthèse:', error);
+        return { pointsForts: '', pointsAmelioration: '', conclusion: '' };
+      }
+
+      return {
+        pointsForts: data?.synthesis_points_forts || '',
+        pointsAmelioration: data?.synthesis_points_amelioration || '',
+        conclusion: data?.synthesis_conclusion || ''
+      };
+    } catch (error) {
+      console.error('Erreur lors du chargement des champs de synthèse:', error);
+      return { pointsForts: '', pointsAmelioration: '', conclusion: '' };
+    }
+  }, [applicationId]);
+
   // Charger toutes les données de synthèse
   const loadSynthesisData = useCallback(async () => {
     if (!applicationId || !user) return;
 
     setIsLoading(true);
     try {
-      const [protocol1Result, protocol2Result] = await Promise.all([
+      const [protocol1Result, protocol2Result, synthesisFields] = await Promise.all([
         loadProtocol1Data(),
-        loadProtocol2Data()
+        loadProtocol2Data(),
+        loadSynthesisFields()
       ]);
 
       const protocol1Score = Math.min(protocol1Result?.score || 0, 100);
@@ -298,8 +381,9 @@ export function useSynthesisData(applicationId: string) {
         },
         globalScore,
         finalStatus: globalScore >= 70 ? 'embauche' : globalScore >= 50 ? 'incubation' : 'refuse',
-        pointsForts: '',
-        pointsAmelioration: ''
+        pointsForts: synthesisFields.pointsForts,
+        pointsAmelioration: synthesisFields.pointsAmelioration,
+        conclusion: synthesisFields.conclusion
       });
 
       console.log('Données de synthèse chargées:', {
@@ -352,9 +436,38 @@ export function useSynthesisData(applicationId: string) {
     }
   }, [applicationId, user, loadSynthesisData]);
 
+  // Sauvegarder les champs de synthèse
+  const saveSynthesisFields = useCallback(async (fields: { pointsForts?: string; pointsAmelioration?: string; conclusion?: string }) => {
+    if (!applicationId) return false;
+
+    try {
+      const updateData: any = {};
+      if (fields.pointsForts !== undefined) updateData.synthesis_points_forts = fields.pointsForts;
+      if (fields.pointsAmelioration !== undefined) updateData.synthesis_points_amelioration = fields.pointsAmelioration;
+      if (fields.conclusion !== undefined) updateData.synthesis_conclusion = fields.conclusion;
+
+      const { error } = await supabase
+        .from('applications')
+        .update(updateData)
+        .eq('id', applicationId);
+
+      if (error) {
+        console.error('Erreur lors de la sauvegarde des champs de synthèse:', error);
+        return false;
+      }
+
+      console.log('✅ Champs de synthèse sauvegardés:', updateData);
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde des champs de synthèse:', error);
+      return false;
+    }
+  }, [applicationId]);
+
   return {
     synthesisData,
     isLoading,
-    updateRecommendations
+    updateRecommendations,
+    saveSynthesisFields
   };
 }
