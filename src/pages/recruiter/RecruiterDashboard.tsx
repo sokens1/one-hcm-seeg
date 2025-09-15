@@ -864,21 +864,21 @@ export default function RecruiterDashboard() {
                           <div className="w-2 h-2 rounded-full bg-red-400 mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Potentiel Faible</p>
-                            <p className="text-xs text-muted-foreground">5 candidats avec scores 0-35</p>
+                            <p className="text-xs text-muted-foreground">25-30 candidats avec scores 0-39</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 rounded-full bg-orange-400 mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Potentiel Moyen</p>
-                            <p className="text-xs text-muted-foreground">70-80 candidats concentrés autour de 40-45</p>
+                            <p className="text-xs text-muted-foreground">100+ candidats concentrés autour de 40-59</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 rounded-full bg-green-400 mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Potentiel Fort</p>
-                            <p className="text-xs text-muted-foreground">60-70 candidats avec scores 56-70</p>
+                            <p className="text-xs text-muted-foreground">6 candidats avec scores 60-80</p>
                           </div>
                         </div>
                       </CardContent>
@@ -897,7 +897,7 @@ export default function RecruiterDashboard() {
                                 Focus sur les candidats Forts
                               </p>
                               <p className="text-xs text-blue-700 dark:text-blue-300 mt-1 leading-relaxed">
-                                Prioriser les candidats avec potentiel fort pour les postes critiques
+                                Prioriser les candidats avec potentiel fort (60-80) pour les postes critiques
                               </p>
                             </div>
                           </div>
@@ -910,7 +910,7 @@ export default function RecruiterDashboard() {
                                 Formation des candidats Moyens
                               </p>
                               <p className="text-xs text-orange-700 dark:text-orange-300 mt-1 leading-relaxed">
-                                Développer des programmes de formation pour les candidats moyens
+                                Développer des programmes de formation pour les candidats moyens (40-59)
                               </p>
                             </div>
                           </div>
