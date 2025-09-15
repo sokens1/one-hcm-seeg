@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard SEEG - Analyse des Candidatures</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        .candidate-card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        .candidate-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .score-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .score-complete { background-color: #d4edda; color: #155724; }
+        .score-missing { background-color: #f8d7da; color: #721c24; }
+        .score-partial { background-color: #fff3cd; color: #856404; }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .search-box {
+            position: relative;
+        }
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        .search-box input {
+            padding-left: 45px;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            color: #667eea;
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #667eea;
+            color: white;
+            border-radius: 5px;
+        }
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table th {
+            background-color: #667eea;
+            color: white;
+            border: none;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        .spinner-border {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-chart-line me-3"></i>Dashboard SEEG - Analyse des Candidatures</h1>
+                    <p class="mb-0">Analyse complète des candidatures et des scores par poste</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-light" onclick="exportData()">
+                            <i class="fas fa-download me-2"></i>Exporter
+                        </button>
+                        <button type="button" class="btn btn-light" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-2"></i>Actualiser
+                        </button>
+                    
+                        <button type="button" class="btn btn-light">
+                            <i class="fas fa-eye me-2"></i> <a href="cv_audit.html">Voir CV</a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Statistiques générales -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number" id="totalPosts">-</div>
+                    <div class="text-muted">Postes disponibles</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number" id="totalCandidatesUnique">-</div>
+                    <div class="text-muted">Candidats uniques</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number" id="totalCandidatesWithDup">-</div>
+                    <div class="text-muted">Candidats avec doublons</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number" id="totalApplicationsUnique">-</div>
+                    <div class="text-muted">Candidatures uniques</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number" id="totalApplicationsWithDup">-</div>
+                    <div class="text-muted">Candidatures avec doublons</div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="stat-card text-center">
+                    <div class="stat-number" id="completeScoresUnique">-</div>
+                    <div class="text-muted">Scores complets (uniques)</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stat-card text-center">
+                    <div class="stat-number" id="completeScoresWithDup">-</div>
+                    <div class="text-muted">Scores complets (avec doublons)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtres et recherche -->
+        <div class="filter-section">
+            <div id="activeFiltersIndicator" class="mb-3" style="display: none;">
+                <div class="alert alert-primary d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-filter me-2"></i>
+                        <strong>Filtres actifs:</strong>
+                        <span id="activeFiltersList"></span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="resetFilters()">
+                        <i class="fas fa-times me-1"></i>Effacer
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Rechercher un candidat</label>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Nom du candidat...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Filtrer par poste</label>
+                    <select class="form-select" id="postFilter">
+                        <option value="">Tous les postes</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Filtrer par statut des scores</label>
+                    <select class="form-select" id="scoreFilter">
+                        <option value="">Tous les statuts</option>
+                        <option value="complete">Scores complets</option>
+                        <option value="missing">Scores manquants</option>
+                        <option value="partial">Scores partiels</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary flex-fill" onclick="applyFilters()">
+                            <i class="fas fa-filter me-2"></i>Filtrer
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="resetFilters()" title="Réinitialiser les filtres">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation par onglets -->
+        <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                    <i class="fas fa-chart-pie me-2"></i>Vue d'ensemble
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="candidates-tab" data-bs-toggle="tab" data-bs-target="#candidates" type="button" role="tab">
+                    <i class="fas fa-users me-2"></i>Candidats par poste
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="scores-tab" data-bs-toggle="tab" data-bs-target="#scores" type="button" role="tab">
+                    <i class="fas fa-star me-2"></i>Analyse des scores
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="missing-tab" data-bs-toggle="tab" data-bs-target="#missing" type="button" role="tab">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Scores manquants
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">
+                    <i class="fas fa-briefcase me-2"></i>Postes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="applications-tab" data-bs-toggle="tab" data-bs-target="#applications" type="button" role="tab">
+                    <i class="fas fa-list me-2"></i>Candidatures
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="duplicates-tab" data-bs-toggle="tab" data-bs-target="#duplicates" type="button" role="tab">
+                    <i class="fas fa-clone me-2"></i>Doublons
+                </button>
+            </li>
+        </ul>
+
+        <!-- Contenu des onglets -->
+        <div class="tab-content" id="mainTabContent">
+            <!-- Vue d'ensemble -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5><i class="fas fa-chart-bar me-2"></i>Répartition des candidats par poste</h5>
+                            <canvas id="candidatesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5><i class="fas fa-chart-doughnut me-2"></i>Statut des scores</h5>
+                            <canvas id="scoresChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5><i class="fas fa-table me-2"></i>Résumé par poste</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="overviewTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Poste</th>
+                                            <th>Candidats</th>
+                                            <th>Scores complets</th>
+                                            <th>Scores manquants</th>
+                                            <th>Scores partiels</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidats par poste -->
+            <div class="tab-pane fade" id="candidates" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5 class="mb-3"><i class="fas fa-users me-2"></i>Liste des candidats par poste</h5>
+                            <ul class="nav nav-tabs mb-3" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="cand-nodup-tab" data-bs-toggle="tab" data-bs-target="#cand-nodup" type="button" role="tab">
+                                        <i class="fas fa-user-check me-2"></i>Sans doublons
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="cand-dup-tab" data-bs-toggle="tab" data-bs-target="#cand-dup" type="button" role="tab">
+                                        <i class="fas fa-clone me-2"></i>Avec doublons
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="cand-nodup" role="tabpanel">
+                                    <div id="candidatesNoDup"></div>
+                                </div>
+                                <div class="tab-pane fade" id="cand-dup" role="tabpanel">
+                                    <div id="candidatesDup"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analyse des scores -->
+            <div class="tab-pane fade" id="scores" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5><i class="fas fa-star me-2"></i>Candidats avec tous les scores</h5>
+                            <div id="completeScoresList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scores manquants -->
+            <div class="tab-pane fade" id="missing" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5><i class="fas fa-exclamation-triangle me-2"></i>Candidats avec scores manquants</h5>
+                            <div id="missingScoresList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Postes -->
+            <div class="tab-pane fade" id="posts" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5><i class="fas fa-briefcase me-2"></i>Liste des postes</h5>
+                            <ul class="list-group" id="postsList"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidatures -->
+            <div class="tab-pane fade" id="applications" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5><i class="fas fa-list me-2"></i>Toutes les candidatures (poste, candidat)</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr><th>Poste</th><th>Candidat</th></tr>
+                                    </thead>
+                                    <tbody id="applicationsList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doublons -->
+            <div class="tab-pane fade" id="duplicates" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5><i class="fas fa-clone me-2"></i>Doublons par poste</h5>
+                            <div id="duplicatesList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Données globales
+        let allData = {};
+        let filteredData = {};
+        let currentFilters = {
+            search: '',
+            post: '',
+            scoreStatus: ''
+        };
+
+        // Fichiers JSON (16 postes)
+        const jsonFiles = [
+            'chef_de_département_eau.json',
+            'chef_de_département_electricité.json',
+            'chef_de_département_support.json',
+            'coordonnateur_des_régions.json',
+            'directeur_audit_et_contrôle_interne.json',
+            'directeur_commercial_et_recouvrement.json',
+            'directeur_des_systèmes_d’information.json',
+            'directeur_du_capital_humain.json',
+            'directeur_exploitation_eau.json',
+            'directeur_exploitation_electricité.json',
+            'directeur_finances_et_comptabilité.json',
+            'directeur_juridique,_communication_et_rse.json',
+            'directeur_moyens_généraux.json',
+            'directeur_qualité,_hygiène,_sécurité_et_environnement.json',
+            'directeur_technique_eau.json',
+            'directeur_technique_electricité.json'
+        ];
+
+        // Chargement des données
+        async function loadData() {
+            try {
+                showLoading();
+
+                allData = await loadJSONData();
+                
+                // Initialisation des filtres
+                initializeFilters();
+                
+                // Calcul des statistiques
+                calculateStatistics();
+                
+                // Génération des graphiques
+                generateCharts();
+                
+                // Affichage des données
+                displayData();
+                
+                hideLoading();
+            } catch (error) {
+                console.error('Erreur lors du chargement des données:', error);
+                showError('Erreur lors du chargement des données');
+            }
+        }
+
+        // Charge et fusionne les 16 fichiers JSON
+        async function loadJSONData() {
+            const basePath = '../json_postes/';
+            const merged = {};
+
+            const results = await Promise.allSettled(
+                jsonFiles.map(name => fetch(basePath + encodeURI(name)).then(r => {
+                    if (!r.ok) throw new Error(name + ' => HTTP ' + r.status);
+                    return r.json();
+                }))
+            );
+
+            results.forEach((res, idx) => {
+                if (res.status === 'fulfilled') {
+                    const obj = res.value || {};
+                    Object.keys(obj).forEach(post => {
+                        merged[post] = merged[post] || {};
+                        const candidates = obj[post] || {};
+                        Object.keys(candidates).forEach(cn => {
+                            // Si doublon exact de nom au sein du même poste, suffixer pour conserver toutes entrées
+                            let key = cn;
+                            let k = 1;
+                            while (merged[post][key]) {
+                                k += 1;
+                                key = cn + ' (dup ' + k + ')';
+                            }
+                            merged[post][key] = candidates[cn];
+                        });
+                    });
+                } else {
+                    console.warn('Chargement échoué:', jsonFiles[idx], res.reason);
+                }
+            });
+
+            return merged;
+        }
+
+        // Initialisation des filtres
+        function initializeFilters() {
+            const postFilter = document.getElementById('postFilter');
+            postFilter.innerHTML = '<option value="">Tous les postes</option>';
+            
+            Object.keys(allData).forEach(post => {
+                const option = document.createElement('option');
+                option.value = post;
+                option.textContent = post;
+                postFilter.appendChild(option);
+            });
+        }
+
+        // Calcul des statistiques
+        function calculateStatistics() {
+            const posts = Object.keys(allData);
+            let totalCandidatesUnique = 0;
+            let totalCandidatesWithDup = 0;
+            let totalApplicationsUnique = 0;
+            let totalApplicationsWithDup = 0;
+            let completeScoresUnique = 0;
+            let completeScoresWithDup = 0;
+
+            posts.forEach(post => {
+                const candidates = Object.keys(allData[post]);
+                const canonicalKeys = new Map();
+                
+                // Compter les candidatures totales (avec doublons)
+                totalApplicationsWithDup += candidates.length;
+                
+                // Analyser les doublons par poste
+                candidates.forEach(candidateName => {
+                    const candidate = allData[post][candidateName];
+                    const canonicalKey = buildCanonicalNameKey(candidate, candidateName);
+                    
+                    if (!canonicalKeys.has(canonicalKey)) {
+                        canonicalKeys.set(canonicalKey, []);
+                    }
+                    canonicalKeys.get(canonicalKey).push(candidateName);
+                });
+                
+                // Compter les candidats uniques et avec doublons
+                canonicalKeys.forEach((candidateNames, canonicalKey) => {
+                    if (candidateNames.length === 1) {
+                        // Candidat unique
+                        totalCandidatesUnique++;
+                        totalApplicationsUnique++;
+                        
+                        // Vérifier les scores complets pour les candidats uniques
+                        const candidate = allData[post][candidateNames[0]];
+                        if (hasAllScores(candidate)) {
+                            completeScoresUnique++;
+                        }
+                    } else {
+                        // Candidat avec doublons
+                        totalCandidatesWithDup += candidateNames.length;
+                        totalApplicationsUnique++; // Une seule candidature unique
+                        
+                        // Vérifier les scores complets pour tous les doublons
+                        candidateNames.forEach(candidateName => {
+                            const candidate = allData[post][candidateName];
+                            if (hasAllScores(candidate)) {
+                                completeScoresWithDup++;
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Mettre à jour l'interface
+            document.getElementById('totalPosts').textContent = posts.length;
+            document.getElementById('totalCandidatesUnique').textContent = totalCandidatesUnique;
+            document.getElementById('totalCandidatesWithDup').textContent = totalCandidatesWithDup;
+            document.getElementById('totalApplicationsUnique').textContent = totalApplicationsUnique;
+            document.getElementById('totalApplicationsWithDup').textContent = totalApplicationsWithDup;
+            document.getElementById('completeScoresUnique').textContent = completeScoresUnique;
+            document.getElementById('completeScoresWithDup').textContent = completeScoresWithDup;
+        }
+
+        // Vérification si un candidat a tous les scores
+        function hasAllScores(candidateData) {
+            // Vérifier les scores obligatoires (objets avec contenu)
+            const requiredObjectScores = ['conformite', 'mtp', 'completude', 'global'];
+            const hasRequiredObjectScores = requiredObjectScores.every(score => 
+                candidateData[score] && 
+                Object.keys(candidateData[score]).length > 0
+            );
+            
+            // Vérifier que feedback existe (peut être un objet vide ou une valeur)
+            const hasFeedback = candidateData.feedback !== undefined;
+            
+            return hasRequiredObjectScores && hasFeedback;
+        }
+
+        // Génération des graphiques
+        function generateCharts() {
+            generateCandidatesChart();
+            generateScoresChart();
+        }
+
+        // Graphique des candidats par poste
+        function generateCandidatesChart() {
+            const ctx = document.getElementById('candidatesChart').getContext('2d');
+            const posts = Object.keys(allData);
+            const candidatesCount = posts.map(post => Object.keys(allData[post]).length);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: posts,
+                    datasets: [{
+                        label: 'Nombre de candidats',
+                        data: candidatesCount,
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Graphique des statuts des scores
+        function generateScoresChart() {
+            const ctx = document.getElementById('scoresChart').getContext('2d');
+            let complete = 0, missing = 0, partial = 0;
+
+            Object.values(allData).forEach(postCandidates => {
+                Object.values(postCandidates).forEach(candidate => {
+                    if (hasAllScores(candidate)) {
+                        complete++;
+                    } else if (hasNoScores(candidate)) {
+                        missing++;
+                    } else {
+                        partial++;
+                    }
+                });
+            });
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Scores complets', 'Scores partiels', 'Scores manquants'],
+                    datasets: [{
+                        data: [complete, partial, missing],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(220, 53, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Vérification si un candidat n'a aucun score
+        function hasNoScores(candidateData) {
+            const requiredScores = ['conformite', 'mtp', 'completude', 'feedback', 'global'];
+            return requiredScores.every(score => 
+                !candidateData[score] || 
+                Object.keys(candidateData[score]).length === 0
+            );
+        }
+
+        // Affichage des données
+        function displayData() {
+            displayOverviewTable();
+            displayCandidatesTables();
+            displayCompleteScoresList();
+            displayMissingScoresList();
+            displayPostsList();
+            displayApplicationsList();
+            displayDuplicatesList();
+        }
+
+        // Listes supplémentaires
+        function displayPostsList() {
+            const container = document.getElementById('postsList');
+            if (!container) return;
+            const posts = Object.keys(allData).sort();
+            container.innerHTML = posts.map(p => `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-briefcase me-2"></i>${p}</span>
+                    <span class="badge bg-primary">${Object.keys(allData[p]).length}</span>
+                </li>
+            `).join('');
+        }
+
+        function displayApplicationsList() {
+            const container = document.getElementById('applicationsList');
+            if (!container) return;
+            const rows = [];
+            Object.keys(allData).forEach(post => {
+                Object.keys(allData[post]).forEach(cn => {
+                    const c = allData[post][cn];
+                    rows.push({ post, name: `${c.prenom || ''} ${c.nom || cn}`.trim() });
+                });
+            });
+            rows.sort((a,b) => a.post.localeCompare(b.post) || a.name.localeCompare(b.name));
+            container.innerHTML = rows.map(r => `
+                <tr><td>${r.post}</td><td>${r.name}</td></tr>
+            `).join('');
+        }
+
+        function displayDuplicatesList() {
+            const container = document.getElementById('duplicatesList');
+            if (!container) return;
+            const items = [];
+            Object.keys(allData).forEach(post => {
+                const seen = {};
+                const dups = [];
+                Object.keys(allData[post]).forEach(cn => {
+                    const c = allData[post][cn];
+                    const rawKey = buildNameKey(c, cn);
+                    const canonical = canonicalizeKey(rawKey);
+                    seen[canonical] = (seen[canonical] || 0) + 1;
+                });
+                Object.entries(seen).forEach(([k, count]) => {
+                    if (count > 1) {
+                        const [prenom, nom] = k.split('|');
+                        dups.push({ prenom, nom, count });
+                    }
+                });
+                if (dups.length) {
+                    items.push({ post, dups });
+                }
+            });
+            if (!items.length) {
+                container.innerHTML = '<div class="text-muted">Aucun doublon détecté par poste.</div>';
+                return;
+            }
+            container.innerHTML = items.map(section => `
+                <div class="mb-3">
+                    <h6 class="mb-2 text-danger"><i class="fas fa-clone me-2"></i>${section.post}</h6>
+                    <ul class="list-group">
+                        ${section.dups.map(d => `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>${d.prenom} ${d.nom}</span>
+                                <span class="badge bg-danger">${d.count}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        // Tableau de vue d'ensemble
+        function displayOverviewTable() {
+            const tbody = document.querySelector('#overviewTable tbody');
+            tbody.innerHTML = '';
+
+            Object.keys(allData).forEach(post => {
+                const candidates = Object.keys(allData[post]);
+                let complete = 0, missing = 0, partial = 0;
+
+                candidates.forEach(candidate => {
+                    const data = allData[post][candidate];
+                    if (hasAllScores(data)) {
+                        complete++;
+                    } else if (hasNoScores(data)) {
+                        missing++;
+                    } else {
+                        partial++;
+                    }
+                });
+
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${post}</td>
+                    <td><span class="badge bg-primary">${candidates.length}</span></td>
+                    <td><span class="badge bg-success">${complete}</span></td>
+                    <td><span class="badge bg-danger">${missing}</span></td>
+                    <td><span class="badge bg-warning">${partial}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewPostDetails('${post}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+            });
+        }
+
+        // Liste des candidats par poste (tables en deux sous-onglets)
+        function displayCandidatesTables() {
+            const containerNoDup = document.getElementById('candidatesNoDup');
+            const containerDup = document.getElementById('candidatesDup');
+            if (!containerNoDup || !containerDup) return;
+            containerNoDup.innerHTML = '';
+            containerDup.innerHTML = '';
+
+            // Utiliser les données filtrées si des filtres sont actifs
+            const dataToUse = Object.keys(filteredData).length > 0 ? filteredData : allData;
+            Object.keys(dataToUse).forEach(post => {
+                // Déterminer doublons par clé normalisée + canonique
+                const nameCounts = {};
+                const keyToCanonical = {};
+                Object.keys(dataToUse[post]).forEach(cn => {
+                    const c = dataToUse[post][cn];
+                    const rawKey = buildNameKey(c, cn);
+                    const canonical = canonicalizeKey(rawKey);
+                    keyToCanonical[rawKey] = canonical;
+                    nameCounts[canonical] = (nameCounts[canonical] || 0) + 1;
+                });
+
+                const toRow = (c, cn) => {
+                    const scores = c?.mtp?.scores || {};
+                    const m = scores.Metier ?? scores['Métier'] ?? '';
+                    const t = scores.Talent ?? '';
+                    const p = scores.Paradigme ?? '';
+                    const rang = c.global?.rang ?? c.mtp?.rang ?? c.completude?.rang ?? '';
+                        return `
+                            <tr>
+                                <td>${(c.prenom||'') + ' ' + (c.nom||cn)}</td>
+                                <td>${rang || '-'}</td>
+                                <td>${formatScore(m)}</td>
+                                <td>${formatScore(t)}</td>
+                                <td>${formatScore(p)}</td>
+                                <td>${formatScore(c.mtp?.Score_moyen)}</td>
+                                <td>${formatScore(c.conformite?.score_conformité)}</td>
+                                <td>${formatScore(c.completude?.score, 1)}</td>
+                                <td>${formatScore(c.feedback)}</td>
+                                <td>${formatScore(c.global?.score_global)}</td>
+                            </tr>
+                        `;
+                };
+
+                const tableShell = `
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Candidat</th>
+                                    <th>Rang</th>
+                                    <th>M</th>
+                                    <th>T</th>
+                                    <th>P</th>
+                                    <th>MTP moyen</th>
+                                    <th>Conformité</th>
+                                    <th>Complétude</th>
+                                    <th>Feedback</th>
+                                    <th>Global</th>
+                                </tr>
+                            </thead>
+                            <tbody>__ROWS__</tbody>
+                        </table>
+                    </div>
+                `;
+
+                const rowsDup = [];
+                const rowsNoDup = [];
+                Object.keys(dataToUse[post]).forEach(cn => {
+                    const c = dataToUse[post][cn];
+                    const canonical = keyToCanonical[buildNameKey(c, cn)];
+                    const row = toRow(c, cn);
+                    if ((nameCounts[canonical] || 0) > 1) rowsDup.push(row); else rowsNoDup.push(row);
+                });
+
+                // Sans doublons (affiche le nombre exact unique)
+                const headerNoDup = `
+                    <h6 class="text-primary mb-2">
+                        <i class="fas fa-briefcase me-2"></i>${post}
+                        <span class="badge bg-secondary ms-2">${rowsNoDup.length} candidats</span>
+                    </h6>
+                `;
+                containerNoDup.insertAdjacentHTML('beforeend', headerNoDup + tableShell.replace('__ROWS__', rowsNoDup.join('')));
+                // Avec doublons: affiche nombre de candidatures en doublon
+                if (rowsDup.length === 0) {
+                    const headerDupEmpty = `
+                        <h6 class="text-danger mb-2">
+                            <i class="fas fa-briefcase me-2"></i>${post}
+                            <span class="badge bg-danger ms-2">0</span>
+                        </h6>
+                        <div class="text-muted mb-4">Aucun doublon</div>
+                    `;
+                    containerDup.insertAdjacentHTML('beforeend', headerDupEmpty);
+                } else {
+                    const headerDup = `
+                        <h6 class="text-danger mb-2">
+                            <i class="fas fa-briefcase me-2"></i>${post}
+                            <span class="badge bg-danger ms-2">${rowsDup.length} en doublon</span>
+                        </h6>
+                    `;
+                    containerDup.insertAdjacentHTML('beforeend', headerDup + tableShell.replace('__ROWS__', rowsDup.join('')));
+                }
+            });
+        }
+
+        // Liste des candidats avec scores complets
+        function displayCompleteScoresList() {
+            const container = document.getElementById('completeScoresList');
+            container.innerHTML = '';
+
+            // Utiliser les données filtrées si des filtres sont actifs
+            const dataToUse = Object.keys(filteredData).length > 0 ? filteredData : allData;
+            Object.keys(dataToUse).forEach(post => {
+                const completeCandidates = Object.keys(dataToUse[post]).filter(candidateName => {
+                    return hasAllScores(dataToUse[post][candidateName]);
+                });
+
+                if (completeCandidates.length > 0) {
+                    // Fonction pour créer une ligne de tableau
+                    const buildRow = (candidateName) => {
+                        const c = dataToUse[post][candidateName];
+                        const scores = c?.mtp?.scores || {};
+                        const m = scores.Metier ?? scores['Métier'] ?? '';
+                        const t = scores.Talent ?? '';
+                        const p = scores.Paradigme ?? '';
+                        const rang = c.global?.rang ?? c.mtp?.rang ?? c.completude?.rang ?? '';
+                        
+                        return `
+                            <tr>
+                                <td>${(c.prenom||'') + ' ' + (c.nom||candidateName)}</td>
+                                <td>${rang || '-'}</td>
+                                <td>${formatScore(m)}</td>
+                                <td>${formatScore(t)}</td>
+                                <td>${formatScore(p)}</td>
+                                <td>${formatScore(c.mtp?.Score_moyen)}</td>
+                                <td>${formatScore(c.conformite?.score_conformité)}</td>
+                                <td>${formatScore(c.completude?.score, 1)}</td>
+                                <td>${formatScore(c.feedback)}</td>
+                                <td>${formatScore(c.global?.score_global)}</td>
+                            </tr>
+                        `;
+                    };
+
+                    const rows = completeCandidates.map(buildRow).join('');
+
+                    const postSection = `
+                        <h6 class="text-success mb-2">
+                            <i class="fas fa-check-circle me-2"></i>${post}
+                            <span class="badge bg-success ms-2">${completeCandidates.length} candidats</span>
+                        </h6>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Candidat</th>
+                                        <th>Rang</th>
+                                        <th>M</th>
+                                        <th>T</th>
+                                        <th>P</th>
+                                        <th>MTP moyen</th>
+                                        <th>Conformité</th>
+                                        <th>Complétude</th>
+                                        <th>Feedback</th>
+                                        <th>Global</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rows}</tbody>
+                            </table>
+                        </div>
+                    `;
+                    
+                    container.insertAdjacentHTML('beforeend', postSection);
+                }
+            });
+        }
+
+        // Liste des candidats avec scores manquants
+        function displayMissingScoresList() {
+            const container = document.getElementById('missingScoresList');
+            container.innerHTML = '';
+
+            // Utiliser les données filtrées si des filtres sont actifs
+            const dataToUse = Object.keys(filteredData).length > 0 ? filteredData : allData;
+            Object.keys(dataToUse).forEach(post => {
+                const missingCandidates = Object.keys(dataToUse[post]).filter(candidateName => {
+                    const candidate = dataToUse[post][candidateName];
+                    return !hasAllScores(candidate);
+                });
+
+                if (missingCandidates.length > 0) {
+                    // Fonction pour créer une ligne de tableau
+                    const buildRow = (candidateName) => {
+                        const c = dataToUse[post][candidateName];
+                        const scores = c?.mtp?.scores || {};
+                        const m = scores.Metier ?? scores['Métier'] ?? '';
+                        const t = scores.Talent ?? '';
+                        const p = scores.Paradigme ?? '';
+                        const rang = c.global?.rang ?? c.mtp?.rang ?? c.completude?.rang ?? '';
+                        const missingScores = getMissingScores(c);
+                        
+                        return `
+                            <tr>
+                                <td>
+                                    ${(c.prenom||'') + ' ' + (c.nom||candidateName)}
+                                    <br><small class="text-danger">Manquant: ${missingScores.join(', ')}</small>
+                                </td>
+                                <td>${rang || '-'}</td>
+                                <td class="${m === '' ? 'text-danger' : ''}">${formatScore(m)}</td>
+                                <td class="${t === '' ? 'text-danger' : ''}">${formatScore(t)}</td>
+                                <td class="${p === '' ? 'text-danger' : ''}">${formatScore(p)}</td>
+                                <td class="${c.mtp?.Score_moyen === undefined ? 'text-danger' : ''}">${formatScore(c.mtp?.Score_moyen)}</td>
+                                <td class="${c.conformite?.score_conformité === undefined ? 'text-danger' : ''}">${formatScore(c.conformite?.score_conformité)}</td>
+                                <td class="${c.completude?.score === undefined ? 'text-danger' : ''}">${formatScore(c.completude?.score, 1)}</td>
+                                <td class="${c.feedback === undefined ? 'text-danger' : ''}">${formatScore(c.feedback)}</td>
+                                <td class="${c.global?.score_global === undefined ? 'text-danger' : ''}">${formatScore(c.global?.score_global)}</td>
+                            </tr>
+                        `;
+                    };
+
+                    const rows = missingCandidates.map(buildRow).join('');
+
+                    const postSection = `
+                        <h6 class="text-warning mb-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>${post}
+                            <span class="badge bg-warning ms-2">${missingCandidates.length} candidats</span>
+                        </h6>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Candidat</th>
+                                        <th>Rang</th>
+                                        <th>M</th>
+                                        <th>T</th>
+                                        <th>P</th>
+                                        <th>MTP moyen</th>
+                                        <th>Conformité</th>
+                                        <th>Complétude</th>
+                                        <th>Feedback</th>
+                                        <th>Global</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rows}</tbody>
+                            </table>
+                        </div>
+                    `;
+                    
+                    container.insertAdjacentHTML('beforeend', postSection);
+                }
+            });
+        }
+
+        // Obtenir le statut des scores d'un candidat
+        function getScoreStatus(candidate) {
+            if (hasAllScores(candidate)) {
+                return { class: 'score-complete', text: 'Complet' };
+            } else if (hasNoScores(candidate)) {
+                return { class: 'score-missing', text: 'Manquant' };
+            } else {
+                return { class: 'score-partial', text: 'Partiel' };
+            }
+        }
+
+        // Obtenir les scores manquants d'un candidat
+        function getMissingScores(candidate) {
+            const requiredScores = ['conformite', 'mtp', 'completude', 'feedback', 'global'];
+            const missing = [];
+
+            requiredScores.forEach(score => {
+                if (!candidate[score] || Object.keys(candidate[score]).length === 0) {
+                    missing.push(score);
+                }
+            });
+
+            return missing;
+        }
+
+        // Normalisation de nom/prénom pour détecter les doublons robustement
+        function buildNameKey(c, fallbackName) {
+            const prenom = (c.prenom || '').toString().trim();
+            const nom = (c.nom || fallbackName || '').toString().trim();
+            const normalize = (s) => s
+                .normalize('NFD').replace(/\p{Diacritic}/gu, '')
+                .toLowerCase().replace(/[^a-z]/g, ' ')
+                .replace(/\s+/g, ' ').trim();
+            return normalize(prenom) + '|' + normalize(nom);
+        }
+
+        function canonicalizeKey(key) {
+            const [p, n] = key.split('|');
+            const pTokens = (p || '').split(' ').filter(Boolean);
+            const nTokens = (n || '').split(' ').filter(Boolean);
+            // Règles de canonisation:
+            // - Prénom: premier token (ex: "jean christian" -> "jean")
+            // - Nom: si le premier token est un prénom commun (ex: "jean", "luc", "armel", "wilfrid"), on garde le dernier token du nom
+            const pCanon = (pTokens[0] || '').trim();
+            const commonFirstNames = new Set(['jean','luc','armel','wilfrid','roland','philippe','calvin','aimée','aimee','lucie']);
+            let nCanon = '';
+            if (nTokens.length === 1) {
+                nCanon = nTokens[0];
+            } else if (nTokens.length > 1) {
+                const first = nTokens[0];
+                const last = nTokens[nTokens.length - 1];
+                nCanon = commonFirstNames.has(first) ? last : last; // privilégier le dernier token
+            }
+            return pCanon + '|' + nCanon;
+        }
+
+        // Fonction combinée pour créer une clé canonique directement
+        function buildCanonicalNameKey(candidate, fallbackName) {
+            const rawKey = buildNameKey(candidate, fallbackName);
+            return canonicalizeKey(rawKey);
+        }
+
+        // Fonction utilitaire pour formater les scores
+        function formatScore(value, decimals = 2) {
+            if (value === undefined || value === null || value === '' || isNaN(value)) {
+                return '-';
+            }
+            return Number(value).toFixed(decimals);
+        }
+
+        // Application des filtres
+        function applyFilters() {
+            currentFilters.search = document.getElementById('searchInput').value.toLowerCase();
+            currentFilters.post = document.getElementById('postFilter').value;
+            currentFilters.scoreStatus = document.getElementById('scoreFilter').value;
+
+            // Filtrer les données
+            filteredData = {};
+            
+            Object.keys(allData).forEach(post => {
+                if (currentFilters.post && post !== currentFilters.post) return;
+                
+                const candidates = Object.keys(allData[post]).filter(candidateName => {
+                    const candidate = allData[post][candidateName];
+                    const fullName = `${candidate.prenom} ${candidate.nom}`.toLowerCase();
+                    
+                    // Filtre de recherche
+                    if (currentFilters.search && !fullName.includes(currentFilters.search)) {
+                        return false;
+                    }
+                    
+                    // Filtre de statut des scores
+                    if (currentFilters.scoreStatus) {
+                        const status = getScoreStatus(candidate);
+                        if (currentFilters.scoreStatus === 'complete' && status.class !== 'score-complete') return false;
+                        if (currentFilters.scoreStatus === 'missing' && status.class !== 'score-missing') return false;
+                        if (currentFilters.scoreStatus === 'partial' && status.class !== 'score-partial') return false;
+                    }
+                    
+                    return true;
+                });
+
+                if (candidates.length > 0) {
+                    filteredData[post] = {};
+                    candidates.forEach(candidateName => {
+                        filteredData[post][candidateName] = allData[post][candidateName];
+                    });
+                }
+            });
+
+            // Mettre à jour l'indicateur de filtres actifs
+            updateActiveFiltersIndicator();
+            
+            // Réafficher les données filtrées
+            displayData();
+            
+            // Afficher un message si aucun résultat
+            if (Object.keys(filteredData).length === 0 && (currentFilters.search || currentFilters.post || currentFilters.scoreStatus)) {
+                showNoResultsMessage();
+            }
+        }
+
+        // Réinitialiser les filtres
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('postFilter').value = '';
+            document.getElementById('scoreFilter').value = '';
+            
+            currentFilters = {
+                search: '',
+                post: '',
+                scoreStatus: ''
+            };
+            
+            filteredData = {};
+            updateActiveFiltersIndicator();
+            displayData();
+            hideNoResultsMessage();
+        }
+
+        // Afficher un message quand aucun résultat
+        function showNoResultsMessage() {
+            const message = document.createElement('div');
+            message.id = 'noResultsMessage';
+            message.className = 'alert alert-info text-center mt-4';
+            message.innerHTML = `
+                <i class="fas fa-info-circle me-2"></i>
+                Aucun candidat ne correspond aux critères de recherche.
+                <button class="btn btn-sm btn-outline-primary ms-3" onclick="resetFilters()">
+                    Réinitialiser les filtres
+                </button>
+            `;
+            
+            // Ajouter le message au début du contenu principal
+            const mainContent = document.querySelector('.container-fluid');
+            if (mainContent && !document.getElementById('noResultsMessage')) {
+                mainContent.insertBefore(message, mainContent.firstChild);
+            }
+        }
+
+        // Masquer le message d'aucun résultat
+        function hideNoResultsMessage() {
+            const message = document.getElementById('noResultsMessage');
+            if (message) {
+                message.remove();
+            }
+        }
+
+        // Mettre à jour l'indicateur de filtres actifs
+        function updateActiveFiltersIndicator() {
+            const indicator = document.getElementById('activeFiltersIndicator');
+            const filtersList = document.getElementById('activeFiltersList');
+            
+            const activeFilters = [];
+            
+            if (currentFilters.search) {
+                activeFilters.push(`<span class="badge bg-primary me-1">Recherche: "${currentFilters.search}"</span>`);
+            }
+            
+            if (currentFilters.post) {
+                activeFilters.push(`<span class="badge bg-primary me-1">Poste: "${currentFilters.post}"</span>`);
+            }
+            
+            if (currentFilters.scoreStatus) {
+                const statusLabels = {
+                    'complete': 'Scores complets',
+                    'missing': 'Scores manquants',
+                    'partial': 'Scores partiels'
+                };
+                activeFilters.push(`<span class="badge bg-primary me-1">Statut: "${statusLabels[currentFilters.scoreStatus]}"</span>`);
+            }
+            
+            if (activeFilters.length > 0) {
+                filtersList.innerHTML = activeFilters.join('');
+                indicator.style.display = 'block';
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+
+        // Fonctions utilitaires
+        function showLoading() {
+            document.body.innerHTML += `
+                <div class="loading" id="loadingOverlay">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2">Chargement des données...</p>
+                </div>
+            `;
+        }
+
+        function hideLoading() {
+            const loading = document.getElementById('loadingOverlay');
+            if (loading) loading.remove();
+        }
+
+        function showError(message) {
+            alert('Erreur: ' + message);
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'seeg_candidatures_data.json';
+            link.click();
+        }
+
+        function refreshData() {
+            loadData();
+        }
+
+        function viewPostDetails(post) {
+            // Basculer vers l'onglet candidats et filtrer par poste
+            document.getElementById('postFilter').value = post;
+            document.getElementById('candidates-tab').click();
+            applyFilters();
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            
+            // Événements
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('postFilter').addEventListener('change', applyFilters);
+            document.getElementById('scoreFilter').addEventListener('change', applyFilters);
+        });
+    </script>
+</body>
+</html>

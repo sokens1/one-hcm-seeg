@@ -1,0 +1,666 @@
+{
+  "Chef de Département Electricité": {
+    "Hervé Mangono Toulou": {
+      "prenom": "Hervé",
+      "nom": "Mangono Toulou",
+      "conformite": {
+        "prenom": "Hervé",
+        "nom": "MANGONO TOULOU",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MANGONO TOULOU",
+        "prenom": "Hervé",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Metier": 0.44,
+          "Talent": 0.41,
+          "Paradigme": 0.47
+        },
+        "Score_moyen": 44.0,
+        "niveau": "Le candidat présente des scores en deçà des attentes de l'entreprise, indiquant une compatibilité limitée avec la vision stratégique de la SEEG. Son score moyen défavorable peut nécessiter un développement substantiel pour aligner ses compétences sur les besoins de transformation de l'entreprise.",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le score moyen de 44.0 est inférieur à 43.5, ce qui indique une inadéquation avec la vision de la SEEG.",
+        "points_forts": [
+          "Connaissance technique du métier d'électricité",
+          "Capacité à identifier des besoins en accompagnement et formation du personnel",
+          "Une ouverture à l'intégration des approches innovantes dans son domaine"
+        ],
+        "points_a_travailler": [
+          "Améliorer ses compétences managériales et stratégiques pour répondre aux besoins de réorganisation",
+          "Développer des compétences en gouvernance et en transparence financière",
+          "Renforcer sa capacité à évaluer et à gérer les projets d'infrastructure"
+        ],
+        "rang": 4
+      },
+      "completude": {
+        "nom": "MANGONO TOULOU",
+        "prenom": "Hervé",
+        "poste": "Chef de Département Electricité",
+        "score": 39.4,
+        "resume_experience": {
+          "nombre_d_annees": 24,
+          "specialite": "secteur industriel, énergie, management"
+        },
+        "verdict": "favorable",
+        "raison": "Avec 24 ans d'expérience, dont 21 ans à la SEEG, Hervé MANGONO TOULOU possède une vaste expérience dans le secteur de la distribution électrique et en gestion de projets, ce qui correspond bien aux exigences du poste.",
+        "points_forts": [
+          "Expérience substantielle dans l'industrie électrique et le management",
+          "Excellentes compétences en gestion de projets et en optimisation des processus",
+          "Solide expérience en leadership et en gestion des équipes"
+        ],
+        "points_a_travailler": [
+          "Renforcement des compétences en anglais et en espagnol pour une meilleure communication internationale",
+          "Acquisition de compétences supplémentaires en gestion des technologies émergentes",
+          "Approfondir les compétences en cartographie des risques et gestion de l'interface avec les autorités"
+        ],
+        "rang": 2
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 23.88,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente un profil avec une conformité documentaire élevée. Cependant, le faible score de feedback RH, couplé à une faible complétude par rapport à l'offre, indique qu'il se pourrait qu'il ne réponde pas pleinement aux exigences stratégiques du poste dans une entreprise en pleine transformation.",
+        "points_forts": [
+          "Conformité documentaire parfaite",
+          "Potentiel d'alignement avec certains aspects de la vision stratégique de l'entreprise"
+        ],
+        "points_a_ameliorer": [
+          "Score de feedback RH nul, nécessitant une attention urgente",
+          "Complétude faible entre le CV/LM et les exigences de l'offre"
+        ],
+        "rang": 1
+      }
+    },
+    "Joël Kinga Delalain": {
+      "prenom": "Joël",
+      "nom": "Kinga Delalain",
+      "conformite": {
+        "prenom": "Joël",
+        "nom": "KINGA DELALAIN",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "KINGA DELALAIN",
+        "prenom": "Joël",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Metier": 0.46,
+          "Talent": 0.42,
+          "Paradigme": 0.47
+        },
+        "Score_moyen": 45.0,
+        "niveau": "Le candidat a un score moyen qui indique une performance moyenne par rapport aux attentes de l'entreprise. Ses compétences semblent en adéquation avec les besoins stratégiques mais nécessitent un renforcement pour atteindre l'excellence.",
+        "verdict": "moyen",
+        "raison_verdict": "Le score moyen de 45.0 indique que le candidat possède des compétences correctes mais reste en deçà des critères favorables requis par l'entreprise.",
+        "points_forts": [
+          "Connaissance des systèmes électriques et des défis liés aux infrastructures vieillissantes.",
+          "Capacité à travailler en équipe et à collaborer avec des partenaires techniques.",
+          "Compétences en gestion des ressources, même si elles doivent être approfondies."
+        ],
+        "points_a_travailler": [
+          "Amélioration des compétences en gestion de projets pour mieux gérer les investissements liés aux infrastructures.",
+          "Renforcement des compétences de leadership pour diriger efficacement les équipes vers les objectifs de la vision SEEG.",
+          "Développement d'une approche proactive en matière de gouvernance et de transparence."
+        ],
+        "rang": 2
+      },
+      "completude": {
+        "nom": "KINGA DELALAIN",
+        "prenom": "Joël",
+        "poste": "Chef de Département Electricité",
+        "score": 36.6,
+        "resume_experience": "26 ans d'expérience en Études, Maintenance, Gestion des Régions et Management",
+        "verdict": "moyen",
+        "verdict_raison": "Le candidat possède une longue expérience dans des domaines en lien avec le poste, mais le score de similarité suggère une adéquation moyenne avec les exigences spécifiques du rôle de Chef de Département Electricité.",
+        "points_forts": [
+          "Expérience solide en gestion des projets et maintenance",
+          "Connaissance approfondie des systèmes de transmission et télécommunication",
+          "Compétence en management des ressources humaines et de la qualité"
+        ],
+        "points_a_travailler": [
+          "Renforcement de l'expérience en élaboration de budgets départementaux",
+          "Accroissement des compétences en définition d'indicateurs de performance spécifiques",
+          "Perfectionnement en gestion proactive des risques"
+        ],
+        "rang": 4
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 23.57,
+        "verdict": "défavorable",
+        "resume": "Joël Kinga Delalain présente un profil désaligné avec les exigences stratégiques et les transformations attendues par la SEEG, notamment dans un contexte de restructuration et de modernisation des infrastructures. Le score global et, particulièrement, le manque de feedback RH témoignent d'une inadéquation pour le poste ciblé.",
+        "points_forts": [
+          "Conformité documentaire"
+        ],
+        "points_a_ameliorer": [
+          "Faible alignement avec la vision stratégique de l'entreprise",
+          "Absence de feedback RH laissant un vide dans l'évaluation qualitative du candidat"
+        ],
+        "rang": 2
+      }
+    },
+    "Stanislas Mandza": {
+      "prenom": "Stanislas",
+      "nom": "Mandza",
+      "conformite": {
+        "prenom": "Stanislas",
+        "nom": "MANDZA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MANDZA",
+        "prenom": "Stanislas",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Metier": 0.39,
+          "Talent": 0.37,
+          "Paradigme": 0.48
+        },
+        "Score_moyen": 41.33,
+        "niveau": "Le candidat présente un score moyen en dessous du seuil critique, indiquant une inadéquation avec les exigences de l'entreprise. Sa compréhension des enjeux de la SEEG et des défis liés à la transformation est insuffisante.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen indiqué est en dessous du seuil défavorable de 43.5, soulignant un manque d'alignement avec la vision de l'entreprise.",
+        "points_forts": [
+          "Une expérience dans la gestion d'infrastructures électriques.",
+          "Une connaissance des enjeux liés à l'approvisionnement énergétique.",
+          "Une capacité à travailler au sein d'équipes techniques."
+        ],
+        "points_a_travailler": [
+          "Renforcer la compréhension des enjeux stratégiques liés à la gouvernance et à la transparence.",
+          "Améliorer les compétences en gestion de projets d'investissement et de modernisation.",
+          "Développer des compétences en gestion des ressources humaines et en motivation des équipes."
+        ],
+        "rang": 7
+      },
+      "completude": {
+        "nom": "MANDZA",
+        "prenom": "Stanislas",
+        "poste": "Chef de Département Electricité",
+        "score": 40.2,
+        "resume_experience": "28 années d'expérience en électricité, principalement au sein de la SEEG",
+        "verdict": "favorable",
+        "points_forts": [
+          "Solide expérience en gestion d'équipes techniques et stratégiques",
+          "Capacité avérée à améliorer la continuité de service et réduire les délestages",
+          "Expertise en gestion budgétaire et planification des investissements"
+        ],
+        "points_a_travailler": [
+          "Optimisation des délais de réalisation des projets",
+          "Modernisation des procédures pour accroître l'efficacité",
+          "Meilleure gestion de la maintenance préventive"
+        ],
+        "rang": 1
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 23.37,
+        "verdict": "défavorable",
+        "resume": "Le candidat Stanislas Mandza présente un profil qui, malgré une excellente conformité documentaire, semble manquer d'adéquation par rapport aux exigences stratégiques et opérationnelles du poste. L'absence de feedback RH positif et un score global pondéré défavorable indiquent des préoccupations significatives concernant sa capacité à s'aligner sur la vision transformatrice de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Alignement sur les objectifs stratégiques de l'entreprise",
+          "Réception de feedback positif des RH"
+        ],
+        "rang": 3
+      }
+    },
+    "Arna Ndoutoumou Minto'O": {
+      "prenom": "Arna",
+      "nom": "Ndoutoumou Minto'O",
+      "conformite": {
+        "prenom": "Arna",
+        "nom": "NDOUTOUMOU MINTO'O",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "NDOUTOUMOU MINTO'O",
+        "prenom": "Arna",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Métier": 0.4,
+          "Talent": 0.4,
+          "Paradigme": 0.48
+        },
+        "Score_moyen": 42.67,
+        "niveau": "Le score moyen du candidat est inférieur à 43.5, ce qui indique un alignement défavorable avec la vision de l'entreprise. Sa performance actuelle dans les domaines de compétence et de paradigme ne répond pas aux exigences cruciales de transformation de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen indique une inadéquation du candidat avec les attentes stratégiques de la SEEG pour 2025-2035.",
+        "points_forts": [
+          "Compréhension des enjeux du secteur électrique lié à la modernisation des infrastructures.",
+          "Capacité à travailler sous pression et à gérer des situations de crise.",
+          "Connaissance des pratiques de gouvernance et de conformité, essentielles dans le cadre de réduction des tensions avec l'État."
+        ],
+        "points_a_travailler": [
+          "Renforcer ses compétences techniques et opérationnelles dans le domaine électrique.",
+          "Améliorer ses compétences en management de projets pour aligner les équipes avec les objectifs stratégiques.",
+          "Développer une meilleure compréhension des exigences de transparence et de responsabilité au sein des entités publiques."
+        ],
+        "rang": 5
+      },
+      "completude": {
+        "nom": "NDOUTOUMOU MINTO'O",
+        "prenom": "Arna",
+        "poste": "Chef de Département Electricité",
+        "score": 38.4,
+        "resume_experience": "19 ans d'expérience, spécialisé dans l'exploitation des réseaux électriques et le management stratégique",
+        "verdict": "favorable",
+        "points_forts": [
+          "Grande expérience en gestion et pilotage d'équipes dans le secteur énergétique",
+          "Compétences en gestion de projets et management stratégique",
+          "Expertise en amélioration continue et pilotage de la performance opérationnelle"
+        ],
+        "points_a_travailler": [
+          "Renforcer la communication avec le Ministère de tutelle pour assurer un alignement stratégique",
+          "Intégration des nouvelles technologies pour réduire l'énergie non distribuée",
+          "Approfondir les compétences en Anglais pour faciliter les relations internationales"
+        ],
+        "rang": 3
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 23.35,
+        "verdict": "défavorable",
+        "resume": "Arna Ndoutoumou Minto'O présente un profil qui ne répond pas aux attentes du poste de Chef de Département Électricité, notamment en raison de l'absence de feedback RH. Un score global pondéré défavorable met en évidence des lacunes dans la correspondance entre son profil et les exigences du poste, ainsi que dans l'alignement avec la vision stratégique de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire impeccable",
+          "Bonne connaissance théorique du secteur"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible complétude par rapport à l'offre"
+        ],
+        "rang": 4
+      }
+    },
+    "Wivine Mengue": {
+      "prenom": "Wivine",
+      "nom": "Mengue",
+      "conformite": {
+        "prenom": "Wivine",
+        "nom": "MENGUE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MENGUE",
+        "prenom": "Wivine",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Metier": 0.43,
+          "Talent": 0.4,
+          "Paradigme": 0.5
+        },
+        "Score_moyen": 44.33,
+        "niveau": "Le score moyen de la candidate indique une adéquation partielle avec les exigences du poste visé. Elle semble avoir des compétences métiers basiques, mais nécessite un développement significatif pour répondre aux attentes élevées de la SEEG dans le cadre de sa vision 2025-2035.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 44.33 est strictement inférieur au seuil de 43.5, indiquant un manque d'adéquation avec la vision transformative recherchée par l'entreprise.",
+        "points_forts": [
+          "Connaissance des infrastructures électriques et des défis liés à leur gestion.",
+          "Capacité à comprendre l’importance de la formation et de l'implication des employés.",
+          "Ouverture à l’intégration de technologies innovantes pour améliorer la performance."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques et managériales en gestion d'équipe.",
+          "Améliorer la compréhension des enjeux financiers pour assurer la durabilité de l'entreprise.",
+          "Développer une approche proactive envers les nouvelles technologies pour une modernisation efficace des opérations."
+        ],
+        "rang": 3
+      },
+      "completude": {
+        "nom": "MENGUE",
+        "prenom": "Wivine",
+        "poste": "Chef de Département Electricité",
+        "score": 34.7,
+        "resume_experience": "Plus de 13 ans d'expérience dans la production, transport et distribution de l'électricité, avec une spécialité en efficacité énergétique et planification stratégique.",
+        "verdict": "défavorable",
+        "raison": "Le score de 34.7 est légèrement en dessous du seuil moyen, ce qui indique que les compétences et expériences actuelles pourraient ne pas totalement correspondre aux exigences du poste visé.",
+        "points_forts": [
+          "Grande expérience en planification stratégique et opérationnelle.",
+          "Compétences managériales solides.",
+          "Expertise technique en ingénierie énergétique."
+        ],
+        "points_a_travailler": [
+          "Approfondir les compétences en gestion de budget pour un département complet.",
+          "Renforcer les compétences en gestion de risques et mise en place de KPI.",
+          "Amélioration continue en leadership pour mieux coordonner les différentes fonctions support."
+        ],
+        "rang": 6
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 23.02,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente un profil qui, malgré une conformité documentaire parfaite, fait face à un manque d'adéquation avec les besoins stratégiques de la SEEG. L'absence de feedback RH positif suggère que le candidat pourrait ne pas être aligné sur les exigences ou la vision de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire parfaite",
+          "Expérience potentielle dans le secteur électrique",
+          "Connaissance des infrastructures"
+        ],
+        "points_a_ameliorer": [
+          "Manque de retour positif de la part des RH",
+          "Faible adéquation avec les besoins stratégiques de l'entreprise"
+        ],
+        "rang": 5
+      }
+    },
+    "Guy-Noël Ondo Ekomy": {
+      "prenom": "Guy-Noël",
+      "nom": "Ondo Ekomy",
+      "conformite": {
+        "prenom": "Guy-Noël",
+        "nom": " ONDO EKOMY",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "ONDO EKOMY",
+        "prenom": "Guy-Noël",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Metier": 0.41,
+          "Talent": 0.39,
+          "Paradigme": 0.47
+        },
+        "Score_moyen": 42.33,
+        "niveau": "Le candidat présente des scores en-dessous de la moyenne requise, ce qui pourrait indiquer une inadéquation avec la vision de l'entreprise. Son faible score suggère un besoin significatif d'amélioration dans ses compétences métier et talent.",
+        "verdict": "défavorables",
+        "raison_du_verdict": "Le score moyen de 42.33 est inférieur au seuil de 43.5, ce qui le rend non compétitif par rapport aux exigences de l'entreprise.",
+        "points_forts": [
+          "Connaissance des infrastructures électriques et de leur gestion.",
+          "Capacité à identifier les problèmes liés aux ressources et à la gouvernance.",
+          "Compréhension des enjeux de transition énergétique et d'innovation."
+        ],
+        "points_a_travailler": [
+          "Améliorer ses compétences techniques en gestion de projet dans le secteur de l'électricité.",
+          "Développer des compétences en management d'équipe et en leadership.",
+          "Renforcer ses capacités en communication pour une meilleure interaction avec les parties prenantes."
+        ],
+        "rang": 6
+      },
+      "completude": {
+        "nom": "ONDO EKOMY",
+        "prenom": "Guy-Noël",
+        "poste": "Chef de Département Electricité",
+        "score": 31.9,
+        "resume_experience": "24 ans en ingénierie électrique et gestion de projets électriques",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Expérience en gestion de projets complexes sur tout le territoire gabonais",
+          "Compétences en élaboration et suivi de budgets d'investissement",
+          "Bonne coordination des équipes et formation des jeunes ingénieurs"
+        ],
+        "points_a_travailler": [
+          "Amélioration de la gestion des ressources humaines pour la répartition optimale",
+          "Renforcement des compétences en analyse des risques",
+          "Développement des indicateurs de performance spécifiques pour améliorer la performance des directions supervisées"
+        ],
+        "rang": 8
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 21.96,
+        "verdict": "défavorable",
+        "resume": "Malgré une conformité documentaire exemplaire, le profil de Guy-Noël Ondo Ekomy est défavorable en raison d'un score de feedback RH inexistant, indiquant un manque de validation positive de son parcours. Cela pose question quant à sa capacité à répondre aux défis spécifiques de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire"
+        ],
+        "points_a_ameliorer": [
+          "Score de feedback RH inexistant",
+          "Faible complétude du CV et de la lettre de motivation par rapport à l'offre"
+        ],
+        "rang": 6
+      }
+    },
+    "Wenceslas Koumba": {
+      "prenom": "Wenceslas",
+      "nom": "Koumba",
+      "conformite": {
+        "prenom": "Wenceslas",
+        "nom": " KOUMBA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "KOUMBA",
+        "prenom": "Wenceslas",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Metier": 0.38,
+          "Talent": 0.36,
+          "Paradigme": 0.4
+        },
+        "Score_moyen": 38.0,
+        "niveau": "Le score moyen de 38.0 indique une inadéquation significative avec les attentes de la vision de l'entreprise. Le candidat devra améliorer ses compétences et sa compréhension des enjeux du secteur pour pouvoir contribuer efficacement à la transformation souhaitée de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen étant strictement inférieur à 43.5 reflète une préparation insuffisante pour le poste visé.",
+        "points_forts": [
+          "Connaissance des enjeux de modernisation des infrastructures",
+          "Capacité d'analyser les défis organisationnels",
+          "Compréhension générale des défis du secteur énergétique"
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques spécifiques à la gestion des réseaux d'électricité",
+          "Développer des compétences en gouvernance et en gestion des ressources",
+          "Améliorer la capacité à travailler avec des partenaires externes pour des projets d'envergure"
+        ],
+        "rang": 9
+      },
+      "completude": {
+        "nom": "KOUMBA",
+        "prenom": "Wenceslas",
+        "poste": "Chef de Département Electricité",
+        "score": 35.5,
+        "resume_experience": "Environ 14 ans d'expérience en ingénierie électrique et gestion des centrales hydroélectriques",
+        "verdict": "moyen",
+        "points_forts": [
+          "Solide expérience en gestion de centrales hydroélectriques",
+          "Compétences en conception, planification et supervision des systèmes électriques complexes",
+          "Capacité à former et à diriger des équipes techniques"
+        ],
+        "points_a_travailler": [
+          "Finaliser la soutenance du diplôme de spécialisation en planification des réseaux électriques",
+          "Améliorer les compétences de présentation de stratégie globale en lien avec le Plan Directeur national",
+          "Développer une expertise plus approfondie dans la cartographie des risques et leur gestion"
+        ],
+        "rang": 5
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 21.6,
+        "verdict": "défavorable",
+        "resume": "Wenceslas Koumba présente un profil documentaire complet avec un score de conformité élevé, mais les scores de MTP et de complétude indiquent un ajustement limité face aux exigences du poste. L'absence de feedback RH positif et un score global faible soulignent des lacunes notables pour répondre aux défis de transformation de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Faible score de MTP",
+          "Absence de feedback RH positif"
+        ],
+        "rang": 7
+      }
+    },
+    "Ida Totiga": {
+      "prenom": "Ida",
+      "nom": "Totiga",
+      "conformite": {
+        "prenom": "IDA",
+        "nom": "TOTIGA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "TOTIGA",
+        "prenom": "IDA",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Métier": 0.44,
+          "Talent": 0.42,
+          "Paradigme": 0.51
+        },
+        "Score_moyen": 45.67,
+        "niveau": "Le score moyen de ce candidat est classé comme moyen, ce qui indique qu'il possède certaines compétences pertinentes pour le poste visé. Cependant, ses scores par catégorie montrent des domaines à solidifier pour atteindre les exigences élevées de la SEEG.",
+        "verdict": "moyen",
+        "raison_du_verdict": "Le score moyen est au-dessus de 43.5, mais en dessous de 60, ce qui indique qu'il y a un potentiel, mais aussi des améliorations nécessaires.",
+        "points_forts": [
+          "Bonne compréhension des paradigmes organisationnels et de la gouvernance dans le secteur énergétique.",
+          "Capacité à intégrer des solutions innovantes dans la modernisation des infrastructures.",
+          "Sensibilité aux enjeux environnementaux et de transition énergétique."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques spécifiques au métier, notamment en matière d'optimisation des processus techniques.",
+          "Améliorer les talents de leadership pour mieux encadrer et motiver une équipe dans un environnement de changement.",
+          "Développer des compétences en gestion de projet pour réaliser les plans d'investissements ambitieux."
+        ],
+        "rang": 1
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 16.42,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Ida Totiga présente des lacunes significatives en matière de retour d'expérience pertinent et de motivation pour le poste. Le manque de feedback RH et de complétude du dossier de candidature soulève des préoccupations quant à son adéquation à la vision transformatrice de la SEEG pour 2025-2035.",
+        "points_forts": [
+          "Conformité documentaire au top"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Inadéquation des expériences passées avec les attentes du poste"
+        ],
+        "rang": 8
+      }
+    },
+    "Pépin Jonas Ozela Nguema": {
+      "prenom": "Pépin",
+      "nom": "Jonas Ozela Nguema",
+      "conformite": {
+        "prenom": "Pépin",
+        "nom": "Jonas OZELA NGUEMA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "OZELA NGUEMA",
+        "prenom": "Pépin Jonas",
+        "poste": "Chef de Département Electricité",
+        "score": 33.7,
+        "resume_experience": "22 années d'expérience en électromécanique et électricité",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Expérience solide en gestion et maintenance des systèmes électriques",
+          "Compétences en management et leadership d'équipes techniques",
+          "Expertise avérée dans le suivi et la gestion des projets électriques"
+        ],
+        "points_a_travailler": [
+          "Amélioration des compétences en anglais pour une communication internationale",
+          "Développement des compétences en définition et suivi des indicateurs de performance spécifiques aux attentes du poste",
+          "Renforcement des compétences en interface technique avec les instances gouvernementales"
+        ],
+        "rang": 7
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 11.74,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente une conformité documentaire impeccable, mais la complétude par rapport à l'offre est limitée. Sans un score de feedback RH, il est difficile de déterminer l'adéquation du candidat avec les exigences et la vision transformationnelle de l'entreprise.",
+        "points_forts": [
+          "Conformité parfaite dans la documentation",
+          "Capacité potentielle pour s'aligner sur la conformité documentaire"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible complétude par rapport aux exigences du poste"
+        ],
+        "rang": 9
+      }
+    },
+    "Pépin Ozela Nguema": {
+      "prenom": "Pépin",
+      "nom": "Ozela Nguema",
+      "conformite": {},
+      "mtp": {
+        "nom": "OZELA NGUEMA",
+        "prenom": "Pépin",
+        "poste": "Chef de Département Electricité",
+        "scores": {
+          "Metier": 0.39,
+          "Talent": 0.38,
+          "Paradigme": 0.46
+        },
+        "Score_moyen": 41.0,
+        "niveau": "Le candidat montre une capacité limitée à comprendre les enjeux techniques et humains liés à la fonction. Il semble avoir besoin d'une meilleure alignement avec les attentes et défis de l'entreprise.",
+        "verdict": "défavorables",
+        "raison_verdict": "Le score moyen étant de 41.0, cela indique une inadéquation avec les exigences de la vision de l'entreprise.",
+        "points_forts": [
+          "Connaissance des enjeux techniques fondamentaux dans le secteur de l'électricité.",
+          "Compréhension des défis liés à l'hydraulique et aux infrastructures dans le contexte gabonais.",
+          "Capacité potentielle à travailler sur des solutions innovantes."
+        ],
+        "points_a_travailler": [
+          "Améliorer ses compétences en gestion de projet pour des infrastructures modernes.",
+          "Renforcer ses capacités en leadership et en management d'équipe.",
+          "Acquérir une compréhension plus approfondie des enjeux économiques et de gouvernance liés à son futur poste."
+        ],
+        "rang": 8
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.25,
+        "verdict": "défavorable",
+        "resume": "En dépit de ses qualifications probables, le candidat présente des lacunes significatives en termes de documentation et de correspondance avec le poste offert, ce qui entraîne une évaluation globale défavorable. Le manque de feedback RH positif et de conformité documentaire suggère une inadéquation avec les besoins stratégiques actuels de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Pertinence par rapport à l'offre",
+          "Feedback RH positif"
+        ],
+        "rang": 10
+      }
+    },
+    "Ida Prisca Totiga": {
+      "prenom": "Ida",
+      "nom": "Prisca Totiga",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "TOTIGA",
+        "prenom": "IDA PRISCA",
+        "poste": "Chef de Département Electricité",
+        "score": 30.2,
+        "resume_experience": "18 années d'expérience, principalement dans la gestion des réseaux électriques et la maintenance",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Expérience significative dans les réseaux HTA et maintenance",
+          "Compétences en gestion de projets électriques",
+          "Capacité à analyser les performances des réseaux"
+        ],
+        "points_a_travailler": [
+          "Renforcement des compétences en coordination et répartition des ressources humaines",
+          "Amélioration des compétences en élaboration de tableaux de bord et indicateurs de performance",
+          "Développement des compétences en interface technique pour des projets gouvernementaux"
+        ],
+        "rang": 9
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 6.04,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Ida Prisca Totiga ne répond pas aux attentes du poste de Chef de Département Électricité. Le score global pondéré est défavorable et aucun feedback RH détaillé n'est disponible pour identifier des points précis d'amélioration.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Absence de feedback RH détaillé",
+          "Conformité faible entre le profil, la vision de l'entreprise et les attentes du poste"
+        ],
+        "rang": 11
+      }
+    }
+  }
+}

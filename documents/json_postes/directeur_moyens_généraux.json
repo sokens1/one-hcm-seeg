@@ -1,0 +1,1629 @@
+{
+  "Directeur Moyens Généraux": {
+    "Salomon Nguema Emane": {
+      "prenom": "Salomon",
+      "nom": "Nguema Emane",
+      "conformite": {
+        "prenom": "Salomon",
+        "nom": "NGUEMA EMANE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "NGUEMA EMANE",
+        "prenom": "Salomon",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.4,
+          "Talent": 0.37,
+          "Paradigme": 0.43
+        },
+        "Score_moyen": 40.0,
+        "niveau": "Le candidat présente un score moyen défavorable, ce qui indique une inadéquation avec la vision de l'entreprise. Son profil semble ne pas répondre aux attentes élevées demandées par la SEEG pour transformer ses pratiques et ses résultats.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 40.0 est bien en dessous du seuil requis pour démontrer une adéquation avec la vision de la SEEG.",
+        "points_forts": [
+          "Capacité à identifier les problèmes structurels dans l'organisation",
+          "Motivation pour la réhabilitation et la modernisation des infrastructures",
+          "Connaissance des enjeux de gouvernance et de transparence"
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques et managériales systématiquement",
+          "Améliorer la gestion des ressources humaines conformes aux pratiques de l'industrie",
+          "Développer une vision stratégique claire et alignée avec les besoins de la SEEG"
+        ],
+        "rang": 15
+      },
+      "completude": {
+        "nom": "NGUEMA EMANE",
+        "prenom": "Salomon",
+        "poste": "Directeur Moyens Généraux",
+        "score": 40.9,
+        "resume_experience": "15 ans d'expérience en achats et gestion clientèle avec une spécialité en management de la supply chain.",
+        "verdict": "favorable",
+        "points_forts": [
+          "Bonne maîtrise du pilotage stratégique et budgétaire",
+          "Expérience significative en management d'équipes et de projets",
+          "Compétence en négociation et gestion des achats"
+        ],
+        "points_a_travailler": [
+          "Expérience directe en facility management à étoffer",
+          "Approfondissement des connaissances en sécurité et sûreté des bâtiments",
+          "Renforcement de l'expérience en gestion d'environnements de travail"
+        ],
+        "rang": 4
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 23.18,
+        "verdict": "défavorable",
+        "resume": "Le candidat Salomon Nguema Emane présente un score global défavorable pour le poste de Directeur Moyens Généraux. Son profil ne semble pas aligné avec les exigences transformatrices et stratégiques de l'entreprise, soulignées par un feedback RH absent. Ceci remet en question sa capacité à contribuer efficacement aux objectifs ambitieux de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Absence totale de feedback RH indiquant un manque de recommandations positives",
+          "Faible score MTP et complétude par rapport aux exigences du poste"
+        ],
+        "rang": 1
+      }
+    },
+    "Nathalie Mbouroukounda": {
+      "prenom": "Nathalie",
+      "nom": "Mbouroukounda",
+      "conformite": {
+        "prenom": "NATHALIE",
+        "nom": "MBOUROUKOUNDA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MBOUROUKOUNDA",
+        "prenom": "NATHALIE",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.41,
+          "Talent": 0.38,
+          "Paradigme": 0.44
+        },
+        "Score_moyen": 41.0,
+        "niveau": "Le score moyen du candidat est en dessous du seuil défavorable, indiquant une inadéquation avec la vision de l'entreprise. Cette situation requiert un examen approfondi des compétences et de l'adéquation stratégique du candidat à long terme.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen étant strictement inférieur à 43.5 indique que le candidat ne correspond pas aux attentes minimales de l'entreprise.",
+        "points_forts": [
+          "Possède une certaine compréhension des enjeux organisationnels.",
+          "Affiche une volonté d'apprendre et de s'améliorer.",
+          "Montre un intérêt pour les thèmes de transformation et de modernisation."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques spécifiques liées au secteur de l'eau et de l'électricité.",
+          "Développer des capacités managériales adaptées à un environnement en mutation.",
+          "Améliorer l'adhésion aux pratiques et procédures internes de gestion."
+        ],
+        "rang": 9
+      },
+      "completude": {
+        "nom": "MBOUROUKOUNDA",
+        "prenom": "Nathalie",
+        "poste": "Directeur Moyens Généraux",
+        "score": 38.5,
+        "resume_experience": "23 ans en finance, gestion et contrôle de gestion",
+        "verdict": "moyen. Nathalie a une solide expérience en gestion financière mais manque d'expérience directe en gestion des moyens généraux.",
+        "points_forts": [
+          "Compétences éprouvées en gestion budgétaire et contrôle de gestion",
+          "Solide expérience en management d'équipe",
+          "Bonne compréhension des processus financiers et optimisation des coûts"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée en facility management et maintenance",
+          "Manque d'expérience concrète en sécurité et sûreté",
+          "Connaissances limitées en gestion logistique et déplacements internes/externe"
+        ],
+        "rang": 6
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 22.95,
+        "verdict": "défavorable",
+        "resume": "Malgré une conformité documentaire parfaite, le profil de Nathalie Mbouroukounda ne correspond pas pleinement aux attentes stratégiques de l'entreprise, notamment en raison d'un feedback RH inexistant. Le manque d'adéquation entre son expérience documentée et les exigences de l'offre est notable.",
+        "points_forts": [
+          "Conformité documentaire élevée",
+          "Expérience potentielle dans des rôles de gestion"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Inadéquation entre le CV+LM et les exigences de l'offre"
+        ],
+        "rang": 2
+      }
+    },
+    "François Mambangui": {
+      "prenom": "François",
+      "nom": "Mambangui",
+      "conformite": {
+        "prenom": "François",
+        "nom": "MAMBANGUI",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MAMBANGUI",
+        "prenom": "François",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.45,
+          "Talent": 0.34,
+          "Paradigme": 0.39
+        },
+        "Score_moyen": 39.33,
+        "niveau": "Le score moyen du candidat indique une faible adhérence à la vision de l'entreprise. Un tel score suggère des lacunes significatives dans ses compétences et ses valeurs par rapport aux attentes de la SEEG.",
+        "verdict": "défavorable",
+        "raison": "Le score moyen est en dessous du seuil requis, ce qui montre un manque d'alignement avec les objectifs stratégiques de la SEEG.",
+        "points_forts": [
+          "Compétences techniques dans le domaine de l'eau et de l'électricité",
+          "Capacité à identifier et analyser des problèmes complexes",
+          "Volonté d'optimiser les ressources disponibles"
+        ],
+        "points_a_travailler": [
+          "Améliorer la gestion des ressources humaines selon les normes de l'industrie",
+          "Renforcer les compétences en gouvernance et transparence",
+          "Développer des stratégies pour la modernisation des infrastructures"
+        ],
+        "rang": 17
+      },
+      "completude": {
+        "nom": "MAMBANGUI",
+        "prenom": "François",
+        "poste": "Directeur Moyens Généraux",
+        "score": 37.4,
+        "resume_experience": "26 ans d'expérience principalement en gestion des achats, des stocks, du management d'équipe et de la supervision logistique",
+        "verdict": "moyen",
+        "points_forts": [
+          "Expérience significative en gestion des achats et des stocks",
+          "Compétences en management d'équipes importantes",
+          "Maîtrise des outils de gestion et optimisations (Oracle Applications)"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée spécifiquement en facility management",
+          "Moins d'expérience directe en gestion de la sécurité et hygiène environnement (HSE)",
+          "Peu d'indications sur la gestion de projets d'aménagement d'espaces de travail"
+        ],
+        "rang": 7
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 22.31,
+        "verdict": "défavorable",
+        "resume": "Le profil de François Mambangui ne répond pas aux attentes pour le poste de Directeur Moyens Généraux à la SEEG, comme en témoigne le score de feedback RH nul et un score global défavorable. Malgré une conformité documentaire parfaite, sa candidature présente de grandes lacunes par rapport à l'offre et aux objectifs stratégiques de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Feedback RH inexistant, ce qui soulève des questions sur l'adéquation culturelle et professionnelle",
+          "Faible complétude de candidature par rapport à l'offre, indiquant un manque de correspondance avec les attentes du poste"
+        ],
+        "rang": 3
+      }
+    },
+    "Davy-Romaric Manguendza": {
+      "prenom": "Davy-Romaric",
+      "nom": "Manguendza",
+      "conformite": {
+        "prenom": "Davy-Romaric",
+        "nom": "MANGUENDZA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "MANGUENDZA",
+        "prenom": "Davy-Romaric",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.36,
+          "Talent": 0.35,
+          "Paradigme": 0.36
+        },
+        "Score_moyen": 35.67,
+        "niveau": "Le candidat présente des scores très en dessous des attentes pour le poste visé. Sa capacité à s'aligner avec la vision de l'entreprise semble préoccupante et nécessite un examen approfondi.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 35.67 est bien en dessous du seuil de 43.5, suggérant un manque d'adéquation avec les besoins de la SEEG.",
+        "points_forts": [
+          "Compréhension des défis organisationnels et besoin de réorganisation.",
+          "Ouverture à l'amélioration des infrastructures et intégration des nouvelles technologies.",
+          "Capacité à identifier des solutions aux problèmes de gouvernance."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences dans la gestion stratégique des ressources.",
+          "Améliorer les qualifications techniques dans le domaine de l'eau et de l'électricité.",
+          "Développer une vision claire et inspirante pour la transformation de la SEEG."
+        ],
+        "rang": 20
+      },
+      "completude": {
+        "nom": "MANGUENDZA",
+        "prenom": "Davy-Romaric",
+        "poste": "Directeur Moyens Généraux",
+        "score": 41.1,
+        "resume_experience": "20 ans, ingénierie énergétique, moyens généraux, achats, gestion clientèle, QHSE",
+        "verdict": "favorable",
+        "points_forts": [
+          "Solide expérience en gestion des moyens généraux et de l'environnement de travail",
+          "Excellente capacité de management et de gestion de projets",
+          "Compétences établies en optimisation des coûts et gestion budgétaire"
+        ],
+        "points_a_travailler": [
+          "Approfondissement des compétences spécifiques en gestion de la flotte automobile",
+          "Adaptation aux nouvelles technologies pour la gestion des systèmes de sécurité",
+          "Renforcement des aptitudes en gestion de la communication interne"
+        ],
+        "rang": 3
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 22.14,
+        "verdict": "défavorable",
+        "resume": "Le profil de Davy-Romaric Manguendza ne répond pas aux attentes pour le poste de Directeur Moyens Généraux chez SEEG, principalement en raison d'un feedback RH inexistant et d'une faible complétude entre ses documents de candidature et les exigences de l'offre. Le score global pondéré est défavorable, ce qui suggère que le candidat pourrait avoir des lacunes importantes qui ne permettent pas d'aligner ses compétences avec la vision stratégique de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible concordance entre le CV/lettre de motivation et les exigences du poste"
+        ],
+        "rang": 4
+      }
+    },
+    "Olivia Duboze": {
+      "prenom": "Olivia",
+      "nom": "Duboze",
+      "conformite": {
+        "prenom": "Olivia",
+        "nom": "Duboze",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "Duboze",
+        "prenom": "Olivia",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.47,
+          "Talent": 0.4,
+          "Paradigme": 0.39
+        },
+        "Score_moyen": 42.0,
+        "niveau": "Le score moyen de 42.0 indique une appartenance défavorable à la vision de l'entreprise. Le candidat présente des lacunes significatives par rapport aux attentes stratégiques de la SEEG.",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le score moyen est largement en dessous du seuil requis, ce qui montre un risque élevé de non-adéquation avec les exigences du poste.",
+        "points_forts": [
+          "Compétences techniques en gestion de projets, qui peuvent être bénéfiques pour la réhabilitation des infrastructures.",
+          "Capacité à analyser et identifier les problèmes organisationnels, ce qui est essentiel pour améliorer la gouvernance.",
+          "Expérience potentielle dans des environnements complexes nécessitant des solutions innovantes."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences managériales et de leadership pour diriger des équipes efficacement.",
+          "Renforcer les connaissances en gestion financière pour gérer les investissements et réductions de coûts.",
+          "Développer une compréhension approfondie des normes et réglementations industrielles pour garantir la conformité."
+        ],
+        "rang": 4
+      },
+      "completude": {
+        "nom": "Duboze",
+        "prenom": "Olivia",
+        "poste": "Directeur Moyens Généraux",
+        "score": 31.3,
+        "resume_experience": "15 années d'expérience en comptabilité, audit, contrôle interne et trésorerie",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Solide expérience en contrôle des flux financiers et optimisation des ressources",
+          "Compétences en gestion des équipes et reporting",
+          "Connaissance approfondie des procédures internes et capacités d'audit"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée en facility management et gestion des services généraux",
+          "Peu de références dans la gestion des déménagements et aménagements des espaces",
+          "Expertise non démontrée dans la gestion de la flotte automobile et des achats hors production"
+        ],
+        "rang": 18
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 21.76,
+        "verdict": "défavorable",
+        "resume": "Olivia Duboze présente un profil avec une conformité documentaire parfaite, mais son score MTP et la complétude de sa candidature sont faibles. Surtout, l'absence totale de feedback RH souligne un manque de validation qualitative essentielle par les ressources humaines.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Score MTP bas",
+          "Faible complétude de la candidature",
+          "Absence de feedback RH"
+        ],
+        "rang": 5
+      }
+    },
+    "René M'Benguet Malat": {
+      "prenom": "René",
+      "nom": "M'Benguet Malat",
+      "conformite": {
+        "prenom": "René",
+        "nom": "M'BENGUET MALAT",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "M'BENGUET MALAT",
+        "prenom": "René",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.44,
+          "Talent": 0.34,
+          "Paradigme": 0.4
+        },
+        "Score_moyen": 39.33,
+        "niveau": "Le candidat présente des scores en dessous des attentes nécessaires pour aligner sa vision avec celle de l'entreprise. Son score moyen indique qu'il a des défis importants à relever pour s'integrer dans la vision de transformation de la SEEG.",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le score moyen de 39.33 est en dessous de la limite défavorable de 43.5, indiquant un manque d'alignement avec la vision de l'entreprise.",
+        "points_forts": [
+          "Niveau de connaissance technique acceptable dans le secteur.",
+          "Capacité à travailler dans un environnement de contraintes.",
+          "Engagement à contribuer au service public."
+        ],
+        "points_a_travailler": [
+          "Acquérir des compétences en gestion stratégique pour aligner les objectifs avec ceux de l'entreprise.",
+          "Développer des talents en leadership pour améliorer la dynamique d'équipe.",
+          "Renforcer des capacités en gouvernance et en transparence pour améliorer la gestion des ressources."
+        ],
+        "rang": 18
+      },
+      "completude": {
+        "nom": "M'BENGUET MALAT",
+        "prenom": "René",
+        "poste": "Directeur Moyens Généraux",
+        "score": 33.6,
+        "resume_experience": {
+          "nombre_annees": 23,
+          "specialite": "Gestion, Finances et Approvisionnement"
+        },
+        "verdict": "défavorable",
+        "raison": "Le score de similarité est inférieur au seuil favorable, indiquant un manque de correspondance significatif entre l'expérience et le poste visé.",
+        "points_forts": [
+          "Expérience en gestion des achats et stocks",
+          "Compétence en gestion budgétaire",
+          "Expérience en contrôle de gestion"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée en gestion directe des moyens généraux",
+          "Développer des compétences spécifiques en facility management",
+          "Améliorer les compétences en gestion de sécurité et sûreté"
+        ],
+        "rang": 16
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 21.55,
+        "verdict": "défavorable",
+        "resume": "René M'Benguet Malat, bien que conforme d'un point de vue documentaire, présente un profil défavorable pour le poste de Directeur Moyens Généraux, principalement en raison d'un feedback RH inexistant et d'un manque de correspondance global avec l'offre.",
+        "points_forts": [
+          "Conformité documentaire impeccable",
+          "Aucun problème de non-conformité détecté"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible correspondance CV+LM par rapport à l'offre"
+        ],
+        "rang": 6
+      }
+    },
+    "Floric Youla": {
+      "prenom": "Floric",
+      "nom": "Youla",
+      "conformite": {
+        "prenom": "Floric",
+        "nom": "YOULA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "YOULA",
+        "prenom": "Floric",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.43,
+          "Talent": 0.37,
+          "Paradigme": 0.43
+        },
+        "Score_moyen": 41.0,
+        "niveau": "Le candidat présente des scores globalement faibles qui témoignent d'une insatisfaction sur ses compétences et aptitudes. Sa capacité à intégrer la vision stratégique de l'entreprise semble limitée face aux défis à relever.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 41.0 est inférieur à la norme minimale requise.",
+        "points_forts": [
+          "Connaissance des enjeux liés à la gestion des infrastructures.",
+          "Capacité à identifier les problématiques organisationnelles.",
+          "Engagement envers améliorer la qualité des services proposés."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences en gestion des ressources et conformité.",
+          "Développer des talents en leadership et management d'équipe.",
+          "Améliorer la compréhension des pratiques du secteur énergétique et hydroélectrique."
+        ],
+        "rang": 8
+      },
+      "completude": {
+        "nom": "YOULA",
+        "prenom": "Floric",
+        "poste": "Directeur Moyens Généraux",
+        "score": 30.1,
+        "resume_experience": "24 années dans la gestion de la chaîne d'approvisionnement, Achats, Logistique et Management.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score de 30.100 est inférieur au seuil de 35, et l'expérience du candidat est très orientée vers la gestion logistique et des achats, qui ne correspond pas directement au poste de Directeur des Moyens Généraux.",
+        "points_forts": [
+          "Expérience étendue dans la gestion des achats et la chaîne d'approvisionnement",
+          "Compétences en management d'équipes multiculturelles",
+          "Capacité à gérer de gros budgets"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée en Facility Management",
+          "Manque de démonstration de compétences en gestion de l’environnement de travail et des bâtiments",
+          "Pas de mention de gestion directe des services généraux"
+        ],
+        "rang": 19
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 21.27,
+        "verdict": "défavorable",
+        "resume": "Le candidat ne semble pas répondre aux attentes du poste en raison de scores faibles en MTP et complétude, et surtout l'absence de feedback RH positif, ce qui est critique vu les défis de transformation de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible complétude du CV et de la lettre de motivation par rapport à l'offre"
+        ],
+        "rang": 7
+      }
+    },
+    "Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam": {
+      "prenom": "Augusta",
+      "nom": "Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam",
+      "conformite": {
+        "prenom": "AUGUSTA",
+        "nom": "BRITT HONORINE HERVO-AKENDENGUE ZIZA ép. ELISEE NDAM",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "BRITT HONORINE HERVO-AKENDENGUE ZIZA ép. ELISEE NDAM",
+        "prenom": "AUGUSTA",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.43,
+          "Talent": 0.37,
+          "Paradigme": 0.4
+        },
+        "Score_moyen": 40.0,
+        "niveau": "Le candidat montre des compétences limitées dans les domaines essentiels, ce qui soulève des préoccupations quant à son adéquation à la vision stratégique de l'entreprise. La faible prestation dans les catégories Metier, Talent et Paradigme suggère une nécessité urgente de développement professionnel.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est nettement inférieur à 43.5, indiquant une inadéquation avec les exigences de la vision de l'entreprise.",
+        "points_forts": [
+          "Une certaine connaissance des métiers liés à la gestion des moyens généraux.",
+          "Capacité à identifier des problématiques structurelles dans les opérations.",
+          "Connaissance des enjeux du secteur de l'énergie au Gabon."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences en gestion de projet et en leadership.",
+          "Développer des talents en communication et en gestion des ressources humaines.",
+          "Renforcer la pensée stratégique pour aligner les objectifs personnels avec ceux de l'entreprise."
+        ],
+        "rang": 14
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 15.0,
+        "verdict": "défavorable",
+        "resume": "Le score global de la candidate est très faible, notamment en raison d'un feedback RH inexistant et d'une complétude de candidature à zéro. Cela indique une forte inadéquation par rapport aux besoins et attentes du poste, ainsi qu'une possible négligence dans le suivi du processus de candidature.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Absence totale de feedback RH",
+          "Dossier de candidature incomplet"
+        ],
+        "rang": 8
+      }
+    },
+    "Aimée Ntchandi Tevenet": {
+      "prenom": "Aimée",
+      "nom": "Ntchandi Tevenet",
+      "conformite": {
+        "prenom": "Aimée",
+        "nom": "NTCHANDI TEVENET",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {
+        "nom": "NTCHANDI TEVENET",
+        "prenom": "Aimée",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.42,
+          "Talent": 0.33,
+          "Paradigme": 0.41
+        },
+        "Score_moyen": 38.67,
+        "niveau": "Le score moyen de 38.67 indique une insuffisance générale dans les compétences et l'alignement avec la vision de l'entreprise. Ce score suggère que le candidat pourrait rencontrer des défis significatifs pour s'adapter aux exigences stratégiques de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est en dessous du seuil minimal requis, indiquant un manque de compétences nécessaires pour le poste.",
+        "points_forts": [
+          "Connaissance des infrastructures et des défis énergétiques au Gabon.",
+          "Expérience potentielle dans la gestion des ressources.",
+          "Compréhension des enjeux de gouvernance et de transparence."
+        ],
+        "points_a_travailler": [
+          "Développement de compétences en gestion de projet pour mener à bien les initiatives de transformation.",
+          "Acquisition de compétences techniques avancées en ingénierie des systèmes d'énergie et d'eau.",
+          "Amélioration des compétences en leadership et en gestion d'équipe pour conduire des projets complexes."
+        ],
+        "rang": 19
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 14.67,
+        "verdict": "défavorable",
+        "resume": "Aimée Ntchandi Tevenet présente un profil dont le score global est défavorable, notamment en raison de l'absence de complétude du dossier et d'un feedback RH inexistant. Cette insuffisance de données signifient qu'il est difficile de juger la capacité du candidat à aligner ses compétences avec la vision transformative de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Complétude du dossier"
+        ],
+        "rang": 9
+      }
+    },
+    "Emilienne Debra Frederique Ndong Essono": {
+      "prenom": "Emilienne",
+      "nom": "Debra Frederique Ndong Essono",
+      "conformite": {
+        "prenom": "Emilienne",
+        "nom": "Debra Frederique  NDONG ESSONO",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "NDONG ESSONO",
+        "prenom": "Emilienne Debra Frederique",
+        "poste": "Directeur Moyens Généraux",
+        "score": 41.6,
+        "resume_experience": "13 ans en management et gestion technique au sein de la SEEG",
+        "verdict": "favorable",
+        "points_forts": [
+          "Solide expérience en management d'équipes pluridisciplinaires",
+          "Compétences éprouvées en gestion et pilotage de projets stratégiques",
+          "Expertise en planification de la maintenance et suivi budgétaire"
+        ],
+        "points_a_travailler": [
+          "Expérience spécifique en Facility Management",
+          "Connaissance approfondie des normes HSE (Hygiène, Sécurité, Environnement)",
+          "Maîtrise de la gestion des services généraux tels que déménagements internes et externes"
+        ],
+        "rang": 1
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 13.32,
+        "verdict": "défavorable",
+        "resume": "Le score global défavorable, influencé par un feedback RH inexistant, indique que le profil du candidat ne répond pas de manière suffisante aux exigences du poste, notamment en matière de contribution à la vision de transformation de l'entreprise. La complétude des documents (CV et lettre de motivation) par rapport à l'offre est faible, signalant peut-être un manque d'adéquation entre les qualifications du candidat et les attentes de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible complétude entre les documents soumis et les exigences du poste"
+        ],
+        "rang": 10
+      }
+    },
+    "Jean Vava Alain Moucke Nzoumba": {
+      "prenom": "Jean",
+      "nom": "Vava Alain Moucke Nzoumba",
+      "conformite": {
+        "prenom": "Jean",
+        "nom": "Vava Alain MOUCKE NZOUMBA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "MOUCKE NZOUMBA",
+        "prenom": "Jean Vava Alain",
+        "poste": "Directeur Moyens Généraux",
+        "score": 41.3,
+        "resume_experience": "Environ 10 ans d'expérience avec une spécialisation dans la gestion financière, optimisation des ressources et pilotage organisationnel.",
+        "verdict": "favorable",
+        "raison_verdict": "Le candidat possède une solide expérience en gestion financière, optimisation des ressources et a piloté des projets complexes, ce qui est pertinent pour le poste de Directeur Moyens Généraux.",
+        "points_forts": [
+          "Expérience en gestion financière et budgétaire",
+          "Compétence avérée en optimisation des coûts",
+          "Capacité de gestion des prestataires et services supports"
+        ],
+        "points_a_travailler": [
+          "Renforcement des compétences en gestion de la sécurité et sûreté",
+          "Approfondissement en aménagement et facility management",
+          "Amélioration du niveau d'anglais"
+        ],
+        "rang": 2
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 13.26,
+        "verdict": "défavorable",
+        "resume": "Jean Vava Alain Moucke Nzoumba présente un profil qui ne correspond pas adéquatement aux exigences stratégiques et transformationnelles de la SEEG. Son score global et l'absence de retour positif dans le feedback RH suggèrent qu'il pourrait ne pas être adapté pour accompagner la SEEG dans sa vision ambitieuse pour 2025-2035.",
+        "points_forts": [
+          "Conformité documentaire excellente à 100%, indiquant une attention aux détails et à la rigueur administrative."
+        ],
+        "points_a_ameliorer": [
+          "Inadéquation majeure entre le CV et l'offre, comme en témoigne le score de complétude de 41.3.",
+          "Absence de feedback positif de la part des RH, ce qui pourrait indiquer des faiblesses dans les compétences nécessaires au poste."
+        ],
+        "rang": 11
+      }
+    },
+    "André Derek Mbongo": {
+      "prenom": "André",
+      "nom": "Derek Mbongo",
+      "conformite": {
+        "prenom": "André",
+        "nom": "Derek MBONGO",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "MBONGO",
+        "prenom": "André Derek",
+        "poste": "Directeur Moyens Généraux",
+        "score": 39.7,
+        "resume_experience": "Plus de 12 années d'expérience dans la gestion des infrastructures et le pilotage d'équipes, principalement dans le génie civil et les services supports techniques.",
+        "verdict": "favorable",
+        "raison": "Une expérience solide en gestion des infrastructures techniques et de la maintenance, combinée à des compétences managériales et en optimisation des coûts, correspond bien aux exigences du poste de Directeur des Moyens Généraux.",
+        "points_forts": [
+          "Expérience significative en gestion des infrastructures et pilotage d'équipes.",
+          "Connaissance approfondie des normes HSE.",
+          "Compétences en gestion budgétaire et optimisation des coûts."
+        ],
+        "points_a_travailler": [
+          "Renforcer l'expérience spécifique en gestion des services aux occupants, notamment supervision de la flotte automobile et gestion des fournitures.",
+          "Développer une approche plus proactive en innovation pour le space planning et la gestion des aménagements.",
+          "Améliorer la communication interne pour une meilleure sensibilisation des collaborateurs aux services disponibles et aux pratiques optimales."
+        ],
+        "rang": 5
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 12.94,
+        "verdict": "défavorable",
+        "resume": "Le profil d'André Derek Mbongo présente des lacunes importantes par rapport aux exigences du poste, notamment en termes de complétude et de feedback RH. Le score global obtenu est faible, ce qui rend la candidature actuellement défavorable.",
+        "points_forts": [
+          "Conformité documentaire"
+        ],
+        "points_a_ameliorer": [
+          "Manque de retour positif de la part des RH",
+          "Faible complétude par rapport à l'offre"
+        ],
+        "rang": 12
+      }
+    },
+    "Marie Claude Bissi Rekangalt": {
+      "prenom": "Marie",
+      "nom": "Claude Bissi Rekangalt",
+      "conformite": {
+        "prenom": "MARIE",
+        "nom": "CLAUDE  BISSI REKANGALT",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "BISSI REKANGALT",
+        "prenom": "Marie Claude",
+        "poste": "Directeur Moyens Généraux",
+        "score": 37.0,
+        "resume_experience": "10+ années d'expérience dans la stratégie de communication et gestion de projets",
+        "verdict": "moyen",
+        "raison_verdict": "Marie Claude possède de solides compétences en gestion et communication, mais son expérience est principalement axée sur la communication et moins sur les responsabilités spécifiques liées à la gestion des moyens généraux.",
+        "points_forts": [
+          "Expérience en management d'équipes pluridisciplinaires",
+          "Capacité à gérer des partenaires externes et négocier des contrats",
+          "Compétences en gestion de budget et optimisation des processus"
+        ],
+        "points_a_travailler": [
+          "Renforcer l'expérience en Facility Management et gestion de l'environnement de travail",
+          "Améliorer les compétences en gestion des achats et optimisation des coûts en service généraux",
+          "Développer un savoir-faire en gestion des systèmes de sécurité et sureté"
+        ],
+        "rang": 8
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 12.4,
+        "verdict": "défavorable",
+        "resume": "Le profil de Marie Claude Bissi Rekangalt est défavorable pour le poste de Directeur Moyens Généraux à la SEEG. Bien que sa conformité documentaire soit parfaite, l'absence complète de feedback RH positif et un score global faible soulignent des lacunes importantes. La candidate ne semble pas répondre aux exigences stratégiques et opérationnelles cruciales pour appuyer la vision de transformation profonde de l'entreprise.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH positif",
+          "Score de complétude faible"
+        ],
+        "rang": 13
+      }
+    },
+    "Olivia Anna Igoho Otiga": {
+      "prenom": "Olivia",
+      "nom": "Anna Igoho Otiga",
+      "conformite": {
+        "prenom": "Olivia",
+        "nom": "Anna IGOHO OTIGA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "IGOHO OTIGA",
+        "prenom": "Olivia Anna",
+        "poste": "Directeur Moyens Généraux",
+        "score": 36.5,
+        "resume_experience": "12 ans d’expérience dans le domaine du Contrôle Financier, 4 années dans le milieu bancaire anglo-saxon et 8 années au sein du contrôle de gestion à la SEEG.",
+        "verdict": "moyen",
+        "points_forts": [
+          "Bonne compétence en gestion budgétaire et élaboration de tableaux de bord",
+          "Expérience solide en management et coordination des équipes",
+          "Compétences en optimization de processus administratifs et en planification stratégique"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée en Facility Management et Gestion de l’Environnement de Travail",
+          "Besoin d'amélioration dans la gestion des systèmes de sécurité et d'accès",
+          "Renforcer l'expérience en gestion des services aux occupants et gestion des déménagements"
+        ],
+        "rang": 9
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 12.3,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Olivia Anna Igoho Otiga présente des lacunes majeures, surtout en termes de feedback RH, ce qui constitue un sérieux désavantage pour le poste de Directeur Moyens Généraux à la SEEG. Son score global est défavorable, et son alignement avec la vision stratégique et transformationnelle de l'entreprise est insuffisant.",
+        "points_forts": [
+          "Conformité documentaire parfaite",
+          "Potentiel d'amélioration au vu des objectifs de l'entreprise"
+        ],
+        "points_a_ameliorer": [
+          "Feedback RH inexistant",
+          "Complétude du dossier par rapport à l'offre"
+        ],
+        "rang": 14
+      }
+    },
+    "Pulcherie Nicole Assame Née Nigouegouni": {
+      "prenom": "Pulcherie",
+      "nom": "Nicole Assame Née Nigouegouni",
+      "conformite": {
+        "prenom": "Pulcherie",
+        "nom": "Nicole  ASSAME Née NIGOUEGOUNI",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "ASSAME Née NIGOUEGOUNI",
+        "prenom": "Pulcherie Nicole",
+        "poste": "Directeur Moyens Généraux",
+        "score": 36.1,
+        "resume_experience": "21 ans d'expérience, dont 14 ans à la SEEG dans les domaines technique, commercial, HSE, et ressources humaines.",
+        "verdict": "moyen",
+        "points_forts": [
+          "Grandes compétences en gestion et suivi des projets",
+          "Solide capacité managériale et gestion d'équipes pluridisciplinaires",
+          "Expérience en gestion budgétaire et optimisation des coûts"
+        ],
+        "points_a_travailler": [
+          "Approfondir la gestion des services supports spécifiques à un Directeur Moyens Généraux",
+          "Renforcer l'expérience en Facility Management pour couvrir tous les aspects de l'environnement de travail",
+          "Accroître l'expérience spécifique dans la gestion des déménagements et aménagements d'espaces de travail"
+        ],
+        "rang": 10
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 12.22,
+        "verdict": "défavorable",
+        "resume": "Pulcherie Nicole Assame Née Nigouegouni ne remplit pas les attentes essentielles pour le poste de Directeur Moyens Généraux, notamment en raison d'un faible score de feedback RH. Le manque de complétude dans sa candidature et un score global défavorable soulignent un manque d'alignement avec la vision stratégique de la SEEG.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Améliorer la qualité et la complétude des documents de candidature",
+          "Augmenter la pertinence par rapport aux attentes du poste et de la vision de l'entreprise"
+        ],
+        "rang": 15
+      }
+    },
+    "Emery Patrick Nkouele Mve": {
+      "prenom": "Emery",
+      "nom": "Patrick Nkouele Mve",
+      "conformite": {
+        "prenom": "Emery",
+        "nom": "Patrick NKOUELE MVE",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "NKOUELE MVE",
+        "prenom": "Emery Patrick",
+        "poste": "Directeur Moyens Généraux",
+        "score": 34.6,
+        "resume_experience": "Plus de 20 ans, spécialisé dans l'informatique et la gestion des systèmes d'information",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le candidat n'a pas d'expérience pertinente ni démontré d'expertise dans la gestion des moyens généraux, mais plutôt dans le domaine informatique.",
+        "points_forts": [
+          "Management et encadrement d'équipes",
+          "Excellente connaissance des systèmes d'information",
+          "Compétences en gestion de projet"
+        ],
+        "points_a_travailler": [
+          "Expérience en facility management et gestion de l'environnement de travail",
+          "Négociation et gestion de contrats avec des prestataires de services",
+          "Expertise en gestion budgétaire et optimisation des coûts liés aux moyens généraux"
+        ],
+        "rang": 13
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 11.92,
+        "verdict": "défavorable",
+        "resume": "Le candidat possède une conformité documentaire parfaite mais souffre d'un manque de feedback positif de la part des RH, ce qui affecte grandement son aptitude à correspondre aux attentes du poste. La complétude de son dossier vis-à-vis de l'offre est également très faible.",
+        "points_forts": [
+          "Conformité documentaire élevée",
+          "Expérience potentiellement solide dans les processus administratifs"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH positif",
+          "Faible complétude du dossier par rapport à l'offre"
+        ],
+        "rang": 16
+      }
+    },
+    "Diane Mauricette Ollomo": {
+      "prenom": "Diane",
+      "nom": "Mauricette Ollomo",
+      "conformite": {
+        "prenom": "Diane",
+        "nom": "Mauricette  Ollomo",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "Ollomo",
+        "prenom": "Diane Mauricette",
+        "poste": "Directeur Moyens Généraux",
+        "score": 34.6,
+        "resume_experience": "21 années dans la gestion et administration des systèmes de supervision, SCADA, automatismes et télétransmission",
+        "verdict": "défavorable",
+        "points_forts": [
+          "Gestion de la sûreté et mise en place de systèmes de contrôle d'accès",
+          "Gestion de projets complexes et organisation",
+          "Expérience en optimisation des coûts et gestion budgétaire"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée en facility management spécifique aux bâtiments",
+          "Peu d'expérience démontrée en gestion de déménagements internes ou externes",
+          "Connaissance limitée des procédures de communication interne"
+        ],
+        "rang": 12
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 11.92,
+        "verdict": "défavorable",
+        "resume": "Le score global de Diane Mauricette Ollomo est défavorable, principalement dû à un manque de retour positif dans le feedback RH et à une complétude faible par rapport aux attentes de l'offre. Malgré une bonne conformité documentaire, d'importants points d'amélioration sont nécessaires pour répondre aux objectifs stratégiques de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire impeccable",
+          "Capacité potentielle de structuration"
+        ],
+        "points_a_ameliorer": [
+          "Manque de retour positif dans le feedback RH",
+          "Faible complétude du profil par rapport à l'offre"
+        ],
+        "rang": 17
+      }
+    },
+    "Pascal Alain Noumba": {
+      "prenom": "Pascal",
+      "nom": "Alain Noumba",
+      "conformite": {
+        "prenom": "pascal",
+        "nom": "alain NOUMBA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "NOUMBA",
+        "prenom": "Pascal Alain",
+        "poste": "Directeur Moyens Généraux",
+        "score": 33.7,
+        "resume_experience": "Plus de 10 ans d'expérience dans le domaine de l'énergie et de l'eau, avec une expertise en gestion de projets techniques, achats et développement client.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score de similarité de 33.700 est inférieur au seuil défavorable, ce qui suggère que le candidat n'a pas toutes les qualifications nécessaires spécifiquement requises pour le poste de Directeur Moyens Généraux.",
+        "points_forts": [
+          "Grande expérience en gestion des projets techniques",
+          "Compétences solides en management des équipes",
+          "Expertise dans le domaine des achats et de la négociation"
+        ],
+        "points_a_travailler": [
+          "Expérience limitée en facility management et gestion des bâtiments",
+          "Connaissances à approfondir en gestion et pilotage des services aux occupants",
+          "Besoin d'expérience directe dans la mise en œuvre de politique d'optimisation des coûts"
+        ],
+        "rang": 15
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 11.74,
+        "verdict": "défavorable",
+        "resume": "Le score global de Pascal Alain Noumba est défavorable, avec un feedback RH particulièrement faible qui indique des lacunes importantes en termes de correspondance avec les exigences du poste. Le manque de complétude par rapport à l'offre signale potentiellement une inadéquation avec le poste et la vision ambitieuse de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Manque de feedback RH positif",
+          "Inadéquation documentaire globale avec le poste"
+        ],
+        "rang": 18
+      }
+    },
+    "Diane Ollomo": {
+      "prenom": "Diane",
+      "nom": "Ollomo",
+      "conformite": {},
+      "mtp": {
+        "nom": "Ollomo",
+        "prenom": "Diane",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.5,
+          "Talent": 0.38,
+          "Paradigme": 0.5
+        },
+        "Score_moyen": 46.0,
+        "niveau": "Le score moyen de la candidate se situe dans la catégorie moyenne, ce qui indique des capacités acceptables mais insuffisantes pour répondre pleinement aux enjeux de la SEEG. Elle montre un potentiel mais doit clairement améliorer certains aspects pour être alignée avec la vision transformante de l'entreprise.",
+        "verdict": "moyen",
+        "raison_du_verdict": "Bien que son score soit moyen, ses compétences doivent être renforcées pour contribuer efficacement à la vision stratégique de la SEEG.",
+        "points_forts": [
+          "Connaissance des enjeux organisationnels, essentielle pour une réorganisation efficace.",
+          "Capacité d'adaptation aux exigences de transformation et de modernisation des infrastructures.",
+          "Aptitude à travailler dans des environnements difficiles et à relever des défis complexes."
+        ],
+        "points_a_travailler": [
+          "Renforcer ses compétences en gestion de projets pour mener des plans d'investissement ambitieux.",
+          "Améliorer ses capacités de leadership pour motiver et former le personnel.",
+          "Développer des compétences en gouvernance et en transparence pour répondre aux attentes des parties prenantes."
+        ],
+        "rang": 1
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 11.5,
+        "verdict": "défavorable",
+        "resume": "Le profil de Diane Ollomo semble ne pas répondre aux attentes liées au poste de Directeur Moyens Généraux, surtout en raison de l'absence de conformité documentaire et de complétude. Le score de feedback RH et le score global pondéré défavorable indiquent des lacunes significatives par rapport aux exigences de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "conformité documentaire",
+          "complétude du dossier"
+        ],
+        "rang": 19
+      }
+    },
+    "Paul Terence Okoumba": {
+      "prenom": "Paul",
+      "nom": "Terence Okoumba",
+      "conformite": {
+        "prenom": "PAUL",
+        "nom": "TERENCE OKOUMBA",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "OKOUMBA",
+        "prenom": "Paul Terence",
+        "poste": "Directeur Moyens Généraux",
+        "score": 30.1,
+        "resume_experience": "16 ans en gestion informatique et support",
+        "verdict": "défavorable",
+        "phrase_raison": "Le candidat possède une forte expérience en informatique, mais ses compétences ne sont pas alignées avec les exigences principales du poste de Directeur Moyens Généraux.",
+        "points_forts": [
+          "Excellente maîtrise de la maintenance informatique et du support utilisateurs.",
+          "Compétence avérée en gestion de projets informatiques.",
+          "Capacité à coordonner et innover dans le domaine digital."
+        ],
+        "points_a_travailler": [
+          "Expérience manquante en gestion de l'environnement de travail et des bâtiments (facility management).",
+          "Compétences limitées en gestion de la sécurité et sûreté des biens, telles que requises pour le poste.",
+          "Absence d'expérience démontrée en achats et gestion budgétaire liés aux éléments non informatiques."
+        ],
+        "rang": 20
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 11.02,
+        "verdict": "défavorable",
+        "resume": "Le candidat Paul Terence Okoumba présente des lacunes significatives quant à l'adéquation avec la vision stratégique de l'entreprise, notamment en termes de complétude de candidature. L'absence de feedback RH positif renforce le verdict défavorable.",
+        "points_forts": [
+          "Conformité documentaire élevée"
+        ],
+        "points_a_ameliorer": [
+          "Manque de pertinence dans les documents soumis",
+          "Absence de retours positifs de la RH"
+        ],
+        "rang": 20
+      }
+    },
+    "Jean Moucke Nzoumba": {
+      "prenom": "Jean",
+      "nom": "Moucke Nzoumba",
+      "conformite": {},
+      "mtp": {
+        "nom": "MOUCKE NZOUMBA",
+        "prenom": "Jean",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.44,
+          "Talent": 0.39,
+          "Paradigme": 0.47
+        },
+        "Score_moyen": 43.33,
+        "niveau": "Le candidat présente un score moyen défavorable, ce qui indique qu'il ne répond pas de manière optimale aux exigences du poste. Sa compréhension des enjeux liés à la vision de l'entreprise semble limitée, nécessitant une amélioration significative.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 43.33 est en dessous du seuil critique de 43.5, indiquant une inadéquation avec la vision de l'entreprise.",
+        "points_forts": [
+          "Une certaine connaissance des structures organisationnelles, important pour la direction des moyens généraux.",
+          "Une capacité à identifier des problématiques existantes, ce qui peut être utile pour réfléchir à des solutions.",
+          "Une aptitude à être conscient des domaines qui nécessitent des améliorations."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques spécifiques au secteur de l'eau et de l'électricité.",
+          "Améliorer les compétences de leadership et de gestion d'équipes pour diriger efficacement la transformation de l'entreprise.",
+          "Acquérir une vision stratégique plus claire pour aligner ses efforts sur les objectifs ambitieux de la SEEG."
+        ],
+        "rang": 2
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.83,
+        "verdict": "défavorable",
+        "resume": "Le profil de Jean Moucke Nzoumba ne répond pas aux attentes du poste de Directeur Moyens Généraux chez SEEG. Le score global est défavorable, et il n'y a pas de feedback RH positif notable, ce qui suggère une inadéquation avec les exigences essentielles du rôle et la vision stratégique de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude du dossier de candidature"
+        ],
+        "rang": 21
+      }
+    },
+    "Raissa Nsue Obiang": {
+      "prenom": "Raissa",
+      "nom": "Nsue Obiang",
+      "conformite": {},
+      "mtp": {
+        "nom": "NSUE OBIANG",
+        "prenom": "RAISSA",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.49,
+          "Talent": 0.38,
+          "Paradigme": 0.43
+        },
+        "Score_moyen": 43.33,
+        "niveau": "Le candidat présente un score moyen défavorable, ce qui indique une inadéquation avec les exigences du poste visé. Il semble nécessiter un développement substantiel en termes de compétences et d'intégration de la vision de l'entreprise.",
+        "verdict": "défavorable",
+        "raison": "Le score moyen de 43.33 est en dessous du seuil minimal requis, témoignant d'une difficulté à s'aligner sur la vision stratégique de l'entreprise.",
+        "points_forts": [
+          "Potentiel à développer des compétences dans la gestion opérationnelle des infrastructures.",
+          "Capacité d'analyse des besoins de modernisation des moyens généraux.",
+          "Volonté manifeste d'apprendre et de s'adapter aux enjeux techniques."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences en management et en conduite du changement.",
+          "Acquérir une vision globale des enjeux stratégiques de la SEEG.",
+          "Développer des capacités techniques spécifiques dans le domaine de l'eau et de l'électricité."
+        ],
+        "rang": 3
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.83,
+        "verdict": "défavorable",
+        "resume": "Le profil de Raissa Nsue Obiang présente plusieurs lacunes par rapport aux attentes du poste de Directeur Moyens Généraux, notamment en termes de conformité documentaire et de complétude du dossier de candidature. Malgré un certain potentiel, les faiblesses identifiées suggèrent qu'elle ne répond pas encore aux exigences stratégiques et opérationnelles de la SEEG.",
+        "points_forts": [
+          "Potentiel de développement"
+        ],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude du dossier de candidature"
+        ],
+        "rang": 22
+      }
+    },
+    "Marie Claude": {
+      "prenom": "Marie",
+      "nom": "Claude",
+      "conformite": {},
+      "mtp": {
+        "nom": "CLAUDE",
+        "prenom": "MARIE",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.42,
+          "Talent": 0.38,
+          "Paradigme": 0.45
+        },
+        "Score_moyen": 41.67,
+        "niveau": "Le candidat présente une adhésion peu engageante aux exigences du poste en raison de scores inférieurs à la moyenne requise. Son profil semble ne pas être aligné avec les attentes de performance et d'innovation mises en avant par la vision de l'entreprise.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 41.67 est strictement inférieur au seuil de 43.5, indiquant un décalage avec les exigences de la vision SEEG 2025 - 2035.",
+        "points_forts": [
+          "Connaissance des enjeux et défis liés à l'infrastructure dans le secteur énergétique.",
+          "Potentiel d'amélioration dans une organisation nécessitant une restructuration.",
+          "Capacité d'apprentissage à travers les leçons du passé et des pratiques internes."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences en gestion de talents pour optimiser la réorganisation.",
+          "Développer une approche proactive pour la modernisation des infrastructures.",
+          "Renforcer la gouvernance et la transparence afin de regagner la confiance des parties prenantes."
+        ],
+        "rang": 5
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.42,
+        "verdict": "défavorable",
+        "resume": "Marie Claude ne semble pas répondre adéquatement aux exigences documentaires et aux attentes de compatibilité pour le poste de Directeur Moyens Généraux à la SEEG. Son score faible en feedback RH et sur d'autres critères importantes indique un manque de préparation et d'adéquation avec les besoins stratégiques de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Améliorer la conformité documentaire",
+          "Augmenter la pertinence par rapport aux exigences du poste"
+        ],
+        "rang": 23
+      }
+    },
+    "Pulcherie Assame": {
+      "prenom": "Pulcherie",
+      "nom": "Assame",
+      "conformite": {},
+      "mtp": {
+        "nom": "ASSAME",
+        "prenom": "Pulcherie",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.43,
+          "Talent": 0.34,
+          "Paradigme": 0.47
+        },
+        "Score_moyen": 41.33,
+        "niveau": "Le score du candidat est strictement inférieur au seuil défavorable de 43.5. Cela témoigne d'un manque d'alignement avec les exigences de la vision stratégique de l'entreprise.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen du candidat est très en dessous du seuil requis, indiquant un faible potentiel d'adaptation à la vision d'avenir de l'entreprise.",
+        "points_forts": [
+          "Capacité d'adaptation aux nouvelles méthodes de travail avec une approche pragmatique.",
+          "Expérience dans la gestion de projets liés à l'infrastructure.",
+          "Persévérance dans la résolution de problèmes complexes."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences en leadership et gestion d'équipe.",
+          "Renforcer les connaissances sur les normes et pratiques de l'industrie énergétique.",
+          "Développer des capacités stratégiques pour contribuer à la modernisation et à l'innovation."
+        ],
+        "rang": 7
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.33,
+        "verdict": "défavorable",
+        "resume": "Le candidat ne répond pas aux attentes du poste en termes de conformité documentaire et complétude. Le faible score de feedback RH indique un manque d'alignement avec les besoins stratégiques de réorganisation et modernisation de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude des documents",
+          "Alignement avec la vision stratégique de l'entreprise"
+        ],
+        "rang": 24
+      }
+    },
+    "Emilienne Ndong Essono": {
+      "prenom": "Emilienne",
+      "nom": "Ndong Essono",
+      "conformite": {},
+      "mtp": {
+        "nom": "NDONG ESSONO",
+        "prenom": "Emilienne",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.44,
+          "Talent": 0.36,
+          "Paradigme": 0.44
+        },
+        "Score_moyen": 41.33,
+        "niveau": "Le score moyen du candidat est strictement inférieur à 43.5, ce qui indique une inadéquation notable avec la vision de l'entreprise. Son expérience et ses compétences ne semblent pas correspondre aux exigences stratégiques établies pour la SEEG dans les années à venir.",
+        "verdict": "défavorable",
+        "raison_du_verdict": "Le faible score moyen n'indique pas une adéquation suffisante aux attentes élevées de la SEEG pour sa transformation et son développement.",
+        "points_forts": [
+          "Solides compétences en matière de gestion de projets, qui sont essentielles pour les réformes structurelles envisagées.",
+          "Expérience dans l'amélioration de l'efficacité des opérations, ce qui est crucial pour la modernisation des processus.",
+          "Connaissance des enjeux de gouvernance et de transparence, en ligne avec la vision stratégique de la SEEG."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences en leadership pour inspirer et motiver une équipe pendant la période de transformation.",
+          "Améliorer la gestion des ressources humaines pour aligner les équipes avec les nouvelles orientations stratégiques.",
+          "Développer une meilleure compréhension des partenariats externes et des technologies innovantes pour la transition énergétique."
+        ],
+        "rang": 6
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.33,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Emilienne Ndong Essono ne semble pas correspondre aux exigences du poste de Directeur Moyens Généraux à la SEEG, surtout en considérant la vision transformatrice de l'entreprise. Le score global pondéré et l'absence de feedback RH positif soulignent des discordances significatives avec les compétences et expériences requises.",
+        "points_forts": [
+          "-"
+        ],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude des dossiers (CV et Lettre de motivation par rapport à l'offre)"
+        ],
+        "rang": 25
+      }
+    },
+    "Olivia Igoho Otiga": {
+      "prenom": "Olivia",
+      "nom": "Igoho Otiga",
+      "conformite": {},
+      "mtp": {
+        "nom": "IGOHO OTIGA",
+        "prenom": "Olivia",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.43,
+          "Talent": 0.35,
+          "Paradigme": 0.44
+        },
+        "Score_moyen": 40.67,
+        "niveau": "Le score moyen du candidat est en dessous du seuil défavorable, indiquant une inadéquation avec les exigences de l'entreprise. Cela reflète un besoin significatif de développement dans plusieurs domaines clés.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est inférieur à 43.5, indiquant que le candidat ne répond pas aux attentes de performance nécessaires pour le poste.",
+        "points_forts": [
+          "Connaissance des enjeux liés à la gestion des ressources et des infrastructures.",
+          "Capacité à travailler dans un environnement complexe et instable.",
+          "Volonté d'engagement dans l'amélioration des systèmes opérationnels."
+        ],
+        "points_a_travailler": [
+          "Développement des compétences en gestion des talents et du personnel.",
+          "Renforcement des connaissances en stratégie de modernisation des infrastructures.",
+          "Amélioration des aptitudes à élaborer des plans d'action concrets et innovants."
+        ],
+        "rang": 10
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.17,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Olivia ne correspond pas aux attentes de la SEEG, particulièrement en raison d'un manque de conformité documentaire et d'alignement stratégique avec les objectifs de réorganisation et de modernisation de l'entreprise. Le feedback RH est insuffisant pour offrir une évaluation positive.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "manque de conformité documentaire",
+          "absence d'alignement stratégique avec les objectifs de l'entreprise"
+        ],
+        "rang": 26
+      }
+    },
+    "Emery Nkouele Mve": {
+      "prenom": "Emery",
+      "nom": "Nkouele Mve",
+      "conformite": {},
+      "mtp": {
+        "nom": "NKOUELE MVE",
+        "prenom": "Emery",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.43,
+          "Talent": 0.36,
+          "Paradigme": 0.42
+        },
+        "Score_moyen": 40.33,
+        "niveau": "Le score moyen de 40.33 indique une performance en dessous des attentes pour le poste visé. Cela suggère que le candidat ne partage pas pleinement la vision de l'entreprise et pourrait peiner à s'adapter aux exigences stratégiques de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score total est inférieur à 43.5, ce qui témoigne d'une inadéquation avec la vision de l'entreprise.",
+        "points_forts": [
+          "Bonne compréhension de l'importance de la modernisation des infrastructures.",
+          "Vision claire sur la nécessité de réduire les coûts et d'optimiser les performances.",
+          "Intérêt pour l'implication des parties prenantes, ce qui est essentiel dans le contexte actuel."
+        ],
+        "points_a_travailler": [
+          "Développer des compétences en gestion des talents pour mieux motiver et former le personnel.",
+          "Améliorer la capacité à suivre les procédures internes alignées sur les meilleures pratiques du secteur.",
+          "Renforcer les compétences en gouvernance et transparence pour répondre aux enjeux de confiance et de responsabilité."
+        ],
+        "rang": 11
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.08,
+        "verdict": "défavorable",
+        "resume": "Le score global d'Emery Nkouele Mve est défavorable, avec une conformité documentaire et une complétude vis-à-vis de l'offre qui sont toutes deux nulles. De plus, aucun feedback RH détaillé n'est fourni, ce qui limite une évaluation précise de ses compétences et adéquation avec la vision transformatrice de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude par rapport à l'offre"
+        ],
+        "rang": 27
+      }
+    },
+    "Paul Okoumba": {
+      "prenom": "Paul",
+      "nom": "Okoumba",
+      "conformite": {},
+      "mtp": {
+        "nom": "OKOUMBA",
+        "prenom": "PAUL",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.42,
+          "Talent": 0.36,
+          "Paradigme": 0.43
+        },
+        "Score_moyen": 40.33,
+        "niveau": "Le candidat présente un score moyen défavorable, indiquant une inadéquation avec la vision de l'entreprise. Cela suggère qu'il pourrait avoir des difficultés à s'aligner sur les objectifs stratégiques de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 40.33 est en dessous du seuil de 43.5, indiquant un manquement potentiel aux attentes de l'entreprise.",
+        "points_forts": [
+          "Connaissance des enjeux liés à la gestion des infrastructures vieillissantes.",
+          "Compréhension des défis en matière de gouvernance et de transparence.",
+          "Capacité à identifier les besoins d'implication des parties prenantes."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences techniques rencontrées dans la gestion opérationnelle.",
+          "Développer des capacités de leadership pour piloter des changements organisationnels.",
+          "Renforcer les connaissances en matière de gestion de projet pour les investissements durables."
+        ],
+        "rang": 12
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.08,
+        "verdict": "défavorable",
+        "resume": "Malgré un contexte exigeant de transformation institutionnelle pour la SEEG, le profil de Paul Okoumba ne répond pas à plusieurs exigences clés du poste, dont la conformité documentaire et la complétude des informations fournies. De plus, les retours internes ne soulignent pas de compétences particulières alignées avec les besoins stratégiques de l’entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Manque de conformité documentaire",
+          "Absence de complétude dans les documents fournis"
+        ],
+        "rang": 28
+      }
+    },
+    "Pascal Noumba": {
+      "prenom": "Pascal",
+      "nom": "Noumba",
+      "conformite": {},
+      "mtp": {
+        "nom": "NOUMBA",
+        "prenom": "pascal",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.46,
+          "Talent": 0.36,
+          "Paradigme": 0.39
+        },
+        "Score_moyen": 40.33,
+        "niveau": "Le score moyen est clairement en dessous de la moyenne acceptée, indiquant des lacunes importantes dans les compétences et l'alignement avec les exigences de l'entreprise. Ce candidat pourrait rencontrer des difficultés pour participer efficacement à la transformation nécessaire de la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score faible indique un manque de préparation pour répondre aux défis stratégiques de la SEEG dans un contexte de crise.",
+        "points_forts": [
+          "Une certaine compréhension des enjeux liés à la gestion des ressources et des infrastructures.",
+          "Capacité à identifier des problèmes organisationnels malgré un score global faible.",
+          "Souci de la qualité de service et de l'efficacité opérationnelle."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences techniques et métier essentielles pour le secteur des moyens généraux.",
+          "Acquérir des compétences en gestion de projet pour mener à bien des réformes organisationnelles.",
+          "Renforcer la capacité à travailler en équipe et à gérer les ressources humaines efficacement."
+        ],
+        "rang": 13
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.08,
+        "verdict": "défavorable",
+        "resume": "Le profil de Pascal Noumba ne semble pas aligné avec la vision transformatrice de la SEEG pour 2025-2035. L'absence de conformité documentaire et de complétude par rapport à l'offre indiquent qu'il pourrait ne pas répondre aux exigences requises, et le score global pondéré laisse entendre une incapacité à apporter une contribution significative à ce poste stratégique.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude (CV+LM vs Offre)"
+        ],
+        "rang": 29
+      }
+    },
+    "André Mbongo": {
+      "prenom": "André",
+      "nom": "Mbongo",
+      "conformite": {},
+      "mtp": {
+        "nom": "MBONGO",
+        "prenom": "André",
+        "poste": "Direction des Moyens Généraux",
+        "scores": {
+          "Metier": 0.42,
+          "Talent": 0.37,
+          "Paradigme": 0.39
+        },
+        "Score_moyen": 39.33,
+        "niveau": "Le candidat présente des scores globalement en dessous des attentes requises pour le poste. Son adéquation avec la vision de l'entreprise semble insuffisante.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen de 39.33 indique une incompatibilité avec les exigences de la vision de la SEEG pour 2025 - 2035.",
+        "points_forts": [
+          "Adaptabilité aux exigences d'un environnement de travail complexe.",
+          "Capacité d'analyse des situations critiques à travers les lenses de l'industrie.",
+          "Possibilité de mobiliser des ressources dans des scénarios incertains."
+        ],
+        "points_a_travailler": [
+          "Renforcer les compétences techniques spécifiques au secteur de l'eau et de l'électricité.",
+          "Améliorer la connaissance des processus de gouvernance et de réglementation.",
+          "Développer des compétences en management stratégique et en gestion de projets complexes."
+        ],
+        "rang": 16
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 9.83,
+        "verdict": "défavorable",
+        "resume": "Le candidat André Mbongo a reçu un score global défavorable, avec des scores de conformité documentaire, de MTP, et de complétude très bas. L'absence de feedback RH détaillé indique un manque d'informations, ce qui compromet sa candidature pour un poste aussi stratégique dans la transformation de la SEEG.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Faible conformité documentaire",
+          "Manque de complétude CV et lettre de motivation par rapport à l'offre",
+          "Absence de feedback RH"
+        ],
+        "rang": 30
+      }
+    },
+    "Raïssa Aimée Nse Obiang": {
+      "prenom": "Raïssa",
+      "nom": "Aimée Nse Obiang",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "NSE OBIANG",
+        "prenom": "Raïssa Aimée",
+        "poste": "Directeur des Moyens Généraux",
+        "score": 35.1,
+        "resume_experience": "23 années dans la gestion comptable et administrative",
+        "verdict": "moyen",
+        "points_forts": [
+          "Solide expérience en gestion budgétaire et suivi de contrats",
+          "Excellentes compétences en négociation avec les fournisseurs",
+          "Compétences managériales et leadership éprouvé"
+        ],
+        "points_a_travailler": [
+          "Manque d'expérience directe en gestion de l'environnement de travail et des bâtiments",
+          "Besoin de renforcer les compétences en sécurité et sûreté",
+          "Amélioration nécessaire dans la communication interne et gestion des espaces"
+        ],
+        "rang": 11
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 7.02,
+        "verdict": "défavorable",
+        "resume": "Raïssa Aimée Nse Obiang présente un profil qui ne correspond pas aux exigences du poste, avec une faible complétude du CV et de la lettre de motivation par rapport à l'offre, et des scores de conformité et de MTP à zéro. Son profil est considéré défavorable pour le poste au regard des objectifs stratégiques ambitieux fixés par l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Amélioration de la complétude du dossier de candidature",
+          "Alignement du profil avec les exigences stratégiques de l'entreprise"
+        ],
+        "rang": 31
+      }
+    },
+    "Raissa Aimee Nse Obiang": {
+      "prenom": "Raissa",
+      "nom": "Aimee Nse Obiang",
+      "conformite": {
+        "prenom": "RAISSA",
+        "nom": "AIMEE NSE OBIANG",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 5.0,
+        "verdict": "défavorable",
+        "resume": "Le profil de Raissa Aimee Nse Obiang ne s'aligne pas avec la vision ambitieuse et transformative de la SEEG. Malgré une conformité documentaire parfaite, l'absence de compétences démontrées et le manque de feedback positif de la part des RH limitent sa candidature.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Absence de compétences démontrées liées au poste",
+          "Manque de retours positifs de la part des RH"
+        ],
+        "rang": 32
+      }
+    },
+    "Augusta Ndam": {
+      "prenom": "Augusta",
+      "nom": "Ndam",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "NDAM",
+        "prenom": "AUGUSTA",
+        "poste": "Directeur Moyens Généraux",
+        "resume_experience": "Non détecté",
+        "verdict": [],
+        "points_forts": "Analyse échouée (Error code: 429 - {'error': {'message': 'Rate limit reached for gpt-4o in organization org-aoRA7l9j5rQZ7YfhVeRvIBw8 on tokens per min (TPM): Limit 30000, Used 28027, Requested 4058. Please try again in 4.17s. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}})",
+        "points_a_travailler": [],
+        "rang": 17
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 0.0,
+        "verdict": "défavorable",
+        "resume": "Le profil de Augusta Ndam ne répond pas aux attentes du poste, notamment au regard d'une absence de conformité documentaire et une complétude insuffisante par rapport à l'offre. Le score global est défavorable, ce qui nécessite une réévaluation approfondie des documents soumis.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Manque de conformité documentaire",
+          "Inadéquation du CV et de la lettre de motivation par rapport à l'offre"
+        ],
+        "rang": 33
+      }
+    },
+    "Aimée Tevenet": {
+      "prenom": "Aimée",
+      "nom": "Tevenet",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "TEVENET",
+        "prenom": "Aimée",
+        "poste": "Directeur Moyens Généraux",
+        "resume_experience": "Non détecté",
+        "verdict": [],
+        "points_forts": "Analyse échouée (Error code: 429 - {'error': {'message': 'Rate limit reached for gpt-4o in organization org-aoRA7l9j5rQZ7YfhVeRvIBw8 on tokens per min (TPM): Limit 30000, Used 27817, Requested 5307. Please try again in 6.248s. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}})",
+        "points_a_travailler": [],
+        "rang": 14
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 0.0,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Aimée Tevenet ne répond pas aux exigences du poste de Directeur Moyens Généraux pour la SEEG. Le manque de conformité documentaire et de complétude du dossier de candidature est notable, ainsi que l'absence de feedback positif de la part des RH.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Manque de conformité documentaire",
+          "Dossier de candidature incomplet"
+        ],
+        "rang": 34
+      }
+    }
+  }
+}

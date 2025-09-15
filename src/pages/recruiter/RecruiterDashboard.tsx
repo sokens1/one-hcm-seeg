@@ -130,7 +130,7 @@ export default function RecruiterDashboard() {
 
         {isLoading ? (
           <div className="flex flex-col sm:flex-row justify-center items-center py-8 sm:py-12 gap-2">
-            <Loader2 className="w-6 h-6 sm:w-8 sm:w-8 animate-spin text-primary" />
+            <Loader2 className="w-6 h-6 sm:w-8 animate-spin text-primary" />
             <span className="text-sm sm:text-base">Chargement du dashboard...</span>
           </div>
         ) : (
@@ -718,20 +718,20 @@ export default function RecruiterDashboard() {
                   {isRecruiter && (
                     <Link to="/recruiter/jobs/new" className="block">
                       <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                        <Plus className="w-3 h-3 sm:w-4 sm:w-4" />
+                        <Plus className="w-3 h-3 sm:w-4" />
                         Créer une nouvelle offre
                       </Button>
                     </Link>
                   )}
                   <Link to="/recruiter/candidates" className="block">
                     <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                      <Users className="w-3 h-3 sm:w-4 sm:w-4" />
+                      <Users className="w-3 h-3 sm:w-4" />
                       Voir tous les candidats
                     </Button>
                   </Link>
                   <Link to="/jobs" className="block">
                     <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                      <Eye className="w-3 h-3 sm:w-4 sm:w-4" />
+                      <Eye className="w-3 h-3 sm:w-4" />
                       Espace candidature
                     </Button>
                   </Link>
@@ -748,7 +748,7 @@ export default function RecruiterDashboard() {
                 <CardContent>
                   {isLoadingActivities ? (
                     <div className="flex justify-center items-center py-4">
-                      <Loader2 className="w-5 h-5 sm:w-6 sm:w-6 animate-spin text-primary" />
+                      <Loader2 className="w-5 h-5 sm:w-6 animate-spin text-primary" />
                     </div>
                   ) : errorActivities ? (
                     <p className="text-red-500 text-xs sm:text-sm">Erreur de chargement des activités</p>
