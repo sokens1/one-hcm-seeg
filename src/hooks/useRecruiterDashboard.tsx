@@ -135,8 +135,8 @@ export function useRecruiterDashboard() {
     const totalCandidates = candidateIds.length; // uniques
     const newCandidates = processedJobs.reduce((sum, job) => sum + job.new_candidates, 0);
 
-    // Count interviews scheduled (applications in 'incubation' status) from ALL applications
-    const interviewsScheduled = (allApplicationsData || []).filter(app => app.status === 'incubation').length;
+    // Count interviews scheduled (applications in 'entretien_programme' status) from ALL applications
+    const interviewsScheduled = (allApplicationsData || []).filter(app => app.status === 'entretien_programme').length;
 
     // Compute multi-post applicants (candidates who applied to 2+ jobs)
     const applicationsByCandidate = new Map<string, Set<string>>();
