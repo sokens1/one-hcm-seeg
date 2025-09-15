@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -42,6 +41,11 @@ interface Protocol2EvaluationData {
       comments: string;
     };
   };
+  simulation_scheduling: {
+    simulation_date: string | null;
+    simulation_time: string | null;
+    simulation_scheduled_at: string | null;
+  };
 }
 
 const defaultEvaluationData: Protocol2EvaluationData = {
@@ -80,6 +84,11 @@ const defaultEvaluationData: Protocol2EvaluationData = {
       score: 0,
       comments: ''
     }
+  },
+  simulation_scheduling: {
+    simulation_date: null,
+    simulation_time: null,
+    simulation_scheduled_at: null
   }
 };
 
@@ -159,6 +168,11 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
               score: data.plan_formation_score || 0,
               comments: data.plan_formation_comments || ''
             }
+          },
+          simulation_scheduling: {
+            simulation_date: data.simulation_date || null,
+            simulation_time: data.simulation_time || null,
+            simulation_scheduled_at: data.simulation_scheduled_at || null
           }
         };
       }
@@ -261,6 +275,12 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
         // Statut
         status: data.status,
         completed: data.status === 'completed',
+        
+        // Programmation de simulation
+        simulation_date: data.simulation_scheduling.simulation_date,
+        simulation_time: data.simulation_scheduling.simulation_time,
+        simulation_scheduled_at: data.simulation_scheduling.simulation_scheduled_at,
+        
         updated_at: new Date().toISOString()
       };
 
@@ -290,8 +310,8 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       // Les données sont maintenant stockées dans des colonnes dédiées
       // Plus besoin de la colonne JSONB details
 
-      // Invalider le cache après sauvegarde
-      cache.invalidate(`protocol2_evaluation_${applicationId}`);
+      // Mettre à jour le cache avec les nouvelles données au lieu de l'invalider
+      cache.set(`protocol2_evaluation_${applicationId}`, data);
       
       console.log('Évaluation Protocole 2 sauvegardée avec succès');
     } catch (error) {
@@ -352,7 +372,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       
       // Calculer les scores comme dans le protocole 1
       const sectionScores = calculateSectionScores(newData);
-      newData.globalScore = sectionScores.global;
+      // Note: globalScore n'est pas dans l'interface Protocol2EvaluationData, on le calcule à la volée
       
       // Mettre à jour le statut basé sur les scores
       const hasScores = newData.mise_en_situation.jeu_de_role.score > 0 || 
@@ -388,13 +408,13 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       
       return newData;
     });
-  }, [calculateSectionScores, saveEvaluation]);
+  }, [calculateSectionScores, saveEvaluation, LOCAL_DIRTY_KEY, LOCAL_KEY, LOCAL_MTIME_KEY]);
 
 
   // Charger les données au montage du composant
   useEffect(() => {
     loadEvaluation();
-  }, [loadEvaluation]);
+  }, [applicationId, loadEvaluation]); // Inclure loadEvaluation pour éviter les warnings
 
   // Nettoyer le timeout au démontage (comme protocole 1)
   useEffect(() => {
@@ -436,7 +456,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       window.removeEventListener('beforeunload', handleImmediatePersist);
       document.removeEventListener('visibilitychange', handleImmediatePersist);
     };
-  }, [evaluationData, saveEvaluation]);
+  }, [evaluationData, saveEvaluation, LOCAL_KEY, LOCAL_MTIME_KEY]);
 
   // Nettoyer le cache périodiquement
   useEffect(() => {
@@ -476,8 +496,30 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     return () => {
       window.removeEventListener('beforeunload', handleImmediatePersist);
     };
-  }, [applicationId, evaluationData, saveEvaluation]);
+  }, [applicationId, evaluationData, saveEvaluation, LOCAL_KEY, LOCAL_MTIME_KEY]);
 
+  // Fonction pour sauvegarder la date de simulation
+  const saveSimulationDate = useCallback(async (date: string, time: string) => {
+    if (!applicationId || !user) return false;
+    
+    try {
+      const updatedData = {
+        ...evaluationData,
+        simulation_scheduling: {
+          simulation_date: date,
+          simulation_time: time,
+          simulation_scheduled_at: new Date().toISOString()
+        }
+      };
+      
+      setEvaluationData(updatedData);
+      await saveEvaluation(updatedData);
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde de la date de simulation:', error);
+      return false;
+    }
+  }, [applicationId, user, evaluationData, saveEvaluation]);
 
   return {
     evaluationData,
@@ -485,6 +527,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     calculateSectionScores,
     isLoading,
     isSaving,
-    reload: loadEvaluation
+    reload: loadEvaluation,
+    saveSimulationDate
   };
 }

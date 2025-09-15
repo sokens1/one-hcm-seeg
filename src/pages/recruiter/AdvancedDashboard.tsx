@@ -75,7 +75,7 @@ export default function AdvancedDashboard() {
       {/* Loading State */}
       {isLoading ? (
         <div className="flex flex-col sm:flex-row justify-center items-center py-8 sm:py-12 gap-2">
-          <Loader2 className="w-6 h-6 sm:w-8 sm:w-8 animate-spin text-primary" />
+          <Loader2 className="w-6 h-6 sm:w-8 animate-spin text-primary" />
           <span className="text-sm sm:text-base">Chargement du dashboard...</span>
         </div>
       ) : (
@@ -127,7 +127,7 @@ export default function AdvancedDashboard() {
                 )}
                 <Link to="/recruiter/candidates" className="block">
                   <Button variant="outline" className="w-full justify-start gap-2 text-xs sm:text-sm">
-                    <Users className="w-3 h-3 sm:w-4 sm:w-4" />
+                    <Users className="w-3 h-3 sm:w-4" />
                     Voir tous les candidats
                   </Button>
                 </Link>
@@ -144,7 +144,7 @@ export default function AdvancedDashboard() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-base sm:text-lg">Activité récente</CardTitle>
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                  <Bell className="h-4 w-4 sm:h-5 sm:h-5" />
+                  <Bell className="h-4 w-4 sm:h-5" />
                 </Button>
               </CardHeader>
               <CardContent>

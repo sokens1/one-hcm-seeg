@@ -1,0 +1,107 @@
+ANALYSE DU FICHIER CSV : CANDIDAT-PAR-POSTE-CANDIDATÉ-09.CSV
+=============================================================
+
+RÉSUMÉ GLOBAL
+=============
+- Fichier analysé : Candidat-par-poste-candidaté-09.csv
+- Nombre total de candidats dans le CSV : 54 candidats
+- Nombre de candidats du CSV avec des champs manquants : 8 candidats
+- Pourcentage de candidats concernés : 14.8%
+
+DÉTAIL DES CANDIDATS CONCERNÉS
+==============================
+
+1. ENGO MENIE JEAN ROBERT
+   - Poste : Directeur Juridique, Communication & RSE
+   - Section manquante : completude
+
+2. Marie Ange NAMBO WEZET Née MBOUROU LAMASSE
+   - Poste : Directeur Audit & Contrôle interne
+   - Section manquante : completude
+
+3. Thomas ESSINGONE MEMIAGHE
+   - Poste : Directeur Commercial et Recouvrement
+   - Section manquante : completude
+
+4. Edwige DILEBOU
+   - Poste : Directeur Qualité, Hygiène, Sécurité & Environnement
+   - Section manquante : completude
+
+5. DERILLE OVONO ENAME
+   - Poste : Directeur des Systèmes d'Information
+   - Section manquante : completude
+
+6. ABAGHE DURANDAL
+   - Poste : Directeur Exploitation Electricité
+   - Section manquante : completude
+
+7. Guy-Noël ONDO EKOMY
+   - Poste : Directeur Exploitation Electricité
+   - Section manquante : completude
+
+8. Pépin Jonas OZELA NGUEMA
+   - Poste : Directeur Exploitation Electricité
+   - Section manquante : completude
+
+STATISTIQUES PAR SECTION MANQUANTE
+==================================
+- completude : 8 candidats (100% des candidats concernés)
+
+ANALYSE PAR POSTE
+=================
+
+Directeur Juridique, Communication & RSE : 1 candidat
+- ENGO MENIE JEAN ROBERT
+
+Directeur Audit & Contrôle interne : 1 candidat
+- Marie Ange NAMBO WEZET Née MBOUROU LAMASSE
+
+Directeur Commercial et Recouvrement : 1 candidat
+- Thomas ESSINGONE MEMIAGHE
+
+Directeur Qualité, Hygiène, Sécurité & Environnement : 1 candidat
+- Edwige DILEBOU
+
+Directeur des Systèmes d'Information : 1 candidat
+- DERILLE OVONO ENAME
+
+Directeur Exploitation Electricité : 3 candidats
+- ABAGHE DURANDAL
+- Guy-Noël ONDO EKOMY
+- Pépin Jonas OZELA NGUEMA
+
+OBSERVATIONS IMPORTANTES
+========================
+
+1. CONCENTRATION SUR LA SECTION "COMPLETUDE"
+   - Tous les candidats concernés (8/8) ont la section "completude" manquante
+   - Aucun candidat du CSV n'a de problèmes avec les autres sections (conformité, mtp, feedback)
+
+2. POSTE LE PLUS CONCERNÉ
+   - Le poste "Directeur Exploitation Electricité" est le plus touché avec 3 candidats
+   - Cela représente 37.5% des candidats concernés
+
+3. COUVERTURE DES POSTES
+   - 6 postes différents sont concernés sur les 16 postes analysés
+   - Les postes techniques semblent plus touchés
+
+4. IMPACT SUR L'ÉVALUATION
+   - La section "completude" étant manquante, ces candidats ne peuvent pas être évalués complètement
+   - Cela peut affecter leur classement final et leur verdict
+
+RECOMMANDATIONS
+===============
+
+1. PRIORITÉ HAUTE
+   - Compléter la section "completude" pour les 8 candidats identifiés
+   - Se concentrer particulièrement sur le poste "Directeur Exploitation Electricité"
+
+2. VÉRIFICATION
+   - Vérifier si d'autres candidats non listés dans le CSV ont également des champs manquants
+   - S'assurer que tous les candidats ont au minimum les sections obligatoires
+
+3. STANDARDISATION
+   - Mettre en place un processus de validation pour éviter les champs manquants
+   - Créer un checklist pour chaque section avant la finalisation des évaluations
+
+Rapport généré le : ${new Date().toLocaleString('fr-FR')}

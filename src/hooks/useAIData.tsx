@@ -162,8 +162,16 @@ export function useAIData() {
                 const directorData = nestedData['Chef de Département Electricité'];
                 
                 if (directorData && typeof directorData === 'object') {
-                  const rawData = transformData(directorData, true);
+                  // Accéder aux candidats dans la structure imbriquée
+                  const candidatsData = directorData.candidats as Record<string, unknown> | undefined;
+                  if (candidatsData && typeof candidatsData === 'object') {
+                    const rawData = transformData(candidatsData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
+                    console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  } else {
+                    transformedData[dept.name] = [];
+                    console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                  }
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -184,9 +192,16 @@ export function useAIData() {
                 const coordData = nestedData['Coordonnateur des Régions'];
                 
                 if (coordData && typeof coordData === 'object') {
-                  const rawData = transformData(coordData, true);
+                  // Accéder aux candidats dans la structure imbriquée
+                  const candidatsData = coordData.candidats as Record<string, unknown> | undefined;
+                  if (candidatsData && typeof candidatsData === 'object') {
+                    const rawData = transformData(candidatsData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
                   console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  } else {
+                    transformedData[dept.name] = [];
+                    console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                  }
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -319,9 +334,16 @@ export function useAIData() {
                 const chefEauData = nestedData['Chef de Département Eau'];
                 
                 if (chefEauData && typeof chefEauData === 'object') {
-                  const rawData = transformData(chefEauData, true);
+                  // Accéder aux candidats dans la structure imbriquée
+                  const candidatsData = chefEauData.candidats as Record<string, unknown> | undefined;
+                  if (candidatsData && typeof candidatsData === 'object') {
+                    const rawData = transformData(candidatsData, true);
                   transformedData[dept.name] = deduplicateCandidates(rawData);
                   console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                  } else {
+                    transformedData[dept.name] = [];
+                    console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                  }
                 } else {
                   transformedData[dept.name] = [];
                   console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -680,7 +702,14 @@ export function useAIData() {
                 score: similarityScore,
                     commentaire_score: (similariteScoreData.commentaire_score as string) || 
                                      (similariteScoreData.raison_verdict as string) || 
+                                 (similariteScoreData.verdict_raison as string) ||
+                                 (similariteScoreData.raison_du_verdict as string) ||
+                                 (similariteScoreData.raisin_du_verdict as string) ||
+                                 (similariteScoreData.reason_verdict as string) ||
                                      (similariteScoreData.raison as string) || 
+                                 (similariteScoreData.reason as string) ||
+                                 (similariteScoreData.phrase_verdict as string) ||
+                                 (similariteScoreData.verdict_explanation as string) ||
                                      'Aucun commentaire',
                     forces: Array.isArray(similariteScoreData.points_forts) ? 
                            (similariteScoreData.points_forts as string[]).filter(f => f && f.trim()) : 
@@ -760,9 +789,16 @@ export function useAIData() {
               const directorData = nestedData['Directeur Moyens Généraux'];
               
               if (directorData && typeof directorData === 'object') {
-                const rawData = transformData(directorData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = directorData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -774,9 +810,16 @@ export function useAIData() {
               const directorData = nestedData['Directeur Technique Eau'];
               
               if (directorData && typeof directorData === 'object') {
-                const rawData = transformData(directorData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = directorData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -788,9 +831,16 @@ export function useAIData() {
               const directorData = nestedData['Chef de Département Electricité'];
               
               if (directorData && typeof directorData === 'object') {
-                const rawData = transformData(directorData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = directorData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -802,9 +852,16 @@ export function useAIData() {
               const directorData = nestedData['Directeur Exploitation Eau'];
               
               if (directorData && typeof directorData === 'object') {
-                const rawData = transformData(directorData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = directorData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -816,9 +873,16 @@ export function useAIData() {
               const coordData = nestedData['Coordonnateur des Régions'];
               
               if (coordData && typeof coordData === 'object') {
-                const rawData = transformData(coordData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = coordData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -830,9 +894,16 @@ export function useAIData() {
               const auditData = nestedData['Directeur Audit & Contrôle interne'];
               
               if (auditData && typeof auditData === 'object') {
-                const rawData = transformData(auditData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = auditData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -847,9 +918,16 @@ export function useAIData() {
               const dsiData = availableKeys.length > 0 ? nestedData[availableKeys[0]] : null;
               
               if (dsiData && typeof dsiData === 'object') {
-                const rawData = transformData(dsiData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = dsiData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -861,9 +939,16 @@ export function useAIData() {
               const qhseData = nestedData['Directeur Qualité, Hygiène, Sécurité & Environnement'];
               
               if (qhseData && typeof qhseData === 'object') {
-                const rawData = transformData(qhseData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = qhseData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -875,9 +960,16 @@ export function useAIData() {
               const commercialData = nestedData['Directeur Commercial et Recouvrement'];
               
               if (commercialData && typeof commercialData === 'object') {
-                const rawData = transformData(commercialData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = commercialData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -889,9 +981,16 @@ export function useAIData() {
               const capitalHumainData = nestedData['Directeur du Capital Humain'];
               
               if (capitalHumainData && typeof capitalHumainData === 'object') {
-                const rawData = transformData(capitalHumainData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = capitalHumainData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -903,9 +1002,16 @@ export function useAIData() {
               const financesData = nestedData['Directeur Finances et Comptabilité'];
               
               if (financesData && typeof financesData === 'object') {
-                const rawData = transformData(financesData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = financesData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -917,9 +1023,16 @@ export function useAIData() {
               const juridiqueData = nestedData['Directeur Juridique, Communication & RSE'];
               
               if (juridiqueData && typeof juridiqueData === 'object') {
-                const rawData = transformData(juridiqueData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = juridiqueData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -931,9 +1044,16 @@ export function useAIData() {
               const techniqueElecData = nestedData['Directeur Technique Electricité'];
               
               if (techniqueElecData && typeof techniqueElecData === 'object') {
-                const rawData = transformData(techniqueElecData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = techniqueElecData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -945,9 +1065,16 @@ export function useAIData() {
               const exploitationElecData = nestedData['Directeur Exploitation Electricité'];
               
               if (exploitationElecData && typeof exploitationElecData === 'object') {
-                const rawData = transformData(exploitationElecData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = exploitationElecData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -959,9 +1086,16 @@ export function useAIData() {
               const supportData = nestedData['Chef de Département Support'];
               
               if (supportData && typeof supportData === 'object') {
-                const rawData = transformData(supportData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = supportData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);
@@ -973,9 +1107,16 @@ export function useAIData() {
               const chefEauData = nestedData['Chef de Département Eau'];
               
               if (chefEauData && typeof chefEauData === 'object') {
-                const rawData = transformData(chefEauData, true);
+                // Accéder aux candidats dans la structure imbriquée
+                const candidatsData = chefEauData.candidats as Record<string, unknown> | undefined;
+                if (candidatsData && typeof candidatsData === 'object') {
+                  const rawData = transformData(candidatsData, true);
                 transformedData[dept.name] = deduplicateCandidates(rawData);
                 console.log(`✅ Département ${dept.name}: ${transformedData[dept.name].length} candidat(s) chargé(s) (après déduplication)`);
+                } else {
+                  transformedData[dept.name] = [];
+                  console.warn(`⚠️ Département ${dept.name}: Aucun candidat trouvé dans la structure imbriquée`);
+                }
               } else {
                 transformedData[dept.name] = [];
                 console.warn(`⚠️ Département ${dept.name}: Structure imbriquée invalide, ignoré`);

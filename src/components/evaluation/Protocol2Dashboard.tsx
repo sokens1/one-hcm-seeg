@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star, Calendar as CalendarLucide } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useOptimizedProtocol2Evaluation } from "@/hooks/useOptimizedProtocol2Evaluation";
+import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
 
 interface StarRatingProps {
   value: number;
@@ -16,15 +18,15 @@ interface StarRatingProps {
   disabled?: boolean;
 }
 
-const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disabled = false }) => {
-  const handleStarClick = (starValue: number) => {
+const StarRating: React.FC<StarRatingProps> = React.memo(({ value, onChange, label, disabled = false }) => {
+  const handleStarClick = useCallback((starValue: number) => {
     if (disabled) return;
     
     // Empêcher les clics involontaires en vérifiant si c'est un clic intentionnel
     // console.log('⭐ [STAR DEBUG] Clic sur étoile:', starValue, 'pour', label);
     
     onChange(starValue);
-  };
+  }, [disabled, onChange]);
 
   return (
     <div className="space-y-2">
@@ -61,7 +63,30 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
       <span className="text-xs text-muted-foreground">{value}/5</span>
     </div>
   );
-};
+});
+
+// Composant mémorisé pour les textareas
+const MemoizedTextarea = React.memo(({ 
+  placeholder, 
+  value, 
+  onChange, 
+  className, 
+  readOnly 
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  className: string;
+  readOnly: boolean;
+}) => (
+  <Textarea
+    placeholder={placeholder}
+    value={value}
+    onChange={onChange}
+    className={className}
+    readOnly={readOnly}
+  />
+));
 
 interface Protocol2DashboardProps {
   candidateName: string;
@@ -112,45 +137,158 @@ const translateStatus = (status: string) => {
   }
 };
 
-export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false }: Protocol2DashboardProps) {
+export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false }: Protocol2DashboardProps) {
+  console.log('🔍 Protocol2Dashboard - isReadOnly:', isReadOnly, 'applicationId:', applicationId);
+  
   const {
     evaluationData,
     updateEvaluation,
     calculateSectionScores,
     isLoading,
     isSaving,
-    reload
+    reload,
+    saveSimulationDate
   } = useOptimizedProtocol2Evaluation(applicationId);
-  // Pas de gestion de scroll comme le protocole 1 - plus simple et plus stable
+
+  // Hook pour la programmation de simulation (même fonctionnalité que l'entretien)
+  const {
+    schedules,
+    isLoading: isSchedulingLoading,
+    isSaving: isSchedulingSaving,
+    timeSlots,
+    scheduleInterview,
+    cancelInterview,
+    isSlotBusy,
+    isDateFullyBooked,
+    getAvailableSlots,
+    generateCalendar
+  } = useInterviewScheduling(applicationId);
+
+  // États pour la programmation de simulation
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedTime, setSelectedTime] = useState<string>('');
+  const [isSimulationPopoverOpen, setIsSimulationPopoverOpen] = useState(false);
+
+  // Fonction pour programmer la simulation (sans changer le statut)
+  const handleScheduleSimulation = useCallback(async () => {
+    if (!selectedDate || !selectedTime) {
+      console.log('❌ Date ou heure manquante:', { selectedDate, selectedTime });
+      return;
+    }
+    
+    console.log('🚀 Début de la programmation de simulation:', { selectedDate, selectedTime, applicationId });
+    
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const simulationDateTime = new Date(`${selectedDate}T${selectedTime}`);
+      
+      console.log('📅 Date de simulation créée:', simulationDateTime.toISOString());
+      
+      // Sauvegarder la date programmée en base de données (protocol2_evaluations)
+      console.log('💾 Sauvegarde dans protocol2_evaluations...');
+      const saveResult = await saveSimulationDate(selectedDate, selectedTime);
+      console.log('✅ Résultat de la sauvegarde:', saveResult);
+      
+      // Mettre à jour seulement la date de simulation dans applications (garder le statut 'incubation')
+      console.log('🔄 Mise à jour de la table applications...');
+      const { error: updateError } = await supabase
+        .from('applications')
+        .update({
+          simulation_date: simulationDateTime.toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', applicationId);
+
+      if (updateError) {
+        console.error('❌ Erreur lors de la mise à jour de la date de simulation:', updateError);
+        return;
+      }
+      
+      console.log('✅ Table applications mise à jour avec succès');
+
+      console.log('✅ Date de simulation mise à jour:', simulationDateTime.toISOString());
+      
+      // Afficher un message de succès avec toast
+      toast({
+        title: "Simulation programmée",
+        description: `Simulation programmée avec succès pour le ${new Date(selectedDate).toLocaleDateString('fr-FR')} à ${selectedTime.slice(0, 5)}`,
+        variant: "default"
+      });
+      
+      // Envoyer un email de confirmation (optionnel)
+      try {
+        const { data: applicationDetails } = await supabase
+          .from('applications')
+          .select(`
+            users:users!applications_candidate_id_fkey(first_name, last_name, email),
+            job_offers:job_offers!applications_job_offer_id_fkey(title)
+          `)
+          .eq('id', applicationId)
+          .single();
+
+        if (applicationDetails?.users && applicationDetails?.job_offers) {
+          const user = Array.isArray(applicationDetails.users) ? applicationDetails.users[0] : applicationDetails.users;
+          const jobOffer = Array.isArray(applicationDetails.job_offers) ? applicationDetails.job_offers[0] : applicationDetails.job_offers;
+          
+          if (user && jobOffer) {
+            const candidateName = `${user.first_name} ${user.last_name}`;
+            const jobTitle = jobOffer.title;
+            
+            // Envoyer email de simulation programmée
+            await supabase.functions.invoke('send-interview-email', {
+              body: {
+                to: user.email,
+                candidateName,
+                jobTitle,
+                interviewDate: simulationDateTime.toISOString(),
+                interviewType: 'simulation'
+              }
+            });
+          }
+        }
+      } catch (emailError) {
+        console.warn('⚠️ Erreur lors de l\'envoi de l\'email:', emailError);
+      }
+      
+      // Rafraîchir la page pour mettre à jour l'interface
+      window.location.reload();
+      
+      // Réinitialiser la sélection
+      setSelectedDate('');
+      setSelectedTime('');
+      setIsSimulationPopoverOpen(false);
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la programmation de la simulation:', error);
+    }
+  }, [selectedDate, selectedTime, saveSimulationDate, applicationId]);
 
   const handleDecision = (decision: 'embauche' | 'refuse') => {
     onStatusChange(decision);
   };
 
-  // Fonction de mise à jour simplifiée comme dans le protocole 1
-  const updateProtocol2 = (section: string, field: string, value: string | number) => {
-    // console.log('🎯 updateProtocol2 appelé:', { section, field, value });
-    
+  // Fonction de mise à jour exactement comme dans le protocole 1 avec useCallback
+  const updateProtocol2 = useCallback((section: string, field: string, value: string | number) => {
     updateEvaluation(prev => {
       const newData = { ...prev };
       const [category, subCategory] = field.split('.');
 
-      if (section === 'mise_en_situation') {
-        if (!newData.mise_en_situation[category as keyof typeof newData.mise_en_situation]) {
-          newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] = { score: 0, comments: '' } as any;
+        if (section === 'mise_en_situation') {
+          if (!newData.mise_en_situation[category as keyof typeof newData.mise_en_situation]) {
+            newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] = { score: 0, comments: '' };
+          }
+          (newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] as { score: number; comments: string })[subCategory] = value;
+        } else if (section === 'validation_operationnelle') {
+          if (!newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle]) {
+            newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] = { score: 0, comments: '' };
+          }
+          (newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] as { score: number; comments: string })[subCategory] = value;
+        } else if (section === 'analyse_competences') {
+          if (!newData.analyse_competences[category as keyof typeof newData.analyse_competences]) {
+            newData.analyse_competences[category as keyof typeof newData.analyse_competences] = { score: 0, comments: '', gapLevel: '' };
+          }
+          (newData.analyse_competences[category as keyof typeof newData.analyse_competences] as { score: number; comments: string; gapLevel: string })[subCategory] = value;
         }
-        newData.mise_en_situation[category as keyof typeof newData.mise_en_situation][subCategory] = value;
-      } else if (section === 'validation_operationnelle') {
-        if (!newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle]) {
-          newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] = { score: 0, comments: '' } as any;
-        }
-        newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle][subCategory] = value;
-      } else if (section === 'analyse_competences') {
-        if (!newData.analyse_competences[category as keyof typeof newData.analyse_competences]) {
-          newData.analyse_competences[category as keyof typeof newData.analyse_competences] = { score: 0, comments: '', gapLevel: '' } as any;
-        }
-        newData.analyse_competences[category as keyof typeof newData.analyse_competences][subCategory] = value;
-      }
 
       // Mettre à jour le statut basé sur les scores
       const hasScores = newData.mise_en_situation.jeu_de_role.score > 0 || 
@@ -163,19 +301,13 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
         newData.status = 'in_progress';
       }
 
-      // console.log('📈 Données après mise à jour:', {
-      //   jeu_de_role: newData.mise_en_situation.jeu_de_role.score,
-      //   jeu_codir: newData.mise_en_situation.jeu_codir.score,
-      //   status: newData.status
-      // });
-
       return newData;
     });
-  };
+  }, [updateEvaluation]);
 
 
-  // Calculer les scores directement comme dans le protocole 1
-  const scores = calculateSectionScores(evaluationData);
+  // Calculer les scores avec useMemo pour éviter les recalculs inutiles
+  const scores = useMemo(() => calculateSectionScores(evaluationData), [evaluationData, calculateSectionScores]);
 
   if (isLoading) {
     return (
@@ -270,11 +402,152 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
               Simulation 
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.situation.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">
+          {/* Section Programmation de la simulation */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg">
+            {/* Champ Date de la simulation */}
+            <div className="flex-1">
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                Date de la simulation
+              </Label>
+              <div className="flex items-center gap-2">
+                <CalendarLucide className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-600">
+                  {evaluationData.simulation_scheduling.simulation_date && evaluationData.simulation_scheduling.simulation_time
+                    ? `${new Date(evaluationData.simulation_scheduling.simulation_date).toLocaleDateString('fr-FR')} à ${evaluationData.simulation_scheduling.simulation_time.slice(0, 5)}`
+                    : "Aucune date programmée"
+                  }
+                </span>
+              </div>
+            </div>
+            
+            {/* Bouton Programmer la simulation */}
+            <div className="flex-shrink-0">
+              <Popover open={isSimulationPopoverOpen} onOpenChange={setIsSimulationPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button 
+                    size="lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
+                    disabled={isReadOnly}
+                    onClick={() => {
+                      console.log('🔘 Bouton "Programmer la simulation" cliqué');
+                      setIsSimulationPopoverOpen(true);
+                    }}
+                  >
+                    <CalendarLucide className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Programmer la simulation
+                  </Button>
+                </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="center">
+                <div className="p-4 space-y-4">
+                  <div className="text-center">
+                    <h4 className="font-semibold text-lg mb-2">Programmer la simulation</h4>
+                    <p className="text-sm text-muted-foreground">Choisissez une date disponible</p>
+                  </div>
+                  
+                  {/* Calendrier personnalisé */}
+                  <div className="space-y-3">
+                    {(() => {
+                      const calendar = generateCalendar();
+                      const weeks = [];
+                      for (let i = 0; i < calendar.days.length; i += 7) {
+                        weeks.push(calendar.days.slice(i, i + 7));
+                      }
+                      return weeks.map((week, weekIndex) => (
+                        <div key={weekIndex} className="grid grid-cols-7 gap-1">
+                          {week.map((day, dayIndex) => {
+                            const today = new Date();
+                            const isToday = day.toDateString() === today.toDateString();
+                            const isPast = day < today;
+                            const dateString = day.toISOString().split('T')[0];
+                            const isFullyBooked = isDateFullyBooked(dateString);
+                            const isAvailable = !isPast && !isFullyBooked;
+                            
+                            return (
+                              <button
+                                key={dayIndex}
+                                onClick={() => isAvailable && setSelectedDate(dateString)}
+                                disabled={!isAvailable}
+                                className={cn(
+                                  "w-8 h-8 text-xs rounded-md transition-colors",
+                                  isToday && "bg-blue-100 text-blue-700 font-semibold",
+                                  isPast && "text-gray-400 cursor-not-allowed",
+                                  isFullyBooked && "bg-red-100 text-red-500 cursor-not-allowed",
+                                  isAvailable && "hover:bg-blue-50 text-gray-700",
+                                  selectedDate === dateString && "bg-blue-500 text-white"
+                                )}
+                              >
+                                {day.getDate()}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ));
+                    })()}
+                  </div>
+
+                  {/* Créneaux horaires */}
+                  {selectedDate && (
+                    <div className="space-y-3">
+                      <h5 className="font-medium text-sm">Créneaux disponibles</h5>
+                      <div className="grid grid-cols-3 gap-2">
+                        {timeSlots.map((time) => {
+                          const isBusy = isSlotBusy(selectedDate, time);
+                          return (
+                            <button
+                              key={time}
+                              onClick={() => !isBusy && setSelectedTime(time)}
+                              disabled={isBusy}
+                              className={cn(
+                                "p-2 text-sm rounded-md border transition-colors",
+                                selectedTime === time
+                                  ? "bg-blue-500 text-white border-blue-500"
+                                  : isBusy
+                                  ? "bg-red-100 text-red-500 border-red-200 cursor-not-allowed"
+                                  : "bg-white hover:bg-blue-50 border-gray-300"
+                              )}
+                            >
+                              {time.slice(0, 5)}
+                              {isBusy && " ✕"}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Boutons d'action */}
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      onClick={handleScheduleSimulation}
+                      disabled={!selectedDate || !selectedTime || isSchedulingSaving}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isSchedulingSaving ? 'Programmation...' : 'Programmer'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedDate('');
+                        setSelectedTime('');
+                      }}
+                      className="flex-1"
+                    >
+                      Annuler
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-3">
               <StarRating
@@ -283,7 +556,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Jeu de rôle fonctionnel"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur le jeu de rôle..."
                 value={evaluationData.mise_en_situation.jeu_de_role.comments}
                 onChange={(e) => !isReadOnly && updateProtocol2('mise_en_situation', 'jeu_de_role.comments', e.target.value)}
@@ -299,7 +572,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Jeu de rôle CODIR"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur le jeu de rôle CODIR..."
                 value={evaluationData.mise_en_situation.jeu_codir.comments}
                 onChange={(e) => !isReadOnly && updateProtocol2('mise_en_situation', 'jeu_codir.comments', e.target.value)}
@@ -320,6 +593,9 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
               Performance
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.performance.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
@@ -333,7 +609,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Key Performance Indicators (KPI's)"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur les KPI's..."
                 value={evaluationData.validation_operationnelle.fiche_kpis.comments}
                 onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kpis.comments', e.target.value)}
@@ -349,7 +625,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Key Risque Indicators (KRI's)"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur les KRI's..."
                 value={evaluationData.validation_operationnelle.fiche_kris?.comments || ''}
                 onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kris.comments', e.target.value)}
@@ -365,7 +641,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Key Control Indicators (KCI's)"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur les KCI's..."
                 value={evaluationData.validation_operationnelle.fiche_kcis?.comments || ''}
                 onChange={(e) => !isReadOnly && updateProtocol2('validation_operationnelle', 'fiche_kcis.comments', e.target.value)}
@@ -386,6 +662,9 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
               Compétence
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.competence.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
@@ -399,7 +678,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
                 label="Gap de compétences"
                 disabled={isReadOnly}
               />
-              <Textarea
+              <MemoizedTextarea
                 placeholder="Commentaires sur l'analyse des compétences..."
                 value={evaluationData.analyse_competences.gap_competences.comments}
                 onChange={(e) => !isReadOnly && updateProtocol2('analyse_competences', 'gap_competences.comments', e.target.value)}
@@ -411,7 +690,7 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
             <div className="space-y-3">
               <div className="space-y-2">
                 <h5 className="font-medium text-sm">Formation requise et Justification</h5>
-                <Textarea
+                <MemoizedTextarea
                   placeholder="Commentaires sur la formation requise et justification..."
                   value={evaluationData.analyse_competences.plan_formation.comments}
                   onChange={(e) => !isReadOnly && updateProtocol2('analyse_competences', 'plan_formation.comments', e.target.value)}
@@ -457,4 +736,4 @@ export function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onS
 
     </div>
   );
-}
+});

@@ -45,38 +45,39 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
 
   // Fonction pour calculer les scores partiels de chaque section (pondération 10/20/70, sans arrondi côté UI)
   const calculateSectionScores = useCallback((protocol1: any) => {
+    // Fonction utilitaire pour limiter les scores entre 0 et 5
+    const clampScore = (score: number) => Math.max(0, Math.min(5, score || 0));
+    
     // 1) Score documentaire: moyenne des 3 documents (sur 5) -> %
     const documentaryScores = [
-      protocol1.documentaryEvaluation.cv.score,
-      protocol1.documentaryEvaluation.lettreMotivation.score,
-      protocol1.documentaryEvaluation.diplomesEtCertificats.score
+      clampScore(protocol1.documentaryEvaluation.cv.score),
+      clampScore(protocol1.documentaryEvaluation.lettreMotivation.score),
+      clampScore(protocol1.documentaryEvaluation.diplomesEtCertificats.score)
     ];
-    const documentaryAvgOn5 = documentaryScores.reduce((a: number, b: number) => a + (b || 0), 0) / documentaryScores.length;
-    const documentaryScore = (documentaryAvgOn5 / 5) * 100;
+    const documentaryAvgOn5 = documentaryScores.reduce((a: number, b: number) => a + b, 0) / documentaryScores.length;
+    const documentaryScore = Math.min((documentaryAvgOn5 / 5) * 100, 100);
     
     // 2) Score MTP: moyenne des 3 axes (sur 5) -> %
     const mtpScores = [
-      protocol1.mtpAdherence.metier.score,
-      protocol1.mtpAdherence.talent.score,
-      protocol1.mtpAdherence.paradigme.score
+      clampScore(protocol1.mtpAdherence.metier.score),
+      clampScore(protocol1.mtpAdherence.talent.score),
+      clampScore(protocol1.mtpAdherence.paradigme.score)
     ];
-    const mtpAverage = mtpScores.length > 0 ? mtpScores.reduce((a: number, b: number) => a + (b || 0), 0) / mtpScores.length : 0;
-    const mtpScore = (mtpAverage / 5) * 100;
+    const mtpAverage = mtpScores.reduce((a: number, b: number) => a + b, 0) / mtpScores.length;
+    const mtpScore = Math.min((mtpAverage / 5) * 100, 100);
     
     // 3) Score Entretien: moyenne des 3 axes physiques MTP + gap de compétence (sur 5) -> %
     const interviewScores = [
-      protocol1.interview.physicalMtpAdherence.metier.score,
-      protocol1.interview.physicalMtpAdherence.talent.score,
-      protocol1.interview.physicalMtpAdherence.paradigme.score,
-      protocol1.interview.gapCompetence.score
+      clampScore(protocol1.interview.physicalMtpAdherence.metier.score),
+      clampScore(protocol1.interview.physicalMtpAdherence.talent.score),
+      clampScore(protocol1.interview.physicalMtpAdherence.paradigme.score),
+      clampScore(protocol1.interview.gapCompetence.score)
     ];
-    const interviewAverage = interviewScores.length > 0
-      ? interviewScores.reduce((a: number, b: number) => a + (b || 0), 0) / interviewScores.length
-      : 0;
-    const interviewScore = (interviewAverage / 5) * 100;
+    const interviewAverage = interviewScores.reduce((a: number, b: number) => a + b, 0) / interviewScores.length;
+    const interviewScore = Math.min((interviewAverage / 5) * 100, 100);
     
     // Score global pondéré = 10% documentaire, 20% MTP, 70% entretien
-    const totalScore = (0.10 * documentaryScore) + (0.20 * mtpScore) + (0.70 * interviewScore);
+    const totalScore = Math.min((0.10 * documentaryScore) + (0.20 * mtpScore) + (0.70 * interviewScore), 100);
 
     return {
       documentaryScore,

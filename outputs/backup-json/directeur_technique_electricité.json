@@ -1,0 +1,1045 @@
+{
+    "Directeur Technique Electricité": {
+      "Wivine Mengue": {
+        "prenom": "Wivine",
+        "nom": "Mengue",
+        "conformite": {
+          "prenom": "Wivine",
+          "nom": "MENGUE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MENGUE",
+          "prenom": "Wivine",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.48,
+            "Talent": 0.34,
+            "Paradigme": 0.54
+          },
+          "Score_moyen": 45.33,
+          "niveau": "Le score moyen de 45.33 indique une adéquation partielle avec la vision de l'entreprise. Le candidat démontre des compétences intéressantes mais nécessitant des améliorations pour s'aligner pleinement avec les objectifs de transformation de la SEEG.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score, bien qu'inférieur à la moyenne favorable, démontre une certaine capacité à comprendre et intégrer les enjeux de l'entreprise.",
+          "points_forts": [
+            "Connaissance des enjeux techniques liés à l'électricité et à l'infrastructure.",
+            "Capacité à analyser les défis organisationnels et économiques.",
+            "Compétences en matière d'innovation et d'intégration de nouvelles technologies."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion de projet pour les grandes réhabilitations d'infrastructures.",
+            "Développer une meilleure compréhension des aspects financiers pour gérer les coûts.",
+            "Renforcer les compétences en gestion des ressources humaines pour appliquer les changements organisationnels."
+          ],
+          "rang": 2
+        },
+        "completude": {
+          "nom": "MENGUE",
+          "prenom": "Wivine",
+          "poste": "Directeur Technique Electricité",
+          "score": 35.2,
+          "resume_experience": "13 ans en production, transport et distribution de l'électricité, planification et normalisation, gestion QHSE, et gestion de projets stratégiques",
+          "verdict": "moyen",
+          "phrase_verdict": "Le score est considéré moyen; le candidat dispose d'une expérience notable mais le profil ne s'aligne que partiellement bien avec les exigences stratégiques du poste.",
+          "points_forts": [
+            "Expérience significative dans la planification stratégique et normalisation",
+            "Compétence en gestion de projets électriques et budgets",
+            "Bonne connaissance des normes et régulations électriques"
+          ],
+          "points_a_travailler": [
+            "Renforcer l'expérience en management des grandes équipes ou divisions",
+            "Accentuer les compétences en innovation technologique dans le secteur électrique",
+            "Améliorer la capacité à définir une stratégie technique alignée sur les objectifs globaux de l'entreprise"
+          ],
+          "rang": 10
+        },
+        "feedback": {
+          "prenom": "Wivine",
+          "nom": "MENGUE",
+          "score": 68.4,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre un potentiel de leadership et un bon comportement, ce qui est essentiel dans un contexte de transformation tel que décrit dans la vision de la SEEG. Cependant, il devra encore affirmer son leadership et adapter ses compétences à la haute exigence de la restructuration.",
+          "Points forces": [
+            "Bon manager avec des compétences relationnelles positives",
+            "Potentiel satisfaisant pour s'adapter aux exigences du poste"
+          ],
+          "Points à travailler": [
+            "Affirmer son leadership de manière plus proactive",
+            "Acquérir une expérience plus solide dans le secteur de l'électricité"
+          ],
+          "rang": 2
+        },
+        "global": {
+          "score_global": 57.57,
+          "verdict": "favorable",
+          "resume": "Wivine Mengue est un candidat avec un potentiel de leadership avéré et des compétences relationnelles positives, essentielles dans le contexte de transformation énergétique de la SEEG. Cependant, il devra affirmer davantage son leadership et acquérir une expérience plus solide dans le secteur de l'électricité pour répondre aux exigences élevées de la restructuration.",
+          "points_forts": [
+            "Bon manager avec des compétences relationnelles positives",
+            "Potentiel satisfaisant pour s'adapter aux exigences du poste"
+          ],
+          "points_a_ameliorer": [
+            "Affirmer son leadership de manière plus proactive",
+            "Acquérir une expérience plus solide dans le secteur de l'électricité"
+          ],
+          "rang": 1
+        }
+      },
+      "Judex Ossima": {
+        "prenom": "Judex",
+        "nom": "Ossima",
+        "conformite": {
+          "prenom": "Judex",
+          "nom": "OSSIMA",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OSSIMA",
+          "prenom": "Judex",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.42,
+            "Talent": 0.34,
+            "Paradigme": 0.39
+          },
+          "Score_moyen": 38.33,
+          "niveau": "Le candidat présente un score moyen défavorable, ce qui indique qu'il n'adhère pas à la vision de l'entreprise. Ses faibles résultats dans les domaines clés montrent qu'il pourrait avoir des difficultés à s'intégrer dans le rôle proposé.",
+          "verdict": "défavorable",
+          "raison_verdict": "La performance du candidat est insuffisante pour répondre aux exigences du poste et correspond à une vision transformatrice attendue par l'entreprise.",
+          "points_forts": [
+            "Connaissance des infrastructures électriques et des enjeux liés à leur modernisation.",
+            "Capacité d'adaptation dans un environnement complexe.",
+            "Compréhension des problématiques liées à la gouvernance et à la transparence."
+          ],
+          "points_a_travailler": [
+            "Renforcement de ses compétences techniques et métiers dans le secteur de l'électricité.",
+            "Développement de son talent pour la gestion d'équipe et le leadership.",
+            "Amélioration de sa capacité à intégrer des technologies et solutions innovantes."
+          ],
+          "rang": 11
+        },
+        "completude": {
+          "nom": "OSSIMA",
+          "prenom": "Judex",
+          "poste": "Directeur Technique Electricité",
+          "score": 40.4,
+          "resume_experience": "Plus de 20 ans en gestion de projets de production, transport et distribution d'électricité",
+          "verdict": "favorable",
+          "points_forts": [
+            "Grande expérience en gestion de projets électriques",
+            "Compétences en management d'équipes et leadership",
+            "Connaissance approfondie des réseaux électriques au Gabon"
+          ],
+          "points_a_travailler": [
+            "Améliorer la maîtrise de l'anglais pour faciliter les échanges internationaux",
+            "Développement de compétences supplémentaires en innovation technologique",
+            "Rafraîchissement des formations en normes environnementales récentes"
+          ],
+          "rang": 2
+        },
+        "feedback": {
+          "prenom": "Judex",
+          "nom": "OSSIMA",
+          "score": 67.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat a une expérience pertinente dans la production et la distribution, ce qui est crucial pour le poste. Son comportement est considéré comme bon, bien qu'il doive renforcer son leadership.",
+          "Points forces": [
+            "Expérience en distribution et production d'électricité",
+            "Bon manager avec un comportement positif"
+          ],
+          "Points à travailler": [
+            "Leadership à confirmer",
+            "Nécessité de se former davantage sur certaines techniques avancées"
+          ],
+          "rang": 3
+        },
+        "global": {
+          "score_global": 56.41,
+          "verdict": "favorable",
+          "resume": "Judex Ossima possède une expérience pertinente dans la production et la distribution d'électricité, ce qui est essentiel pour le poste de Directeur Technique Électricité. Il est un bon manager avec un comportement positif, bien que son leadership doive être confirmé et qu'il soit nécessaire qu'il se forme davantage sur certaines techniques avancées.",
+          "points_forts": [
+            "Expérience en distribution et production d'électricité",
+            "Bon manager",
+            "Comportement positif"
+          ],
+          "points_a_ameliorer": [
+            "Leadership à confirmer",
+            "Nécessité de se former davantage sur certaines techniques avancées"
+          ],
+          "rang": 2
+        }
+      },
+      "Ulrich Mba Edou": {
+        "prenom": "Ulrich",
+        "nom": "Mba Edou",
+        "conformite": {
+          "prenom": "Ulrich",
+          "nom": "MBA EDOU",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MBA EDOU",
+          "prenom": "Ulrich",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.41,
+            "Talent": 0.38,
+            "Paradigme": 0.43
+          },
+          "Score_moyen": 40.67,
+          "niveau": "Le candidat affiche un score moyen défavorable en raison de ses compétences insuffisantes dans les domaines observés. Son adhésion à la vision de l'entreprise semble faible, ce qui pourrait compromettre sa capacité à contribuer efficacement aux objectifs de la SEEG.",
+          "verdict": "défavorable",
+          "raison_du_verdict": "Le score moyen de 40.67 est strictement inférieur à 43.5, indiquant un alignement insuffisant avec les objectifs de l'entreprise.",
+          "points_forts": [
+            "Compétences de base dans le domaine technique électrique.",
+            "Connaissances initiales des paradigmes énergétiques.",
+            "Capacité à dialoguer sur des solutions organisationnelles."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences techniques spécifiques à la modernisation des infrastructures.",
+            "Améliorer la gestion des talents pour mieux répondre aux attentes organisationnelles.",
+            "Acquérir une meilleure compréhension des enjeux de gouvernance et de transparence."
+          ],
+          "rang": 7
+        },
+        "completude": {
+          "nom": "MBA EDOU",
+          "prenom": "Ulrich",
+          "poste": "Directeur Technique Electricité",
+          "score": 39.1,
+          "resume_experience": {
+            "nombre_d_annees": 10,
+            "specialite": "gestion de projets électriques et management"
+          },
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat possède une expérience riche de plus de 10 ans en électricité, ce qui est un atout majeur pour le poste. Cependant, son score de similarité suggère qu'il pourrait y avoir un écart entre son profil et certaines des exigences spécifiques du poste, mais ses compétences en management et en gestion de projets complexes le rendent apte.",
+          "points_forts": [
+            "Maîtrise des systèmes électriques et gestion de projets",
+            "Expérience dans la supervision de projets d'envergure et de la maintenance",
+            "Compétences en management avec encadrement de plus de 30 collaborateurs"
+          ],
+          "points_a_travailler": [
+            "Alignement stratégique avec les objectifs globaux de l'entreprise",
+            "Incorporation des dernières innovations technologiques pour améliorer la performance énergétique",
+            "Suivi réglementaire et conformité aux normes récentes"
+          ],
+          "rang": 5
+        },
+        "feedback": {
+          "prenom": "Ulrich",
+          "nom": "MBA EDOU",
+          "score": 62.75,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre un bon potentiel managérial et des compétences techniques, bien que des aspects du leadership nécessitent une confirmation.",
+          "Points forces": [
+            "Bon comportement et respect de la hiérarchie",
+            "Trailleur acharné avec une expérience dans la direction technique"
+          ],
+          "Points à travailler": [
+            "Leadership à confirmer",
+            "Expérience limitée au niveau de la direction"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 54.36,
+          "verdict": "moyen",
+          "resume": "Ulrich Mba Edou présente un potentiel managérial et des compétences techniques solides, bien qu'il reste des aspects du leadership à renforcer. Son expérience passée dans la direction technique est un atout, mais il devra élargir ses compétences en gestion d'équipe à un niveau supérieur pour pleinement répondre aux objectifs ambitieux de la SEEG à horizon 2030.",
+          "points_forts": [
+            "Bon comportement et respect de la hiérarchie",
+            "Travailleur acharné",
+            "Expérience dans la direction technique"
+          ],
+          "points_a_ameliorer": [
+            "Leadership à confirmer",
+            "Expérience limitée au niveau de la direction"
+          ],
+          "rang": 3
+        }
+      },
+      "Presty Minko Mi Nzue": {
+        "prenom": "Presty",
+        "nom": "Minko Mi Nzue",
+        "conformite": {
+          "prenom": "Presty",
+          "nom": "MINKO MI NZUE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MINKO MI NZUE",
+          "prenom": "Presty",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.41,
+            "Talent": 0.33,
+            "Paradigme": 0.43
+          },
+          "Score_moyen": 39.0,
+          "niveau": "Le candidat a un score moyen défavorable qui atteste d'un potentiel limité pour répondre aux défis de la direction technique. Son évaluation ne correspond pas aux exigences de la vision d'une SEEG réformée et performante.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est en dessous du seuil critique, illustrant des lacunes importantes par rapport aux attentes de l'entreprise.",
+          "points_forts": [
+            "Compréhension des enjeux techniques du secteur de l'électricité.",
+            "Capacité à identifier les besoins en modernisation des infrastructures.",
+            "Connaissances des normes et pratiques dans le domaine électrique."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion des ressources humaines pour alléger les charges salariales.",
+            "Développer des compétences en gouvernance et transparence pour une meilleure gestion financière.",
+            "Renforcer le parcours d'innovation et d'intégration des énergies renouvelables dans son approche technique."
+          ],
+          "rang": 10
+        },
+        "completude": {
+          "nom": "MINKO MI NZUE",
+          "prenom": "Presty",
+          "poste": "Directeur Technique Electricité",
+          "score": 37.8,
+          "resume_experience": "23 ans en Métrologie, Comptage et Automatismes",
+          "verdict": "moyen",
+          "points_forts": [
+            "Solide expertise en métrologie et comptage",
+            "Compétences avérées en gestion de projets",
+            "Leadership transformationnel avec bonne gestion d'équipe"
+          ],
+          "points_a_travailler": [
+            "Expériences plus spécifiques en gestion stratégique des infrastructures électriques",
+            "Veille technologique et innovation dans le secteur électrique",
+            "Mise en conformité aux normes électriques modernes"
+          ],
+          "rang": 7
+        },
+        "feedback": {
+          "prenom": "Presty",
+          "nom": "MINKO MI NZUE",
+          "score": 62.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente des compétences techniques pertinentes ainsi qu'une attitude positive. Bien qu'il ait été classé manager junior, des éléments de son parcours montrent un potentiel pour progresser vers un poste de direction technique en intégrant des approches innovantes.",
+          "Points forces": [
+            "Bon comportement et aptitude à travailler en équipe",
+            "Profil adapté pour la direction technique et d'exploitation"
+          ],
+          "Points à travailler": [
+            "Renforcer l'expérience managériale pour passer à un niveau supérieur",
+            "Acquérir une vision plus stratégique pour répondre aux attentes de la SEEG"
+          ],
+          "rang": 6
+        },
+        "global": {
+          "score_global": 53.56,
+          "verdict": "moyen",
+          "resume": "Presty Minko Mi Nzue possède des compétences techniques pertinentes et démontre une attitude positive, ce qui indique un potentiel pour évoluer vers un poste de direction technique. Malgré sa classification en tant que manager junior, il est bien positionné pour intégrer des approches innovantes nécessaires à la transformation de la SEEG.",
+          "points_forts": [
+            "Bon comportement et aptitude à travailler en équipe",
+            "Profil adapté pour la direction technique et d'exploitation"
+          ],
+          "points_a_ameliorer": [
+            "Renforcer l'expérience managériale pour passer à un niveau supérieur",
+            "Acquérir une vision plus stratégique pour répondre aux attentes de la SEEG"
+          ],
+          "rang": 4
+        }
+      },
+      "Léon Ngnimi": {
+        "prenom": "Léon",
+        "nom": "Ngnimi",
+        "conformite": {
+          "prenom": "Léon",
+          "nom": " NGNIMI",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "NGNIMI",
+          "prenom": "Léon",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Métier": 0.43,
+            "Talent": 0.3,
+            "Paradigme": 0.46
+          },
+          "Score_moyen": 39.67,
+          "niveau": "Le candidat démontre une compréhension limitée des exigences liées au poste visé, ce qui pourrait nuire à sa capacité à contribuer à la vision de l’entreprise. Des lacunes importantes dans ses compétences et son engagement pourraient entraver son adaptation et sa performance au sein de l'organisation.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 39.67 indique des compétences considérées comme insuffisantes pour répondre aux besoins de la SEEG.",
+          "points_forts": [
+            "Connaissance des enjeux liés à la gestion des infrastructures d'électricité.",
+            "Capacité à identifier les problèmes structurels au sein d'une organisation.",
+            "Compréhension des défis liés à la transition énergétique."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences managériales pour la réorganisation de l'entreprise.",
+            "Acquérir des aptitudes en gouvernance et transparence pour renforcer la confiance des parties prenantes.",
+            "Développer une vision stratégique claire pour la mise en œuvre d'investissements technologiques."
+          ],
+          "rang": 9
+        },
+        "completude": {
+          "nom": "NGNIMI",
+          "prenom": "Léon",
+          "poste": "Directeur Technique Electricité",
+          "score": 38.8,
+          "resume_experience": "24 années d'expérience en distribution électrique et gestion de projets, avec une spécialisation dans le réseau HTA/BT",
+          "verdict": "moyen",
+          "phrase_verdict": "Le score obtenu est légèrement au-dessus de la moyenne, indiquant une certaine adéquation avec le poste, mais cela pourrait être renforcé par une lettre de motivation détaillant son intérêt et ses compétences spécifiques.",
+          "points_forts": [
+            "Expérience notable en direction régionale et gestion de projets HTA/BT",
+            "Compétence avérée en management des équipes techniques",
+            "Expertise en supervision et optimisation des infrastructures électriques"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en anglais pour assurer une meilleure communication internationale",
+            "Inclusion d'une lettre de motivation argumentant la pertinence de sa candidature",
+            "Développement de compétences en veille technologique et innovation"
+          ],
+          "rang": 6
+        },
+        "feedback": {
+          "prenom": "Léon",
+          "nom": "NGNIMI",
+          "score": 52.3,
+          "verdict": "Moyen",
+          "raisons": "Le candidat présente des compétences techniques adéquates, mais son manque de sociabilité et de leadership dans des situations cruciales pour le poste sont préoccupants, surtout dans le cadre d'une gouvernance renforcée et de l'implication des parties prenantes.",
+          "Points forces": [
+            "Compétences techniques en électricité",
+            "Expérience en gestion de projets"
+          ],
+          "Points à travailler": [
+            "Leadership et prise de décision",
+            "Communication et sociabilité"
+          ],
+          "rang": 8
+        },
+        "global": {
+          "score_global": 48.83,
+          "verdict": "moyen",
+          "resume": "Léon présente des compétences techniques solides et une expérience notable en gestion de projets, mais ses compétences en leadership et en communication sont insuffisantes pour le poste. Ces aspects sont cruciaux pour mener à bien la vision stratégique de SEEG, qui nécessite une gouvernance renforcée et l'engagement des parties prenantes.",
+          "points_forts": [
+            "Compétences techniques en électricité",
+            "Expérience en gestion de projets"
+          ],
+          "points_a_ameliorer": [
+            "Leadership et prise de décision",
+            "Communication et sociabilité"
+          ],
+          "rang": 5
+        }
+      },
+      "Remus Arnold Mbouogho": {
+        "prenom": "Remus",
+        "nom": "Arnold Mbouogho",
+        "conformite": {
+          "prenom": "Remus",
+          "nom": "Arnold  MBOUOGHO",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "MBOUOGHO",
+          "prenom": "Remus Arnold",
+          "poste": "Directeur Technique Electricité",
+          "score": 40.2,
+          "resume_experience": "10 années d'expérience en ingénierie électrique",
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide expérience en gestion de projets complexes dans le secteur électrique",
+            "Compétences éprouvées en management et encadrement d'équipes pluridisciplinaires",
+            "Excellente maîtrise de la planification stratégique et du suivi de performance"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en communication en anglais",
+            "Approfondir l'expérience en innovations technologiques",
+            "Amélioration de l'engagement dans des initiatives de sécurité proactive"
+          ],
+          "rang": 3
+        },
+        "feedback": {
+          "prenom": "Remus",
+          "nom": "ARNOLD MBOUOGHO",
+          "score": 68.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat démontre un bon potentiel en management et leadership, ce qui est essentiel pour un rôle de direction technique. Sa capacité à gérer et à interagir avec différentes parties prenantes est également un atout considérable. Cependant, des aspects de sa gestion doivent être confirmés par des résultats tangibles.",
+          "Points forces": [
+            "Compétences managériales solides",
+            "Bon comportement et relationnel"
+          ],
+          "Points à travailler": [
+            "Nécessité de preuves de leadership effectif",
+            "Expérience technique à approfondir"
+          ],
+          "rang": 1
+        },
+        "global": {
+          "score_global": 47.29,
+          "verdict": "moyen",
+          "resume": "Remus Arnold Mbouogho possède des compétences managériales solides et une capacité notable à interagir avec diverses parties prenantes, caractéristiques cruciales pour un poste de direction technique. Toutefois, pour correspondre pleinement aux ambitions de la SEEG, des preuves concrètes d'un leadership effectif et une expertise technique approfondie sont nécessaires.",
+          "points_forts": [
+            "Compétences managériales solides",
+            "Bon comportement et relationnel"
+          ],
+          "points_a_ameliorer": [
+            "Nécessité de preuves de leadership effectif",
+            "Expérience technique à approfondir"
+          ],
+          "rang": 6
+        }
+      },
+      "Hervé Mangono Toulou": {
+        "prenom": "Hervé",
+        "nom": "Mangono Toulou",
+        "conformite": {
+          "prenom": "Hervé",
+          "nom": "MANGONO TOULOU",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MANGONO TOULOU",
+          "prenom": "Hervé",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.41,
+            "Talent": 0.3,
+            "Paradigme": 0.43
+          },
+          "Score_moyen": 38.0,
+          "niveau": "Le candidat présente des scores en deçà des attentes requises pour le poste. Cela indique une inadéquation avec les compétences nécessaires pour contribuer efficacement à la vision de l'entreprise.",
+          "verdict": "défavorables",
+          "raison_verdict": "Les scores moyens en-dessous de 43.5 montrent une insuffisance dans les domaines critiques pour le rôle visé.",
+          "points_forts": [
+            "Capacité à évoluer dans un environnement en crise.",
+            "Compréhension des enjeux stratégiques liés aux infrastructures.",
+            "Engagement potentiel envers la mission de service au public."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences techniques en électricité et infrastructures modernes.",
+            "Améliorer ses aptitudes en gestion des ressources humaines et en leadership.",
+            "Développer une vision holistique axée sur l'innovation et la transition énergétique."
+          ],
+          "rang": 12
+        },
+        "completude": {
+          "nom": "MANGONO TOULOU",
+          "prenom": "Hervé",
+          "poste": "Directeur Technique Electricité",
+          "score": 39.5,
+          "resume_experience": "24 ans d'expérience dans le domaine industriel et énergétique",
+          "verdict": "favorable",
+          "raison_verdict": "Hervé possède une solide expérience de 24 ans dans l'industrie électrique et a occupé des postes de responsabilité augmentant la pertinence pour le rôle de Directeur Technique Electricité.",
+          "points_forts": [
+            "Grande expérience en gestion de projets et en amélioration continue",
+            "Compétences avérées en management et formation des équipes",
+            "Expertise dans la supervision et la distribution des réseaux électriques"
+          ],
+          "points_a_travailler": [
+            "Approfondir ses connaissances en anglais et espagnol pour suivre les évolutions technologiques mondiales",
+            "Améliorer l'innovation énergétique et technologique",
+            "Développer une approche plus proactive dans la régulation et la conformité aux nouvelles normes du secteur"
+          ],
+          "rang": 4
+        },
+        "feedback": {
+          "prenom": "Hervé",
+          "nom": "MANGONO TOULOU",
+          "score": 48.75,
+          "verdict": "Moyen",
+          "raisons": "Bien que le candidat ait montré des compétences techniques acceptables, ses problèmes de comportement et ses relations professionnelles inappropriées nuisent à sa capacité à rassembler et mobiliser ses équipes, ce qui est critique dans le contexte de transformation de la SEEG.",
+          "Points forces": [
+            "Aisance dans la communication",
+            "Rendement globalement satisfaisant"
+          ],
+          "Points à travailler": [
+            "Problèmes de relations professionnelles",
+            "Manque de capacité à fédérer les équipes"
+          ],
+          "rang": 9
+        },
+        "global": {
+          "score_global": 46.77,
+          "verdict": "moyen",
+          "resume": "Hervé Mangono Toulou possède des compétences techniques acceptables mais ses struggles avec les relations professionnelles et sa capacité à mobiliser les équipes posent des défis. Ces aspects sont critiques dans le cadre de la transformation de la SEEG, où une capacité à bien rassembler et diriger est essentielle.",
+          "points_forts": [
+            "Aisance dans la communication",
+            "Rendement globalement satisfaisant"
+          ],
+          "points_a_ameliorer": [
+            "Problèmes de relations professionnelles",
+            "Manque de capacité à fédérer les équipes"
+          ],
+          "rang": 7
+        }
+      },
+      "Guy Lucien Mayombo": {
+        "prenom": "Guy",
+        "nom": "Lucien Mayombo",
+        "conformite": {
+          "prenom": "Guy",
+          "nom": "Lucien MAYOMBO",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "MAYOMBO",
+          "prenom": "Guy Lucien",
+          "poste": "Directeur Technique Electricité",
+          "score": 42.8,
+          "resume_experience": "21 ans d'expérience en électricité et gestion énergétique, spécialisée en exploitation, maintenance, et gestion d'équipes.",
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat présente une expérience pertinente en tant que Directeur Technique Electricité avec un score supérieur à 35, bien que non exceptionnel, et il a démontré des compétences solides adaptées au poste.",
+          "points_forts": [
+            "Expérience significative de 21 ans dans le secteur de l'énergie et de l'eau.",
+            "Compétence confirmée en gestion d'équipes pluridisciplinaires et de projets.",
+            "Réduction efficace des coûts et amélioration de la qualité et de la continuité de services."
+          ],
+          "points_a_travailler": [
+            "Amélioration du niveau d'anglais pour une communication internationale efficace.",
+            "Renforcement de la veille technologique pour proposer des solutions innovantes.",
+            "Développement de stratégies pour la réduction des incidents et performance énergétique."
+          ],
+          "rang": 1
+        },
+        "feedback": {
+          "prenom": "Guy",
+          "nom": "LUCIEN MAYOMBO",
+          "score": 62.75,
+          "verdict": "Favorable",
+          "raisons": "Bien que le candidat ait été perçu comme un bon manager sans un leadership affirmé, ses compétences managériales et son comportement excellent reflètent une capacité à gérer efficacement une équipe et à mener des projets techniques. Il a le potentiel de s'améliorer dans le domaine du leadership.",
+          "Points forces": [
+            "Excellentes compétences managériales",
+            "Comportement positif et motivant"
+          ],
+          "Points à travailler": [
+            "Affirmer son leadership",
+            "Acquérir une vision stratégique plus large"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 44.94,
+          "verdict": "défavorable",
+          "resume": "Guy Lucien Mayombo présente des compétences managériales solides et un comportement motivant qui indique une capacité à gérer efficacement les équipes et les projets techniques. Cependant, l'absence d'un leadership affirmé et d'une vision stratégique plus large pourrait poser des défis dans la réalisation des objectifs transformateurs de l'entreprise.",
+          "points_forts": [
+            "Excellentes compétences managériales",
+            "Comportement positif et motivant"
+          ],
+          "points_a_ameliorer": [
+            "Affirmer son leadership",
+            "Acquérir une vision stratégique plus large"
+          ],
+          "rang": 8
+        }
+      },
+      "Nestor Ditsougou": {
+        "prenom": "Nestor",
+        "nom": "Ditsougou",
+        "conformite": {
+          "prenom": "nestor",
+          "nom": "DITSOUGOU",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "DITSOUGOU",
+          "prenom": "nestor",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.42,
+            "Talent": 0.32,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 41.67,
+          "niveau": "Le candidat présente des scores en dessous des attentes pour le poste visé, ce qui indique une inadéquation par rapport aux exigences de la SEEG. Sa capacité à évoluer dans un environnement en restructuration semble limitée.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 41.67 est largement en dessous du seuil requis pour une évaluation positive.",
+          "points_forts": [
+            "Connaissance des infrastructures électriques (score de 0.42 en Métier).",
+            "Capacité à intégrer des systèmes complexes (score de 0.51 en Paradigme)."
+          ],
+          "points_a_travailler": [
+            "Développer des compétences en gestion de personnel et leadership (score faible en Talent à 0.32).",
+            "Améliorer la connaissance des normes et pratiques modernes de l'industrie électrique pour répondre aux besoins de restructuration.",
+            "Élargir sa vision stratégique pour inclure des perspectives innovantes sur la transition énergétique."
+          ],
+          "rang": 6
+        },
+        "completude": {
+          "nom": "DITSOUGOU",
+          "prenom": "Nestor",
+          "poste": "Directeur Technique Electricité",
+          "score": 35.5,
+          "resume_experience": "18 ans en gestion de projets électriques et ingénierie",
+          "verdict": "moyen",
+          "raisons_verdict": "Le score de similarité est légèrement au-dessus de la moyenne, indiquant que le candidat possède certaines qualifications et expériences pertinentes, mais pourrait ne pas exceller dans toutes les compétences requises pour le poste de Directeur Technique Electricité.",
+          "points_forts": [
+            "Expérience substantielle en gestion de projets électriques",
+            "Compétences en ingénierie et suivi des travaux électriques",
+            "Connaissances en sécurité et conformité des installations électriques"
+          ],
+          "points_a_travailler": [
+            "Niveau d'anglais faible pour un poste potentiel de direction à l'international",
+            "Expertise limitée en innovation technologique",
+            "Développement des compétences managériales pour diriger de grandes équipes"
+          ],
+          "rang": 9
+        },
+        "feedback": {
+          "prenom": "Nestor",
+          "nom": "DITSOUGOU",
+          "score": 38.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat ne démontre ni compétences managériales ni leadership, essentiels pour le poste. De plus, son feedback indique un manque de vision et d'implication dans les projets.",
+          "Points forces": [
+            "Bon comportement"
+          ],
+          "Points à travailler": [
+            "Manque de leadership",
+            "Absence de vision stratégique"
+          ],
+          "rang": 11
+        },
+        "global": {
+          "score_global": 41.87,
+          "verdict": "défavorable",
+          "resume": "Le profil de Nestor Ditsougou ne répond pas aux exigences du poste de Directeur Technique Électricité, principalement en raison d’un manque de compétences managériales et de leadership. Le candidat ne montre pas non plus une vision stratégique ni une implication notable dans les projets, ce qui est essentiel pour contribuer à la vision transformatrice de l'entreprise.",
+          "points_forts": [
+            "Bon comportement"
+          ],
+          "points_a_ameliorer": [
+            "Manque de leadership",
+            "Absence de vision stratégique"
+          ],
+          "rang": 9
+        }
+      },
+      "Steve Olivier N'Nang": {
+        "prenom": "Steve",
+        "nom": "Olivier N'Nang",
+        "conformite": {
+          "prenom": "Steve",
+          "nom": "Olivier N'NANG",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "N'NANG",
+          "prenom": "Steve Olivier",
+          "poste": "Directeur Technique Electricité",
+          "score": 34.7,
+          "resume_experience": "Près de 30 ans d'expérience en ingénierie électromécanique",
+          "verdict": "défavorable - Le score de similarité est inférieur au seuil requis pour une recommandation positive.",
+          "points_forts": [
+            "Vaste expérience dans l'industrie électrique et gestion de projet",
+            "Compétences en supervision et suivi des projets d'infrastructures",
+            "Expertise en production et transport d'électricité"
+          ],
+          "points_a_travailler": [
+            "Aligner les projets avec les objectifs globaux de l’entreprise continue",
+            "Améliorer le score de similarité pour une meilleure adéquation avec le poste",
+            "Développement en veillé technologique et innovation"
+          ],
+          "rang": 11
+        },
+        "feedback": {
+          "prenom": "Steve",
+          "nom": "OLIVIER N'NANG",
+          "score": 53.7,
+          "verdict": "Moyen",
+          "raisons": "Bien que le candidat possède un potentiel en tant que manager, son leadership reste à confirmer et il est perçu comme manquant d'autorité, ce qui est préoccupant dans un rôle de direction critique.",
+          "Points forces": [
+            "Bonne expérience managériale",
+            "Connaissance des enjeux techniques dans le secteur"
+          ],
+          "Points à travailler": [
+            "Renforcer ses compétences en leadership et autorité",
+            "Améliorer la gestion des conflits et la motivation des équipes"
+          ],
+          "rang": 7
+        },
+        "global": {
+          "score_global": 38.79,
+          "verdict": "défavorable",
+          "resume": "Steve Olivier N'Nang possède une bonne expérience managériale et une connaissance approfondie des enjeux techniques dans le secteur de l'électricité. Cependant, son leadership est perçu comme insuffisant pour un poste de direction critique, où une autorité affirmée est indispensable. Son score global est défavorable en raison de besoins d'amélioration en matière de gestion des conflits et de motivation des équipes.",
+          "points_forts": [
+            "Bonne expérience managériale",
+            "Connaissance des enjeux techniques dans le secteur"
+          ],
+          "points_a_ameliorer": [
+            "Renforcer ses compétences en leadership et autorité",
+            "Améliorer la gestion des conflits et la motivation des équipes"
+          ],
+          "rang": 10
+        }
+      },
+      "Alphonse Fils Mbouendi": {
+        "prenom": "Alphonse",
+        "nom": "Fils Mbouendi",
+        "conformite": {
+          "prenom": "ALPHONSE",
+          "nom": "FILS MBOUENDI",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "FILS MBOUENDI",
+          "prenom": "ALPHONSE",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.37,
+            "Paradigme": 0.49
+          },
+          "Score_moyen": 44.0,
+          "niveau": "Le candidat présente un score moyen inférieur à la limite critique, indiquant une adéquation limitée avec les attentes de l'entreprise. Son expérience semble insuffisante pour répondre aux défis stratégiques de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 44.0 indique que le candidat ne répond pas aux critères requis pour le poste visé.",
+          "points_forts": [
+            "Bonne compréhension des enjeux techniques liés à l'électricité.",
+            "Capacité à identifier des problématiques organisationnelles.",
+            "Sensibilité aux attentes en matière de modernisation des infrastructures."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences en gestion des talents et leadership.",
+            "Développer des connaissances en gouvernance et transparence.",
+            "Acquérir une vision stratégique à long terme pour l'innovation énergétique."
+          ],
+          "rang": 5
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Alphonse",
+          "nom": "FILS MBOUENDI",
+          "score": 42.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des points faibles majeurs en leadership et en communication, ce qui est incompatible avec les attentes d'une transformation nécessaire pour la SEEG. Son attitude envers les collaborateurs et son manque d'ouverture aux discussions sont préoccupants.",
+          "Points forces": [
+            "Connaissance technique solide",
+            "Calme et pondéré"
+          ],
+          "Points à travailler": [
+            "Acceptation des feedbacks",
+            "Communication et disponibilité pour l'équipe"
+          ],
+          "rang": 10
+        },
+        "global": {
+          "score_global": 37.35,
+          "verdict": "défavorable",
+          "resume": "Le candidat dispose d'une solide connaissance technique et fait preuve de calme et de pondération. Toutefois, ses lacunes en matière de leadership, communication et acceptation des feedbacks rendent son profil incompatible avec les besoins transformationnels de la SEEG, impliquant un jugement globalement défavorable.",
+          "points_forts": [
+            "Connaissance technique solide",
+            "Calme et pondéré"
+          ],
+          "points_a_ameliorer": [
+            "Leadership",
+            "Communication et disponibilité pour l'équipe"
+          ],
+          "rang": 11
+        }
+      },
+      "Guy-Noël Ondo Ekomy": {
+        "prenom": "Guy-Noël",
+        "nom": "Ondo Ekomy",
+        "conformite": {
+          "prenom": "Guy-Noël",
+          "nom": " ONDO EKOMY",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "ONDO EKOMY",
+          "prenom": "Guy-Noël",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.42,
+            "Talent": 0.35,
+            "Paradigme": 0.43
+          },
+          "Score_moyen": 40.0,
+          "niveau": "Le candidat présente des scores inférieurs à la moyenne requise, indiquant une adéquation limitée avec les attentes de l'entreprise. Sa capacité à répondre aux exigences techniques et culturelles de la SEEG semble compromise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Les scores inférieurs à 43.5 montrent une incompatibilité avec la vision stratégique ambitieuse de la SEEG pour l'avenir.",
+          "points_forts": [
+            "Connaissance des contraintes techniques du secteur électrique.",
+            "Expérience dans un environnement complexe nécessitant des analyses détaillées.",
+            "Capacité à travailler sous pression dans des circonstances exigeantes."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences managériales pour gérer une équipe dans un contexte de restructuration.",
+            "Développer une vision stratégique alignée avec les ambitions de la SEEG pour l'avenir.",
+            "Améliorer ses compétences en gestion de projet pour mener à bien les initiatives d'investissement."
+          ],
+          "rang": 8
+        },
+        "completude": {
+          "nom": "ONDO EKOMY",
+          "prenom": "Guy-Noël",
+          "poste": "Directeur Technique Electricité",
+          "score": 36.8,
+          "resume_experience": "24 ans dans le domaine de l'électricité",
+          "verdict": "moyen",
+          "points_forts": [
+            "Expérience étendue en gestion de projets électriques",
+            "Compétences en supervision et encadrement des équipes",
+            "Expérience dans l'élaboration de stratégies et cahiers de charge pour de grandes infrastructures électriques"
+          ],
+          "points_a_travailler": [
+            "Améliorer la veille technologique et innovation",
+            "Renforcer l'expertise en stratégie d'alignement avec les objectifs globaux de l'entreprise",
+            "Affiner ses compétences en gestion proactive des risques industriels"
+          ],
+          "rang": 8
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 22.36,
+          "verdict": "défavorable",
+          "resume": "Guy-Noël Ondo Ekomy présente un profil insuffisant pour le poste de Directeur Technique Electricité chez SEEG, comme le témoigne son score global défavorable. Malgré une conformité documentaire parfaite, il manque de correspondance en termes de mission, de compétences techniques spécifiques requises pour le poste et de vision alignée avec la transformation stratégique de l'entreprise. L'absence de feedback RH positif et un score MTP et de complétude faibles s'ajoutent à la décision.",
+          "points_forts": [
+            "Conformité documentaire parfaite"
+          ],
+          "points_a_ameliorer": [
+            "Faible adéquation avec la stratégie de transformation de SEEG",
+            "Manque de feedback RH positif"
+          ],
+          "rang": 12
+        }
+      },
+      "Remus Mbouogho": {
+        "prenom": "Remus",
+        "nom": "Mbouogho",
+        "conformite": {},
+        "mtp": {
+          "nom": "MBOUOGHO",
+          "prenom": "Remus",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.48,
+            "Talent": 0.36,
+            "Paradigme": 0.52
+          },
+          "Score_moyen": 45.33,
+          "niveau": "Le candidat se positionne à un niveau moyen, ce qui indique qu'il possède certaines compétences nécessaires, mais requiert un développement supplémentaire. Sa capacité à atteindre les objectifs stratégiques de l'entreprise est encore incertaine.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen de 45.33 indique des performances inférieures aux attentes pour le poste visé.",
+          "points_forts": [
+            "Bonne compréhension des enjeux techniques liés à l'électricité.",
+            "Capacité à s'adapter aux paradigmes de changement dans un secteur en mutation.",
+            "Compétences en gestion de projets qui peuvent bénéficier à la modernisation des infrastructures."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences en talents managériaux pour diriger efficacement les équipes.",
+            "Renforcer son expertise en conformité règlementaire et en gouvernance.",
+            "Développer des stratégies d'innovation dans la transition énergétique."
+          ],
+          "rang": 1
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.33,
+          "verdict": "défavorable",
+          "resume": "Le profil de Remus Mbouogho présente des lacunes significatives en matière de conformités documentaires et complétude par rapport à l'offre. Le faible score de feedback RH indique un décalage entre les attentes pour ce poste crucial et les capacités perçues du candidat.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude des documents (CV + Lettre de Motivation)",
+            "Feedback RH"
+          ],
+          "rang": 13
+        }
+      },
+      "Guy Mayombo": {
+        "prenom": "Guy",
+        "nom": "Mayombo",
+        "conformite": {},
+        "mtp": {
+          "nom": "MAYOMBO",
+          "prenom": "Guy",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.45,
+            "Talent": 0.34,
+            "Paradigme": 0.56
+          },
+          "Score_moyen": 45.0,
+          "niveau": "Le candidat présente une adhésion modérée à la vision de l'entreprise. Bien que son score indique une approche technique présente, plusieurs domaines nécessitent une attention particulière.",
+          "verdict": "moyen",
+          "raison": "Le score moyen, situé à 45.0, indique une adéquation partielle à la vision de la SEEG.",
+          "points_forts": [
+            "Connaissance technique des infrastructures électriques.",
+            "Capacité d'adaptation aux exigences de modernisation et de réhabilitation.",
+            "Approche pragmatique en matière de gestion technique."
+          ],
+          "points_a_travailler": [
+            "Améliorer la compréhension des enjeux de gouvernance et de transparence.",
+            "Développer des compétences en management et leadership pour mieux diriger les équipes.",
+            "Renforcer l'évaluation des talents et leur intégration dans la stratégie de l'entreprise."
+          ],
+          "rang": 3
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.25,
+          "verdict": "défavorable",
+          "resume": "Le candidat ne semble pas répondre aux exigences documentaires du poste, et son score de feedback RH est de 0, ce qui est une indication majeure d'incompatibilité avec la vision de transformation stratégique de l'entreprise. L'absence de conformité de sa candidature et sa performance défavorable suggèrent qu'il pourrait ne pas être la bonne personne pour accompagner la SEEG dans ses efforts de réhabilitation et de modernisation de ses infrastructures.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire inexistante",
+            "Complétude de la candidature",
+            "Absence de feedback positif de la part des RH"
+          ],
+          "rang": 14
+        }
+      },
+      "Steve N'Nang": {
+        "prenom": "Steve",
+        "nom": "N'Nang",
+        "conformite": {},
+        "mtp": {
+          "nom": "N'NANG",
+          "prenom": "Steve",
+          "poste": "Direction Technique Electricité",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.35,
+            "Paradigme": 0.53
+          },
+          "Score_moyen": 44.67,
+          "niveau": "Le score moyen du candidat est de 44.67, indiquant une performance jugée moyenne. Cela révèle une certaine adéquation avec les attentes de l'entreprise, bien qu'il reste des progrès à faire.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen de 44.67 indique une performance qui requiert des améliorations pour répondre pleinement aux attentes de la mission.",
+          "points_forts": [
+            "Connaissance technique du secteur de l'électricité.",
+            "Capacité à intégrer des paradigmes nouveaux dans une structure en mutation.",
+            "Expérience démontrée dans la gestion des ressources techniques."
+          ],
+          "points_a_travailler": [
+            "Développement des compétences en gestion des talents et leadership.",
+            "Amélioration des processus de gestion des infrastructures.",
+            "Renforcement des capacités en adaptation à des contextes de changement rapide."
+          ],
+          "rang": 4
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.17,
+          "verdict": "défavorable",
+          "resume": "Le profil de Steve N'Nang ne répond pas aux attentes du poste de Directeur Technique Electricité. Les scores de conformité documentaire et de complétude sont nuls, et le score global pondéré est défavorable, ce qui indique une inadéquation avec les exigences stratégiques de transformation de la SEEG.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Améliorer la conformité documentaire",
+            "Augmenter le niveau de complétude par rapport à l'offre"
+          ],
+          "rang": 15
+        }
+      }
+    }
+  }

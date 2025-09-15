@@ -1,0 +1,684 @@
+{
+    "Directeur du Capital Humain": {
+      "Thibaut Lendjondjo Lebounda": {
+        "prenom": "Thibaut",
+        "nom": "Lendjondjo Lebounda",
+        "conformite": {
+          "prenom": "Thibaut",
+          "nom": " LENDJONDJO LEBOUNDA",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "LENDJONDJO LEBOUNDA",
+          "prenom": "Thibaut",
+          "poste": "Direction du Capital Humain",
+          "scores": {
+            "Metier": 0.49,
+            "Talent": 0.43,
+            "Paradigme": 0.5
+          },
+          "Score_moyen": 47.33,
+          "niveau": "Le score moyen de 47.33 indique une possibilité d'adéquation, mais révèle également des lacunes importantes. Thibaut montre un potentiel, mais devra accroître son alignement avec les attentes en termes de performance et d'innovation.",
+          "verdict": "moyen",
+          "raison_verdict": "Ce verdict reflète un score moyen qui ne répond pas totalement aux exigences élevées liées à la vision stratégique de l'entreprise.",
+          "points_forts": [
+            "Compétences techniques solides dans le domaine du métier.",
+            "Connaissance de la gestion des ressources humaines.",
+            "Capacité à comprendre l'importance de la transformation et de l'innovation."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion de talents, essentielles pour la modernisation et la transformation.",
+            "Développer des stratégies de gouvernance renforcée pour garantir transparence et contrôle.",
+            "Renforcer la capacité à entreprendre des investissements stratégiques nécessaires à la réussite des objectifs de l'entreprise."
+          ],
+          "rang": 5
+        },
+        "completude": {
+          "nom": "LENDJONDJO LEBOUNDA",
+          "prenom": "Thibaut",
+          "poste": "Directeur du Capital Humain",
+          "score": 42.4,
+          "resume_experience": "13 années dans la gestion du capital humain, spécialisation en stratégie RH et développement organisationnel.",
+          "verdict": "favorable",
+          "raison": "Avec un score de 42.4 et une expérience solide en gestion des ressources humaines, Thibaut démontre les compétences nécessaires pour conduire la politique RH stratégique de l'organisation.",
+          "points_forts": [
+            "Planification stratégique en ressources humaines.",
+            "Optimisation des processus et performance organisationnelle.",
+            "Gestion des carrières et développement des talents."
+          ],
+          "points_a_travailler": [
+            "Améliorer la relation avec les partenaires sociaux.",
+            "Négocier et mettre en œuvre efficacement des accords collectifs.",
+            "Renforcer les compétences en digitalisation des processus RH."
+          ],
+          "rang": 1
+        },
+        "feedback": {
+          "prenom": "Thibaut",
+          "nom": "LENDJONDJO LEBOUNDA",
+          "score": 78.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente une expérience solide dans la maison SEEG, ce qui lui permet de bien comprendre les enjeux actuels de l'organisation. Sa capacité à mobiliser les équipes et à pilotage, alliée à une bonne posture professionnelle, est essentielle dans le cadre de la transformation nécessaire de l'entreprise.",
+          "Points forces": [
+            "Excellente connaissance de l'organisation et des enjeux RH",
+            "Compétences en leadership et capacité à mobiliser les équipes"
+          ],
+          "Points à travailler": [
+            "Renforcer encore davantage son influence au sein des équipes",
+            "Adapter sa vision aux attentes spécifiques de la transition énergétique"
+          ],
+          "rang": 1
+        },
+        "global": {
+          "score_global": 64.56,
+          "verdict": "favorable",
+          "resume": "Thibaut Lendjondjo Lebounda possède une solide expérience au sein de la SEEG, ce qui lui confère une connaissance approfondie des enjeux organisationnels. Son leadership et sa capacité à mobiliser les équipes sont des atouts majeurs pour accompagner la transformation nécessaire de l'entreprise.",
+          "points_forts": [
+            "Excellente connaissance de l'organisation et des enjeux RH",
+            "Compétences en leadership",
+            "Capacité à mobiliser les équipes"
+          ],
+          "points_a_ameliorer": [
+            "Renforcer encore davantage son influence au sein des équipes",
+            "Adapter sa vision aux attentes spécifiques de la transition énergétique"
+          ],
+          "rang": 1
+        }
+      },
+      "Ulrich Ndong Eyi": {
+        "prenom": "Ulrich",
+        "nom": "Ndong Eyi",
+        "conformite": {
+          "prenom": "Ulrich",
+          "nom": "NDONG EYI",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "NDONG EYI",
+          "prenom": "Ulrich",
+          "poste": "Direction du Capital Humain",
+          "scores": {
+            "Metier": 0.52,
+            "Talent": 0.41,
+            "Paradigme": 0.5
+          },
+          "Score_moyen": 47.67,
+          "niveau": "Le score du candidat est moyen, ce qui indique une certaine adéquation avec les exigences du poste. Cependant, des améliorations sont nécessaires pour aligner pleinement ses compétences avec les attentes stratégiques de l'entreprise.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen de 47.67 montre que le candidat a un potentiel, mais n'atteint pas encore les critères favorables nécessaires pour ce poste crucial.",
+          "points_forts": [
+            "Bonne connaissance des processus organisationnels et de la gestion des ressources humaines.",
+            "Capacité à travailler de manière collaborative avec les parties prenantes.",
+            "Compréhension des enjeux stratégiques liés à la réorganisation et à la gouvernance."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences en gestion de projet pour mener à bien les initiatives de transformation.",
+            "Améliorer ses capacités en leadership pour inspirer et motiver les équipes.",
+            "Développer une meilleure maîtrise des technologies innovantes et numériques pour accompagner la transition énergétique."
+          ],
+          "rang": 4
+        },
+        "completude": {
+          "nom": "NDONG EYI",
+          "prenom": "Ulrich",
+          "poste": "Directeur du Capital Humain",
+          "score": 33.6,
+          "resume_experience": "16 années dans le domaine juridique et RSE",
+          "verdict": "défavorable",
+          "points_forts": [
+            "Connaissance approfondie du droit du travail et des relations sociales",
+            "Expérience solide en négociation de contrats et gestion des contentieux",
+            "Maîtrise de la stratégie RSE et de la communication d'entreprise"
+          ],
+          "points_a_travailler": [
+            "Expérience limitée en gestion stratégique des ressources humaines",
+            "Absence de mention spécifique de compétences en digitalisation RH",
+            "Manque de focus sur la gestion des performances et l'agilité opérationnelle"
+          ],
+          "rang": "7"
+        },
+        "feedback": {
+          "prenom": "Ulrich",
+          "nom": "NDONG EYI",
+          "score": 52.3,
+          "verdict": "Moyen",
+          "raisons": "Le candidat montre un potentiel de management, mais le leadership demeure à confirmer. Sa capacité à naviguer dans un environnement complexe et à implanter des changements stratégiques semble incertaine.",
+          "Points forces": [
+            "Gestion managériale élémentaire",
+            "Bon comportement juridique"
+          ],
+          "Points à travailler": [
+            "Leadership à confirmer",
+            "Expérience en transformation organisationnelle"
+          ],
+          "rang": 3
+        },
+        "global": {
+          "score_global": 49.79,
+          "verdict": "moyen",
+          "resume": "Ulrich montre un potentiel managérial élémentaire avec un bon comportement juridique, mais son leadership doit encore être confirmé. Sa capacité à naviguer dans des environnements complexes et à mener des transformations organisationnelles reste incertaine, ce qui est crucial pour la vision de transformation de l'entreprise.",
+          "points_forts": [
+            "Gestion managériale élémentaire",
+            "Bon comportement juridique"
+          ],
+          "points_a_ameliorer": [
+            "Leadership à confirmer",
+            "Expérience en transformation organisationnelle"
+          ],
+          "rang": 2
+        }
+      },
+      "Auriane Aunouviet": {
+        "prenom": "Auriane",
+        "nom": "Aunouviet",
+        "conformite": {
+          "prenom": "Auriane",
+          "nom": "AUNOUVIET",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "AUNOUVIET",
+          "prenom": "Auriane",
+          "poste": "Direction du Capital Humain",
+          "scores": {
+            "Metier": 0.48,
+            "Talent": 0.45,
+            "Paradigme": 0.47
+          },
+          "Score_moyen": 46.67,
+          "niveau": "Le score moyen de 46.67 indique que la candidature se situe dans une zone de performance moyenne. Cela reflète des compétences adéquates mais également un besoin d'amélioration dans plusieurs domaines pour aligner la vision de l'entreprise.",
+          "verdict": "moyen",
+          "raison_du_verdict": "Le score moyen est au-dessus de 43.5, mais loin d'atteindre un niveau favorable, indiquant qu'il y a des attentes qui ne sont pas encore pleinement satisfaites.",
+          "points_forts": [
+            "Maitrise des enjeux liés au capital humain et à la gestion des talents.",
+            "Capacité à intégrer des compétences spécifiques dans un environnement complexe.",
+            "Compréhension des paradigmes organisationnels nécessaires pour une réorganisation réussie."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion des processus pour améliorer l'efficacité opérationnelle.",
+            "Développer des stratégies de communication et de motivation plus solides pour les employés.",
+            "Acquérir une meilleure connaissance des nouvelles technologies et des innovations pertinentes pour le secteur."
+          ],
+          "rang": 6
+        },
+        "completude": {
+          "nom": "AUNOUVIET",
+          "prenom": "Auriane",
+          "poste": "Directeur du Capital Humain",
+          "score": 40.0,
+          "resume_experience": "16 années d'expérience en ressources humaines, principalement dans le secteur de l'énergie et de l'eau.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expérience solide en gestion des ressources humaines dans une grande entreprise",
+            "Compétence avérée en gestion de crise et dialogue social",
+            "Capacité à piloter des transformations organisationnelles"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en digitalisation des processus RH",
+            "Amélioration continue de la gestion budgétaire stratégique",
+            "Développement d'une stratégie forte de formation continue"
+          ],
+          "rang": 4
+        },
+        "feedback": {
+          "prenom": "Auriane",
+          "nom": "AUNOUVIET",
+          "score": 32.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente un manque de leadership significatif et n'a pas su fédérer l'équipe. Son retour négatif sur son expérience en poste souligne un pilotage peu structuré et l'absence de propositions concrètes, essentielles pour soutenir la vision de transformation de la SEEG.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Mauvaise attitude et tensions dans l'équipe",
+            "Absence de plan d'action et d'organigramme DRH",
+            "Manque de leadership et d'engagement"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 40.92,
+          "verdict": "défavorable",
+          "resume": "Auriane Aunouviet présente un profil défavorable pour le poste de Directeur du Capital Humain de la SEEG. Le feedback RH souligne un manque significatif de leadership et une incapacité à structurer et fédérer l'équipe, ce qui est crucial pour soutenir la vision transformante de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Mauvaise attitude et tensions dans l'équipe",
+            "Absence de plan d'action et d'organigramme DRH",
+            "Manque de leadership et d'engagement"
+          ],
+          "rang": 3
+        }
+      },
+      "Christiane Mboussou Nkolo": {
+        "prenom": "Christiane",
+        "nom": "Mboussou Nkolo",
+        "conformite": {
+          "prenom": "Christiane",
+          "nom": "MBOUSSOU NKOLO",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MBOUSSOU NKOLO",
+          "prenom": "Christiane",
+          "poste": "Direction du Capital Humain",
+          "scores": {
+            "Metier": 0.5,
+            "Talent": 0.43,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 48.0,
+          "niveau": "Le candidat présente un score moyen qui indique une aptitude modérée à rejoindre l'entreprise. Ses compétences peuvent être développées pour mieux s'aligner avec les objectifs stratégiques de la SEEG.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen de 48.0 se situe dans la catégorie moyenne, indiquant une adéquation partielle avec la vision stratégique de l'entreprise.",
+          "points_forts": [
+            "Bonne compréhension des enjeux liés à la gouvernance et la transparence nécessaire à la SEEG.",
+            "Capacité à identifier les thèmes de réorganisation et de modernisation des infrastructures.",
+            "Ouverture à l'intégration des nouvelles technologies pour améliorer l'efficacité opérationnelle."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion des talents et du personnel dans un environnement complexe.",
+            "Acquérir une expertise plus approfondie en matière de management de projet pour favoriser la mise en œuvre des investissements.",
+            "Développer une approche stratégique de la communication et de la mobilisation des parties prenantes pour une meilleure collaboration."
+          ],
+          "rang": 3
+        },
+        "completude": {
+          "nom": "MBOUSSOU NKOLO",
+          "prenom": "Christiane",
+          "poste": "Directeur du Capital Humain",
+          "score": 40.2,
+          "resume_experience": "Plus de 20 années d'expérience confirmée dans la gestion stratégique des talents, la performance et le développement organisationnel.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Grande expérience en gestion stratégique des talents et transformation organisationnelle.",
+            "Capacité à piloter des projets RH d'envergure, y compris digitalisation des processus RH.",
+            "Excellentes compétences en communication et leadership, ayant dirigé de grandes équipes."
+          ],
+          "points_a_travailler": [
+            "Renforcer la maîtrise de l'anglais pour faciliter les collaborations internationales.",
+            "Approfondir la connaissance des nouvelles technologies RH pour suivre les dernières tendances.",
+            "Intérêt à développer une expérience avec d'autres types de structures pour diversifier les compétences."
+          ],
+          "rang": 3
+        },
+        "feedback": {
+          "prenom": "Christiane",
+          "nom": "MBOUSSOU NKOLO",
+          "score": 30.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente d'importantes lacunes en matière de leadership et de compétences techniques, ce qui ne correspond pas aux attentes de transformation de la SEEG. De plus, son départ imminent à la retraite suscite des interrogations sur son engagement à long terme.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Leadership inexistant",
+            "Manque de compétences techniques",
+            "Absence de vision pour la transformation",
+            "Âge proche de la retraite"
+          ],
+          "rang": 7
+        },
+        "global": {
+          "score_global": 40.29,
+          "verdict": "défavorable",
+          "resume": "Christiane Mboussou Nkolo présente des insuffisances notables en leadership et en compétences techniques, ne répondant pas aux exigences transformationnelles de la SEEG. Son âge proche de la retraite soulève également des doutes sur son engagement à long terme.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Leadership inexistant",
+            "Manque de compétences techniques"
+          ],
+          "rang": 4
+        }
+      },
+      "Nadine Léa Ghediba Mavanga": {
+        "prenom": "Nadine",
+        "nom": "Léa Ghediba Mavanga",
+        "conformite": {
+          "prenom": "Nadine",
+          "nom": "Léa  Ghediba Mavanga",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "Ghediba Mavanga",
+          "prenom": "Nadine Léa",
+          "poste": "Directeur du Capital Humain",
+          "score": 42,
+          "resume_experience": "Plus de 10 ans d'expérience en gestion du capital humain, recrutement, administration du personnel, paie et relations sociales",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expérience significative en relations sociales et dialogue social",
+            "Compétence en gestion administrative du personnel et paie",
+            "Expérience en gestion des processus RH et digitalisation des RH"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en négociation d'accords collectifs",
+            "Développement d'une approche plus stratégique en management RH",
+            "Perfectionnement des compétences en transformation numérique dans le secteur énergétique"
+          ],
+          "rang": 2
+        },
+        "feedback": {
+          "prenom": "Nadine",
+          "nom": "LÉA GHEDIBA MAVANGA",
+          "score": 52.3,
+          "verdict": "Moyen",
+          "raisons": "Bien que le candidat ait un potentiel identifiés, ses difficultés à travailler sous pression et le besoin de confirmation managériale posent des questions sur sa capacité à s'adapter à un environnement exigeant et en transformation. Toutefois, son comportement satisfaisant dans sa direction est un aspect positif.",
+          "Points forces": [
+            "Comportement satisfaisant au sein de sa direction.",
+            "Potentiel managérial identifié."
+          ],
+          "Points à travailler": [
+            "Difficultés à travailler sous pression.",
+            "Nécessité de confirmation pour le management."
+          ],
+          "rang": 2
+        },
+        "global": {
+          "score_global": 39.55,
+          "verdict": "défavorable",
+          "resume": "Le profil de Nadine présente un potentiel managérial, mais des difficultés à travailler sous pression et un besoin de confirmation managériale soulèvent des doutes quant à son adaptation à un environnement en transformation. Son comportement au sein de sa direction est satisfaisant.",
+          "points_forts": [
+            "Comportement satisfaisant au sein de sa direction.",
+            "Potentiel managérial identifié."
+          ],
+          "points_a_ameliorer": [
+            "Difficultés à travailler sous pression.",
+            "Nécessité de confirmation pour le management."
+          ],
+          "rang": 5
+        }
+      },
+      "Ulrich Ombande Otombe": {
+        "prenom": "Ulrich",
+        "nom": "Ombande Otombe",
+        "conformite": {
+          "prenom": "Ulrich",
+          "nom": "OMBANDE OTOMBE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OMBANDE OTOMBE",
+          "prenom": "Ulrich",
+          "poste": "Direction du Capital Humain",
+          "scores": {
+            "Metier": 0.35,
+            "Talent": 0.35,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 38.33,
+          "niveau": "Le score moyen est en dessous des attentes, ce qui indique des lacunes significatives dans l'alignement du candidat avec la vision de l'entreprise. Cela pourrait entraver sa capacité à contribuer efficacement aux objectifs stratégiques de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 38.33 indique une non-conformité aux exigences minimales de la vision de l'entreprise.",
+          "points_forts": [
+            "Compétences de communication et d'écoute, essentielles pour la formation et la motivation des employés.",
+            "Capacité à envisager des solutions innovantes, conforme avec la transition énergétique et l'implication des parties prenantes.",
+            "Compréhension des enjeux économiques et sociaux, favorisant un dialogue constructif entre l'Etat et la SEEG."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en gestion des ressources humaines, cruciales pour la réorganisation de l'entreprise.",
+            "Améliorer les capacités stratégiques pour faire face aux défis de gouvernance renforcée et de transparence.",
+            "Accroître les compétences en gestion de projets pour faciliter l'exécution des plans d'investissement dans les infrastructures."
+          ],
+          "rang": 8
+        },
+        "completude": {
+          "nom": "OMBANDE OTOMBE",
+          "prenom": "Ulrich",
+          "poste": "Directeur du Capital Humain",
+          "score": 37.6,
+          "resume_experience": "2 ans d'expérience, principalement en maintenance électromécanique",
+          "verdict": "moyen",
+          "raison_du_verdict": "Le score de 37.600 montre une adéquation partielle avec le poste, mais une expérience insuffisante en gestion des ressources humaines.",
+          "points_forts": [
+            "Motivation et vision claire pour le développement des compétences au sein de SEEG",
+            "Connaissances de base autodidactes en gestion du capital humain",
+            "Engagement envers le bien-être et la performance des collaborateurs"
+          ],
+          "points_a_travailler": [
+            "Expérience pratique limitée en gestion des ressources humaines",
+            "Connaissance limitée des relations sociales et négociations d'accords",
+            "Absence d'expérience dans des fonctions managériales de haut niveau"
+          ],
+          "rang": 5
+        },
+        "feedback": {
+          "prenom": "Ulrich",
+          "nom": "OMBANDE OTOMBE",
+          "score": 25.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat indique qu'il ne remplit aucune condition pour le poste, ce qui ne correspond pas aux exigences de la vision stratégique de la SEEG et montre un manque de préparation ou d'adéquation avec le poste.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Compréhension des enjeux et exigences du poste",
+            "Expérience en gestion des ressources humaines et en gouvernance"
+          ],
+          "rang": 8
+        },
+        "global": {
+          "score_global": 34.95,
+          "verdict": "défavorable",
+          "resume": "Le candidat Ulrich Ombande Otombe ne remplit pas les conditions nécessaires pour le poste de Directeur du Capital Humain, selon la vision stratégique de la SEEG. Son manque de préparation et d'expérience pertinente en gestion des ressources humaines et en gouvernance est notable.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Compréhension des enjeux et exigences du poste",
+            "Expérience en gestion des ressources humaines et en gouvernance"
+          ],
+          "rang": 6
+        }
+      },
+      "Katia Sandrine Ondo": {
+        "prenom": "Katia",
+        "nom": "Sandrine Ondo",
+        "conformite": {
+          "prenom": "Katia",
+          "nom": "Sandrine ONDO",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "ONDO",
+          "prenom": "Katia Sandrine",
+          "poste": "Directeur du Capital Humain",
+          "score": 35.8,
+          "resume_experience": "18 ans dans divers rôles liés aux RH et à la gestion administrative",
+          "verdict": "moyen",
+          "raison": "Bien que Katia ait une expérience significative dans la gestion administrative du personnel, son score de similarité est juste au-dessus du seuil moyen, ce qui indique que certaines compétences clés pour le poste de Directeur du Capital Humain pourraient être renforcées.",
+          "points_forts": [
+            "Solide expérience en gestion de la paie et des services administratifs avec SEEG",
+            "Capacité éprouvée à manager des équipes",
+            "Bonne compréhension des processus de communication interne"
+          ],
+          "points_a_travailler": [
+            "Expérience limitée dans la négociation d'accords collectifs et le dialogue social",
+            "Compétences à étendre en gestion stratégique des ressources humaines",
+            "Développement de compétences spécifiques dans le secteur énergétique et numérique"
+          ],
+          "rang": 6
+        },
+        "feedback": {
+          "prenom": "Katia",
+          "nom": "SANDRINE ONDO",
+          "score": 42.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat ne démontre pas de capacités managériales et de leadership nécessaires pour répondre aux défis stratégiques de la SEEG. Son feedback ne témoigne pas d'une expérience convaincante.",
+          "Points forces": [
+            "Bon comportement",
+            "Satisfaction minimale dans son poste actuel"
+          ],
+          "Points à travailler": [
+            "Manque de compétences en management",
+            "Absence de leadership avéré"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 33.41,
+          "verdict": "défavorable",
+          "resume": "Katia Sandrine Ondo présente un score global défavorable, principalement en raison d'un manque de compétences managériales et de leadership nécessaire pour faire face aux défis stratégiques de la SEEG. Bien qu'elle ait un bon comportement, cela ne compense pas l'absence d'expérience convaincante requise pour le poste de Directeur du Capital Humain.",
+          "points_forts": [
+            "Bon comportement",
+            "Satisfaction minimale dans son poste actuel"
+          ],
+          "points_a_ameliorer": [
+            "Manque de compétences en management",
+            "Absence de leadership avéré"
+          ],
+          "rang": 7
+        }
+      },
+      "Jérémie Obiang": {
+        "prenom": "Jérémie",
+        "nom": "Obiang",
+        "conformite": {
+          "prenom": "Jérémie",
+          "nom": "OBIANG",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OBIANG",
+          "prenom": "Jérémie",
+          "poste": "Direction du Capital Humain",
+          "scores": {
+            "Metier": 0.47,
+            "Talent": 0.43,
+            "Paradigme": 0.55
+          },
+          "Score_moyen": 48.33,
+          "niveau": "Le candidat présente un score moyen de 48.33, indiquant une adéquation modérée avec les attentes de l'entreprise. Il sera important de travailler davantage sur certaines compétences pour aligner sa vision à celle de SEEG.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen situé entre 43.5 et 60 indique une adéquation moyenne avec la vision de l'entreprise.",
+          "points_forts": [
+            "Capacité à identifier et aborder des problématiques liées à l'organisation et la gestion des ressources humaines.",
+            "Compréhension des enjeux de transformation nécessaires au sein de l'entreprise.",
+            "Aptitude à intégrer des perspectives de gouvernance et de transparence dans la gestion des ressources."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion de la performance au sein des équipes.",
+            "Renforcer la capacité à mener des initiatives de modernisation des infrastructures humaines.",
+            "Développer une vision stratégique plus claire concernant l'implication des parties prenantes."
+          ],
+          "rang": 1
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Jérémie",
+          "nom": "OBIANG",
+          "score": 32.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des manques significatifs en termes de leadership et de vision stratégique, essentiels pour le poste. Les retours négatifs indiquent un comportement inapproprié qui pourrait nuire à la culture d'entreprise.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Leadership insuffisant",
+            "Manque de perspective stratégique",
+            "Comportement relationnel inadapté"
+          ],
+          "rang": 6
+        },
+        "global": {
+          "score_global": 33.33,
+          "verdict": "défavorable",
+          "resume": "Jérémie Obiang ne répond pas aux exigences du poste de Directeur du Capital Humain, principalement en raison de lacunes en leadership et une vision stratégique insuffisante. Des comportements relationnels inappropriés ont également été signalés, ce qui pourrait nuire à la culture de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Leadership insuffisant",
+            "Manque de perspective stratégique",
+            "Comportement relationnel inadapté"
+          ],
+          "rang": 8
+        }
+      },
+      "Nadine Mavanga": {
+        "prenom": "Nadine",
+        "nom": "Mavanga",
+        "conformite": {},
+        "mtp": {
+          "nom": "Mavanga",
+          "prenom": "Nadine",
+          "poste": "Direction du Capital Humain",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.45,
+            "Paradigme": 0.54
+          },
+          "Score_moyen": 48.33,
+          "niveau": "Le score moyen de 48.33 indique que le candidat a un potentiel digne d'attention mais qu'il pourrait bénéficier d'une amélioration dans certains domaines clés. Son adhésion à la vision de l'entreprise nécessite des efforts supplémentaires pour aligner ses compétences sur les besoins objectifs de la SEEG.",
+          "verdict": "moyen",
+          "raison_verdict": "Bien que le score soit au-dessus du seuil défavorable, il ne répond pas pleinement aux attentes de la vision de l'entreprise.",
+          "points_forts": [
+            "Bonne compréhension des enjeux liés à la gestion des ressources humaines.",
+            "Capacité à communiquer sur des paradigmes innovants en matière de gestion.",
+            "Sensibilité à la nécessité de réorganisation et d'amélioration des infrastructures."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences en management stratégique pour mieux répondre aux défis de la SEEG.",
+            "Développer des compétences techniques liées à la transition énergétique et à l'innovation.",
+            "Accroître ses capacités d'analyse des données pour mieux accompagner la digitalisation des processus."
+          ],
+          "rang": 2
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 12.08,
+          "verdict": "défavorable",
+          "resume": "Le profil de Nadine Mavanga ne semble pas aligné avec les exigences élevées et transformatrices de la vision de la SEEG pour 2025-2035. Son score global défavorable et sa conformité documentaire nulle indiquent des lacunes critiques par rapport aux attentes de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude par rapport à l'offre",
+            "Feedback RH"
+          ],
+          "rang": 9
+        }
+      },
+      "Katia Ondo": {
+        "prenom": "Katia",
+        "nom": "Ondo",
+        "conformite": {},
+        "mtp": {
+          "nom": "ONDO",
+          "prenom": "Katia",
+          "poste": "Direction du Capital Humain",
+          "scores": {
+            "Metier": 0.42,
+            "Talent": 0.4,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 44.33,
+          "niveau": "Le score du candidat est légèrement en dessous du seuil moyen, ce qui indique des compétences insuffisantes dans certains domaines clés. Cependant, certaines qualités peuvent également être mises en avant pour sa candidature.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 44.33 est strictement inférieur au seuil de 43.5.",
+          "points_forts": [
+            "Sens de l'organisation et capacités de leadership dans la restructuration des équipes.",
+            "Compréhension des enjeux de gouvernance et préparation à l'implémentation de processus transparents.",
+            "Volonté d'intégrer des technologies modernes pour améliorer l'efficacité opérationnelle."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences techniques spécifiques liées aux métiers de l'eau et de l'électricité.",
+            "Développer une meilleure approche dans la gestion des talents pour attirer et retenir des profils qualifiés.",
+            "Renforcer la capacité d'analyse stratégique pour répondre aux défis de la modernisation des infrastructures."
+          ],
+          "rang": 7
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.08,
+          "verdict": "défavorable",
+          "resume": "Katia Ondo présente un profil dont le score global est défavorable selon les critères établis, en grande partie dû à un manque de conformité documentaire et une absence de complétude par rapport à l'offre. Le score de feedback RH est également nul, ce qui soulève des questions sur l'adéquation du profil avec les exigences stratégiques de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Correspondance entre le CV/LM et l'offre",
+            "Feedback RH insuffisant"
+          ],
+          "rang": 10
+        }
+      }
+    }
+  }
