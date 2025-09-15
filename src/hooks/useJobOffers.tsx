@@ -103,7 +103,7 @@ const fetchJobOffers = async () => {
 
 // Fonction de fallback pour retourner des données de test en cas d'erreur
 const getFallbackJobOffers = (): JobOffer[] => {
-  console.log('[useJobOffers] Using fallback data');
+  // console.log('[useJobOffers] Using fallback data');
   return [
     {
       id: 'fallback-1',
@@ -151,8 +151,8 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
     .eq('id', id)
     .single();
 
-  console.log('[useJobOffers DEBUG] Raw offer data from DB:', offer);
-  console.log('[useJobOffers DEBUG] DB error:', error);
+  // console.log('[useJobOffers DEBUG] Raw offer data from DB:', offer);
+  // console.log('[useJobOffers DEBUG] DB error:', error);
 
   if (error) throw error;
   if (!offer) return null;
@@ -229,7 +229,7 @@ const fetchRecruiterJobOffers = async (recruiterId: string): Promise<JobOffer[]>
         console.warn('RPC get_all_recruiter_applications failed for recruiter:', rpcError.message);
         // Si l'erreur est liée aux permissions, on continue sans les données de candidatures
         if (rpcError.message.includes('permission') || rpcError.message.includes('access denied')) {
-          console.log('User does not have permission to access recruiter applications, continuing without application data');
+          // console.log('User does not have permission to access recruiter applications, continuing without application data');
         } else {
           console.error('Unexpected RPC error:', rpcError);
         }
@@ -241,7 +241,7 @@ const fetchRecruiterJobOffers = async (recruiterId: string): Promise<JobOffer[]>
         })).filter(app => app.job_offer_id && app.created_at);
       }
     } else {
-      console.log('User not authenticated, skipping application data');
+      // console.log('User not authenticated, skipping application data');
       applications = [];
     }
   } catch (e) {

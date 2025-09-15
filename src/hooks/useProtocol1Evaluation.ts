@@ -304,12 +304,12 @@ export function useProtocol1Evaluation(applicationId: string) {
         gap_competence_comments: data.protocol1.interview.gapCompetence.comments,
         general_summary: data.protocol1.interview.generalSummary,
         
-        // Scores calculés
+        // Scores calculés SANS arrondi
         documentary_score: sectionScores.documentaryScore,
         mtp_score: sectionScores.mtpScore,
         interview_score: sectionScores.interviewScore,
         total_score: sectionScores.totalScore,
-        overall_score: Math.round(sectionScores.totalScore),
+        overall_score: sectionScores.totalScore,
         
         // Statut
         status: data.protocol1.status,
@@ -343,7 +343,7 @@ export function useProtocol1Evaluation(applicationId: string) {
         throw result.error;
       }
 
-      console.log('Évaluation sauvegardée avec succès');
+      // console.log('Évaluation sauvegardée avec succès');
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
       toast({
@@ -364,9 +364,9 @@ export function useProtocol1Evaluation(applicationId: string) {
     setEvaluationData(prev => {
       const newData = updater(prev);
       
-      // Calculer les nouveaux scores
+      // Calculer les nouveaux scores SANS arrondi
       const sectionScores = calculateSectionScores(newData.protocol1);
-      newData.protocol1.score = Math.round(sectionScores.totalScore);
+      newData.protocol1.score = sectionScores.totalScore;
       newData.globalScore = sectionScores.totalScore;
       
       // Mettre à jour le statut

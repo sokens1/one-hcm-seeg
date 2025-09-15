@@ -65,7 +65,7 @@ export function Header() {
   const handleDiagnoseDatabase = async () => {
     try {
       const results = await diagnoseDatabaseAccess();
-      console.log('Diagnostic results:', results);
+      // console.log('Diagnostic results:', results);
       
       if (results.errors.length > 0) {
         toast.error(`Diagnostic: ${results.errors.length} erreur(s) détectée(s)`);

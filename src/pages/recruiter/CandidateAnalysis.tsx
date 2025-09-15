@@ -522,7 +522,7 @@ export default function CandidateAnalysis() {
   const { data: application, isLoading, error, refetch: refetchApplication } = useApplication(id);
   
   // Utiliser le hook useSynthesisData pour récupérer les vraies données
-  const { synthesisData, isLoading: synthesisLoading, updateRecommendations } = useSynthesisData(application?.id || '');
+  const { synthesisData, isLoading: synthesisLoading, updateRecommendations, saveSynthesisFields } = useSynthesisData(application?.id || '');
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
   const { updateApplicationStatus } = useRecruiterApplications();
 
@@ -577,16 +577,16 @@ export default function CandidateAnalysis() {
 
   const handleStatusChange = async (newStatus: Application['status']) => {
     if (!application || isObserver) return;
-    console.log('🔄 handleStatusChange appelé avec:', { applicationId: application.id, newStatus });
+    // console.log('🔄 handleStatusChange appelé avec:', { applicationId: application.id, newStatus });
     try {
-      console.log('📤 Appel de updateApplicationStatus...');
+      // console.log('📤 Appel de updateApplicationStatus...');
       await updateApplicationStatus({ applicationId: application.id, status: newStatus });
-      console.log('✅ updateApplicationStatus terminé');
+      // console.log('✅ updateApplicationStatus terminé');
 
       // Recharger les données de l'application pour refléter le nouveau statut
-      console.log('🔄 Rechargement des données...');
+      // console.log('🔄 Rechargement des données...');
       await refetchApplication();
-      console.log('✅ Données rechargées');
+      // console.log('✅ Données rechargées');
 
       toast({
         title: "Statut mis à jour",
@@ -767,7 +767,7 @@ export default function CandidateAnalysis() {
                     );
                   }
                 }}
-
+                saveSynthesisFields={saveSynthesisFields}
               />
             )}
           </TabsContent>

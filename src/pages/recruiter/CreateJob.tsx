@@ -58,8 +58,8 @@ export default function CreateJob() {
   };
 
   const handleSubmit = async (status: 'draft' | 'published') => {
-    console.log('[CreateJob] Starting submission with status:', status);
-    console.log('[CreateJob] Form data:', formData);
+    // console.log('[CreateJob] Starting submission with status:', status);
+    // console.log('[CreateJob] Form data:', formData);
 
     // Validate required fields for DB NOT NULL constraints
     if (!formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements) {
@@ -101,11 +101,11 @@ export default function CreateJob() {
       // requirements: formData.requirements,
     };
 
-    console.log('[CreateJob] Prepared job data:', jobData);
+    // console.log('[CreateJob] Prepared job data:', jobData);
 
     try {
       const result = await createJobOffer({ jobData, status: mappedStatus });
-      console.log('[CreateJob] Creation successful:', result);
+      // console.log('[CreateJob] Creation successful:', result);
       
       toast({
         title: "Offre d'emploi sauvegardée",
