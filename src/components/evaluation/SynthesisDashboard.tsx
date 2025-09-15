@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Editor } from "@/components/ui/editor";
 import { CheckCircle, Clock, AlertCircle, FileText, BarChart3, TrendingUp, Star, Download } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { exportSynthesisPdf } from "@/utils/exportSynthesisPdf";
+import { useToast } from "@/components/ui/use-toast";
 
 interface StarDisplayProps {
   value: number;
@@ -108,9 +110,48 @@ export function SynthesisDashboard({
   isReadOnly = false,
   onUpdate
 }: SynthesisDashboardProps) {
-  const handleDownloadReport = () => {
-    // TODO: Implémenter la génération et le téléchargement du rapport
-    console.log('Téléchargement du rapport...');
+  const { toast } = useToast();
+  const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
+
+  const handleDownloadReport = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const success = await exportSynthesisPdf(
+        applicationId,
+        candidateName,
+        jobTitle,
+        synthesisData.globalScore,
+        synthesisData.finalStatus,
+        synthesisData.pointsForts,
+        synthesisData.pointsAmelioration,
+        synthesisData.conclusion
+      );
+
+      if (success) {
+        toast({
+          title: "Rapport généré",
+          description: "Le rapport de synthèse a été téléchargé avec succès.",
+          duration: 3000
+        });
+      } else {
+        toast({
+          title: "Erreur",
+          description: "Impossible de générer le rapport. Veuillez réessayer.",
+          variant: "destructive",
+          duration: 5000
+        });
+      }
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la génération du rapport.",
+        variant: "destructive",
+        duration: 5000
+      });
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   return (
@@ -280,11 +321,20 @@ export function SynthesisDashboard({
             <div className="flex justify-end pt-4">
               <Button
                 onClick={handleDownloadReport}
-                className="bg-gray-400 hover:bg-gray-500 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
-                disabled={true}
+                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
+                disabled={isGeneratingPdf}
               >
-                <Download className="w-4 h-4 mr-2" />
-                Télécharger le rapport
+                {isGeneratingPdf ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Génération...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4 mr-2" />
+                    Télécharger le rapport
+                  </>
+                )}
               </Button>
             </div>
           </div>
