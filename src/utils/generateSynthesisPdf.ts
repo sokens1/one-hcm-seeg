@@ -79,6 +79,17 @@ interface Protocol2Data {
   fiche_kris_comments: string | null;
   gap_competences_score: number;
   gap_competences_comments: string | null;
+  jeu_codir_score: number;
+  jeu_codir_comments: string | null;
+  gap_competences_level: string | null;
+  plan_formation_score: number;
+  plan_formation_comments: string | null;
+  mise_en_situation_score: number;
+  validation_operationnelle_score: number;
+  total_score: number;
+  jeu_de_role_comments: string | null;
+  jeu_de_role_score: number;
+  status: string;
 }
 
 interface CandidateData {
@@ -100,8 +111,8 @@ interface SynthesisData {
 }
 
 const getScoreColor = (score: number): string => {
-  if (score >= 80) return '#16a34a'; // Green
-  if (score >= 60) return '#ea580c'; // Orange
+  if (score >= 86) return '#16a34a'; // Green
+  if (score >= 46) return '#ea580c'; // Orange
   return '#dc2626'; // Red
 };
 
@@ -197,10 +208,15 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(11);
   doc.setTextColor(75, 85, 99);
+  
+  // Colonne gauche - alignée correctement
   doc.text(`Nom: ${data.candidate.firstName} ${data.candidate.lastName}`, margin + 10, yPos + 25);
-  doc.text(`Poste: ${data.candidate.jobTitle}`, margin + 150, yPos + 25);
   doc.text(`Email: ${data.candidate.email}`, margin + 10, yPos + 32);
-  doc.text(`Date de génération: ${format(new Date(), 'dd/MM/yyyy à HH:mm', { locale: fr })}`, margin + 150, yPos + 32);
+  
+  // Colonne droite - alignée correctement avec la colonne gauche
+  const rightColumnX = margin + (pageWidth - 2 * margin) / 2 + 10; // Milieu + marge
+  doc.text(`Poste: ${data.candidate.jobTitle}`, rightColumnX, yPos + 25);
+  doc.text(`Date de génération: ${format(new Date(), 'dd/MM/yyyy à HH:mm', { locale: fr })}`, rightColumnX, yPos + 32);
   
   yPos += 50;
 
@@ -213,16 +229,11 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
   doc.setTextColor(30, 64, 175);
-  doc.text('Score Global', margin + 15, yPos + 15);
+  doc.text('Score Global', pageWidth / 2, yPos + 15, { align: 'center' });
   
   doc.setFontSize(28);
   doc.setTextColor(getScoreColor(data.globalScore));
-  doc.text(`${data.globalScore.toFixed(1)}%`, margin + 15, yPos + 30);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(12);
-  doc.setTextColor(75, 85, 99);
-  doc.text(`Évaluation complète du processus de recrutement`, pageWidth - margin - 10, yPos + 15, { align: 'right' });
+  doc.text(`${data.globalScore.toFixed(1)}%`, pageWidth / 2, yPos + 30, { align: 'center' });
   
   yPos += 50;
 
@@ -451,6 +462,161 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     }
   }
 
+  // Section Protocole 2
+  if (data.protocol2) {
+    yPos += 20;
+    yPos = addSectionHeader(doc, 'Protocole 2 - Évaluation Approfondie', yPos, margin);
+    
+    // Statuts des étapes du Protocole 2
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(30, 64, 175);
+    doc.text('Étapes d\'Évaluation', margin, yPos);
+    yPos += 15;
+
+    const protocol2Steps = [
+      { label: 'Visite Physique', completed: data.protocol2.physical_visit },
+      { label: 'Entretien Complété', completed: data.protocol2.interview_completed },
+      { label: 'QCM Rôle', completed: data.protocol2.qcm_role_completed },
+      { label: 'QCM CODIR', completed: data.protocol2.qcm_codir_completed },
+      { label: 'Fiche Poste Créée', completed: data.protocol2.job_sheet_created },
+      { label: 'Gap Compétences Évalué', completed: data.protocol2.skills_gap_assessed }
+    ];
+
+    // Affichage des étapes en grille
+    const stepWidth = (pageWidth - 2 * margin - 30) / 3;
+    let col = 0;
+    let row = 0;
+
+    protocol2Steps.forEach(step => {
+      const x = margin + col * (stepWidth + 10);
+      const y = yPos + row * 15;
+
+      if (y > doc.internal.pageSize.height - 40) {
+        doc.addPage();
+        yPos = 20;
+        row = 0;
+        col = 0;
+      }
+
+      // Icône de statut
+      doc.setFontSize(12);
+      doc.setTextColor(step.completed ? '#16a34a' : '#dc2626');
+      doc.text(step.completed ? '✓' : '✗', x, y);
+      
+      // Label de l'étape
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(75, 85, 99);
+      doc.text(step.label, x + 15, y);
+
+      col++;
+      if (col >= 3) {
+        col = 0;
+        row++;
+      }
+    });
+
+    yPos += Math.ceil(protocol2Steps.length / 3) * 15 + 20;
+
+    // Scores du Protocole 2
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(30, 64, 175);
+    doc.text('Scores d\'Évaluation', margin, yPos);
+    yPos += 15;
+
+    const protocol2Scores = [
+      { label: 'Analyse Compétences', score: data.protocol2.analyse_competences_score || 0, comments: data.protocol2.analyse_competences_comments },
+      { label: 'Fiche KCIS', score: data.protocol2.fiche_kcis_score || 0, comments: data.protocol2.fiche_kcis_comments },
+      { label: 'Fiche KPIS', score: data.protocol2.fiche_kpis_score || 0, comments: data.protocol2.fiche_kpis_comments },
+      { label: 'Fiche KRIS', score: data.protocol2.fiche_kris_score || 0, comments: data.protocol2.fiche_kris_comments },
+      { label: 'Gap Compétences', score: data.protocol2.gap_competences_score || 0, comments: data.protocol2.gap_competences_comments },
+      { label: 'Jeu CODIR', score: data.protocol2.jeu_codir_score || 0, comments: data.protocol2.jeu_codir_comments },
+      { label: 'Plan Formation', score: data.protocol2.plan_formation_score || 0, comments: data.protocol2.plan_formation_comments },
+      { label: 'Jeu de Rôle', score: data.protocol2.jeu_de_role_score || 0, comments: data.protocol2.jeu_de_role_comments }
+    ];
+
+    protocol2Scores.forEach(item => {
+      if (yPos > doc.internal.pageSize.height - 40) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      // Ligne d'évaluation
+      doc.setFillColor(249, 250, 251);
+      doc.rect(margin, yPos, pageWidth - 2 * margin, 25, 'F');
+      doc.setDrawColor(229, 231, 235);
+      doc.rect(margin, yPos, pageWidth - 2 * margin, 25);
+      
+      // Label et score
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(31, 41, 55);
+      doc.text(`${item.label}:`, margin + 10, yPos + 10);
+      
+      doc.setFontSize(16);
+      doc.setTextColor(getScoreColor(item.score * 20));
+      doc.text(`${item.score}/5`, margin + 10, yPos + 20);
+      
+      // Commentaires
+      if (item.comments && item.comments.trim() !== '') {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(75, 85, 99);
+        const commentLines = doc.splitTextToSize(item.comments, pageWidth - 2 * margin - 80);
+        doc.text(commentLines[0] || '', margin + 80, yPos + 10);
+      } else {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(150, 150, 150);
+        doc.text("Aucun commentaire", margin + 80, yPos + 10);
+      }
+      
+      yPos += 30;
+    });
+
+    // Notes générales du Protocole 2
+    const hasGeneralNotes = data.protocol2.interview_notes || data.protocol2.visit_notes || data.protocol2.skills_gap_notes;
+    if (hasGeneralNotes) {
+      yPos += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(30, 64, 175);
+      doc.text('Notes Générales', margin, yPos);
+      yPos += 15;
+
+      if (data.protocol2.interview_notes && data.protocol2.interview_notes.trim() !== '') {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(75, 85, 99);
+        doc.text('Notes Entretien:', margin, yPos);
+        yPos += 5;
+        yPos += addWrappedText(doc, data.protocol2.interview_notes, margin, yPos, pageWidth - 2 * margin);
+        yPos += 10;
+      }
+
+      if (data.protocol2.visit_notes && data.protocol2.visit_notes.trim() !== '') {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(75, 85, 99);
+        doc.text('Notes Visite:', margin, yPos);
+        yPos += 5;
+        yPos += addWrappedText(doc, data.protocol2.visit_notes, margin, yPos, pageWidth - 2 * margin);
+        yPos += 10;
+      }
+
+      if (data.protocol2.skills_gap_notes && data.protocol2.skills_gap_notes.trim() !== '') {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(75, 85, 99);
+        doc.text('Notes Gap Compétences:', margin, yPos);
+        yPos += 5;
+        yPos += addWrappedText(doc, data.protocol2.skills_gap_notes, margin, yPos, pageWidth - 2 * margin);
+      }
+    }
+  }
+
   // Section Recommandations
   yPos += 20;
   yPos = addSectionHeader(doc, 'Recommandations et Conclusion', yPos, margin);
@@ -516,29 +682,18 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     doc.text(conclusionLines[0] || '', margin + 10, yPos + 22);
   }
 
-  // Move to bottom of page for footer
-  yPos = doc.internal.pageSize.height - 50;
-
-  // Footer moderne avec signature SEEG
+  // Footer simple avec marge
   //@ts-expect-error fix it later
   const totalPages = doc.internal.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
     
+    // Marge de 15px du bas de la page
+    const footerY = doc.internal.pageSize.height - 15;
+    
     // Ligne de séparation
     doc.setDrawColor(229, 231, 235);
-    doc.line(margin, doc.internal.pageSize.height - 25, pageWidth - margin, doc.internal.pageSize.height - 25);
-    
-    // Logo SEEG en bas à droite
-    try {
-      doc.setFillColor(30, 64, 175); // Blue-800
-      doc.rect(pageWidth - 70, doc.internal.pageSize.height - 20, 50, 15, 'F');
-      doc.setFontSize(10);
-      doc.setTextColor(255, 255, 255);
-      doc.text('SEEG', pageWidth - 45, doc.internal.pageSize.height - 11, { align: 'center' });
-    } catch (error) {
-      console.log('Could not add logo:', error);
-    }
+    doc.line(margin, footerY - 8, pageWidth - margin, footerY - 8);
     
     // Date et website en bas à gauche
     doc.setFontSize(9);
@@ -546,17 +701,17 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
     doc.text(
       `${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: fr })} - seeg-talentsource.com`, 
       margin, 
-      doc.internal.pageSize.height - 11
+      footerY
     );
     
-    // Numéro de page centré
+    // Numéro de page à droite
     doc.setFontSize(9);
     doc.setTextColor(107, 114, 128);
     doc.text(
       `Page ${i} sur ${totalPages}`, 
-      pageWidth / 2, 
-      doc.internal.pageSize.height - 11,
-      { align: 'center' }
+      pageWidth - margin, 
+      footerY,
+      { align: 'right' }
     );
   }
 
