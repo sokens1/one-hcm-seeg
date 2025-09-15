@@ -864,21 +864,21 @@ export default function RecruiterDashboard() {
                           <div className="w-2 h-2 rounded-full bg-red-400 mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Potentiel Faible</p>
-                            <p className="text-xs text-muted-foreground">25-30 candidats avec scores 0-39</p>
+                            <p className="text-xs text-muted-foreground">25-30 candidats avec un score compris entre 0-39</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 rounded-full bg-orange-400 mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Potentiel Moyen</p>
-                            <p className="text-xs text-muted-foreground">100+ candidats concentrés autour de 40-59</p>
+                            <p className="text-xs text-muted-foreground">100+ candidats avec un score compris entre 40-59</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 rounded-full bg-green-400 mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Potentiel Fort</p>
-                            <p className="text-xs text-muted-foreground">6 candidats avec scores 60-80</p>
+                            <p className="text-xs text-muted-foreground">6 candidats avec un score compris entre 60-80</p>
                           </div>
                         </div>
                       </CardContent>
