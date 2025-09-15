@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -205,19 +205,24 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
           .single();
 
         if (applicationDetails?.users && applicationDetails?.job_offers) {
-          const candidateName = `${applicationDetails.users.first_name} ${applicationDetails.users.last_name}`;
-          const jobTitle = applicationDetails.job_offers.title;
+          const user = Array.isArray(applicationDetails.users) ? applicationDetails.users[0] : applicationDetails.users;
+          const jobOffer = Array.isArray(applicationDetails.job_offers) ? applicationDetails.job_offers[0] : applicationDetails.job_offers;
           
-          // Envoyer email de simulation programmée
-          await supabase.functions.invoke('send-interview-email', {
-            body: {
-              to: applicationDetails.users.email,
-              candidateName,
-              jobTitle,
-              interviewDate: simulationDateTime.toISOString(),
-              interviewType: 'simulation'
-            }
-          });
+          if (user && jobOffer) {
+            const candidateName = `${user.first_name} ${user.last_name}`;
+            const jobTitle = jobOffer.title;
+            
+            // Envoyer email de simulation programmée
+            await supabase.functions.invoke('send-interview-email', {
+              body: {
+                to: user.email,
+                candidateName,
+                jobTitle,
+                interviewDate: simulationDateTime.toISOString(),
+                interviewType: 'simulation'
+              }
+            });
+          }
         }
       } catch (emailError) {
         console.warn('⚠️ Erreur lors de l\'envoi de l\'email:', emailError);
@@ -245,22 +250,22 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
       const newData = { ...prev };
       const [category, subCategory] = field.split('.');
 
-      if (section === 'mise_en_situation') {
-        if (!newData.mise_en_situation[category as keyof typeof newData.mise_en_situation]) {
-          newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] = { score: 0, comments: '' } as any;
+        if (section === 'mise_en_situation') {
+          if (!newData.mise_en_situation[category as keyof typeof newData.mise_en_situation]) {
+            newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] = { score: 0, comments: '' };
+          }
+          (newData.mise_en_situation[category as keyof typeof newData.mise_en_situation] as { score: number; comments: string })[subCategory] = value;
+        } else if (section === 'validation_operationnelle') {
+          if (!newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle]) {
+            newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] = { score: 0, comments: '' };
+          }
+          (newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] as { score: number; comments: string })[subCategory] = value;
+        } else if (section === 'analyse_competences') {
+          if (!newData.analyse_competences[category as keyof typeof newData.analyse_competences]) {
+            newData.analyse_competences[category as keyof typeof newData.analyse_competences] = { score: 0, comments: '', gapLevel: '' };
+          }
+          (newData.analyse_competences[category as keyof typeof newData.analyse_competences] as { score: number; comments: string; gapLevel: string })[subCategory] = value;
         }
-        newData.mise_en_situation[category as keyof typeof newData.mise_en_situation][subCategory] = value;
-      } else if (section === 'validation_operationnelle') {
-        if (!newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle]) {
-          newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle] = { score: 0, comments: '' } as any;
-        }
-        newData.validation_operationnelle[category as keyof typeof newData.validation_operationnelle][subCategory] = value;
-      } else if (section === 'analyse_competences') {
-        if (!newData.analyse_competences[category as keyof typeof newData.analyse_competences]) {
-          newData.analyse_competences[category as keyof typeof newData.analyse_competences] = { score: 0, comments: '', gapLevel: '' } as any;
-        }
-        newData.analyse_competences[category as keyof typeof newData.analyse_competences][subCategory] = value;
-      }
 
       // Mettre à jour le statut basé sur les scores
       const hasScores = newData.mise_en_situation.jeu_de_role.score > 0 || 
@@ -278,8 +283,8 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
   }, [updateEvaluation]);
 
 
-  // Calculer les scores directement comme dans le protocole 1
-  const scores = calculateSectionScores(evaluationData);
+  // Calculer les scores avec useMemo pour éviter les recalculs inutiles
+  const scores = useMemo(() => calculateSectionScores(evaluationData), [evaluationData, calculateSectionScores]);
 
   if (isLoading) {
     return (
@@ -374,6 +379,9 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
               Simulation 
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.situation.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
@@ -558,6 +566,9 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
               Performance
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.performance.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>
@@ -624,6 +635,9 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
               Compétence
             </CardTitle>
             <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-white font-semibold">
+                {scores.competence.toFixed(1)}%
+              </Badge>
               {getStatusBadge(evaluationData.status)}
             </div>
           </div>

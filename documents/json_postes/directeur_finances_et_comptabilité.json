@@ -1,0 +1,208 @@
+{
+  "Directeur Finances et Comptabilité": {
+    "Aude Tania Akoure Eyang": {
+      "prenom": "Aude",
+      "nom": "Tania Akoure Eyang",
+      "conformite": {
+        "prenom": "AUDE",
+        "nom": "TANIA AKOURE EYANG",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {
+        "nom": "AKOURE EYANG",
+        "prenom": "Aude Tania",
+        "poste": "Directrice Financier et Comptable",
+        "score": 38.1,
+        "resume_experience": "17 ans d'expérience en audit et contrôle",
+        "verdict": "moyen",
+        "raison": "L'expérience est significative en audit, mais le score de similarité est moyen dû à une spécialisation qui diffère quelque peu du rôle de Directeur Financier et Comptable.",
+        "points_forts": [
+          "Maîtrise des principes comptables et gestion de la trésorerie",
+          "Expérience enrichissante sur les normes SYSCOHADA",
+          "Compétences dans l'évaluation budgétaire"
+        ],
+        "points_a_travailler": [
+          "Expérience directe en finances d'entreprise notamment IFRS",
+          "Expérience limitée en gestion financière et stratégie de l'entreprise",
+          "Renforcer les compétences en relations externes, comme la négociation avec les banques"
+        ],
+        "rang": 1
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 12.62,
+        "verdict": "défavorable",
+        "resume": "Le profil de la candidate ne répond pas favorablement aux attentes du poste, principalement en raison d'un feedback RH inexistant et d'une faible complétude de sa candidature par rapport aux exigences de l'offre. Ceci soulève des questions sur sa capacité à s'aligner avec la vision de transformation intégrée de la SEEG.",
+        "points_forts": [
+          "Conformité documentaire à 100%"
+        ],
+        "points_a_ameliorer": [
+          "Absence de feedback RH",
+          "Faible complétude de la candidature par rapport à l'offre"
+        ],
+        "rang": 1
+      }
+    },
+    "Aude Akoure Eyang": {
+      "prenom": "Aude",
+      "nom": "Akoure Eyang",
+      "conformite": {},
+      "mtp": {
+        "nom": "AKOURE EYANG",
+        "prenom": "AUDE",
+        "poste": "Direction Finances & Comptabilité",
+        "scores": {
+          "Metier": 0.38,
+          "Talent": 0.41,
+          "Paradigme": 0.49
+        },
+        "Score_moyen": 42.67,
+        "niveau": "Le score moyen de 42.67 est en dessous du seuil favorable, indiquant un manque d'adéquation avec les exigences de la vision stratégique de l'entreprise. Ce candidat présente des faiblesses notables qui pourraient freiner l'atteinte des objectifs de transformation nécessaire pour la SEEG.",
+        "verdict": "défavorable",
+        "raison_verdict": "Le score moyen est inférieur à 43.5, ce qui reflète une inadéquation avec les attentes de performance de l'entreprise.",
+        "points_forts": [
+          "Connaissance générale des pratiques de gestion financière.",
+          "Capacité à identifier des besoins de formation au sein des équipes.",
+          "Expérience potentielle dans le domaine de la gouvernance d'entreprise."
+        ],
+        "points_a_travailler": [
+          "Améliorer les compétences techniques spécifiques au domaine de la finance et de la comptabilité.",
+          "Développer des talents en matière de leadership et de gestion d'équipe.",
+          "Renforcer les connaissances sur la gestion des infrastructures dans le secteur de l'énergie."
+        ],
+        "rang": 1
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 10.67,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Aude Akoure Eyang ne répond pas aux exigences du poste de Directeur Finances et Comptabilité à la SEEG. Les scores de conformité documentaire et de feedback RH sont nuls, indiquant un sérieux manque de préparation et d'adéquation à la vision stratégique de l'entreprise.",
+        "points_forts": [
+          "",
+          "",
+          ""
+        ],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Adéquation avec la vision stratégique de l'entreprise"
+        ],
+        "rang": 2
+      }
+    },
+    "Emilie Abeng": {
+      "prenom": "Emilie",
+      "nom": "Abeng",
+      "conformite": {},
+      "mtp": {
+        "nom": "ABENG",
+        "prenom": "Emilie",
+        "poste": "Direction Finances & Comptabilité",
+        "scores": {
+          "Metier": 0.35,
+          "Talent": 0.38,
+          "Paradigme": 0.42
+        },
+        "Score_moyen": 38.33,
+        "niveau": "Le score moyen du candidat est relativement faible, indiquant des lacunes importantes dans les domaines évalués. Cela suggère un manque d'alignement avec les exigences de la vision stratégique de l'entreprise.",
+        "verdict": "défavorable",
+        "razon_verdict": "Le score moyen du candidat est strictement inférieur à 43.5, ce qui le rend inadapté aux besoins de l'entreprise.",
+        "points_forts": [
+          "Certaines compétences techniques observées dans la gestion financière.",
+          "Capacité à travailler en équipe.",
+          "Volonté d'apprendre et de se former."
+        ],
+        "points_a_travailler": [
+          "Améliorer les connaissances en gestion financière stratégique.",
+          "Renforcer les compétences en leadership et en gouvernance.",
+          "Développer une meilleure compréhension des enjeux sectoriels de l'énergie et de l'eau."
+        ],
+        "rang": 2
+      },
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 9.58,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Emilie Abeng ne semble pas aligné avec les exigences du poste, notamment en termes de conformité documentaire et de complétude de ses soumissions. Aucun feedback RH détaillé n'est présent, ce qui complique l'évaluation de ses compétences et qualifications en adéquation avec la vision stratégique de l'entreprise.",
+        "points_forts": [],
+        "points_a_ameliorer": [
+          "Conformité documentaire",
+          "Complétude du dossier de candidature"
+        ],
+        "rang": 3
+      }
+    },
+    "Emilie Danielle Abeng": {
+      "prenom": "Emilie",
+      "nom": "Danielle Abeng",
+      "conformite": {},
+      "mtp": {},
+      "completude": {
+        "nom": "ABENG",
+        "prenom": "Emilie Danielle",
+        "poste": "Directeur Finances et Comptabilité",
+        "score": 31.5,
+        "resume_experience": "15 ans d'expérience en Finances, Comptabilité, Audit et Contrôle",
+        "verdict": "défavorable",
+        "raison": "Le score de similarité est inférieur au seuil requis, malgré l'expérience significative du candidat.",
+        "points_forts": [
+          "Expérience en supervision de comptabilité et élaboration de clôtures comptables",
+          "Capacité à élaborer et suivre le budget annuel de l’entreprise",
+          "Expérience dans la gestion des relations externes et négociation avec partenaires financiers"
+        ],
+        "points_a_travailler": [
+          "Approfondissement des connaissances en normes comptables internationales telles que IFRS",
+          "Renforcement de l'anglais pour une meilleure communication internationale",
+          "Optimisation des processus de reporting financier détaillé"
+        ],
+        "rang": 2
+      },
+      "feedback": {},
+      "global": {
+        "score_global": 6.3,
+        "verdict": "défavorable",
+        "resume": "Le profil d'Emilie Danielle Abeng présente une inadéquation notable par rapport aux exigences du poste, surtout en ce qui concerne les éléments de conformité documentaire et l'alignement avec la vision stratégique nécessitant des compétences renforcées en gouvernance financière sous pression. Le score de feedback RH non renseigné pouvant indiquer un manque d'engagement ou d'alignement avec les attentes organisationnelles.",
+        "points_forts": [
+          "Expérience potentielle en finances et comptabilité",
+          "Compréhension théorique potentielle des enjeux de modernisation des infrastructures",
+          "Disponibilité à apprendre et s'adapter à une culture d'entreprise en transformation"
+        ],
+        "points_a_ameliorer": [
+          "Conformité documentaire et complétude du dossier de candidature",
+          "Absence de feedback RH détaillé",
+          "Alignement limité avec la vision stratégique transformatrice de l'entreprise"
+        ],
+        "rang": 4
+      }
+    },
+    "Abeng Emilie": {
+      "prenom": "Abeng",
+      "nom": "Emilie",
+      "conformite": {
+        "prenom": "ABENG",
+        "nom": "Emilie",
+        "score_conformité": 100,
+        "commentaire": "Tous les documents ont été fournis."
+      },
+      "mtp": {},
+      "completude": {},
+      "feedback": {},
+      "global": {
+        "score_global": 5.0,
+        "verdict": "défavorable",
+        "resume": "Le candidat présente une conformité documentaire impeccable, mais manque de complétude par rapport à l'offre. Le score bas en feedback RH indique un problème important dans l'alignement aux attentes de l'entreprise, ce qui rend le profil défavorable.",
+        "points_forts": [
+          "Conformité documentaire parfaite"
+        ],
+        "points_a_ameliorer": [
+          "Manque de complétude du profil par rapport à l'offre",
+          "Score de feedback RH très bas"
+        ],
+        "rang": 5
+      }
+    }
+  }
+}
