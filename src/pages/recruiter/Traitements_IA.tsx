@@ -841,7 +841,7 @@ export default function Traitements_IA() {
                     <CardTitle className="text-lg">Informations du candidat</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Nom complet</p>
                         <p className="text-lg">{selectedCandidate.firstName} {selectedCandidate.lastName}</p>
@@ -849,10 +849,6 @@ export default function Traitements_IA() {
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Poste</p>
                         <p className="text-lg">{selectedCandidate.poste}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Département</p>
-                        <p className="text-lg">{selectedCandidate.department}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -906,6 +902,132 @@ export default function Traitements_IA() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Conformité documentaire */}
+                {selectedCandidate.aiData.conformite ? (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Conformité documentaire
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-green-500">
+                          {selectedCandidate.aiData.conformite.score_conformité}%
+                        </div>
+                        <p className="text-sm text-muted-foreground">Score de conformité</p>
+                        <p className="text-sm bg-muted p-2 rounded mt-2">
+                          {selectedCandidate.aiData.conformite.commentaire}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Conformité documentaire
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8">
+                        <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Aucune évaluation de conformité disponible pour ce candidat</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Complétude */}
+                {selectedCandidate.aiData.similarite_offre ? (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5" />
+                        Complétude
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-primary">
+                            {selectedCandidate.aiData.similarite_offre.score > 1 
+                              ? `${selectedCandidate.aiData.similarite_offre.score.toFixed(1)}%`
+                              : `${(selectedCandidate.aiData.similarite_offre.score * 100).toFixed(1)}%`
+                            }
+                          </div>
+                          <p className="text-sm text-muted-foreground">Score de similarité</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground mb-2">Expérience :</p>
+                          <p className="text-sm bg-muted p-2 rounded">
+                            {selectedCandidate.aiData.similarite_offre?.resume_experience ? (
+                              typeof selectedCandidate.aiData.similarite_offre.resume_experience === 'string' 
+                              ? selectedCandidate.aiData.similarite_offre.resume_experience
+                                : selectedCandidate.aiData.similarite_offre.resume_experience?.nombre_d_annees && selectedCandidate.aiData.similarite_offre.resume_experience?.specialite
+                                  ? `${selectedCandidate.aiData.similarite_offre.resume_experience.nombre_d_annees} ans - ${selectedCandidate.aiData.similarite_offre.resume_experience.specialite}`
+                                  : 'Informations non disponibles'
+                            ) : 'Aucune information d\'expérience disponible'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground mb-2">Commentaire :</p>
+                          <p className="text-sm bg-muted p-2 rounded">
+                            {selectedCandidate.aiData.similarite_offre?.commentaire_score || 'Aucun commentaire disponible'}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground mb-2">Forces :</p>
+                            <ul className="text-sm space-y-1">
+                              {Array.isArray(selectedCandidate.aiData.similarite_offre.forces) 
+                                ? selectedCandidate.aiData.similarite_offre.forces.map((force, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                  {force}
+                                </li>
+                                  ))
+                                : <li className="text-muted-foreground">Aucune force identifiée</li>
+                              }
+                            </ul>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground mb-2">Faiblesses :</p>
+                            <ul className="text-sm space-y-1">
+                              {Array.isArray(selectedCandidate.aiData.similarite_offre.faiblesses) 
+                                ? selectedCandidate.aiData.similarite_offre.faiblesses.map((faiblesse, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                                  {faiblesse}
+                                </li>
+                                  ))
+                                : <li className="text-muted-foreground">Aucune faiblesse identifiée</li>
+                              }
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5" />
+                        Complétude
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8">
+                        <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Aucune évaluation de similarité disponible pour ce candidat</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Scores MTP */}
                 {selectedCandidate.aiData.mtp ? (
@@ -1033,94 +1155,6 @@ export default function Traitements_IA() {
                   </Card>
                 )}
 
-                {/* Complétude */}
-                {selectedCandidate.aiData.similarite_offre ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5" />
-                        Complétude
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="text-center">
-                          <div className="text-3xl font-bold text-primary">
-                            {selectedCandidate.aiData.similarite_offre.score > 1 
-                              ? `${selectedCandidate.aiData.similarite_offre.score.toFixed(1)}%`
-                              : `${(selectedCandidate.aiData.similarite_offre.score * 100).toFixed(1)}%`
-                            }
-                          </div>
-                          <p className="text-sm text-muted-foreground">Score de similarité</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground mb-2">Expérience :</p>
-                          <p className="text-sm bg-muted p-2 rounded">
-                            {selectedCandidate.aiData.similarite_offre?.resume_experience ? (
-                              typeof selectedCandidate.aiData.similarite_offre.resume_experience === 'string' 
-                              ? selectedCandidate.aiData.similarite_offre.resume_experience
-                                : selectedCandidate.aiData.similarite_offre.resume_experience?.nombre_d_annees && selectedCandidate.aiData.similarite_offre.resume_experience?.specialite
-                                  ? `${selectedCandidate.aiData.similarite_offre.resume_experience.nombre_d_annees} ans - ${selectedCandidate.aiData.similarite_offre.resume_experience.specialite}`
-                                  : 'Informations non disponibles'
-                            ) : 'Aucune information d\'expérience disponible'}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground mb-2">Commentaire :</p>
-                          <p className="text-sm bg-muted p-2 rounded">
-                            {selectedCandidate.aiData.similarite_offre?.commentaire_score || 'Aucun commentaire disponible'}
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground mb-2">Forces :</p>
-                            <ul className="text-sm space-y-1">
-                              {Array.isArray(selectedCandidate.aiData.similarite_offre.forces) 
-                                ? selectedCandidate.aiData.similarite_offre.forces.map((force, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                  {force}
-                                </li>
-                                  ))
-                                : <li className="text-muted-foreground">Aucune force identifiée</li>
-                              }
-                            </ul>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground mb-2">Faiblesses :</p>
-                            <ul className="text-sm space-y-1">
-                              {Array.isArray(selectedCandidate.aiData.similarite_offre.faiblesses) 
-                                ? selectedCandidate.aiData.similarite_offre.faiblesses.map((faiblesse, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                                  {faiblesse}
-                                </li>
-                                  ))
-                                : <li className="text-muted-foreground">Aucune faiblesse identifiée</li>
-                              }
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5" />
-                        Complétude
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground">Aucune évaluation de similarité disponible pour ce candidat</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
                 {/* Feedback RH */}
                 {selectedCandidate.aiData.feedback ? (
                   <Card>
@@ -1188,44 +1222,6 @@ export default function Traitements_IA() {
                       <div className="text-center py-8">
                         <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                         <p className="text-muted-foreground">Aucun feedback RH disponible pour ce candidat</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Conformité documentaire */}
-                {selectedCandidate.aiData.conformite ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        Conformité documentaire
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-green-500">
-                          {selectedCandidate.aiData.conformite.score_conformité}%
-                        </div>
-                        <p className="text-sm text-muted-foreground">Score de conformité</p>
-                        <p className="text-sm bg-muted p-2 rounded mt-2">
-                          {selectedCandidate.aiData.conformite.commentaire}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        Conformité documentaire
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground">Aucune évaluation de conformité disponible pour ce candidat</p>
                       </div>
                     </CardContent>
                   </Card>

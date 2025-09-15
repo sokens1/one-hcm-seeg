@@ -1,484 +1,180 @@
 {
-    "Directeur Commercial et Recouvrement": {
-      "Floric Youla": {
-        "prenom": "Floric",
-        "nom": "Youla",
-        "conformite": {
-          "prenom": "Floric",
-          "nom": "YOULA",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "YOULA",
-          "prenom": "Floric",
-          "poste": "Direction Commerciale & Recouvrement",
-          "scores": {
-            "Metier": 0.49,
-            "Talent": 0.39,
-            "Paradigme": 0.48
-          },
-          "Score_moyen": 45.33,
-          "niveau": "Le score moyen du candidat est considéré comme moyen, indiquant une capacité acceptable pour le poste. Cependant, des améliorations sont nécessaires pour atteindre les exigences de la vision de l'entreprise.",
-          "verdict": "moyen",
-          "raison_verdict": "Le score moyen de 45.33 ne répond pas entièrement aux attentes élevées de la SEEG pour la transformation requise.",
-          "points_forts": [
-            "Bonne compréhension des défis du secteur et des infrastructures vieillissantes.",
-            "Capacité à identifier des solutions d'organisation pour améliorer l'efficacité.",
-            "Une certaine compréhension de la nécessité d'une gouvernance renforcée et transparente."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences en leadership et en gestion d'équipes pour mieux induire des changements.",
-            "Renforcer les capacités d'analyse pour élaborer des stratégies innovantes en matière de modernisation.",
-            "Accroître la sensibilisation aux technologies émergentes pour une meilleure intégration des énergies renouvelables."
-          ],
-          "rang": 2
-        },
-        "completude": {
-          "nom": "YOULA",
-          "prenom": "Floric",
-          "poste": "Directeur Commercial et Recouvrement",
-          "score": 36.9,
-          "resume_experience": "24 années d'expérience dans les domaines du marketing, de la gestion commerciale et du management, avec expérience internationale en Afrique.",
-          "verdict": "moyen",
-          "points_forts": [
-            "Grande expérience en gestion commerciale et marketing.",
-            "Compétences en management d'équipes multinationales.",
-            "Expérience avérée dans le développement des marchés et gestion des comptes clés."
-          ],
-          "points_a_travailler": [
-            "Manque d'expérience directe et spécifiée dans le recouvrement des créances.",
-            "Absence de détails sur la gestion proactive des réclamations clients.",
-            "Absence d'une lettre de motivation qui aurait pu objectivement préciser l'adaptation au poste."
-          ],
-          "rang": 8
-        },
-        "feedback": {
-          "prenom": "Floric",
-          "nom": "YOULA",
-          "score": 62.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat possède des qualités managériales reconnues et un respect notable pour ses collaborateurs. Malgré un retour d'expérience managérial limité en recouvrement, son potentiel de leadership et sa capacité d'adaptation peuvent être bénéfiques pour la SEEG.",
-          "Points forces": [
-            "Capacité à travailler en équipe",
-            "Respectueux des collaborateurs"
-          ],
-          "Points à travailler": [
-            "Expérience en recouvrement",
-            "Gestion de projets complexes"
-          ],
-          "rang": 2
-        },
-        "global": {
-          "score_global": 54.96,
-          "verdict": "moyen",
-          "resume": "Floric Youla présente des qualités managériales reconnues et une capacité notable à travailler en équipe, ce qui est favorable pour la dynamique requise par la SEEG dans sa phase de transformation. Cependant, son retour d'expérience en recouvrement et en gestion de projets complexes est limité, bien que son potentiel de leadership et son respect pour ses collaborateurs soient des atouts importants.",
-          "points_forts": [
-            "Capacité à travailler en équipe",
-            "Respectueux des collaborateurs",
-            "Potentiel de leadership"
-          ],
-          "points_a_ameliorer": [
-            "Expérience en recouvrement",
-            "Gestion de projets complexes"
-          ],
-          "rang": 1
-        }
-      },
+  "Directeur Commercial et Recouvrement": {
+    "candidats": {
       "Patrick Essone Bibang": {
         "prenom": "Patrick",
         "nom": "Essone Bibang",
         "conformite": {
           "prenom": "Patrick",
           "nom": "ESSONE BIBANG",
+          "poste": "Directeur Commercial et Recouvrement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
           "nom": "ESSONE BIBANG",
           "prenom": "Patrick",
-          "poste": "Direction Commerciale & Recouvrement",
+          "poste": "Directeur Commercial et Recouvrement",
           "scores": {
             "Metier": 0.5,
             "Talent": 0.39,
-            "Paradigme": 0.45
+            "Paradigme": 0.43
           },
-          "Score_moyen": 44.67,
-          "niveau": "Le score de 44.67 indique une adéquation moyenne du candidat à la vision de l'entreprise. Bien qu'il dispose de compétences de base, son potentiel global ne répond pas pleinement aux attentes élevées de la SEEG.",
-          "verdict": "moyen",
-          "raison_verdict": "Le candidat présente un score moyen qui est insuffisant pour démontrer une forte adéquation avec la vision transformatrice de la SEEG.",
+          "Score_moyen": 44.0,
+          "niveau": "Le score moyen de 44.0 indique une performance juste en dessous de la moyenne. Cela signifie qu'il pourrait avoir des difficultés à s'aligner sur la vision de transformation stratégique de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score est inférieur à 43.5, ce qui ne satisfait pas les critères de la société.",
           "points_forts": [
-            "Compréhension des enjeux de gouvernance et de transparence.",
-            "Capacité d'analyse des infrastructures et identification des besoins de modernisation.",
-            "Compétences en gestion des ressources humaines."
+            "Capacité à identifier les problématiques majeures au sein de l'organisation.",
+            "Engagement envers la performance et l'amélioration continue.",
+            "Connaissance des défis spécifiques à l'industrie de l'énergie et de l'eau."
           ],
           "points_a_travailler": [
-            "Développer des compétences en gestion de projet pour les investissements stratégiques.",
-            "Renforcer les talents dans les domaines de la transition énergétique et de l'innovation.",
-            "Améliorer l'approche client et la gestion des relations avec les parties prenantes."
+            "Améliorer ses compétences en gestion de projets pour mieux diriger les initiatives de transformation.",
+            "Renforcer les capacités en gestion financière et budgétaire pour contribuer à la stabilité de l'entreprise.",
+            "Développer des compétences en leadership pour inspirer et motiver les équipes durant le processus de changement."
           ],
-          "rang": 3
-        },
-        "completude": {},
-        "feedback": {
-          "prenom": "Patrick",
-          "nom": "ESSONE BIBANG",
-          "score": 72.5,
-          "verdict": "Favorable",
-          "raisons": "Le candidat démontre une forte capacité de leadership et une compréhension des enjeux commerciaux et de recouvrement devant une entreprise en difficulté. Son ton affirmé et son engagement à servir l'entreprise correspondent bien aux exigences de la vision stratégique de la SEEG.",
-          "Points forces": [
-            "Leadership affirmé et capacité à mobiliser les équipes",
-            "Compréhension des défis du recouvrement et des enjeux commerciaux"
-          ],
-          "Points à travailler": [
-            "Renforcement des compétences en gestion de crise et en transformation organisationnelle",
-            "Développement de stratégies innovantes alignées sur les évolutions technologiques requises"
-          ],
-          "rang": 1
-        },
-        "global": {
-          "score_global": 52.42,
-          "verdict": "moyen",
-          "resume": "Patrick démontre une forte capacité de leadership avec une compréhension claire des enjeux commerciaux, ce qui est crucial pour une entreprise en difficulté comme la SEEG. Son engagement et son alignement avec la vision stratégique de l'entreprise sont notables, bien qu'il reste des améliorations possibles en gestion de crise et innovation technologique.",
-          "points_forts": [
-            "Leadership affirmé et capacité à mobiliser les équipes",
-            "Compréhension des défis du recouvrement",
-            "Engagement à servir l'entreprise"
-          ],
-          "points_a_ameliorer": [
-            "Renforcement des compétences en gestion de crise",
-            "Développement de stratégies innovantes alignées sur les évolutions technologiques"
-          ],
-          "rang": 2
-        }
-      },
-      "Thomas Essingone Memiaghe": {
-        "prenom": "Thomas",
-        "nom": "Essingone Memiaghe",
-        "conformite": {
-          "prenom": "Thomas",
-          "nom": "ESSINGONE MEMIAGHE",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "ESSINGONE MEMIAGHE",
-          "prenom": "Thomas",
-          "poste": "Direction Commerciale & Recouvrement",
-          "scores": {
-            "Metier": 0.47,
-            "Talent": 0.36,
-            "Paradigme": 0.47
-          },
-          "Score_moyen": 43.33,
-          "niveau": "Le score moyen de Thomas est légèrement en dessous du seuil de 43.5, ce qui indique une adéquation faible avec la vision de l'entreprise. Sa performance en Métier et Paradigme montre des points positifs, mais la faiblesse en Talent compromet sa candidature.",
-          "verdict": "défavorables",
-          "raison_verdict": "Le score moyen de 43.33 indique un alignement insuffisant avec la vision de la SEEG.",
-          "points_forts": [
-            "Bonne compréhension des enjeux métier liés à la réhabilitation et modernisation des infrastructures.",
-            "Capacité à identifier les leviers stratégiques nécessaires pour une réorganisation efficace.",
-            "Connaissance des principes de gouvernance et transparence essentiels pour la structure."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en management et leadership pour optimiser la gestion des équipes.",
-            "Améliorer la capacité à développer des relations partenariales pour le financement et l'implémentation des projets.",
-            "Travailler sur l'engagement des employés pour favoriser un dialogue constructif au sein de l'organisation."
-          ],
-          "rang": 7
+          "rang": 8
         },
         "completude": {
-          "nom": "ESSINGONE MEMIAGHE",
-          "prenom": "Thomas",
+          "nom": "ESSONE BIBANG",
+          "prenom": "Patrick",
           "poste": "Directeur Commercial et Recouvrement",
-          "score": 35.9,
-          "resume_experience": "27 ans, dont plus de 15 ans en tant que responsable des unités commerciales et clientèles",
+          "score": 38.5,
+          "resume_experience": "Plus de 20 ans d'expérience dans la gestion de la relation client, la facturation, et le recouvrement.",
           "verdict": "moyen",
-          "reason": "Thomas présente une expérience significative et pertinente au sein de SEEG, toutefois, le score de 35.900 représente une marge d'amélioration pour répondre pleinement aux exigences du poste.",
+          "raison_du_verdict": "Le candidat a plus de 20 ans d'expérience en direction commerciale et recouvrement, mais le score de similarité n'est que légèrement au-dessus de la moyenne, suggérant une adéquation modérée au poste.",
           "points_forts": [
-            "Expérience approfondie dans la gestion commerciale et clientèle",
-            "Compétence en digitalisation des processus (notamment facturation)",
-            "Connaissance approfondie de l'environnement institutionnel du secteur de l'eau et de l'électricité"
+            "Solide parcours en direction commerciale et animation d’équipes.",
+            "Expertise dans l’élaboration de stratégies commerciales et le pilotage de la performance.",
+            "Expérience avérée en réduction des impayés et gestion de portefeuilles stratégiques."
           ],
           "points_a_travailler": [
-            "Renforcer ses compétences en évaluation et gestion de risques clients",
-            "Améliorer les techniques de recouvrement pour réduire davantage le taux d'impayés",
-            "Optimiser l'équilibre entre le développement commercial et la sécurisation financière"
+            "Renforcer la digitalisation des processus clientèle.",
+            "Approfondir la collaboration interservices surtout avec le juridique pour les contentieux.",
+            "Optimisation continue de la trésorerie par une meilleure gestion des flux financiers."
           ],
           "rang": 9
         },
         "feedback": {
-          "prenom": "Thomas",
-          "nom": "ESSINGONE MEMIAGHE",
-          "score": 52.3,
-          "verdict": "Moyen",
-          "raisons": "Bien que le candidat possède une expérience managériale, le manque de leadership confirmé et les doutes sur sa contribution future soulèvent des préoccupations. Sa capacité à s'aligner sur la vision de transformation de l'entreprise reste à démontrer.",
+          "prenom": "Patrick",
+          "nom": "ESSONE BIBANG",
+          "score": 73.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente des qualités de leadership affirmées, adaptées aux besoins de restructuration et d'optimisation exprimés dans la vision de la SEEG. Son approche et ses expériences montrent un alignement potentiel avec les objectifs stratégiques de l'entreprise.",
           "Points forces": [
-            "Expérience antérieure en direction commerciale",
-            "Connaissance des enjeux de recouvrement"
+            "Leadership affirmé",
+            "Capacité d'adaptation à des environnements complexes"
           ],
           "Points à travailler": [
-            "Leadership à prouver",
-            "Confiance des parties prenantes à établir"
+            "Connaissance approfondie de la réglementation sectorielle",
+            "Expérience dans la gestion de la transition énergétique"
           ],
-          "rang": 5
+          "rang": 1
         },
         "global": {
-          "score_global": 49.16,
-          "verdict": "moyen",
-          "resume": "Le candidat possède une expérience antérieure en direction commerciale et maîtrise les enjeux de recouvrement. Cependant, son manque de leadership confirmé et la nécessité de prouver sa capacité à s'aligner sur la vision de transformation de l'entreprise soulèvent des inquiétudes.",
-          "points_forts": [
-            "Expérience antérieure en direction commerciale",
-            "Connaissance des enjeux de recouvrement"
-          ],
-          "points_a_ameliorer": [
-            "Leadership à prouver",
-            "Confiance des parties prenantes à établir"
-          ],
-          "rang": 3
-        }
-      },
-      "Georges Jacques S Tigoue": {
-        "prenom": "Georges",
-        "nom": "Jacques S Tigoue",
-        "conformite": {
-          "prenom": "Georges",
-          "nom": "Jacques S TIGOUE",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {
-          "nom": "TIGOUE",
-          "prenom": "Georges Jacques S",
-          "poste": "Directeur Commercial et Recouvrement",
-          "score": 39.8,
-          "resume_experience": "Plus de 20 ans dans la gestion clientèle et recouvrement",
+          "score_global": 60.45,
           "verdict": "favorable",
+          "raison_verdict": "Le candidat présente des qualités de leadership affirmées et une capacité d'adaptation, qui sont cruciales pour la restructuration et l'optimisation demandées par la SEEG.",
+          "resume": "Patrick Essone Bibang a reçu une évaluation favorable grâce à ses qualités de leadership affirmé et à sa capacité d'adaptation aux environnements complexes, ce qui est aligné avec les besoins de restructuration de la SEEG. Cependant, il devra améliorer sa connaissance de la réglementation sectorielle et son expérience dans la gestion de la transition énergétique.",
           "points_forts": [
-            "Expérience étendue en gestion clientèle et recouvrement",
-            "Capacité avérée de management et leadership",
-            "Maîtrise des techniques de négociation et satisfaction client"
-          ],
-          "points_a_travailler": [
-            "Approfondir les compétences en digitalisation des processus",
-            "Améliorer la maîtrise de l’anglais professionnel",
-            "Intégration de nouvelles technologies dans la stratégie commerciale"
-          ],
-          "rang": 7
-        },
-        "feedback": {
-          "prenom": "Georges",
-          "nom": "JACQUES S TIGOUE",
-          "score": 53.7,
-          "verdict": "Moyen",
-          "raisons": "Le candidat démontre une certaine expertise, mais des préoccupations concernant son leadership et des suspicions de comportement inapproprié nuisent à son évaluation globale.",
-          "Points forces": [
-            "Expertise en gestion",
-            "Comportement satisfaisant au cabinet ADG"
-          ],
-          "Points à travailler": [
-            "Manque de leadership",
-            "Suspicion de fraudes"
-          ],
-          "rang": 4
-        },
-        "global": {
-          "score_global": 39.81,
-          "verdict": "défavorable",
-          "resume": "Georges Jacques S Tigoue présente une expertise notable en gestion, néanmoins, son évaluation est entachée par des préoccupations pertinentes concernant son leadership et des allégations de comportement inapproprié. Ces éléments impactent négativement son adéquation avec le poste de Directeur Commercial et Recouvrement dans un contexte de transformation pour la SEEG.",
-          "points_forts": [
-            "Expertise en gestion",
-            "Comportement satisfaisant au cabinet ADG"
+            "Leadership affirmé",
+            "Capacité d'adaptation à des environnements complexes"
           ],
           "points_a_ameliorer": [
-            "Manque de leadership",
-            "Suspicion de fraudes"
+            "Connaissance approfondie de la réglementation sectorielle",
+            "Expérience dans la gestion de la transition énergétique"
           ],
-          "rang": 4
+          "rang": 1
         }
       },
-      "Steeve Ogoula Ndabendjet": {
-        "prenom": "Steeve",
-        "nom": "Ogoula Ndabendjet",
+      "Floric Paulivain Youla": {
+        "prenom": "Floric",
+        "nom": "Paulivain Youla",
         "conformite": {
-          "prenom": "steeve",
-          "nom": "ogoula ndabendjet",
+          "prenom": "Floric",
+          "nom": "YOULA",
+          "poste": "Directeur Commercial et Recouvrement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
-          "nom": "ogoula ndabendjet",
-          "prenom": "steeve",
-          "poste": "Direction Commerciale & Recouvrement",
+          "nom": "YOULA",
+          "prenom": "Floric",
+          "poste": "Directeur Commercial et Recouvrement",
           "scores": {
-            "Metier": 0.42,
-            "Talent": 0.36,
-            "Paradigme": 0.44
+            "Métier": 0.49,
+            "Talent": 0.39,
+            "Paradigme": 0.48
           },
-          "Score_moyen": 40.67,
-          "niveau": "Le score moyen de ce candidat est inférieur à 43.5, ce qui indique une inadéquation avec les attentes de l'entreprise. Il est crucial pour la SEEG de disposer de candidats alignés avec sa vision ambitieuse pour surmonter ses défis.",
-          "verdict": "défavorable",
-          "raison": "Le score moyen ne permet pas d'assurer que le candidat répond aux exigences fondamentales de la vision et des enjeux de la SEEG.",
+          "Score_moyen": 45.33,
+          "niveau": "Le score moyen de 45.33 indique une compétence d'un niveau moyen en termes d'adéquation à la vision de l'entreprise. Le candidat montre des capacités, mais nécessite un soutien supplémentaire pour aligner ses compétences avec les attentes stratégiques de la SEEG.",
+          "verdict": "moyen",
+          "raison_du_verdict": "Bien que le candidat possède des compétences, son score moyen laisse à désirer et il devra démontrer une forte volonté d'amélioration pour répondre aux défis de l'entreprise.",
           "points_forts": [
-            "Compétences techniques en gestion de crise",
-            "Capacité à travailler en équipe",
-            "Expérience en recouvrement et gestion des créances"
+            "Compétences en gestion commerciale et de recouvrement qui pourraient apporter des améliorations dans la trésorerie.",
+            "Connaissance des paradigmes du secteur de l'énergie et de l'eau, renforçant son aptitude à naviguer dans des environnements complexes.",
+            "Une approche professionnelle qui pourrait favoriser des partenariats avec des agences de régulation et des entreprises techniques."
           ],
           "points_a_travailler": [
-            "Améliorer la compréhension des enjeux stratégiques du secteur énergétique",
-            "Développer des compétences en gestion de projets complexes",
-            "Renforcer l'aptitude à l'innovation et à l'intégration de nouvelles technologies"
+            "Améliorer ses compétences en management et leadership pour mieux encadrer et motiver les équipes.",
+            "Développer une compréhension plus poussée des enjeux financiers et de la gouvernance d'entreprise pour renforcer la responsabilité.",
+            "Renforcer ses capacités d'analyse des données afin de mieux adapter les stratégies commerciales aux besoins du marché."
           ],
-          "rang": 10
+          "rang": 4
         },
         "completude": {
-          "nom": "Ogoula Ndabendjet",
-          "prenom": "Steeve",
+          "nom": "YOULA",
+          "prenom": "Floric Paulivain",
           "poste": "Directeur Commercial et Recouvrement",
-          "score": 39.9,
-          "resume_experience": "23 années dans diverses fonctions liées à la gestion de clientèle et recouvrement",
+          "score": 42.2,
+          "resume_experience": "24 années d'expérience en optimisation de la chaîne d'approvisionnement et stratégie commerciale",
           "verdict": "favorable",
+          "raison": "Avec 24 ans d'expérience dans plusieurs pays africains et des compétences solides en gestion commerciale et optimisation de la trésorerie, M. Youla est bien aligné sur le poste proposé.",
           "points_forts": [
-            "Expérience significative de 23 ans dans la gestion de la clientèle et le recouvrement",
-            "Capacité éprouvée à améliorer le Chiffre d'Affaires",
-            "Solide expérience en management d'équipes commerciales"
+            "Expérience diversifiée dans divers pays africains avec des entreprises reconnues",
+            "Réduction des impayés par des procédures de recouvrement efficaces",
+            "Digitalisation des processus clients pour améliorer la satisfaction et fidélisation"
           ],
           "points_a_travailler": [
-            "Augmenter l'exposition à la digitalisation des processus clientèle",
-            "Approfondir les compétences en analyse des risques clients",
-            "Renforcer la collaboration inter-départementale"
-          ],
-          "rang": 6
-        },
-        "feedback": {
-          "prenom": "Steeve",
-          "nom": "OGOULA NDABENDJET",
-          "score": 30.5,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat démontre un manque de leadership et de motivation, ce qui est incompatible avec les exigences de transformation et de gouvernance renforcée requises par la SEEG. Son refus de répondre aux convocations de la hiérarchie indique un comportement problématique.",
-          "Points forces": [],
-          "Points à travailler": [
-            "Manque de leadership",
-            "Comportement non collaboratif",
-            "Absence de vision stratégique"
-          ],
-          "rang": 10
-        },
-        "global": {
-          "score_global": 38.4,
-          "verdict": "défavorable",
-          "resume": "Steeve Ogoula Ndabendjet présente un profil inadéquat pour le poste de Directeur Commercial et Recouvrement, en raison de lacunes significatives en leadership et motivation. Ces déficiences sont accentuées par un comportement non collaboratif, rendant difficile l'alignement avec la vision de transformation et de gouvernance renforcée de la SEEG.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Manque de leadership",
-            "Comportement non collaboratif",
-            "Absence de vision stratégique"
-          ],
-          "rang": 5
-        }
-      },
-      "Franck Armel Mendome": {
-        "prenom": "Franck",
-        "nom": "Armel Mendome",
-        "conformite": {
-          "prenom": "Franck",
-          "nom": "Armel MENDOME",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {
-          "nom": "MENDOME",
-          "prenom": "Franck Armel",
-          "poste": "Directeur Commercial et Recouvrement",
-          "score": 42.6,
-          "resume_experience": "20 ans d'expérience dans le secteur commercial et recouvrement, avec spécialité dans la gestion de la facturation/recouvrement",
-          "verdict": "favorable",
-          "points_forts": [
-            "Expérience solide de 20 ans dans les domaines commercial et recouvrement",
-            "Compétences en gestion d'équipes et mise en œuvre de projets stratégiques",
-            "Capacités démontrées en innovation et optimisation des processus clients"
-          ],
-          "points_a_travailler": [
-            "Digitalisation des processus clientèle pour répondre aux tendances actuelles",
-            "Renforcement des compétences en négociation avec les clients stratégiques",
-            "Suivi et ajustement des outils de performance pour plus de précision"
+            "Accent accru sur l'analyse des risques clients spécifiques au Gabon",
+            "Amélioration continue dans la supervision du recouvrement des créances",
+            "Adaptation des stratégies de croissance pour les petites équipes locales"
           ],
           "rang": 3
         },
         "feedback": {
-          "prenom": "Franck",
-          "nom": "ARMEL MENDOME",
-          "score": 48.5,
-          "verdict": "Moyen",
-          "raisons": "Le candidat présente un profil calme et réfléchi, mais manque de leadership et de sociabilité, ce qui est essentiel pour le poste de Directeur Commercial et Recouvrement, surtout dans le cadre des ambitions actuelles de la SEEG.",
-          "Points forces": [
-            "Calme et réfléchi",
-            "Capacité à prendre des responsabilités"
-          ],
-          "Points à travailler": [
-            "Manque de leadership",
-            "Sociabilité faible"
-          ],
-          "rang": 6
-        },
-        "global": {
-          "score_global": 37.77,
-          "verdict": "défavorable",
-          "resume": "Franck Armel Mendome présente un profil calme et réfléchi, montrant une capacité à prendre des responsabilités. Cependant, son manque de leadership et de sociabilité limite sa compatibilité avec les exigences du poste. Ces compétences sont cruciales pour accompagner la transformation stratégique de la SEEG.",
-          "points_forts": [
-            "Calme et réfléchi",
-            "Capacité à prendre des responsabilités"
-          ],
-          "points_a_ameliorer": [
-            "Manque de leadership",
-            "Sociabilité faible"
-          ],
-          "rang": 6
-        }
-      },
-      "Ninga Reine Gerlina": {
-        "prenom": "Ninga",
-        "nom": "Reine Gerlina",
-        "conformite": {
-          "prenom": "NINGA",
-          "nom": " Reine Gerlina",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {},
-        "feedback": {
-          "prenom": "Ninga",
-          "nom": "REINE GERLINA",
-          "score": 62.5,
+          "prenom": "Floric",
+          "nom": "YOULA",
+          "score": 62.75,
           "verdict": "Favorable",
-          "raisons": "Le candidat possède un potentiel avéré avec une orientation résultat et une bonne attitude, bien qu'il ait besoin de développement en management et leadership. Son aptitude à unir Marketing et Commercial est aussi un atout pertinent dans le cadre de la vision de la SEEG.",
+          "raisons": "Le candidat présente des compétences interpersonnelles reconnues, mais doit renforcer sa vision stratégique pour répondre aux défis clés de la SEEG.",
           "Points forces": [
-            "Orientation résultats",
-            "Bonne attitude et comportement",
-            "Capacité à rallier les équipes"
+            "Capacité à travailler en équipe et à établir des relations respectueuses avec les collaborateurs.",
+            "Expérience satisfaisante dans un rôle de gestion au sein des Ressources Générales."
           ],
           "Points à travailler": [
-            "Besoin d'accompagnement en management",
-            "Développement des compétences en leadership"
+            "Développer une vision stratégique adaptée aux transformations nécessaires de l'entreprise.",
+            "Améliorer ses compétences en gestion de crise et en recouvrement des créances."
           ],
           "rang": 3
         },
         "global": {
-          "score_global": 36.25,
-          "verdict": "défavorable",
-          "resume": "Ninga Reine Gerlina démontre un potentiel avéré avec une forte orientation vers les résultats et une capacité à intégrer les fonctions Marketing et Commercial, ce qui est crucial pour la vision de transformation de la SEEG. Cependant, elle nécessite un développement supplémentaire en management et leadership pour répondre pleinement aux exigences du poste.",
+          "score_global": 56.15,
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat est jugé favorable grâce à ses compétences interpersonnelles reconnues, mais il doit renforcer sa vision stratégique pour être pleinement efficace dans le contexte de transformation de la SEEG.",
+          "resume": "Le candidat Floric Paulivain Youla est globalement favorable pour le poste, malgré des points à renforcer. Il possède une excellente capacité à travailler en équipe mais doit améliorer sa vision stratégique pour aligner ses compétences aux besoins de transformation de la SEEG.",
           "points_forts": [
-            "Orientation résultats",
-            "Bonne attitude et comportement",
-            "Capacité à rallier les équipes"
+            "Capacité à travailler en équipe",
+            "Établissement de relations respectueuses",
+            "Expérience en gestion des ressources générales"
           ],
           "points_a_ameliorer": [
-            "Besoin d'accompagnement en management",
-            "Développement des compétences en leadership"
+            "Vision stratégique pour transformations",
+            "Compétences en gestion de crise",
+            "Recouvrement des créances"
           ],
-          "rang": 7
+          "rang": 2
         }
       },
       "Karl Alex Jean Youyatte": {
@@ -487,116 +183,322 @@
         "conformite": {
           "prenom": "Karl",
           "nom": "Alex Jean YOUYATTE",
+          "poste": "Directeur Commercial et Recouvrement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
+        "mtp": {
+          "nom": "YOUYATTE",
+          "prenom": "Karl",
+          "poste": "Directeur Commercial et Recouvrement",
+          "scores": {
+            "Metier": 0.48,
+            "Talent": 0.37,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 44.33,
+          "niveau": "Le score moyen de 44.33 indique une performance en dessous des attentes. Ce résultat suggère un potentiel de contribution limité à la vision de transformation de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui ne répond pas aux normes de l'entreprise.",
+          "points_forts": [
+            "Une bonne compréhension des enjeux du secteur commercial et du recouvrement.",
+            "Capacité à s'adapter aux défis de gestion des ressources.",
+            "Motivation à moderniser les infrastructures, crucial dans le cadre de la vision de l'entreprise."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion des talents pour assurer une meilleure motivation des équipes.",
+            "Renforcer l'expertise en Gouvernance et transparence pour répondre aux attentes de l'entreprise.",
+            "Développer une approche stratégique pour la modernisation des infrastructures afin de répondre aux besoins du service."
+          ],
+          "rang": 6
+        },
         "completude": {
           "nom": "YOUYATTE",
           "prenom": "Karl Alex Jean",
           "poste": "Directeur Commercial et Recouvrement",
-          "score": 42.5,
-          "resume_experience": {
-            "nombre_annees": 20,
-            "specialite": "gestion commerciale et management d'équipes"
-          },
+          "score": 43.7,
+          "resume_experience": "Plus de 20 ans d'expérience en gestion commerciale, recouvrement et management d'équipes au sein de SEEG",
           "verdict": "favorable",
+          "raison_verdict": "Karl présente une large expérience dans les domaines requis pour le poste, notamment en gestion commerciale et recouvrement, ce qui le qualifie pour le poste de Directeur Commercial et Recouvrement.",
           "points_forts": [
-            "Solide expérience en gestion commerciale et management d'équipes",
-            "Expertise en gestion de projets et développement de stratégies commerciales",
-            "Capacité à améliorer rapidement l'efficacité opérationnelle et la satisfaction client"
+            "Solide expérience en management opérationnel et gestion commerciale.",
+            "Expertise technique et pédagogique pour le déploiement de systèmes de gestion clientèle.",
+            "Capacité avérée à piloter des projets avec succès et à améliorer les processus opérationnels."
           ],
           "points_a_travailler": [
-            "Acquisition d'une expérience plus spécifique dans la digitalisation des processus clientèle",
-            "Renforcement des compétences en négociation avec des clients stratégiques",
-            "Approfondir des stratégies innovantes pour l'optimisation de trésorerie"
+            "Digitalisation des processus clientèle pour s'adapter aux attentes modernes.",
+            "Réduction des délais de paiement de manière proactive.",
+            "Approfondissement des compétences dans l'optimisation de la trésorerie et la gestion des recouvrements."
           ],
-          "rang": 4
+          "rang": 2
         },
         "feedback": {
           "prenom": "Karl",
           "nom": "ALEX JEAN YOUYATTE",
-          "score": 42.7,
+          "score": 42.3,
           "verdict": "Défavorable",
-          "raisons": "Le candidat présente des lacunes en matière de leadership et de maturité, ce qui compromet sa capacité à diriger une équipe dans un contexte de réorganisation et de transformation stratégique fort inhérents à la vision de la SEEG.",
+          "raisons": "Le candidat présente un comportement positif, mais son manque de leadership et de maturité pour le poste soulève des inquiétudes quant à sa capacité à diriges l'équipe commerciale et à mener à bien les transformations stratégiques requises par la vision de la SEEG.",
           "Points forces": [
-            "Bon comportement en milieu de travail",
-            "Connaissance des enjeux systémiques du secteur"
+            "Bon comportement",
+            "Capacité à travailler en équipe"
           ],
           "Points à travailler": [
-            "Manque de maturité managériale",
-            "Incapacité à fédérer une équipe vers des objectifs communs"
+            "Manque de leadership",
+            "Nécessité de développer la maturité professionnelle"
           ],
           "rang": 7
         },
         "global": {
-          "score_global": 34.85,
-          "verdict": "défavorable",
-          "resume": "Karl présente des connaissances solides sur les enjeux systémiques du secteur, mais ses lacunes en termes de leadership et de capacité à fédérer une équipe limitent sa pertinence pour ce poste, surtout dans le cadre de la transformation et réorganisation prévues par la SEEG.",
+          "score_global": 45.97,
+          "verdict": "moyen",
+          "raison_verdict": "Bien que le candidat ait des qualités de collaboration, ses insuffisances en leadership et maturité professionnelle limitent sa compatibilité avec les exigences stratégiques du poste.",
+          "resume": "Karl Alex Jean Youyatte est un candidat avec un bon comportement et une capacité à travailler en équipe. Cependant, son manque de leadership et de maturité soulève des doutes quant à sa capacité à diriger les équipes commerciales et à accomplir les transformations stratégiques nécessaires à la vision de la SEEG.",
           "points_forts": [
-            "Bon comportement en milieu de travail",
-            "Connaissance des enjeux systémiques du secteur"
+            "Bon comportement",
+            "Capacité à travailler en équipe"
           ],
           "points_a_ameliorer": [
-            "Manque de maturité managériale",
-            "Incapacité à fédérer une équipe vers des objectifs communs"
+            "Manque de leadership",
+            "Nécessité de développer la maturité professionnelle"
           ],
-          "rang": 8
+          "rang": 3
         }
       },
-      "Marlyne Armelle Ziza": {
-        "prenom": "Marlyne",
-        "nom": "Armelle Ziza",
+      "Thomas Essingone Memiaghe": {
+        "prenom": "Thomas",
+        "nom": "Essingone Memiaghe",
         "conformite": {
-          "prenom": "Marlyne",
-          "nom": "Armelle  ZIZA",
+          "prenom": "Thomas",
+          "nom": "ESSINGONE MEMIAGHE",
+          "poste": "Directeur Commercial et Recouvrement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
-        "completude": {
-          "nom": "ZIZA",
-          "prenom": "Marlyne Armelle",
+        "mtp": {
+          "nom": "ESSINGONE MEMIAGHE",
+          "prenom": "Thomas",
           "poste": "Directeur Commercial et Recouvrement",
-          "score": 40.3,
-          "resume_experience": "Environ 25 ans d'expérience dans les domaines commercial et recouvrement, notamment au sein de la Société d'Energie et d'Eau du Gabon.",
-          "verdict": "favorable",
-          "raison_verdict": "Avec une solide expérience en recouvrement et gestion commerciale, elle possède les compétences nécessaires pour le poste de Directeur Commercial et Recouvrement.",
+          "scores": {
+            "Metier": 0.47,
+            "Talent": 0.36,
+            "Paradigme": 0.55
+          },
+          "Score_moyen": 46.0,
+          "niveau": "Le score moyen du candidat est dans la tranche dite moyenne, ce qui montre une compatibilité partielle avec la vision de l'entreprise. Bien que ses capacités soient prometteuses, elles nécessitent une amélioration pour bien coller à la transformation que la SEEG envisage.",
+          "verdict": "moyen",
+          "raison du verdict": "Bien que le candidat ait un potentiel intéressant, ses scores ne se démarquent pas assez pour assurer qu'il puisse contribuer efficacement à la vision ambitieuse de la SEEG centrée sur la réorganisation, la modernisation des infrastructures et la gouvernance renforcée. Une mise à jour de ses compétences pourrait accroître son alignement avec les objectifs stratégiques de l'entreprise.",
           "points_forts": [
-            "Expérience solide et diversifiée en gestion commerciale et recouvrement",
-            "Capacités éprouvées en formation et management d'équipes",
-            "Grand sens de l'organisation et orientation résultats"
+            "Bonne compréhension du paradigme de la SEEG et de ses ambitions futures.",
+            "Capacité à évoluer avec des changements organisationnels.",
+            "Volonté de travailler sur la modernisation et l'innovation, cruciales pour la transition énergétique."
           ],
           "points_a_travailler": [
-            "Digitalisation des processus clientèle",
-            "Formation continue sur les nouvelles stratégies de gestion commerciale",
-            "Taux d'impayés potentiellement en amélioration malgré une forte expérience en recouvrement"
+            "Renforcer ses compétences techniques pour mieux contribuer à la réhabilitation des infrastructures.",
+            "Améliorer ses capacités en gestion de talents pour aligner la stratégie commerciale avec la vision de l'entreprise.",
+            "Augmenter sa compréhension des besoins opérationnels et de leur contribution à la performance globale."
+          ],
+          "rang": 2
+        },
+        "completude": {
+          "nom": "ESSINGONE MEMIAGHE",
+        "prenom": "Thomas",
+        "poste": "Directeur Commercial et Recouvrement",
+        "score": 35.9,
+        "resume_experience": "27 ans, dont plus de 15 ans en tant que responsable des unités commerciales et clientèles",
+        "verdict": "moyen",
+        "reason": "Thomas présente une expérience significative et pertinente au sein de SEEG, toutefois, le score de 35.900 représente une marge d'amélioration pour répondre pleinement aux exigences du poste.",
+        "points_forts": [
+          "Expérience approfondie dans la gestion commerciale et clientèle",
+          "Compétence en digitalisation des processus (notamment facturation)",
+          "Connaissance approfondie de l'environnement institutionnel du secteur de l'eau et de l'électricité"
+        ],
+        "points_a_travailler": [
+          "Renforcer ses compétences en évaluation et gestion de risques clients",
+          "Améliorer les techniques de recouvrement pour réduire davantage le taux d'impayés",
+          "Optimiser l'équilibre entre le développement commercial et la sécurisation financière"
+        ],
+        "rang": 9
+        },
+        "feedback": {
+          "prenom": "Thomas",
+          "nom": "ESSINGONE MEMIAGHE",
+          "score": 58.7,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente une expérience managériale significative, bien qu'il doive prouver son leadership. Ses compétences en gestion commerciale et en recouvrement sont en adéquation avec les besoins stratégiques de la SEEG.",
+          "Points forces": [
+            "Expérience en management et en direction avec un passé dans des rôles de leadership",
+            "Capacité à contribuer à la stabilisation financière et à la gestion des recouvrements"
+          ],
+          "Points à travailler": [
+            "Leadership à confirmer pour inspirer et mobiliser les équipes",
+            "Nécessité de démontrer une contribution pro-active dans un nouveau poste"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 45.85,
+          "verdict": "moyen",
+          "raison_verdict": "Le candidat présente des compétences en adéquation avec les besoins, mais doit confirmer son leadership et prouver sa contribution proactive, ce qui limite actuellement son évaluation globale.",
+          "resume": "Thomas Essingone Memiaghe présente une expérience managériale significative, avec des compétences en gestion commerciale et en recouvrement alignées sur les besoins stratégiques de la SEEG. Toutefois, des interrogations persistent quant à sa capacité à démontrer un leadership inspirant et une contribution proactive dans un environnement en transformation.",
+          "points_forts": [
+            "Expérience en management et en direction",
+            "Passé dans des rôles de leadership",
+            "Capacité à contribuer à la stabilisation financière et à la gestion des recouvrements"
+          ],
+          "points_a_ameliorer": [
+            "Leadership à confirmer pour inspirer et mobiliser les équipes",
+            "Nécessité de démontrer une contribution proactive dans un nouveau poste"
+          ],
+          "rang": 4
+        }
+      },
+      "Franck Armel Mendome": {
+        "prenom": "Franck",
+        "nom": "Armel Mendome",
+        "conformite": {
+          "prenom": "Franck",
+          "nom": "Armel MENDOME",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MENDOME",
+          "prenom": "Franck",
+          "poste": "Directeur Commercial et Recouvrement",
+          "scores": {
+            "Metier": 0.51,
+            "Talent": 0.35,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 43.67,
+          "niveau": "Le candidat présente un score moyen considérable, se situant juste en dessous du seuil de performance acceptable. Cela indique qu'il possède certains atouts, mais qu'il nécessite des améliorations significatives pour aligner ses compétences avec les exigences élevées de la SEEG.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen est légèrement inférieur à 43.5, ce qui reflète une adéquation partielle à la vision de l'entreprise.",
+          "points_forts": [
+            "Connaissance des procédures internes et meilleures pratiques dans l'industrie.",
+            "Capacité à comprendre les enjeux de la gestion des ressources.",
+            "Compétences en gestion commerciale et recouvrement."
+          ],
+          "points_a_travailler": [
+            "Développer des compétences en leadership pour piloter des équipes performantes.",
+            "Renforcer la compréhension et l'application des innovations technologiques dans le secteur.",
+            "Améliorer la gestion des projets afin d'aligner les résultats commerciaux avec les objectifs stratégiques."
+          ],
+          "rang": 9
+        },
+        "completude": {
+          "nom": "MENDOME",
+          "prenom": "Franck Armel",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score": 39.9,
+          "resume_experience": "Plus de 20 ans d'expérience dans le domaine commercial et recouvrement, notamment dans le secteur de l'eau et l'électricité.",
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat possède une vaste expérience pertinente et des compétences solides dans des fonctions liées au poste, malgré un score de similarité moyen.",
+          "points_forts": [
+            "Solide expertise en gestion d'équipes",
+            "Compétences en optimisation de processus",
+            "Expérience en mise en œuvre de projets stratégiques commerciaux"
+          ],
+          "points_a_travailler": [
+            "Développer davantage la digitalisation des processus clientèle",
+            "Augmenter l'expérience en gestion des litiges et contentieux",
+            "Renforcer la collaboration inter-départementale"
           ],
           "rang": 5
         },
         "feedback": {
-          "prenom": "Marlyne",
-          "nom": "ARMELLE ZIZA",
-          "score": 35.7,
+          "prenom": "Franck",
+          "nom": "ARMEL MENDOME",
+          "score": 42.5,
           "verdict": "Défavorable",
-          "raisons": "Le candidat présente des problèmes de leadership et de comportement, ce qui nuit à l'atteinte des objectifs de la vision SEEG. De plus, des problèmes de santé et d'assiduité impactent sa capacité à remplir ses obligations.",
+          "raisons": "Le candidat présente des faiblesses en leadership et en sociabilité, essentielles pour un poste de Directeur Commercial et Recouvrement, surtout dans un contexte de transformation organisationnelle.",
           "Points forces": [],
           "Points à travailler": [
-            "Manque de leadership et de management",
-            "Problèmes de comportement avec les collaborateurs"
+            "Leadership et capacités de gestion d'équipe",
+            "Sociabilité et communication avec les équipes"
           ],
-          "rang": 9
+          "rang": 6
         },
         "global": {
-          "score_global": 30.91,
-          "verdict": "défavorable",
-          "resume": "Le profil de Marlyne Armelle Ziza ne répond pas suffisamment aux exigences du poste de Directeur Commercial et Recouvrement chez SEEG. Son feedback RH met en évidence des lacunes en leadership et des problèmes de comportement, accompagnés de soucis de santé et d'assiduité, ce qui compromet l'alignement avec la vision ambitieuse de transformation de la SEEG.",
+          "score_global": 45.15,
+          "verdict": "moyen",
+          "raison_verdict": "Le score global de 45.15, entravé par des faiblesses en leadership et sociabilité, est inférieur à la moyenne exigée pour un rôle crucial dans un contexte de transformation d'entreprise.",
+          "resume": "Le candidat présente un profil moyen pour le poste de Directeur Commercial et Recouvrement, en raison de ses faiblesses en leadership et en sociabilité, lesquelles sont cruciales dans le contexte actuel de transformation organisationnelle de l'entreprise. Sa capacité à s'adapter aux besoins stratégiques de l'organisation et à gérer efficacement les équipes est limitée.",
           "points_forts": [],
           "points_a_ameliorer": [
-            "Manque de leadership et de management",
-            "Problèmes de comportement avec les collaborateurs"
+            "Leadership et capacités de gestion d'équipe",
+            "Sociabilité et communication avec les équipes"
           ],
-          "rang": 9
+          "rang": 5
+        }
+      },
+      "Georges Jacques S Tigoue": {
+        "prenom": "Georges",
+        "nom": "Jacques S Tigoue",
+        "conformite": {
+          "prenom": "Georges",
+          "nom": "Jacques S TIGOUE",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "TIGOUE",
+          "prenom": "Georges",
+          "poste": "Directeur Commercial et Recouvrement",
+          "scores": {
+            "Metier": 0.48,
+            "Talent": 0.37,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 44.33,
+          "niveau": "Le candidat affiche un score moyen qui est jugé défavorable, indiquant qu'il ne répond pas totalement aux exigences de la vision de l'entreprise. Son profil montre des potentialités, mais nécessite des ajustements pour s'aligner avec les besoins de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen est en dessous du seuil critique de 43.5, ce qui indique un manque d'alignement avec les attentes de l'entreprise.",
+          "points_forts": [
+            "Compréhension des enjeux liés à la gestion des ressources et à la modernisation des infrastructures.",
+            "Capacité à gérer des situations de crise avec des idées de réorganisation.",
+            "Expérience potentielle en management et leadership dans des environnements exigeants."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences en gestion financière pour répondre aux défis d'endettement et de rentabilité.",
+            "Renforcer son approche stratégique pour intégrer les nouvelles technologies et processus d'optimisation.",
+            "Travailler sur ses compétences en gouvernance et transparence pour répondre aux exigences de contrôle et d'audit."
+          ],
+          "rang": 5
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Georges",
+          "nom": "JACQUES S TIGOUE",
+          "score": 53.7,
+          "verdict": "Moyen",
+          "raisons": "Bien que le candidat ait une certaine expérience et ait été perçu comme ayant un bon comportement, les points négatifs concernant son leadership et des suspicions d'activités frauduleuses sont préoccupants. Cela pourrait nuire à la transition énergétique et à la modernisation espérée de la SEEG.",
+          "Points forces": [
+            "Expertise en gestion au sein du cabinet ADG",
+            "Bonne réputation de comportement serré"
+          ],
+          "Points à travailler": [
+            "Manque de leadership",
+            "Suspicion de pratiques de gestion douteuses"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 42.93,
+          "verdict": "défavorable",
+          "raison_verdict": "Le manque de leadership et les suspicions d'activités frauduleuses pourraient compromettre les objectifs de modernisation et de transparence de la SEEG.",
+          "resume": "Georges Jacques S Tigoue présente une certaine expertise en gestion et a une bonne réputation de comportement au sein de son cabinet actuel. Toutefois, des préoccupations subsistent concernant son leadership et des suspicions d'activités de gestion douteuses, ce qui pose des risques pour la SEEG qui vise une modernisation et transition énergétique efficaces.",
+          "points_forts": [
+            "Expertise en gestion au sein du cabinet ADG",
+            "Bonne réputation de comportement serré"
+          ],
+          "points_a_ameliorer": [
+            "Manque de leadership",
+            "Suspicion de pratiques de gestion douteuses"
+          ],
+          "rang": 6
         }
       },
       "Marie Florence Eyamame": {
@@ -605,50 +507,239 @@
         "conformite": {
           "prenom": "Marie",
           "nom": "Florence EYAMAME",
+          "poste": "Directeur Commercial et Recouvrement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
+        "mtp": {
+          "nom": "EYAMAME",
+          "prenom": "Marie",
+          "poste": "Directeur Commercial et Recouvrement",
+          "scores": {
+            "Metier": 0.5,
+            "Talent": 0.42,
+            "Paradigme": 0.49
+          },
+          "Score_moyen": 47.0,
+          "niveau": "Le score moyen de 47.0 indique une performance générale qui pourrait être améliorée. Bien que ce score soit classé comme moyen, il montre des lacunes dans certaines compétences clés nécessaires pour le poste visé.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen est situé dans la fourchette moyenne, ce qui indique que le candidat a des atouts mais aussi des domaines nécessitant des améliorations.",
+          "points_forts": [
+            "Solide compréhension des enjeux métiers liés à la gestion commerciale et au recouvrement.",
+            "Capacité à s'intégrer dans une vision de transformation et d'innovation pour l'entreprise.",
+            "Potentiel pour développer des relations constructives avec les parties prenantes."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en leadership pour mieux diriger une équipe dans un contexte de réorganisation.",
+            "Renforcer la connaissance des procédures de gouvernance et de gestion des ressources.",
+            "Développer des stratégies efficaces pour la récupération des créances en situation de crise."
+          ],
+          "rang": 1
+        },
         "completude": {
           "nom": "EYAMAME",
           "prenom": "Marie Florence",
           "poste": "Directeur Commercial et Recouvrement",
-          "score": 35.6,
-          "resume_experience": "16 ans en Ressources Humaines, Commercial et Gestion clientèle",
-          "verdict": "moyen",
+          "score": 39.8,
+          "resume_experience": "16 ans d'expérience dans des postes de responsabilité dans le secteur de l'énergie et de l'eau, incluant la gestion des équipes et la gestion clientèle.",
+          "verdict": "favorable",
           "points_forts": [
-            "Expérience solide en leadership et gestion d'équipes",
-            "Bonne connaissance des procédures internes et objectifs de la société",
-            "Expertise en optimisation des processus opérationnels"
+            "Solide expérience en gestion de recouvrement",
+            "Compétences développées en leadership et en gestion d'équipes",
+            "Bonne connaissance des procédures et objectifs commerciaux dans le secteur"
           ],
           "points_a_travailler": [
-            "Approfondir les compétences en digitalisation des processus clientèle",
-            "Renforcer l'expertise dans la négociation avec les clients stratégiques",
-            "Améliorer les compétences en supervision du recouvrement des créances"
+            "Digitalisation avancée des processus clientèle",
+            "Négociation avec des clients stratégiques",
+            "Optimisation de la trésorerie"
           ],
-          "rang": 10
+          "rang": 6
         },
         "feedback": {
           "prenom": "Marie",
           "nom": "FLORENCE EYAMAME",
-          "score": 35.7,
+          "score": 35.4,
           "verdict": "Défavorable",
-          "raisons": "Le candidat présente des lacunes significatives en leadership et en gestion des collaborateurs, ce qui est essentiel pour le poste. Les retours indiquent un comportement problématique qui pourrait nuire à la réorganisation nécessaire et à l'implication des parties prenantes.",
+          "raisons": "Le feedback indique des problèmes de management et de comportement, ce qui est en contradiction avec les exigences de leadership pour le poste, surtout dans un contexte de transformation nécessaire.",
           "Points forces": [],
           "Points à travailler": [
-            "Leadership compromis",
-            "Difficultés relationnelles avec les collaborateurs"
+            "Manque de compétences managériales",
+            "Problèmes de comportement avec les collaborateurs"
+          ],
+          "rang": 9
+        },
+        "global": {
+          "score_global": 42.41,
+          "verdict": "défavorable",
+          "raison_verdict": "Le candidat présente des problèmes de leadership et de comportement, cruciaux pour un poste de direction dans une entreprise en pleine restructuration.",
+          "resume": "Marie Florence Eyamame a un profil qui présente des difficultés en matière de management et de comportement. Bien que son dossier soit complet et conforme, les qualités de leadership requises pour le poste ne sont pas perçues, surtout dans un contexte de transformation majeur de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Manque de compétences managériales",
+            "Problèmes de comportement avec les collaborateurs"
+          ],
+          "rang": 7
+        }
+      },
+      "Marlyne Armelle Ziza": {
+        "prenom": "Marlyne",
+        "nom": "Armelle Ziza",
+        "conformite": {
+          "prenom": "Marlyne",
+          "nom": "Armelle  ZIZA",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "ZIZA",
+          "prenom": "Marlyne",
+          "poste": "Directeur Commercial et Recouvrement",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.39,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 44.33,
+          "niveau": "Le candidat présente un score moyen qui indique une adéquation limitée avec la vision de l'entreprise. Sa compréhension des enjeux stratégiques semble insuffisante pour répondre aux besoins d'une transformation en profondeur.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen étant en dessous de 43.5, cela indique une inadéquation avec les attentes de la SEEG et les exigences de son programme de transformation.",
+          "points_forts": [
+            "Compréhension des enjeux liés aux infrastructures et à leur modernisation.",
+            "Capacité à travailler dans un environnement en évolution rapide.",
+            "Attitude proactive en matière de gestion des ressources."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion stratégique et en planification financière.",
+            "Renforcer la compréhension des pratiques de gouvernance et de transparence.",
+            "Développer des aptitudes à la gestion de projets complexes dans un cadre organisationnel."
+          ],
+          "rang": 7
+        },
+        "completude": {
+          "nom": "ZIZA",
+          "prenom": "Marlyne Armelle",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score": 41,
+          "resume_experience": "25 années d'expérience principalement dans le recouvrement, le marketing et la gestion de la relation clientèle.",
+          "verdict": "favorable",
+          "raison": "Avec une solide expérience dans le recouvrement et le marketing, Marlyne a les compétences pour répondre aux attentes du poste, combinant expertise commerciale et stratégie de recouvrement.",
+          "points_forts": [
+            "Expérience significative en recouvrement et gestion des créances",
+            "Compétences avérées en marketing et relation clientèle",
+            "Expérience en management et formation des équipes"
+          ],
+          "points_a_travailler": [
+            "Développement de stratégies de digitalisation pour les processus clientèle",
+            "Intégration de techniques avancées de management des équipes",
+            "Optimisation des procédures de négociation avec les clients stratégiques"
+          ],
+          "rang": 4
+        },
+        "feedback": {
+          "prenom": "Marlyne",
+          "nom": "ARMELLE ZIZA",
+          "score": 35.7,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat présente des problèmes de leadership et d'assiduité, ainsi que des interactions négatives avec les collaborateurs, essentiels pour le rôle de Directeur Commercial et Recouvrement.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Manque de compétence en management",
+            "Problèmes de santé affectant l'assiduité",
+            "Comportement problématique avec les collaborateurs"
           ],
           "rang": 8
         },
         "global": {
-          "score_global": 29.97,
+          "score_global": 42.13,
           "verdict": "défavorable",
-          "resume": "Marie Florence Eyamame ne satisfait pas pleinement aux exigences du poste en raison de lacunes significatives en leadership et en gestion des collaborateurs. Ces compétences sont cruciales pour mener à bien la réorganisation stratégique et l'implication des parties prenantes, essentielles à la vision de l'entreprise SEEG.",
+          "raison_verdict": "Le candidat présente des problèmes de leadership et d'assiduité, ainsi que des interactions négatives avec les collaborateurs, essentiels pour le rôle de Directeur Commercial et Recouvrement.",
+          "resume": "Marlyne Armelle Ziza présente un profil documenté, mais les évaluations indiquent des lacunes en management et des interactions négatives au travail, ce qui est essentiel pour le poste de Directeur Commercial et Recouvrement.",
           "points_forts": [],
           "points_a_ameliorer": [
-            "Leadership compromis",
-            "Difficultés relationnelles avec les collaborateurs"
+            "Manque de compétence en management",
+            "Problèmes de santé affectant l'assiduité",
+            "Comportement problématique avec les collaborateurs"
+          ],
+          "rang": 8
+        }
+      },
+      "Steeve Ogoula Ndabendjet": {
+        "prenom": "Steeve",
+        "nom": "Ogoula Ndabendjet",
+        "conformite": {
+          "prenom": "steeve",
+          "nom": "ogoula ndabendjet",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "ogoula ndabendjet",
+          "prenom": "steeve",
+          "poste": "Directeur Commercial et Recouvrement",
+          "scores": {
+            "Metier": 0.42,
+            "Talent": 0.36,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 43.0,
+          "niveau": "Le candidat présente un score moyen qui indique une appartenance défavorable à la vision de l'entreprise. Ses compétences dans les domaines évalués sont inférieures aux attentes requises pour ce poste stratégique.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 43.0 est strictement inférieur au seuil requis de 43.5.",
+          "points_forts": [
+            "Possède une certaine compréhension des paradigmes de gestion en lien avec les infrastructures.",
+            "Capacité à identifier des axes d'amélioration dans le recouvrement des créances.",
+            "Expérience potentielle en management qui pourrait aider à la restructuration et à l'engagement des équipes."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences opérationnelles dans les métiers liés au secteur de l'eau et l'électricité.",
+            "Développer davantage de talents en leadership pour inspirer et motiver une équipe pendant la transition.",
+            "Améliorer sa compréhension des processus de gouvernance et de transparence afin de répondre aux attentes de la SEEG."
+          ],
+          "rang": 10
+        },
+        "completude": {
+          "nom": "Ogoula Ndabendjet",
+          "prenom": "Steeve",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score": 39.2,
+          "resume_experience": "23 années d'expérience en gestion commerciale, recouvrement, facturation et management d'équipes.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide expérience en gestion de recouvrement et amélioration du chiffre d'affaires.",
+            "Management d'équipes importantes, atteignant des objectifs commerciaux et de satisfaction clientèle.",
+            "Connaissance approfondie du secteur et capacités à élaborer et mettre en œuvre des stratégies commerciales."
+          ],
+          "points_a_travailler": [
+            "Développer davantage les compétences en digitalisation des processus clientèles.",
+            "Renforcer les compétences en négociation avec des clients stratégiques.",
+            "Améliorer la gestion proactive des réclamations pour des indicateurs de satisfaction plus élevés."
+          ],
+          "rang": 7
+        },
+        "feedback": {
+          "prenom": "Steeve",
+          "nom": "OGOULA NDABENDJET",
+          "score": 30.7,
+          "verdict": "Défavorable",
+          "raisons": "Le feedback du candidat indique un manque de leadership et de comportement approprié, ce qui est incompatible avec les exigences du poste de Directeur Commercial et Recouvrement.",
+          "Points forces": [],
+          "Points à travailler": [
+            "Manque de vision et de leadership",
+            "Comportement inapproprié envers la hiérarchie"
+          ],
+          "rang": 10
+        },
+        "global": {
+          "score_global": 38.94,
+          "verdict": "défavorable",
+          "raison_verdict": "Le candidat ne répond pas aux critères de leadership et de comportement approprié nécessaires pour le poste, impactant négativement sa capacité à diriger efficacement les activités commerciales et de recouvrement.",
+          "resume": "Le profil de Steeve Ogoula Ndabendjet présente des insuffisances notamment en leadership et en comportement envers la hiérarchie, ce qui est crucial pour le poste proposé. Par ailleurs, ses scores en conformité documentaire et MTP ne compensent pas un feedback RH défavorable.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Manque de vision et de leadership",
+            "Comportement inapproprié envers la hiérarchie"
           ],
           "rang": 10
         }
@@ -659,30 +750,32 @@
         "conformite": {
           "prenom": "Juste-Paulin",
           "nom": "ELOUE",
+          "poste": "Directeur Commercial et Recouvrement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
           "nom": "ELOUE",
           "prenom": "Juste-Paulin",
-          "poste": "Direction Commerciale & Recouvrement",
+          "poste": "Directeur Commercial et Recouvrement",
           "scores": {
             "Metier": 0.43,
             "Talent": 0.34,
-            "Paradigme": 0.42
+            "Paradigme": 0.46
           },
-          "Score_moyen": 39.67,
-          "niveau": "Le candidat présente des scores inférieurs aux attentes et montre un manque de compétences clés pour le poste visé. Son profil ne semble pas aligné avec la vision stratégique de la SEEG.",
+          "Score_moyen": 41.0,
+          "niveau": "Le score moyen de 41.0 indique une appartenance défavorable à la vision de l'entreprise. Cela suggère une inadéquation avec les compétences et valeurs requises pour réussir dans ce poste stratégique.",
           "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 39.67 est inférieur à 43.5, indiquant des compétences insuffisantes.",
+          "raison_verdict": "Le score moyen inférieur à 43.5 ne répond pas aux attentes en termes de compétences et d'alignement avec la vision de SEEG.",
           "points_forts": [
-            "Connaissance des problématiques commerciales et de recouvrement.",
-            "Compréhension des enjeux liés à l'eau et à l'électricité au Gabon."
+            "Expérience professionnelle pertinente dans la gestion commerciale.",
+            "Capacité à analyser et identifier les problèmes opérationnels.",
+            "Sensibilité à la nécessité de réformes dans l'entreprise."
           ],
           "points_a_travailler": [
-            "Améliorer les compétences en gestion des talents et en leadership.",
-            "Développer des concepts innovants pour la modernisation des infrastructures.",
-            "Renforcer les connaissances en gouvernance et transparence."
+            "Renforcer les compétences de leadership et de gestion d'équipe.",
+            "Améliorer la compréhension des enjeux liés à la modernisation des infrastructures.",
+            "Développer des compétences en matière de gouvernance et de transparence."
           ],
           "rang": 11
         },
@@ -690,315 +783,230 @@
           "nom": "ELOUE",
           "prenom": "Juste-Paulin",
           "poste": "Directeur Commercial et Recouvrement",
-          "score": 45.4,
-          "resume_experience": "15+ années d'expérience en développement commercial et recouvrement",
+          "score": 47.6,
+          "resume_experience": "15+ années dans le management commercial multisectoriel et gestion du recouvrement",
           "verdict": "favorable",
-          "raison_verdict": "Le candidat présente une expérience riche et pertinente en développement commercial, management d'équipes, et recouvrement. Son expertise en optimisation du chiffre d'affaires et en gestion de la trésorerie répond aux exigences du poste.",
+          "reason": "Juste-Paulin ELOUE démontre une expertise solide et une expérience significative en développement commercial et gestion de recouvrement, alignées avec les exigences du poste, corroborées par des résultats prouvés.",
           "points_forts": [
-            "Leadership confirmé dans des environnements multiculturels",
-            "Expertise prouvée en développement commercial et recouvrement",
-            "Vision stratégique et capacité à digitaliser les processus clients"
+            "Expérience significative en optimisation du chiffre d'affaires et recouvrement",
+            "Leadership et management d'équipes multiculturelles",
+            "Vision stratégique incluant la digitalisation des processus"
           ],
           "points_a_travailler": [
-            "Renforcer la maîtrise des spécificités du secteur de l'énergie et de l'eau",
-            "Approfondir la gestion de la relation client digitale",
-            "Améliorer l'équilibre entre développement commercial et sécurisation des flux financiers"
+            "Approfondir la gestion des contentieux avec le service juridique",
+            "Améliorer la cartographie et maîtrise des risques spécifiques à l'activité",
+            "Optimiser davantage les projets de digitalisation en lien avec la satisfaction client"
           ],
-          "rang": 2
+          "rang": 1
         },
         "feedback": {},
         "global": {
-          "score_global": 24.0,
+          "score_global": 24.77,
           "verdict": "défavorable",
-          "resume": "Le candidat ne semble pas aligné avec les exigences stratégiques et opérationnelles du poste, surtout à cause de l'absence de retours positifs dans le feedback RH. Malgré certaines compétences documentaires, son profil global montre des lacunes importantes par rapport aux attentes.",
+          "raison_verdict": "L'absence de feedback RH combinée à un score de complétude bas et MTP médiocre rendent le profil inapproprié pour répondre aux attentes stratégiques et les défis du poste visé.",
+          "resume": "Le candidat Juste-Paulin Eloue n'atteint pas le seuil requis pour le poste de Directeur Commercial et Recouvrement, avec un score global défavorable de 24.77. Le feedback RH étant inexistant et le manque de complétude de la candidature pèsent lourdement sur l'évaluation globale.",
           "points_forts": [
             "Conformité documentaire parfaite"
           ],
           "points_a_ameliorer": [
-            "Score de feedback RH nul",
-            "Faible compatibilité avec les exigences de l'offre"
+            "Faible score MTP",
+            "Manque de complétude de la candidature",
+            "Absence de feedback RH"
           ],
           "rang": 11
         }
       },
-      "Reine Gerlina Ninga": {
-        "prenom": "Reine",
-        "nom": "Gerlina Ninga",
-        "conformite": {},
+      "NINGA Reine Gerlina": {
+        "prenom": "Ninga",
+        "nom": "Reine Gerlina",
+        "conformite": {
+          "prenom": "NINGA",
+          "nom": " Reine Gerlina",
+          "poste": "Directeur Commercial et Recouvrement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
         "mtp": {
-          "nom": "NINGA",
-          "prenom": "Reine Gerlina",
-          "poste": "Direction Commerciale & Recouvrement",
-          "scores": {
-            "Metier": 0.47,
-            "Talent": 0.35,
-            "Paradigme": 0.46
-          },
-          "Score_moyen": 42.67,
-          "niveau": "Le score moyen du candidat est défavorable, indiquant des lacunes significatives par rapport aux attentes de l'entreprise. Cela soulève des préoccupations sur sa capacité à contribuer à la transformation requise pour la SEEG.",
-          "verdict": "défavorables",
-          "raison_verdict": "Le score moyen est inférieur à 43.5, ce qui signifie que le candidat ne répond pas aux attentes de la vision de l'entreprise.",
-          "points_forts": [
-            "Compréhension des processus de recouvrement dans le secteur de l'énergie.",
-            "Capacité à identifier les besoins d'amélioration dans la gestion des ressources.",
-            "Expérience dans l'engagement et la communication avec les parties prenantes."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en leadership pour diriger des équipes vers des objectifs stratégiques.",
-            "Développer une meilleure connaissance des nouvelles technologies de gestion des ressources.",
-            "Améliorer les compétences en gestion de projets pour assurer l'implémentation efficace des initiatives stratégiques."
-          ],
-          "rang": 9
+          "nom": "Ninga",
+    "prenom": "Reine Gerlina",
+    "poste": "Directeur Commercial et Recouvrement",
+    "scores": {
+      "Métier": 0.47,
+      "Talent": 0.35,
+      "Paradigme": 0.55
+    },
+    "Score_moyen": 45.67,
+    "niveau": "Reine Gerlina Ninga présente un score moyen situé dans la tranche moyenne, suggérant une compréhension et une aptitude moyennes par rapport aux attentes du poste visé. Il faudra néanmoins un effort additionnel pour renforcer son alignement avec les besoins stratégiques de la SEEG.",
+    "verdict": "moyen",
+    "raison du verdict": "Avec un score moyen de 45.67, Reine Gerlina Ninga est dans la catégorie moyenne. Cela indique une adéquation partielle avec la vision stratégique, mais elle devra développer davantage ses compétences pour répondre aux exigences élevées du poste et des réorganisations stratégiques à venir au sein de la SEEG.",
+    "points_forts": [
+      "Niveau de paradigme relativement élevé suggérant une ouverture à de nouvelles initiatives.",
+      "Capacité de percevoir et de s'adapter aux besoins changeants dans un environnement dynamique.",
+      "Compréhension de base des enjeux liés à l'énergie et à l'eau, ce qui est crucial pour la vision énergétique de la SEEG."
+    ],
+    "points_a_travailler": [
+      "Renforcement de ses compétences métiers pour mieux aligner avec les standards de l'industrie.",
+      "Augmentation du score de talent pour une meilleure adaptation aux pratiques commerciales et de recouvrement innovantes.",
+      "Amélioration de la gestion de la gouvernance et du suivi des processus pour s'aligner avec la transparence et l'efficacité attendues."
+    ],
+    "rang": 3
         },
         "completude": {
           "nom": "NINGA",
-          "prenom": "Reine Gerlina",
-          "poste": "Directeur Commercial et Recouvrement",
-          "score": 46.5,
-          "resume_experience": "12 ans dans le secteur de l'énergie et de l'eau au Gabon, principalement dans la gestion et le marketing commercial.",
-          "verdict": "favorable",
-          "points_forts": [
-            "Forte expérience en gestion commerciale et marketing au sein d'une grande société énergétique.",
-            "Compétences en stratégie marketing et développement commercial.",
-            "Capacités analytiques pour dynamiser la croissance et satisfaction client."
-          ],
-          "points_a_travailler": [
-            "Expérience directe en recouvrement à préciser, car ce n’est pas mentionné clairement.",
-            "Développer et mettre en œuvre des innovations numériques dans les processus client.",
-            "Profondeur dans la gestion des risques financiers et des litiges."
-          ],
-          "rang": 1
+    "prenom": "Reine Gerlina",
+    "poste": "Directeur Commercial et Recouvrement",
+    "score": 37.9,
+    "resume_experience": "13 ans d'expérience principalement dans le domaine commercial et marketing, spécialisée en gestion commerciale, stratégie marketing et développement commercial.",
+    "verdict": "moyen",
+    "raison_du_verdict": "Le score de similarité de 37.9 se situe tout juste au-dessus de la moyenne, indiquant que le profil du candidat correspond modérément aux exigences du poste. Bien que son expérience soit vaste et pertinente surtout dans le secteur commercial et marketing, il manque peut-être des éléments démontrant un focus clair sur la partie recouvrement. La position de rang 10 introduit également une nécessité de compétition face à d'autres candidats mieux alignés avec la vision stratégique du poste à pourvoir.",
+    "points_forts": [
+      "Expérience avérée en gestion commerciale et marketing",
+      "Compétences reconnues en développement commercial",
+      "Capacité à motiver et encadrer une équipe"
+    ],
+    "points_a_travailler": [
+      "Renforcement des compétences spécifiques en recouvrement",
+      "Amélioration de la stratégie de digitalisation des processus client",
+      "Approfondir l'expérience en gestion des litiges et contentieux"
+    ],
+    "rang": 10
         },
-        "feedback": {},
-        "global": {
-          "score_global": 19.97,
-          "verdict": "défavorable",
-          "resume": "Le profil de Reine Gerlina Ninga semble inadapté au poste de Directeur Commercial et Recouvrement à la SEEG, car le candidat ne présente pas les qualifications requises pour aligner ses compétences avec la vision ambitieuse de l'entreprise. Son score de feedback RH de zéro et un score global défavorable indiquent un manque de conformité et d'alignement avec les attentes du poste.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Absence de conformité documentaire",
-            "Basse complétude du dossier de candidature"
+        "feedback": {
+          "prenom": "Ninga",
+          "nom": "REINE GERLINA",
+          "score": 68.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente une orientation vers les résultats et a le potentiel pour rassembler les équipes de marketing et commercial, qu'il conviendra d'accompagner dans le management et le leadership. Ces qualités sont alignées avec la vision de transformation de la SEEG.",
+          "Points forces": [
+            "Orientée résultats",
+            "Bon comportement"
           ],
-          "rang": 12
-        }
-      },
-      "Marie Eyamame": {
-        "prenom": "Marie",
-        "nom": "Eyamame",
-        "conformite": {},
-        "mtp": {
-          "nom": "EYAMAME",
-          "prenom": "Marie",
-          "poste": "Direction Commerciale & Recouvrement",
-          "scores": {
-            "Métier": 0.5,
-            "Talent": 0.42,
-            "Paradigme": 0.48
-          },
-          "Score_moyen": 46.67,
-          "niveau": "Le candidat présente un score moyen, indiquant une performance qui mérite attention. Des domaines spécifiques devraient être développés pour optimiser son alignement avec les objectifs stratégiques de l'entreprise.",
-          "verdict": "moyen",
-          "raison_verdict": "Le score moyen de 46.67 indique que le candidat est dans une position médiane et nécessite un développement supplémentaire.",
-          "points_forts": [
-            "Bonne connaissance des processus de recouvrement et des techniques de vente.",
-            "Capacité à travailler en équipe et à animer des groupes de travail.",
-            "Flexibilité et adaptabilité face aux défis du marché."
+          "Points à travailler": [
+            "Management",
+            "Leadership"
           ],
-          "points_a_travailler": [
-            "Améliorer ses compétences en leadership pour diriger efficacement une équipe.",
-            "Renforcer ses connaissances techniques liées aux infrastructures et à la gestion des ressources.",
-            "Travailler sur la prise de décision stratégique en matière de gouvernance et de transparence."
-          ],
-          "rang": 1
+          "rang": 2
         },
-        "completude": {},
-        "feedback": {},
         "global": {
-          "score_global": 11.67,
+          "score_global": 39.25,
           "verdict": "défavorable",
-          "resume": "Marie Eyamame n'a pas su montrer une adéquation suffisante entre ses compétences et les exigences du poste. Son score global pondéré, particulièrement influencé par un feedback RH peu favorable, indique qu'elle pourrait ne pas répondre aux attentes critiques liées à la transformation stratégique de l'entreprise.",
+          "raison_verdict": "Le score global pondéré est faible et indique que le candidat n'est pas actuellement prêt à gérer les défis du poste, notamment en termes de management et leadership, essentiels pour le contexte de réorganisation et transformation stratégique de la SEEG.",
+          "resume": "Malgré une orientation vers les résultats et un bon comportement, le candidat manque d'expérience complète et d'alignement complet avec les exigences du poste. Des améliorations en management et leadership sont nécessaires pour assumer efficacement le rôle dans le contexte de transformation de la SEEG.",
           "points_forts": [
-            "Expérience potentielle dans le domaine commercial",
-            "Possibilité d'apprentissage et d'adaptation"
+            "Orientée résultats",
+            "Bon comportement"
           ],
           "points_a_ameliorer": [
-            "Inadéquation avec les exigences du poste",
-            "Faiblesse dans la démonstration de compétence pour le recouvrement"
+            "Management",
+            "Leadership"
           ],
-          "rang": 13
-        }
-      },
-      "Georges Tigoue": {
-        "prenom": "Georges",
-        "nom": "Tigoue",
-        "conformite": {},
-        "mtp": {
-          "nom": "TIGOUE",
-          "prenom": "Georges",
-          "poste": "Direction Commerciale & Recouvrement",
-          "scores": {
-            "Metier": 0.48,
-            "Talent": 0.37,
-            "Paradigme": 0.46
-          },
-          "Score_moyen": 43.67,
-          "niveau": "Le score moyen de 43.67 est légèrement en dessous du seuil défavorable, indiquant une appartenance limitée à la vision de l'entreprise. Le candidat doit montrer une amélioration significative pour correspondre aux attentes de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est inférieur à 43.5, ce qui indique que le candidat ne répond pas aux critères d'appartenance à la vision de l'entreprise.",
-          "points_forts": [
-            "Une bonne compréhension des enjeux du secteur de l'eau et de l'électricité au Gabon.",
-            "Des compétences relationnelles qui pourraient être bénéfiques pour la direction commerciale.",
-            "Une capacité d'adaptation aux transformations requises dans le cadre de la gouvernance et de la transparence."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences techniques et managériales pour répondre aux exigences de la réorganisation et de l'optimisation des ressources.",
-            "Améliorer la gestion des talents pour favoriser l'implication des employés et stimuler la motivation.",
-            "Développer une meilleure approche stratégique pour la digitalisation des processus et la modernisation des infrastructures."
-          ],
-          "rang": 4
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 10.92,
-          "verdict": "défavorable",
-          "resume": "Georges Tigoue ne satisfait pas aux attentes du poste de Directeur Commercial et Recouvrement. L'alignement entre ses expériences et les exigences de la SEEG n'est pas évident, et des lacunes significatives sont observées dans la documentation fournie, affectant son évaluation.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Absence de documents à l'appui pour évaluer adéquatement son profil",
-            "Non-conformité aux exigences documentaires et de conformité de l'entreprise"
-          ],
-          "rang": 14
-        }
-      },
-      "Karl Youyatte": {
-        "prenom": "Karl",
-        "nom": "Youyatte",
-        "conformite": {},
-        "mtp": {
-          "nom": "YOUYATTE",
-          "prenom": "Karl",
-          "poste": "Direction Commerciale & Recouvrement",
-          "scores": {
-            "Metier": 0.48,
-            "Talent": 0.37,
-            "Paradigme": 0.46
-          },
-          "Score_moyen": 43.67,
-          "niveau": "Le score moyen de 43.67 indique une aptitude moyenne dans l'alignement avec la vision de l'entreprise. Il est essentiel d'améliorer certains aspects pour être en phase avec les objectifs stratégiques de la SEEG.",
-          "verdict": "moyen",
-          "raison_verdict": "Le score moyen est légèrement en dessous de la norme favorable, indiquant des domaines d'amélioration.",
-          "points_forts": [
-            "Une bonne compréhension des modèles économiques et de la gouvernance renforcée nécessaires pour la SEEG.",
-            "Capacité à identifier les domaines nécessitant des améliorations en matière de gestion des ressources.",
-            "Expérience préalable en direction commerciale qui peut contribuer à l'optimisation des opérations."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en leadership pour gérer les équipes en période de transition.",
-            "Améliorer la capacité d'analyse des données financières pour prendre des décisions éclairées.",
-            "Développer une approche plus proactive dans la gestion d'infrastructures vieillissantes."
-          ],
-          "rang": 5
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 10.92,
-          "verdict": "défavorable",
-          "resume": "Le profil de Karl Youyatte ne semble pas aligné avec les exigences de la vision stratégique de la SEEG, notamment en termes de conformité documentaire et de complétude des éléments soumis. Son score global faible reflète une inadéquation pour le poste visé, en particulier dans le contexte d'une entreprise en pleine transformation.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Non-conformité documentaire",
-            "Absence de complétude dans la soumission de la candidature"
-          ],
-          "rang": 15
-        }
-      },
-      "Marlyne Ziza": {
-        "prenom": "Marlyne",
-        "nom": "Ziza",
-        "conformite": {},
-        "mtp": {
-          "nom": "ZIZA",
-          "prenom": "Marlyne",
-          "poste": "Direction Commerciale & Recouvrement",
-          "scores": {
-            "Metier": 0.46,
-            "Talent": 0.39,
-            "Paradigme": 0.45
-          },
-          "Score_moyen": 43.33,
-          "niveau": "Le score moyen du candidat est en dessous du seuil apprécié, ce qui le situe dans une position défavorable. Cela suggère que le candidat pourrait avoir des lacunes significatives par rapport aux attentes de l'entreprise.",
-          "verdict": "défavorablement défavorable",
-          "raison_verdict": "Le score moyen du candidat est de 43.33, ce qui est inférieur au seuil critique de 43.5.",
-          "points_forts": [
-            "Bonne connaissance des enjeux liés au secteur de l'eau et de l'électricité.",
-            "Capacité à comprendre des situations complexes de gestion.",
-            "Points intéressants sur la transformation et la modernisation des infrastructures."
-          ],
-          "points_a_travailler": [
-            "Renforcer ses compétences en leadership et gestion d'équipe.",
-            "Améliorer la compréhension des processus de gouvernance et de transparence.",
-            "Développer des compétences en stratégie et en mise en œuvre d'initiatives d'innovation et des technologies avancées."
-          ],
-          "rang": 6
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 10.83,
-          "verdict": "défavorable",
-          "resume": "Le profil de Marlyne Ziza ne répond pas aux exigences requises pour le poste de Directeur Commercial et Recouvrement, en raison de manquements significatifs dans la conformité documentaire et la complétude par rapport à l'offre. Aucun feedback RH favorable n'a été identifié pour soutenir sa candidature.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude par rapport à l'offre"
-          ],
-          "rang": 16
-        }
-      },
-      "Franck Mendome": {
-        "prenom": "Franck",
-        "nom": "Mendome",
-        "conformite": {},
-        "mtp": {
-          "nom": "MENDOME",
-          "prenom": "Franck",
-          "poste": "Direction Commerciale & Recouvrement",
-          "scores": {
-            "Métier": 0.51,
-            "Talent": 0.35,
-            "Paradigme": 0.42
-          },
-          "Score_moyen": 42.67,
-          "niveau": "Le candidat présente un score moyen défavorable qui indique une inadéquation notable par rapport aux attentes de la vision de l'entreprise. Ses compétences et sa compréhension semblent insuffisantes pour répondre aux défis majeurs de la SEEG.",
-          "verdict": "défavorable",
-          "raison": "Le score moyen de 42.67 est inférieur au seuil requis, indiquant un besoin de développement significatif pour s'aligner avec les objectifs de l'entreprise.",
-          "points_forts": [
-            "Compétences en gestion financière, pouvant contribuer à la stabilisation des finances.",
-            "Expérience potentielle dans le recouvrement, essentielle pour résoudre les problèmes d'impayés.",
-            "Capacité à intégrer des solutions pratiques dans la gestion des opérations commerciales."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en leadership et en gestion d'équipe pour optimiser la réorganisation.",
-            "Améliorer la compréhension des procédures de gouvernance et de transparence nécessaires dans le secteur.",
-            "Développer des compétences en gestion de projet pour assurer le suivi des investissements dans les infrastructures."
-          ],
-          "rang": 8
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 10.67,
-          "verdict": "défavorable",
-          "resume": "Le profil de Franck Mendome présente plusieurs lacunes importantes, notamment en termes de conformité documentaire et de complétude par rapport à l'offre. L'absence de feedback RH positif souligne un manque d'adéquation avec les exigences stratégiques et opérationnelles de la vision 2025-2035 de la SEEG.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Manque de conformité documentaire",
-            "Absence de complétude par rapport à l'offre d'emploi"
-          ],
-          "rang": 17
+          "rang": 9
         }
       }
+    },
+    "classement": [
+      {
+        "rang": 1,
+        "nom": "Essone Bibang",
+        "prenom": "Patrick",
+        "score_global": 60.45,
+        "verdict": "favorable",
+        "raison_verdict": "Le candidat présente des qualités de leadership affirmées et une capacité d'adaptation, qui sont cruciales pour la restructuration et l'optimisation demandées par la SEEG."
+      },
+      {
+        "rang": 2,
+        "nom": "Paulivain Youla",
+        "prenom": "Floric",
+        "score_global": 56.15,
+        "verdict": "favorable",
+        "raison_verdict": "Le candidat est jugé favorable grâce à ses compétences interpersonnelles reconnues, mais il doit renforcer sa vision stratégique pour être pleinement efficace dans le contexte de transformation de la SEEG."
+      },
+      {
+        "rang": 3,
+        "nom": "Alex Jean Youyatte",
+        "prenom": "Karl",
+        "score_global": 45.97,
+        "verdict": "moyen",
+        "raison_verdict": "Bien que le candidat ait des qualités de collaboration, ses insuffisances en leadership et maturité professionnelle limitent sa compatibilité avec les exigences stratégiques du poste."
+      },
+      {
+        "rang": 4,
+        "nom": "Essingone Memiaghe",
+        "prenom": "Thomas",
+        "score_global": 45.85,
+        "verdict": "moyen",
+        "raison_verdict": "Bien que Thomas ait une expérience pertinente, son score global moyen indique qu'il doit renforcer son leadership pour aligner pleinement ses compétences avec les attentes stratégiques de la SEEG."
+      },
+      {
+        "rang": 5,
+        "nom": "Armel Mendome",
+        "prenom": "Franck",
+        "score_global": 45.15,
+        "verdict": "moyen",
+        "raison_verdict": "Le score global de 45.15, entravé par des faiblesses en leadership et sociabilité, est inférieur à la moyenne exigée pour un rôle crucial dans un contexte de transformation d'entreprise."
+      },
+      {
+        "rang": 6,
+        "nom": "Jacques S Tigoue",
+        "prenom": "Georges",
+        "score_global": 42.93,
+        "verdict": "défavorable",
+        "raison_verdict": "Le manque de leadership et les suspicions d'activités frauduleuses pourraient compromettre les objectifs de modernisation et de transparence de la SEEG."
+      },
+      {
+        "rang": 7,
+        "nom": "Florence Eyamame",
+        "prenom": "Marie",
+        "score_global": 42.41,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat présente des problèmes de leadership et de comportement, cruciaux pour un poste de direction dans une entreprise en pleine restructuration."
+      },
+      {
+        "rang": 8,
+        "nom": "Armelle Ziza",
+        "prenom": "Marlyne",
+        "score_global": 42.13,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat présente des problèmes de leadership et d'assiduité, ainsi que des interactions négatives avec les collaborateurs, essentiels pour le rôle de Directeur Commercial et Recouvrement."
+      },
+      {
+        "rang": 10,
+        "nom": "Ogoula Ndabendjet",
+        "prenom": "Steeve",
+        "score_global": 38.94,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat ne répond pas aux critères de leadership et de comportement approprié nécessaires pour le poste, impactant négativement sa capacité à diriger efficacement les activités commerciales et de recouvrement."
+      },
+      {
+        "rang": 11,
+        "nom": "Eloue",
+        "prenom": "Juste-Paulin",
+        "score_global": 24.77,
+        "verdict": "défavorable",
+        "raison_verdict": "L'absence de feedback RH combinée à un score de complétude bas et MTP médiocre rendent le profil inapproprié pour répondre aux attentes stratégiques et les défis du poste visé."
+      },
+      {
+        "rang": 12,
+        "nom": "Gerlina Ninga",
+        "prenom": "Reine",
+        "score_global": 19.08,
+        "verdict": "défavorable",
+        "raison_verdict": "Le score de conformité de 0, l'absence de feedback RH, et la complétude partielle par rapport à l'offre d'emploi rendent le profil de Reine Gerlina Ninga inadéquat pour le poste de Directeur Commercial et Recouvrement."
+      }
+    ],
+    "rapport_poste": {
+      "nb_candidats": 11,
+      "distribution_verdicts": {
+        "favorable": 2,
+        "moyen": 3,
+        "défavorable": 8
+      },
+      "top_raisons": [
+        "Le candidat présente des qualités de leadership affirmées et une capacité d'adaptation, qui sont cruciales pour la restructuration et l'optimisation demandées par la SEEG.",
+        "Le candidat est jugé favorable grâce à ses compétences interpersonnelles reconnues, mais il doit renforcer sa vision stratégique pour être pleinement efficace dans le contexte de transformation de la SEEG.",
+        "Bien que le candidat ait des qualités de collaboration, ses insuffisances en leadership et maturité professionnelle limitent sa compatibilité avec les exigences stratégiques du poste."
+      ],
+      "incoherences": []
     }
   }
+}

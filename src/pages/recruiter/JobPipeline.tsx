@@ -53,7 +53,7 @@ const normalizeStatus = (status: string): string => {
   }
   
   // Statuts valides
-  const validStatuses = ['candidature', 'incubation', 'embauche', 'refuse', 'entretien_programme'];
+  const validStatuses = ['candidature', 'incubation', 'embauche', 'refuse', 'entretien_programme', 'simulation_programmee'];
   if (validStatuses.includes(status.toLowerCase())) {
     return status.toLowerCase();
   }
@@ -70,6 +70,7 @@ const getStatusLabel = (status: string) => {
     case 'embauche': return 'Engagés';
     case 'refuse': return 'Refusés';
     case 'entretien_programme': return 'Entretiens';
+    case 'simulation_programmee': return 'Simulations';
     default: return 'Candidats';
   }
 };
@@ -80,6 +81,8 @@ const getStatusColor = (status: string) => {
     case 'incubation': return 'border-warning';
     case 'embauche': return 'border-success';
     case 'refuse': return 'border-red-500';
+    case 'entretien_programme': return 'border-purple-500';
+    case 'simulation_programmee': return 'border-blue-600';
     default: return 'border-muted';
   }
 };
@@ -121,6 +124,7 @@ export default function JobPipeline() {
       applicationDate: formatDate(app.created_at),
       email: app.users?.email || '',
       interviewDate: app.interview_date, // Assuming interview_date is available in the application data
+      simulationDate: app.simulation_date, // Date de la simulation programmée
 
       gender: (app.users as any)?.sexe,
       birthDate: formatDate(app.users?.date_of_birth)
@@ -139,6 +143,14 @@ export default function JobPipeline() {
       // Inclure les candidats avec statut 'candidature' ET 'entretien_programme'
       return candidates.filter(candidate => 
         candidate.status === 'candidature' || candidate.status === 'entretien_programme'
+      );
+    }
+    if (status === 'incubation') {
+      // Inclure les candidats avec statut 'incubation' ET ceux avec simulation programmée
+      return candidates.filter(candidate => 
+        candidate.status === 'incubation' || 
+        candidate.status === 'simulation_programmee' ||
+        (candidate.status === 'incubation' && candidate.simulationDate)
       );
     }
     return candidates.filter(candidate => candidate.status === status);
@@ -269,10 +281,30 @@ export default function JobPipeline() {
                                     </span>
                                   </div>
                                 )}
+                                
+                                {/* Date de la simulation si programmée */}
+                                {candidate.simulationDate && (
+                                  <div className="flex items-center gap-1 text-xs text-blue-600 whitespace-nowrap">
+                                    <Calendar className="w-3 h-3 flex-shrink-0" />
+                                    <span className="truncate">
+                                      Simulation : {(() => {
+                                        // Utiliser formatage manuel pour éviter tout décalage
+                                        const date = new Date(candidate.simulationDate);
+                                        const day = date.getDate().toString().padStart(2, '0');
+                                        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                                        const year = date.getFullYear();
+                                        const hours = date.getHours().toString().padStart(2, '0');
+                                        const minutes = date.getMinutes().toString().padStart(2, '0');
+                                        
+                                        return `${day}/${month}/${year} à ${hours}:${minutes}`;
+                                      })()}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                               
                               {/* Afficher le score uniquement pour les candidats évalués (incubés, embauchés, refusés) */}
-                              {candidate.status !== 'candidature' && candidate.status !== 'entretien_programme' && (
+                              {candidate.status !== 'candidature' && candidate.status !== 'entretien_programme' && candidate.status !== 'simulation_programmee' && (
                                 <CandidateScoreDisplay applicationId={candidate.id} />
                               )}
                               

@@ -50,7 +50,7 @@ const generateTimeline = (application: MockApplication): TimelineStep[] => {
       title: "Incubation",
       status: status === 'incubation' ? 'current' : (status === 'embauche' ? 'completed' : (status === 'refuse' ? 'refused' : 'pending')),
       icon: status === 'refuse' ? XCircle : Trophy,
-      description: "Protocole 2 : Simulation, Performance et Compétence",
+      description: "Protocole 2 : Simulation fonctionnelle (Jeu de rôle)",
       date: status === 'incubation' ? 'En cours' : (status === 'embauche' ? 'Terminé' : (status === 'refuse' ? 'Refusé' : 'À venir')),
     },
     {

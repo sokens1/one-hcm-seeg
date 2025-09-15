@@ -714,7 +714,7 @@ export default function CandidateAnalysis() {
             </div>
           </TabsContent>
           <TabsContent value="protocol2" className="mt-3 sm:mt-4 lg:mt-6">
-            {application.status !== 'incubation' && !isObserver && (
+            {application.status !== 'incubation' && application.status !== 'embauche' && !isObserver && (
               <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
@@ -739,7 +739,7 @@ export default function CandidateAnalysis() {
                 jobTitle={jobTitle || 'Poste non spécifié'}
                 applicationId={application.id}
                 onStatusChange={isObserver ? undefined : handleStatusChange}
-                isReadOnly={isObserver || application.status !== 'incubation'}
+                isReadOnly={isObserver || (application.status !== 'incubation' && application.status !== 'embauche')}
                 protocol={2}
               />
             </div>
