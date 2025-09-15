@@ -41,6 +41,11 @@ interface Protocol2EvaluationData {
       comments: string;
     };
   };
+  simulation_scheduling: {
+    simulation_date: string | null;
+    simulation_time: string | null;
+    simulation_scheduled_at: string | null;
+  };
 }
 
 const defaultEvaluationData: Protocol2EvaluationData = {
@@ -79,6 +84,11 @@ const defaultEvaluationData: Protocol2EvaluationData = {
       score: 0,
       comments: ''
     }
+  },
+  simulation_scheduling: {
+    simulation_date: null,
+    simulation_time: null,
+    simulation_scheduled_at: null
   }
 };
 
@@ -158,6 +168,11 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
               score: data.plan_formation_score || 0,
               comments: data.plan_formation_comments || ''
             }
+          },
+          simulation_scheduling: {
+            simulation_date: data.simulation_date || null,
+            simulation_time: data.simulation_time || null,
+            simulation_scheduled_at: data.simulation_scheduled_at || null
           }
         };
       }
@@ -260,6 +275,12 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
         // Statut
         status: data.status,
         completed: data.status === 'completed',
+        
+        // Programmation de simulation
+        simulation_date: data.simulation_scheduling.simulation_date,
+        simulation_time: data.simulation_scheduling.simulation_time,
+        simulation_scheduled_at: data.simulation_scheduling.simulation_scheduled_at,
+        
         updated_at: new Date().toISOString()
       };
 
@@ -477,6 +498,28 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     };
   }, [applicationId, evaluationData, saveEvaluation, LOCAL_KEY, LOCAL_MTIME_KEY]);
 
+  // Fonction pour sauvegarder la date de simulation
+  const saveSimulationDate = useCallback(async (date: string, time: string) => {
+    if (!applicationId || !user) return false;
+    
+    try {
+      const updatedData = {
+        ...evaluationData,
+        simulation_scheduling: {
+          simulation_date: date,
+          simulation_time: time,
+          simulation_scheduled_at: new Date().toISOString()
+        }
+      };
+      
+      setEvaluationData(updatedData);
+      await saveEvaluation(updatedData);
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde de la date de simulation:', error);
+      return false;
+    }
+  }, [applicationId, user, evaluationData, saveEvaluation]);
 
   return {
     evaluationData,
@@ -484,6 +527,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     calculateSectionScores,
     isLoading,
     isSaving,
-    reload: loadEvaluation
+    reload: loadEvaluation,
+    saveSimulationDate
   };
 }
