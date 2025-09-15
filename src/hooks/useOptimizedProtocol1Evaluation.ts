@@ -290,11 +290,11 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
     setIsSaving(true);
     try {
       const sectionScores = calculateSectionScores(data.protocol1);
-      // Conformer aux types BD (entiers) pour éviter 22P02
-      const documentaryScoreInt = Math.round(sectionScores.documentaryScore);
-      const mtpScoreInt = Math.round(sectionScores.mtpScore);
-      const interviewScoreInt = Math.round(sectionScores.interviewScore);
-      const totalScoreInt = Math.round(sectionScores.totalScore);
+      // Stocker les scores exacts SANS arrondi
+      const documentaryScoreExact = sectionScores.documentaryScore;
+      const mtpScoreExact = sectionScores.mtpScore;
+      const interviewScoreExact = sectionScores.interviewScore;
+      const totalScoreExact = sectionScores.totalScore;
       
       const evaluationRecord = {
         application_id: applicationId,
@@ -332,12 +332,12 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
         gap_competence_comments: data.protocol1.interview.gapCompetence.comments,
         general_summary: data.protocol1.interview.generalSummary,
         
-        // Scores calculés (entiers)
-        documentary_score: documentaryScoreInt,
-        mtp_score: mtpScoreInt,
-        interview_score: interviewScoreInt,
-        total_score: totalScoreInt,
-        overall_score: totalScoreInt,
+        // Scores calculés SANS arrondi
+        documentary_score: documentaryScoreExact,
+        mtp_score: mtpScoreExact,
+        interview_score: interviewScoreExact,
+        total_score: totalScoreExact,
+        overall_score: totalScoreExact,
         
         // Statut
         status: data.protocol1.status,

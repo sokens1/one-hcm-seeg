@@ -211,9 +211,14 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
 
   // Sauvegarder les données avec invalidation du cache
   const saveEvaluation = useCallback(async (data: Protocol2EvaluationData) => {
-    if (!applicationId || !user) return;
+    if (!applicationId || !user) {
+      console.warn('⚠️ [PROTOCOL2 SAVE] applicationId ou user manquant:', { applicationId, user: !!user });
+      return;
+    }
     
-    console.log('💾 Sauvegarde des données Protocol 2:', {
+    console.log('💾 [PROTOCOL2 SAVE] Début de la sauvegarde:', {
+      applicationId,
+      userId: user.id,
       mise_en_situation: data.mise_en_situation,
       validation_operationnelle: data.validation_operationnelle,
       analyse_competences: data.analyse_competences
@@ -265,7 +270,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
         plan_formation_score: data.analyse_competences.plan_formation.score,
         plan_formation_comments: data.analyse_competences.plan_formation.comments,
         
-        // Scores calculés
+        // Scores calculés AVEC arrondi pour correspondre au type INTEGER de la DB
         mise_en_situation_score: Math.round(situationPct),
         validation_operationnelle_score: Math.round(performancePct),
         analyse_competences_score: Math.round(competencePct),
@@ -285,27 +290,41 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       };
 
       // Vérifier si un enregistrement existe déjà
-      const { data: existingRecord } = await supabase
+      console.log('🔍 [PROTOCOL2 SAVE] Vérification de l\'existence d\'un enregistrement...');
+      const { data: existingRecord, error: checkError } = await supabase
         .from('protocol2_evaluations')
         .select('id')
         .eq('application_id', applicationId)
         .maybeSingle();
 
+      if (checkError) {
+        console.error('❌ [PROTOCOL2 SAVE] Erreur lors de la vérification:', checkError);
+        throw checkError;
+      }
+
+      console.log('📊 [PROTOCOL2 SAVE] Enregistrement existant:', !!existingRecord);
+      console.log('💾 [PROTOCOL2 SAVE] Données à sauvegarder:', evaluationRecord);
+
       let result;
       if (existingRecord) {
+        console.log('🔄 [PROTOCOL2 SAVE] Mise à jour de l\'enregistrement existant...');
         result = await supabase
           .from('protocol2_evaluations')
           .update(evaluationRecord)
           .eq('application_id', applicationId);
       } else {
+        console.log('➕ [PROTOCOL2 SAVE] Création d\'un nouvel enregistrement...');
         result = await supabase
           .from('protocol2_evaluations')
           .insert(evaluationRecord);
       }
 
       if (result.error) {
+        console.error('❌ [PROTOCOL2 SAVE] Erreur lors de la sauvegarde:', result.error);
         throw result.error;
       }
+
+      console.log('✅ [PROTOCOL2 SAVE] Sauvegarde réussie:', result);
 
       // Les données sont maintenant stockées dans des colonnes dédiées
       // Plus besoin de la colonne JSONB details
@@ -313,12 +332,19 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       // Mettre à jour le cache avec les nouvelles données au lieu de l'invalider
       cache.set(`protocol2_evaluation_${applicationId}`, data);
       
-      console.log('Évaluation Protocole 2 sauvegardée avec succès');
+      console.log('✅ [PROTOCOL2 SAVE] Évaluation Protocole 2 sauvegardée avec succès');
+      
+      // Afficher un toast de succès
+      toast({
+        title: "Sauvegarde réussie",
+        description: "Les données du protocole 2 ont été sauvegardées avec succès.",
+        variant: "default"
+      });
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde Protocole 2:', error);
+      console.error('❌ [PROTOCOL2 SAVE] Erreur lors de la sauvegarde Protocole 2:', error);
       toast({
         title: "Erreur de sauvegarde",
-        description: "Impossible de sauvegarder les données d'évaluation Protocole 2.",
+        description: `Impossible de sauvegarder les données d'évaluation Protocole 2: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
         variant: "destructive"
       });
     } finally {

@@ -522,7 +522,7 @@ export default function CandidateAnalysis() {
   const { data: application, isLoading, error, refetch: refetchApplication } = useApplication(id);
   
   // Utiliser le hook useSynthesisData pour récupérer les vraies données
-  const { synthesisData, isLoading: synthesisLoading, updateRecommendations } = useSynthesisData(application?.id || '');
+  const { synthesisData, isLoading: synthesisLoading, updateRecommendations, saveSynthesisFields } = useSynthesisData(application?.id || '');
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
   const { updateApplicationStatus } = useRecruiterApplications();
 
@@ -767,7 +767,7 @@ export default function CandidateAnalysis() {
                     );
                   }
                 }}
-
+                saveSynthesisFields={saveSynthesisFields}
               />
             )}
           </TabsContent>
