@@ -1,13 +1,15 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star, Calendar as CalendarLucide } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useOptimizedProtocol2Evaluation } from "@/hooks/useOptimizedProtocol2Evaluation";
+import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
 
 interface StarRatingProps {
   value: number;
@@ -142,8 +144,96 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
     calculateSectionScores,
     isLoading,
     isSaving,
-    reload
+    reload,
+    saveSimulationDate
   } = useOptimizedProtocol2Evaluation(applicationId);
+
+  // Hook pour la programmation de simulation (même fonctionnalité que l'entretien)
+  const {
+    schedules,
+    isLoading: isSchedulingLoading,
+    isSaving: isSchedulingSaving,
+    timeSlots,
+    scheduleInterview,
+    cancelInterview,
+    isSlotBusy,
+    isDateFullyBooked,
+    getAvailableSlots,
+    generateCalendar
+  } = useInterviewScheduling(applicationId);
+
+  // États pour la programmation de simulation
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedTime, setSelectedTime] = useState<string>('');
+
+  // Fonction pour programmer la simulation (sans changer le statut)
+  const handleScheduleSimulation = useCallback(async () => {
+    if (!selectedDate || !selectedTime) return;
+    
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const simulationDateTime = new Date(`${selectedDate}T${selectedTime}`);
+      
+      // Sauvegarder la date programmée en base de données (protocol2_evaluations)
+      await saveSimulationDate(selectedDate, selectedTime);
+      
+      // Mettre à jour seulement la date de simulation dans applications (garder le statut 'incubation')
+      const { error: updateError } = await supabase
+        .from('applications')
+        .update({
+          simulation_date: simulationDateTime.toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', applicationId);
+
+      if (updateError) {
+        console.error('❌ Erreur lors de la mise à jour de la date de simulation:', updateError);
+        return;
+      }
+
+      console.log('✅ Date de simulation mise à jour:', simulationDateTime.toISOString());
+      
+      // Envoyer un email de confirmation (optionnel)
+      try {
+        const { data: applicationDetails } = await supabase
+          .from('applications')
+          .select(`
+            users:users!applications_candidate_id_fkey(first_name, last_name, email),
+            job_offers:job_offers!applications_job_offer_id_fkey(title)
+          `)
+          .eq('id', applicationId)
+          .single();
+
+        if (applicationDetails?.users && applicationDetails?.job_offers) {
+          const candidateName = `${applicationDetails.users.first_name} ${applicationDetails.users.last_name}`;
+          const jobTitle = applicationDetails.job_offers.title;
+          
+          // Envoyer email de simulation programmée
+          await supabase.functions.invoke('send-interview-email', {
+            body: {
+              to: applicationDetails.users.email,
+              candidateName,
+              jobTitle,
+              interviewDate: simulationDateTime.toISOString(),
+              interviewType: 'simulation'
+            }
+          });
+        }
+      } catch (emailError) {
+        console.warn('⚠️ Erreur lors de l\'envoi de l\'email:', emailError);
+      }
+      
+      // Rafraîchir la page pour mettre à jour l'interface
+      window.location.reload();
+      
+      // Réinitialiser la sélection
+      setSelectedDate('');
+      setSelectedTime('');
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la programmation de la simulation:', error);
+    }
+  }, [selectedDate, selectedTime, saveSimulationDate, applicationId]);
 
   const handleDecision = (decision: 'embauche' | 'refuse') => {
     onStatusChange(decision);
@@ -289,6 +379,140 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
           </div>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">
+          {/* Section Programmation de la simulation */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg">
+            {/* Champ Date de la simulation */}
+            <div className="flex-1">
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                Date de la simulation
+              </Label>
+              <div className="flex items-center gap-2">
+                <CalendarLucide className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-600">
+                  {evaluationData.simulation_scheduling.simulation_date && evaluationData.simulation_scheduling.simulation_time
+                    ? `${new Date(evaluationData.simulation_scheduling.simulation_date).toLocaleDateString('fr-FR')} à ${evaluationData.simulation_scheduling.simulation_time.slice(0, 5)}`
+                    : "Aucune date programmée"
+                  }
+                </span>
+              </div>
+            </div>
+            
+            {/* Bouton Programmer la simulation */}
+            <div className="flex-shrink-0">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button 
+                    size="lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
+                    disabled={isReadOnly}
+                  >
+                    <CalendarLucide className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Programmer la simulation
+                  </Button>
+                </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="center">
+                <div className="p-4 space-y-4">
+                  <div className="text-center">
+                    <h4 className="font-semibold text-lg mb-2">Programmer la simulation</h4>
+                    <p className="text-sm text-muted-foreground">Choisissez une date disponible</p>
+                  </div>
+                  
+                  {/* Calendrier personnalisé */}
+                  <div className="space-y-3">
+                    {(() => {
+                      const calendar = generateCalendar();
+                      const weeks = [];
+                      for (let i = 0; i < calendar.days.length; i += 7) {
+                        weeks.push(calendar.days.slice(i, i + 7));
+                      }
+                      return weeks.map((week, weekIndex) => (
+                        <div key={weekIndex} className="grid grid-cols-7 gap-1">
+                          {week.map((day, dayIndex) => {
+                            const today = new Date();
+                            const isToday = day.toDateString() === today.toDateString();
+                            const isPast = day < today;
+                            const dateString = day.toISOString().split('T')[0];
+                            const isFullyBooked = isDateFullyBooked(dateString);
+                            const isAvailable = !isPast && !isFullyBooked;
+                            
+                            return (
+                              <button
+                                key={dayIndex}
+                                onClick={() => isAvailable && setSelectedDate(dateString)}
+                                disabled={!isAvailable}
+                                className={cn(
+                                  "w-8 h-8 text-xs rounded-md transition-colors",
+                                  isToday && "bg-blue-100 text-blue-700 font-semibold",
+                                  isPast && "text-gray-400 cursor-not-allowed",
+                                  isFullyBooked && "bg-red-100 text-red-500 cursor-not-allowed",
+                                  isAvailable && "hover:bg-blue-50 text-gray-700",
+                                  selectedDate === dateString && "bg-blue-500 text-white"
+                                )}
+                              >
+                                {day.getDate()}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ));
+                    })()}
+                  </div>
+
+                  {/* Créneaux horaires */}
+                  {selectedDate && (
+                    <div className="space-y-3">
+                      <h5 className="font-medium text-sm">Créneaux disponibles</h5>
+                      <div className="grid grid-cols-3 gap-2">
+                        {timeSlots.map((time) => {
+                          const isBusy = isSlotBusy(selectedDate, time);
+                          return (
+                            <button
+                              key={time}
+                              onClick={() => !isBusy && setSelectedTime(time)}
+                              disabled={isBusy}
+                              className={cn(
+                                "p-2 text-sm rounded-md border transition-colors",
+                                selectedTime === time
+                                  ? "bg-blue-500 text-white border-blue-500"
+                                  : isBusy
+                                  ? "bg-red-100 text-red-500 border-red-200 cursor-not-allowed"
+                                  : "bg-white hover:bg-blue-50 border-gray-300"
+                              )}
+                            >
+                              {time.slice(0, 5)}
+                              {isBusy && " ✕"}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Boutons d'action */}
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      onClick={handleScheduleSimulation}
+                      disabled={!selectedDate || !selectedTime || isSchedulingSaving}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isSchedulingSaving ? 'Programmation...' : 'Programmer'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedDate('');
+                        setSelectedTime('');
+                      }}
+                      className="flex-1"
+                    >
+                      Annuler
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-3">
               <StarRating
