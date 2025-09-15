@@ -93,7 +93,7 @@ export function useApplicationDraft(jobOfferId: string): UseApplicationDraftRetu
       setLastSaved(new Date(data.updated_at));
       setIsDraftLoaded(true);
       
-      console.log('📄 Brouillon chargé:', draftData);
+      // console.log('📄 Brouillon chargé:', draftData);
       return draftData;
     } catch (error) {
       console.error('Error loading draft:', error);
@@ -143,7 +143,7 @@ export function useApplicationDraft(jobOfferId: string): UseApplicationDraftRetu
       lastFormDataRef.current = formDataStr;
       lastUiStateRef.current = uiStateStr;
 
-      console.log('💾 Brouillon sauvegardé:', newDraftData);
+      // console.log('💾 Brouillon sauvegardé:', newDraftData);
     } catch (error) {
       console.error('Error saving draft:', error);
       toast.error('Erreur lors de la sauvegarde du brouillon');
@@ -172,7 +172,7 @@ export function useApplicationDraft(jobOfferId: string): UseApplicationDraftRetu
       lastFormDataRef.current = '';
       lastUiStateRef.current = '';
 
-      console.log('🗑️ Brouillon supprimé');
+      // console.log('🗑️ Brouillon supprimé');
     } catch (error) {
       console.error('Error clearing draft:', error);
     }
@@ -189,14 +189,14 @@ export function useApplicationDraft(jobOfferId: string): UseApplicationDraftRetu
       saveDraft(formData, uiState);
     }, AUTO_SAVE_INTERVAL);
 
-    console.log('⏰ Auto-save activé (toutes les 15 secondes)');
+    // console.log('⏰ Auto-save activé (toutes les 15 secondes)');
   }, [saveDraft]);
 
   const disableAutoSave = useCallback(() => {
     if (autoSaveIntervalRef.current) {
       clearInterval(autoSaveIntervalRef.current);
       autoSaveIntervalRef.current = null;
-      console.log('⏰ Auto-save désactivé');
+      // console.log('⏰ Auto-save désactivé');
     }
   }, []);
 

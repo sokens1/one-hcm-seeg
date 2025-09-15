@@ -75,11 +75,11 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('1. Informations Personnelles', margin, yPos);
   yPos += 10;
 
-  console.log('=== PDF Generator Debug ===');
-  console.log('data.dateOfBirth in generator:', data.dateOfBirth);
-  console.log('data.dateOfBirth type in generator:', typeof data.dateOfBirth);
-  console.log('data.dateOfBirth truthy check:', !!data.dateOfBirth);
-  console.log('==============================');
+  // console.log('=== PDF Generator Debug ===');
+  // console.log('data.dateOfBirth in generator:', data.dateOfBirth);
+  // console.log('data.dateOfBirth type in generator:', typeof data.dateOfBirth);
+  // console.log('data.dateOfBirth truthy check:', !!data.dateOfBirth);
+  // console.log('==============================');
 
   const personalInfo = [
     { 
@@ -109,21 +109,21 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     },
   ];
 
-  console.log('=== PersonalInfo Debug ===');
+  // console.log('=== PersonalInfo Debug ===');
   const dateOfBirthInfo = personalInfo.find(info => info.label === 'Date de Naissance');
-  console.log('DateOfBirth info object:', dateOfBirthInfo);
-  console.log('==========================');
+  // console.log('DateOfBirth info object:', dateOfBirthInfo);
+  // console.log('==========================');
 
   doc.setFont('helvetica', 'normal');
   doc.setFont('helvetica', 'normal');
   personalInfo.forEach(info => {
     // Debug pour l'élément Date de Naissance
     if (info.label === 'Date de Naissance') {
-      console.log('=== Processing Date de Naissance in PDF ===');
-      console.log('info:', info);
-      console.log('info.value:', info.value);
-      console.log('info.value || "Non renseigné":', info.value || 'Non renseigné');
-      console.log('==============================');
+      // console.log('=== Processing Date de Naissance in PDF ===');
+      // console.log('info:', info);
+      // console.log('info.value:', info.value);
+      // console.log('info.value || "Non renseigné":', info.value || 'Non renseigné');
+      // console.log('==============================');
     }
     
     // Vérifier l'espace disponible
@@ -144,10 +144,10 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     doc.setTextColor(75, 85, 99);
     const textToWrite = info.value || 'Non renseigné';
     if (info.label === 'Date de Naissance') {
-      console.log('=== Writing Date de Naissance to PDF ===');
-      console.log('Text being written to PDF:', textToWrite);
-      console.log('Position:', margin + 60, yPos);
-      console.log('======================');
+      // console.log('=== Writing Date de Naissance to PDF ===');
+      // console.log('Text being written to PDF:', textToWrite);
+      // console.log('Position:', margin + 60, yPos);
+      // console.log('======================');
     }
     doc.text(textToWrite, margin + 60, yPos);
     

@@ -57,11 +57,11 @@ interface CandidateModalProps {
 }
 
 function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
-  console.log('[CANDIDATE MODAL DEBUG] Opening modal for candidate:', candidate);
-  console.log('[CANDIDATE MODAL DEBUG] Using applicationId:', candidate.id);
+  // console.log('[CANDIDATE MODAL DEBUG] Opening modal for candidate:', candidate);
+  // console.log('[CANDIDATE MODAL DEBUG] Using applicationId:', candidate.id);
   
   const { data: documents, isLoading, error } = useApplicationDocuments(candidate.id);
-  console.log('[CANDIDATE MODAL DEBUG] Documents from hook:', documents);
+  // console.log('[CANDIDATE MODAL DEBUG] Documents from hook:', documents);
 
   const toUrl = (path: string) => {
     if (path.startsWith('http')) return path;

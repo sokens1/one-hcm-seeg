@@ -11,7 +11,7 @@ export const diagnoseDatabaseAccess = async () => {
 
   try {
     // 1. Tester l'accès à la table job_offers
-    console.log('[DIAGNOSTIC] Testing job_offers table access...');
+    // console.log('[DIAGNOSTIC] Testing job_offers table access...');
     const { data: tableTest, error: tableError } = await supabase
       .from('job_offers')
       .select('id')
@@ -22,11 +22,11 @@ export const diagnoseDatabaseAccess = async () => {
       console.error('[DIAGNOSTIC] Table access failed:', tableError);
     } else {
       results.tableAccess = true;
-      console.log('[DIAGNOSTIC] Table access successful:', tableTest);
+      // console.log('[DIAGNOSTIC] Table access successful:', tableTest);
     }
 
     // 2. Tester l'accès à la fonction RPC
-    console.log('[DIAGNOSTIC] Testing RPC function access...');
+    // console.log('[DIAGNOSTIC] Testing RPC function access...');
     const { data: rpcTest, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
     
     if (rpcError) {
@@ -34,11 +34,11 @@ export const diagnoseDatabaseAccess = async () => {
       console.error('[DIAGNOSTIC] RPC access failed:', rpcError);
     } else {
       results.rpcAccess = true;
-      console.log('[DIAGNOSTIC] RPC access successful:', rpcTest);
+      // console.log('[DIAGNOSTIC] RPC access successful:', rpcTest);
     }
 
     // 3. Tester le statut d'authentification
-    console.log('[DIAGNOSTIC] Testing authentication status...');
+    // console.log('[DIAGNOSTIC] Testing authentication status...');
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError) {
@@ -46,7 +46,7 @@ export const diagnoseDatabaseAccess = async () => {
       console.error('[DIAGNOSTIC] Auth check failed:', authError);
     } else {
       results.authStatus = !!user;
-      console.log('[DIAGNOSTIC] Auth status:', { user: !!user, userId: user?.id });
+      // console.log('[DIAGNOSTIC] Auth status:', { user: !!user, userId: user?.id });
     }
 
   } catch (error) {
@@ -54,6 +54,6 @@ export const diagnoseDatabaseAccess = async () => {
     console.error('[DIAGNOSTIC] Unexpected error:', error);
   }
 
-  console.log('[DIAGNOSTIC] Results:', results);
+  // console.log('[DIAGNOSTIC] Results:', results);
   return results;
 };
