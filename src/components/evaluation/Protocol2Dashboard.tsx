@@ -10,6 +10,7 @@ import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, S
 import { cn } from "@/lib/utils";
 import { useOptimizedProtocol2Evaluation } from "@/hooks/useOptimizedProtocol2Evaluation";
 import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
+import { useToast } from "@/hooks/use-toast";
 
 interface StarRatingProps {
   value: number;
@@ -150,6 +151,8 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
     saveSimulationDate
   } = useOptimizedProtocol2Evaluation(applicationId);
 
+  const { toast } = useToast();
+
   // Hook pour la programmation de simulation (même fonctionnalité que l'entretien)
   const {
     schedules,
@@ -215,16 +218,20 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
         variant: "default"
       });
       
-      // Envoyer un email de confirmation (optionnel)
+      // Envoyer une notification au candidat (remplace l'email)
       try {
+        console.log('🔔 [NOTIFICATION] Début de l\'envoi de notification de simulation');
         const { data: applicationDetails } = await supabase
           .from('applications')
           .select(`
-            users:users!applications_candidate_id_fkey(first_name, last_name, email),
+            candidate_id,
+            users:users!applications_candidate_id_fkey(id, first_name, last_name, email),
             job_offers:job_offers!applications_job_offer_id_fkey(title)
           `)
           .eq('id', applicationId)
           .single();
+
+        console.log('🔔 [NOTIFICATION] Détails de l\'application récupérés:', applicationDetails);
 
         if (applicationDetails?.users && applicationDetails?.job_offers) {
           const user = Array.isArray(applicationDetails.users) ? applicationDetails.users[0] : applicationDetails.users;
@@ -233,25 +240,56 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
           if (user && jobOffer) {
             const candidateName = `${user.first_name} ${user.last_name}`;
             const jobTitle = jobOffer.title;
+            const candidateId = user.id || applicationDetails.candidate_id;
             
-            // Envoyer email de simulation programmée
-            await supabase.functions.invoke('send-interview-email', {
-              body: {
-                to: user.email,
-                candidateName,
-                jobTitle,
-                interviewDate: simulationDateTime.toISOString(),
-                interviewType: 'simulation'
-              }
+            console.log('🔔 [NOTIFICATION] IDs récupérés:', {
+              user_id: user.id,
+              candidate_id: applicationDetails.candidate_id,
+              final_candidate_id: candidateId
             });
+            
+            if (!candidateId) {
+              throw new Error('ID candidat non trouvé');
+            }
+            
+            // Créer une notification pour le candidat
+            const notificationData = {
+              user_id: candidateId,
+              title: 'Simulation programmée',
+              message: `Votre simulation pour le poste de ${jobTitle} a été programmée pour le ${new Date(selectedDate).toLocaleDateString('fr-FR')} à ${selectedTime.slice(0, 5)}.`,
+              type: 'simulation_scheduled',
+              read: false
+            };
+            
+            console.log('🔔 [NOTIFICATION] Données pour la notification:', notificationData);
+            
+            // Insérer la notification via la fonction Supabase (version avec 5 paramètres)
+            const { error: notificationError } = await supabase
+              .rpc('create_notification', {
+                p_user_id: candidateId,
+                p_title: notificationData.title,
+                p_message: notificationData.message,
+                p_type: 'info',
+                p_link: null
+              });
+
+            if (notificationError) {
+              console.error('❌ Erreur création notification:', notificationError);
+              throw new Error(`Erreur création notification: ${notificationError.message || 'Erreur inconnue'}`);
+            }
+
+            console.log('✅ Notification créée avec succès');
           }
         }
-      } catch (emailError) {
-        console.warn('⚠️ Erreur lors de l\'envoi de l\'email:', emailError);
+      } catch (notificationError) {
+        console.error('❌ Erreur lors de la création de la notification:', notificationError);
+        // Afficher une alerte à l'utilisateur mais ne pas faire échouer la programmation
+        alert(`Erreur lors de la création de la notification: ${notificationError.message || 'Erreur inconnue'}`);
+        // Ne pas relancer l'erreur pour éviter d'interrompre la programmation
       }
       
-      // Rafraîchir la page pour mettre à jour l'interface
-      window.location.reload();
+      // Ne plus rafraîchir automatiquement la page pour garder les logs
+      // window.location.reload();
       
       // Réinitialiser la sélection
       setSelectedDate('');

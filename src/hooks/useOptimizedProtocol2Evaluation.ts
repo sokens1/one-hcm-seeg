@@ -350,7 +350,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     } finally {
       setIsSaving(false);
     }
-  }, [applicationId, user, toast, cache]);
+  }, [applicationId, user, toast]);
 
   // Calculer les scores des sections (retour en pourcentage, pondéré 50/20/30)
   const calculateSectionScores = useCallback((data: Protocol2EvaluationData) => {
@@ -434,7 +434,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       
       return newData;
     });
-  }, [calculateSectionScores, saveEvaluation, LOCAL_DIRTY_KEY, LOCAL_KEY, LOCAL_MTIME_KEY]);
+  }, [calculateSectionScores, LOCAL_DIRTY_KEY, LOCAL_KEY, LOCAL_MTIME_KEY]);
 
 
   // Charger les données au montage du composant
