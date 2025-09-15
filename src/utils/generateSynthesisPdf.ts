@@ -569,65 +569,77 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   yPos = addSectionHeader(doc, 'Recommandations et Conclusion', yPos, margin);
 
   // Points forts
-  if (data.pointsForts && data.pointsForts.trim() !== '') {
-    doc.setFillColor(240, 253, 244); // Green-50
-    doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
-    doc.setDrawColor(34, 197, 94); // Green-500
-    doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
-    
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(22, 163, 74);
-    doc.text('✓ Points Forts', margin + 10, yPos + 12);
-    
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(75, 85, 99);
-    const pointsFortsLines = doc.splitTextToSize(data.pointsForts, pageWidth - 2 * margin - 20);
-    doc.text(pointsFortsLines[0] || '', margin + 10, yPos + 22);
-    
-    yPos += 40;
+  const pointsFortsText = data.pointsForts && data.pointsForts.trim() !== '' ? data.pointsForts : 'Non renseigné';
+  if (yPos > doc.internal.pageSize.height - 60) {
+    doc.addPage();
+    yPos = 20;
   }
+  
+  doc.setFillColor(240, 253, 244); // Green-50
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
+  doc.setDrawColor(34, 197, 94); // Green-500
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(22, 163, 74);
+  doc.text('✓ Points Forts', margin + 10, yPos + 12);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(75, 85, 99);
+  const pointsFortsLines = doc.splitTextToSize(pointsFortsText, pageWidth - 2 * margin - 20);
+  doc.text(pointsFortsLines[0] || '', margin + 10, yPos + 22);
+  
+  yPos += 40;
 
   // Points d'amélioration
-  if (data.pointsAmelioration && data.pointsAmelioration.trim() !== '') {
-    doc.setFillColor(255, 247, 237); // Orange-50
-    doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
-    doc.setDrawColor(249, 115, 22); // Orange-500
-    doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
-    
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(234, 88, 12);
-    doc.text('⚠ Points d\'Amélioration', margin + 10, yPos + 12);
-    
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(75, 85, 99);
-    const pointsAmeliorationLines = doc.splitTextToSize(data.pointsAmelioration, pageWidth - 2 * margin - 20);
-    doc.text(pointsAmeliorationLines[0] || '', margin + 10, yPos + 22);
-    
-    yPos += 40;
+  const pointsAmeliorationText = data.pointsAmelioration && data.pointsAmelioration.trim() !== '' ? data.pointsAmelioration : 'Non renseigné';
+  if (yPos > doc.internal.pageSize.height - 60) {
+    doc.addPage();
+    yPos = 20;
   }
+  
+  doc.setFillColor(255, 247, 237); // Orange-50
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
+  doc.setDrawColor(249, 115, 22); // Orange-500
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(234, 88, 12);
+  doc.text('⚠ Points d\'Amélioration', margin + 10, yPos + 12);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(75, 85, 99);
+  const pointsAmeliorationLines = doc.splitTextToSize(pointsAmeliorationText, pageWidth - 2 * margin - 20);
+  doc.text(pointsAmeliorationLines[0] || '', margin + 10, yPos + 22);
+  
+  yPos += 40;
 
   // Conclusion
-  if (data.conclusion && data.conclusion.trim() !== '') {
-    doc.setFillColor(239, 246, 255); // Blue-50
-    doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
-    doc.setDrawColor(59, 130, 246); // Blue-500
-    doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
-    
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(30, 64, 175);
-    doc.text('📋 Conclusion', margin + 10, yPos + 12);
-    
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(75, 85, 99);
-    const conclusionLines = doc.splitTextToSize(data.conclusion, pageWidth - 2 * margin - 20);
-    doc.text(conclusionLines[0] || '', margin + 10, yPos + 22);
+  const conclusionText = data.conclusion && data.conclusion.trim() !== '' ? data.conclusion : 'Non renseigné';
+  if (yPos > doc.internal.pageSize.height - 60) {
+    doc.addPage();
+    yPos = 20;
   }
+  
+  doc.setFillColor(239, 246, 255); // Blue-50
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 30, 'F');
+  doc.setDrawColor(59, 130, 246); // Blue-500
+  doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(30, 64, 175);
+  doc.text('📋 Conclusion', margin + 10, yPos + 12);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(75, 85, 99);
+  const conclusionLines = doc.splitTextToSize(conclusionText, pageWidth - 2 * margin - 20);
+  doc.text(conclusionLines[0] || '', margin + 10, yPos + 22);
 
   // Footer simple avec marge
   //@ts-expect-error fix it later

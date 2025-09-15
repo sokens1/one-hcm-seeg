@@ -100,6 +100,12 @@ interface SynthesisData {
   conclusion?: string;
 }
 
+// Fonction utilitaire pour nettoyer le HTML des balises <p>
+const cleanHtmlText = (text: string | null): string => {
+  if (!text || text.trim() === '') return '';
+  return text.replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '').trim();
+};
+
 export const exportSynthesisPdf = async (
   applicationId: string,
   candidateName: string,
@@ -119,12 +125,15 @@ export const exportSynthesisPdf = async (
     console.log('Final Status:', finalStatus);
     console.log('===================================');
 
-    // Récupérer les données du candidat
+    // Récupérer les données du candidat avec les champs de synthèse
     const { data: application, error: applicationError } = await supabase
       .from('applications')
       .select(`
         id,
         status,
+        synthesis_points_forts,
+        synthesis_points_amelioration,
+        synthesis_conclusion,
         job_offers!applications_job_offer_id_fkey(title),
         users!applications_candidate_id_fkey(
           first_name,
@@ -172,16 +181,16 @@ export const exportSynthesisPdf = async (
       jobTitle: application.job_offers?.title || jobTitle
     };
 
-    // Construire les données de synthèse
+    // Construire les données de synthèse en utilisant les données de la DB
     const synthesisData: SynthesisData = {
       protocol1: protocol1Data || null,
       protocol2: protocol2Data || null,
       candidate,
       globalScore,
       finalStatus,
-      pointsForts,
-      pointsAmelioration,
-      conclusion
+      pointsForts: cleanHtmlText(application.synthesis_points_forts) || pointsForts || 'Non renseigné',
+      pointsAmelioration: cleanHtmlText(application.synthesis_points_amelioration) || pointsAmelioration || 'Non renseigné',
+      conclusion: cleanHtmlText(application.synthesis_conclusion) || conclusion || 'Non renseigné'
     };
 
     console.log('=== Synthesis Data Debug ===');
