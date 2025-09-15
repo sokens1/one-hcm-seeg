@@ -23,7 +23,7 @@ export function SimpleProtocol1Test() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   const updateField = (field: keyof TestData, subField: 'score' | 'comments', value: number | string) => {
-    console.log('🔄 [SIMPLE TEST] Mise à jour:', { field, subField, value });
+    // console.log('🔄 [SIMPLE TEST] Mise à jour:', { field, subField, value });
     setTestData(prev => {
       const newData = {
         ...prev,
@@ -32,19 +32,19 @@ export function SimpleProtocol1Test() {
           [subField]: value
         }
       };
-      console.log('🔄 [SIMPLE TEST] Nouvelles données:', newData);
+      // console.log('🔄 [SIMPLE TEST] Nouvelles données:', newData);
       return newData;
     });
   };
 
   const simulateSave = async () => {
-    console.log('💾 [SIMPLE TEST] Simulation de sauvegarde');
+    // console.log('💾 [SIMPLE TEST] Simulation de sauvegarde');
     setIsSaving(true);
     // Simuler une sauvegarde
     await new Promise(resolve => setTimeout(resolve, 1000));
     setLastSaved(new Date());
     setIsSaving(false);
-    console.log('💾 [SIMPLE TEST] Sauvegarde terminée');
+    // console.log('💾 [SIMPLE TEST] Sauvegarde terminée');
   };
 
   const StarRating: React.FC<{
@@ -61,7 +61,7 @@ export function SimpleProtocol1Test() {
               key={star}
               type="button"
               onClick={() => {
-                console.log('⭐ [SIMPLE TEST] Clic sur étoile:', star);
+                // console.log('⭐ [SIMPLE TEST] Clic sur étoile:', star);
                 onChange(star);
               }}
               className="transition-colors hover:scale-110"
@@ -124,7 +124,7 @@ export function SimpleProtocol1Test() {
                 placeholder="Commentaires sur le métier..."
                 value={testData.metier.comments}
                 onChange={(e) => {
-                  console.log('📝 [SIMPLE TEST] Changement commentaire métier:', e.target.value);
+                  // console.log('📝 [SIMPLE TEST] Changement commentaire métier:', e.target.value);
                   updateField('metier', 'comments', e.target.value);
                 }}
                 className="min-h-[100px]"
@@ -150,7 +150,7 @@ export function SimpleProtocol1Test() {
                 placeholder="Commentaires sur le talent..."
                 value={testData.talent.comments}
                 onChange={(e) => {
-                  console.log('📝 [SIMPLE TEST] Changement commentaire talent:', e.target.value);
+                  // console.log('📝 [SIMPLE TEST] Changement commentaire talent:', e.target.value);
                   updateField('talent', 'comments', e.target.value);
                 }}
                 className="min-h-[100px]"
@@ -176,7 +176,7 @@ export function SimpleProtocol1Test() {
                 placeholder="Commentaires sur le paradigme..."
                 value={testData.paradigme.comments}
                 onChange={(e) => {
-                  console.log('📝 [SIMPLE TEST] Changement commentaire paradigme:', e.target.value);
+                  // console.log('📝 [SIMPLE TEST] Changement commentaire paradigme:', e.target.value);
                   updateField('paradigme', 'comments', e.target.value);
                 }}
                 className="min-h-[100px]"

@@ -25,7 +25,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
             key={star}
             type="button"
             onClick={() => {
-              console.log('⭐ [REAL TEST] Clic sur étoile:', star, 'disabled:', disabled);
+              // console.log('⭐ [REAL TEST] Clic sur étoile:', star, 'disabled:', disabled);
               !disabled && onChange(star);
             }}
             className="transition-colors hover:scale-110"
@@ -60,9 +60,9 @@ export function RealDataTest() {
 
   // Fonction exacte du composant d'évaluation original
   const updateProtocol1 = (section: string, field: string, value: any) => {
-    console.log('🔄 [REAL TEST] updateProtocol1 appelé:', { section, field, value });
+    // console.log('🔄 [REAL TEST] updateProtocol1 appelé:', { section, field, value });
     updateEvaluation(prev => {
-      console.log('🔄 [REAL TEST] Données précédentes:', prev);
+      // console.log('🔄 [REAL TEST] Données précédentes:', prev);
       const newData = { ...prev };
       const newProtocol1 = { ...newData.protocol1 };
       
@@ -79,14 +79,14 @@ export function RealDataTest() {
       }
       
       newData.protocol1 = newProtocol1;
-      console.log('🔄 [REAL TEST] Nouvelles données:', newData);
+      // console.log('🔄 [REAL TEST] Nouvelles données:', newData);
       return newData;
     });
   };
 
   const handleLoadData = () => {
     if (applicationId.trim()) {
-      console.log('🔄 [REAL TEST] Chargement des données pour:', applicationId);
+      // console.log('🔄 [REAL TEST] Chargement des données pour:', applicationId);
       setCurrentAppId(applicationId.trim());
     }
   };
@@ -153,7 +153,7 @@ export function RealDataTest() {
                       placeholder="Commentaires sur le métier..."
                       value={evaluationData.protocol1.mtpAdherence.metier.comments}
                       onChange={(e) => {
-                        console.log('📝 [REAL TEST] Changement commentaire métier:', e.target.value);
+                        // console.log('📝 [REAL TEST] Changement commentaire métier:', e.target.value);
                         updateProtocol1('mtpAdherence', 'metier.comments', e.target.value);
                       }}
                       className="min-h-[100px]"
@@ -179,7 +179,7 @@ export function RealDataTest() {
                       placeholder="Commentaires sur le talent..."
                       value={evaluationData.protocol1.mtpAdherence.talent.comments}
                       onChange={(e) => {
-                        console.log('📝 [REAL TEST] Changement commentaire talent:', e.target.value);
+                        // console.log('📝 [REAL TEST] Changement commentaire talent:', e.target.value);
                         updateProtocol1('mtpAdherence', 'talent.comments', e.target.value);
                       }}
                       className="min-h-[100px]"
@@ -205,7 +205,7 @@ export function RealDataTest() {
                       placeholder="Commentaires sur le paradigme..."
                       value={evaluationData.protocol1.mtpAdherence.paradigme.comments}
                       onChange={(e) => {
-                        console.log('📝 [REAL TEST] Changement commentaire paradigme:', e.target.value);
+                        // console.log('📝 [REAL TEST] Changement commentaire paradigme:', e.target.value);
                         updateProtocol1('mtpAdherence', 'paradigme.comments', e.target.value);
                       }}
                       className="min-h-[100px]"

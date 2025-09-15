@@ -25,7 +25,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
             key={star}
             type="button"
             onClick={() => {
-              console.log('⭐ [ULTIMATE DEBUG TEST] Clic sur étoile:', star, 'disabled:', disabled);
+              // console.log('⭐ [ULTIMATE DEBUG TEST] Clic sur étoile:', star, 'disabled:', disabled);
               !disabled && onChange(star);
             }}
             className="transition-colors hover:scale-110"
@@ -60,9 +60,9 @@ export function UltimateDebugTest() {
 
   // Fonction exacte du composant d'évaluation original
   const updateProtocol1 = (section: string, field: string, value: any) => {
-    console.log('🔄 [ULTIMATE DEBUG TEST] updateProtocol1 appelé:', { section, field, value });
+    // console.log('🔄 [ULTIMATE DEBUG TEST] updateProtocol1 appelé:', { section, field, value });
     updateEvaluation(prev => {
-      console.log('🔄 [ULTIMATE DEBUG TEST] Données précédentes:', prev);
+      // console.log('🔄 [ULTIMATE DEBUG TEST] Données précédentes:', prev);
       const newData = { ...prev };
       const newProtocol1 = { ...newData.protocol1 };
       
@@ -110,23 +110,23 @@ export function UltimateDebugTest() {
       }
       
       newData.protocol1 = newProtocol1;
-      console.log('🔄 [ULTIMATE DEBUG TEST] Nouvelles données:', newData);
+      // console.log('🔄 [ULTIMATE DEBUG TEST] Nouvelles données:', newData);
       return newData;
     });
   };
 
   const handleLoadData = () => {
     if (applicationId.trim()) {
-      console.log('🔄 [ULTIMATE DEBUG TEST] Chargement des données pour:', applicationId);
+      // console.log('🔄 [ULTIMATE DEBUG TEST] Chargement des données pour:', applicationId);
       setCurrentAppId(applicationId.trim());
     }
   };
 
   const handleManualSave = () => {
-    console.log('💾 [ULTIMATE DEBUG TEST] Sauvegarde manuelle déclenchée');
+    // console.log('💾 [ULTIMATE DEBUG TEST] Sauvegarde manuelle déclenchée');
     // Déclencher une sauvegarde manuelle
     updateEvaluation(prev => {
-      console.log('💾 [ULTIMATE DEBUG TEST] Sauvegarde manuelle - données:', prev);
+      // console.log('💾 [ULTIMATE DEBUG TEST] Sauvegarde manuelle - données:', prev);
       return prev;
     });
   };
@@ -235,7 +235,7 @@ export function UltimateDebugTest() {
                         placeholder="Commentaires métier..."
                         value={evaluationData.protocol1.mtpAdherence.metier.comments}
                         onChange={(e) => {
-                          console.log('📝 [ULTIMATE DEBUG TEST] Changement commentaire métier:', e.target.value);
+                          // console.log('📝 [ULTIMATE DEBUG TEST] Changement commentaire métier:', e.target.value);
                           updateProtocol1('mtpAdherence', 'metier.comments', e.target.value);
                         }}
                         className="min-h-[60px]"
@@ -252,7 +252,7 @@ export function UltimateDebugTest() {
                         placeholder="Commentaires talent..."
                         value={evaluationData.protocol1.mtpAdherence.talent.comments}
                         onChange={(e) => {
-                          console.log('📝 [ULTIMATE DEBUG TEST] Changement commentaire talent:', e.target.value);
+                          // console.log('📝 [ULTIMATE DEBUG TEST] Changement commentaire talent:', e.target.value);
                           updateProtocol1('mtpAdherence', 'talent.comments', e.target.value);
                         }}
                         className="min-h-[60px]"
@@ -269,7 +269,7 @@ export function UltimateDebugTest() {
                         placeholder="Commentaires paradigme..."
                         value={evaluationData.protocol1.mtpAdherence.paradigme.comments}
                         onChange={(e) => {
-                          console.log('📝 [ULTIMATE DEBUG TEST] Changement commentaire paradigme:', e.target.value);
+                          // console.log('📝 [ULTIMATE DEBUG TEST] Changement commentaire paradigme:', e.target.value);
                           updateProtocol1('mtpAdherence', 'paradigme.comments', e.target.value);
                         }}
                         className="min-h-[60px]"

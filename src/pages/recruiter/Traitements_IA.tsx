@@ -432,7 +432,6 @@ export default function Traitements_IA() {
               <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
             </div>
           </div>
-          
         </div>
 
         {/* Barre de recherche et filtres */}

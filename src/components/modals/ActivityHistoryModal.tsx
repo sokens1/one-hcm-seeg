@@ -43,10 +43,10 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
     setError(null);
 
     try {
-      console.log('[ACTIVITY DEBUG] Calling get_recruiter_activities with:', {
-        p_limit: ITEMS_PER_PAGE,
-        p_offset: (pageNum - 1) * ITEMS_PER_PAGE
-      });
+      // console.log('[ACTIVITY DEBUG] Calling get_recruiter_activities with:', {
+      //   p_limit: ITEMS_PER_PAGE,
+      //   p_offset: (pageNum - 1) * ITEMS_PER_PAGE
+      // });
       
       const { data, error: fetchError } = await supabase
         .rpc('get_recruiter_activities', {
@@ -54,7 +54,7 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
           p_offset: (pageNum - 1) * ITEMS_PER_PAGE
         });
 
-      console.log('[ACTIVITY DEBUG] Response:', { data, error: fetchError });
+      // console.log('[ACTIVITY DEBUG] Response:', { data, error: fetchError });
 
       if (fetchError) {
         console.error('[ACTIVITY DEBUG] Error details:', fetchError);

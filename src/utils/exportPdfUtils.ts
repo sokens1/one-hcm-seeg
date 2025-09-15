@@ -10,15 +10,15 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
     const profile = user?.candidate_profiles;
     
     // Debug: Log all relevant data to identify gender issue
-    console.log('=== PDF Export Debug ===');
-    console.log('User data:', user);
-    console.log('Profile data:', profile);
-    console.log('Profile gender:', (profile as any)?.gender);
-    console.log('User date_of_birth:', user?.date_of_birth);
-    console.log('Profile birth_date:', (profile as any)?.birth_date);
-    console.log('User date_of_birth type:', typeof user?.date_of_birth);
-    console.log('Profile birth_date type:', typeof (profile as any)?.birth_date);
-    console.log('========================');
+    // console.log('=== PDF Export Debug ===');
+    // console.log('User data:', user);
+    // console.log('Profile data:', profile);
+    // console.log('Profile gender:', (profile as any)?.gender);
+    // console.log('User date_of_birth:', user?.date_of_birth);
+    // console.log('Profile birth_date:', (profile as any)?.birth_date);
+    // console.log('User date_of_birth type:', typeof user?.date_of_birth);
+    // console.log('Profile birth_date type:', typeof (profile as any)?.birth_date);
+    // console.log('========================');
     
     // Fetch application documents
     const { data: documents, error: documentsError } = await supabase
@@ -133,8 +133,8 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       }),
     };
     
-    console.log('Gender value passed to PDF generator:', applicationData.gender);
-    console.log('DateOfBirth value passed to PDF generator:', applicationData.dateOfBirth);
+    // console.log('Gender value passed to PDF generator:', applicationData.gender);
+    // console.log('DateOfBirth value passed to PDF generator:', applicationData.dateOfBirth);
     
     const doc = generateApplicationPdf(applicationData);
     

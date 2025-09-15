@@ -50,7 +50,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
   const loadInterviews = useCallback(async () => {
     setIsLoading(true);
     try {
-      console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
+      //console.log('🔄 [CALENDAR DEBUG] Chargement des entretiens...');
       
       // 1) Récupérer les créneaux sans jointures complexes (évite 400)
       // Déterminer la fenêtre du mois courant pour charger tous les jours visibles
@@ -59,7 +59,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       const monthStartStr = format(monthStart, 'yyyy-MM-dd');
       const monthEndStr = format(monthEnd, 'yyyy-MM-dd');
       
-      console.log('🔄 [CALENDAR DEBUG] Période de chargement:', { monthStartStr, monthEndStr });
+      //console.log('🔄 [CALENDAR DEBUG] Période de chargement:', { monthStartStr, monthEndStr });
 
       const { data: slots, error: slotsError } = await supabase
         .from('interview_slots')
@@ -76,8 +76,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         return;
       }
 
-      console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots?.length, 'créneaux');
-      console.log('✅ [CALENDAR DEBUG] Détail des créneaux:', slots);
+      //console.log('✅ [CALENDAR DEBUG] Créneaux reçus:', slots?.length, 'créneaux');
+      //console.log('✅ [CALENDAR DEBUG] Détail des créneaux:', slots);
 
       if (!slots || slots.length === 0) {
         setInterviews([]);
@@ -150,8 +150,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         })[0]; // Prendre le premier (le plus récent)
       });
 
-      console.log('📅 [CALENDAR DEBUG] Entretiens avant filtrage:', allInterviews.length);
-      console.log('📅 [CALENDAR DEBUG] Entretiens après filtrage (dernier par candidat):', formattedInterviews.length);
+      //console.log('📅 [CALENDAR DEBUG] Entretiens avant filtrage:', allInterviews.length);
+      //console.log('📅 [CALENDAR DEBUG] Entretiens après filtrage (dernier par candidat):', formattedInterviews.length);
       setInterviews(formattedInterviews);
     } catch (error) {
       console.error('❌ [CALENDAR DEBUG] Erreur lors du chargement des entretiens:', error);
@@ -161,8 +161,8 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
   }, [currentMonth]);
 
   const startEditingInterview = (interview: Interview) => {
-    console.log('🔄 [CALENDAR DEBUG] Début de startEditingInterview');
-    console.log('🔄 [CALENDAR DEBUG] interview:', interview);
+    //console.log('🔄 [CALENDAR DEBUG] Début de startEditingInterview');
+    //console.log('🔄 [CALENDAR DEBUG] interview:', interview);
     
     setIsEditing(true);
     setEditingInterview(interview);
@@ -172,33 +172,33 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     const t = interview.time.match(/^\d{2}:\d{2}(:\d{2})?$/) ? (interview.time.length === 5 ? `${interview.time}:00` : interview.time) : interview.time;
     setDraftTime(t);
     
-    console.log('🔄 [CALENDAR DEBUG] draftDate défini:', interview.date);
-    console.log('🔄 [CALENDAR DEBUG] draftTime défini:', t);
+    //console.log('🔄 [CALENDAR DEBUG] draftDate défini:', interview.date);
+    //console.log('🔄 [CALENDAR DEBUG] draftTime défini:', t);
     
     // Pré-sélectionner la date sur le calendrier
     try { setSelectedDate(new Date(`${interview.date}T00:00:00`)); } catch (e) { console.debug('📅 [CALENDAR DEBUG] Erreur de parsing date en édition:', e); }
   };
 
   const saveEditingInterview = async () => {
-    console.log('🔄 [CALENDAR DEBUG] Début de saveEditingInterview');
-    console.log('🔄 [CALENDAR DEBUG] isEditing:', isEditing);
-    console.log('🔄 [CALENDAR DEBUG] editingInterview:', editingInterview);
-    console.log('🔄 [CALENDAR DEBUG] draftDate:', draftDate);
-    console.log('🔄 [CALENDAR DEBUG] draftTime:', draftTime);
+    //console.log('🔄 [CALENDAR DEBUG] Début de saveEditingInterview');
+    //console.log('🔄 [CALENDAR DEBUG] isEditing:', isEditing);
+    //console.log('🔄 [CALENDAR DEBUG] editingInterview:', editingInterview);
+    //console.log('🔄 [CALENDAR DEBUG] draftDate:', draftDate);
+    //console.log('🔄 [CALENDAR DEBUG] draftTime:', draftTime);
     
     if (!isEditing || !editingInterview || !draftDate || !draftTime) {
-      console.log('❌ [CALENDAR DEBUG] Conditions de validation non remplies');
+      //console.log('❌ [CALENDAR DEBUG] Conditions de validation non remplies');
       return;
     }
     
     // Validation
     const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(draftDate);
     const isValidTime = /^([01]?\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(draftTime);
-    console.log('🔄 [CALENDAR DEBUG] isValidDate:', isValidDate);
-    console.log('🔄 [CALENDAR DEBUG] isValidTime:', isValidTime);
+    //console.log('🔄 [CALENDAR DEBUG] isValidDate:', isValidDate);
+    //console.log('🔄 [CALENDAR DEBUG] isValidTime:', isValidTime);
     
     if (!isValidDate || !isValidTime) {
-      console.log('❌ [CALENDAR DEBUG] Validation échouée');
+      //console.log('❌ [CALENDAR DEBUG] Validation échouée');
       return;
     }
     
@@ -208,7 +208,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     
     if (dateChanged || timeChanged) {
       // Si la date ou l'heure a changé, libérer l'ancien créneau
-      console.log('🔄 [CALENDAR DEBUG] Libération de l\'ancien créneau:', editingInterview.date, editingInterview.time);
+      //console.log('🔄 [CALENDAR DEBUG] Libération de l\'ancien créneau:', editingInterview.date, editingInterview.time);
       
       // Libérer l'ancien créneau en le marquant comme disponible
       const { error: freeOldSlotError } = await supabase
@@ -230,7 +230,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       if (freeOldSlotError) {
         console.error('❌ [CALENDAR DEBUG] Erreur libération ancien créneau:', freeOldSlotError);
       } else {
-        console.log('✅ [CALENDAR DEBUG] Ancien créneau libéré avec succès');
+        //console.log('✅ [CALENDAR DEBUG] Ancien créneau libéré avec succès');
       }
       
       // Vérifier si le nouveau créneau existe déjà
@@ -321,7 +321,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       if (appUpdateError) {
         console.error('❌ [CALENDAR DEBUG] Erreur mise à jour application:', appUpdateError);
       } else {
-        console.log('✅ [CALENDAR DEBUG] Application mise à jour avec nouvelle date/heure');
+        //console.log('✅ [CALENDAR DEBUG] Application mise à jour avec nouvelle date/heure');
       }
 
       // Mettre à jour aussi la table protocol1_evaluations si elle existe
@@ -334,17 +334,17 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         .eq('application_id', editingInterview.application_id);
       
       if (protocolUpdateError) {
-        console.log('ℹ️ [CALENDAR DEBUG] Pas de protocol1_evaluation à mettre à jour ou erreur:', protocolUpdateError);
+        //console.log('ℹ️ [CALENDAR DEBUG] Pas de protocol1_evaluation à mettre à jour ou erreur:', protocolUpdateError);
       } else {
-        console.log('✅ [CALENDAR DEBUG] Protocol1_evaluation mise à jour avec nouvelle date/heure');
+        //console.log('✅ [CALENDAR DEBUG] Protocol1_evaluation mise à jour avec nouvelle date/heure');
       }
     }
     
-    console.log('✅ [CALENDAR DEBUG] Entretien mis à jour');
+    //console.log('✅ [CALENDAR DEBUG] Entretien mis à jour');
     
     // Afficher une notification de succès
     if (dateChanged || timeChanged) {
-      console.log('✅ [CALENDAR DEBUG] Modification effectuée avec succès - ancien créneau libéré');
+      //console.log('✅ [CALENDAR DEBUG] Modification effectuée avec succès - ancien créneau libéré');
     }
     
     setIsEditing(false);
@@ -358,7 +358,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       detail: { action: 'updated', details: { oldDate: editingInterview.date, oldTime: editingInterview.time, newDate: draftDate, newTime: draftTime }, timestamp: Date.now() }
     }));
     
-    console.log('✅ [CALENDAR DEBUG] Fonction saveEditingInterview terminée avec succès');
+    //console.log('✅ [CALENDAR DEBUG] Fonction saveEditingInterview terminée avec succès');
   };
 
   const cancelEditingInterview = () => {
@@ -379,7 +379,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     const handleSlotsUpdate = (event: CustomEvent) => {
       const action = event.detail?.action || 'updated';
       const details = event.detail?.details;
-      console.log('🔄 [CALENDAR DEBUG] Rechargement calendrier suite à programmation entretien', { action, details });
+      //console.log('🔄 [CALENDAR DEBUG] Rechargement calendrier suite à programmation entretien', { action, details });
       
       if (isOpen) {
         // Recharger les entretiens du calendrier
@@ -388,7 +388,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
         // Si c'est une création ou suppression, forcer le rechargement des créneaux
         if (action === 'created' || action === 'deleted') {
           setTimeout(() => {
-            console.log('🔄 [CALENDAR DEBUG] Force rechargement créneaux disponibles');
+            //console.log('🔄 [CALENDAR DEBUG] Force rechargement créneaux disponibles');
             window.dispatchEvent(new CustomEvent('forceReloadSlots'));
           }, 100);
         }
@@ -396,7 +396,7 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     };
 
     const handleForceReload = () => {
-      console.log('🔄 [CALENDAR DEBUG] Force reload depuis programmation entretien');
+      //console.log('🔄 [CALENDAR DEBUG] Force reload depuis programmation entretien');
       if (isOpen) {
         loadInterviews();
       }

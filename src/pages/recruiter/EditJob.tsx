@@ -68,16 +68,16 @@ export default function EditJob() {
 
   // Debug: Logger l'état du formulaire à chaque changement
   useEffect(() => {
-    console.log('[EditJob DEBUG] FormData state updated:', formData);
+    // console.log('[EditJob DEBUG] FormData state updated:', formData);
   }, [formData]);
 
   useEffect(() => {
     if (jobOffer) {
-      console.log('[EditJob DEBUG] JobOffer data received:', jobOffer);
-      console.log('[EditJob DEBUG] responsibilities type:', typeof jobOffer.responsibilities, jobOffer.responsibilities);
-      console.log('[EditJob DEBUG] requirements type:', typeof jobOffer.requirements, jobOffer.requirements);
-      console.log('[EditJob DEBUG] description:', jobOffer.description);
-      console.log('[EditJob DEBUG] profile:', jobOffer.profile);
+      // console.log('[EditJob DEBUG] JobOffer data received:', jobOffer);
+      // console.log('[EditJob DEBUG] responsibilities type:', typeof jobOffer.responsibilities, jobOffer.responsibilities);
+      // console.log('[EditJob DEBUG] requirements type:', typeof jobOffer.requirements, jobOffer.requirements);
+      // console.log('[EditJob DEBUG] description:', jobOffer.description);
+      // console.log('[EditJob DEBUG] profile:', jobOffer.profile);
       
       // Prioriser le contenu HTML existant (description/profile) même s'il est vide
       const responsibilitiesContent = jobOffer.description && jobOffer.description.trim() !== ""
@@ -92,8 +92,8 @@ export default function EditJob() {
           ? `<ul>${jobOffer.requirements.map(item => `<li>${item}</li>`).join('')}</ul>` 
           : (jobOffer.requirements || "");
       
-      console.log('[EditJob DEBUG] Final responsibilities content:', responsibilitiesContent);
-      console.log('[EditJob DEBUG] Final requirements content:', requirementsContent);
+      // console.log('[EditJob DEBUG] Final responsibilities content:', responsibilitiesContent);
+      // console.log('[EditJob DEBUG] Final requirements content:', requirementsContent);
       
       setFormData({
         title: jobOffer.title || "",

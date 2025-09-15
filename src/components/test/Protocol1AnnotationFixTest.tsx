@@ -24,7 +24,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
   const handleStarClick = (starValue: number) => {
     if (disabled) return;
     
-    console.log('⭐ [TEST DEBUG] Clic sur étoile:', starValue, 'pour', label);
+    // console.log('⭐ [TEST DEBUG] Clic sur étoile:', starValue, 'pour', label);
     onChange(starValue);
   };
 
@@ -106,7 +106,7 @@ export function Protocol1AnnotationFixTest() {
   }, [evaluationData]);
 
   const updateField = (field: keyof TestData, subField: 'score' | 'comments', value: number | string) => {
-    console.log('🔄 [TEST DEBUG] Mise à jour:', { field, subField, value });
+    // console.log('🔄 [TEST DEBUG] Mise à jour:', { field, subField, value });
     
     const newTestData = {
       ...testData,
@@ -149,7 +149,7 @@ export function Protocol1AnnotationFixTest() {
     try {
       await reload();
       setLastSaved(new Date());
-      console.log('✅ [TEST DEBUG] Données rechargées');
+      // console.log('✅ [TEST DEBUG] Données rechargées');
     } catch (error) {
       console.error('❌ [TEST DEBUG] Erreur de rechargement:', error);
     }

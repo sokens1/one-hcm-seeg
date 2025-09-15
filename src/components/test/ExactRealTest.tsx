@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
             key={star}
             type="button"
             onClick={() => {
-              console.log('⭐ [EXACT REAL TEST] Clic sur étoile:', star, 'disabled:', disabled);
+              //⭐ [EXACT REAL TEST] Clic sur étoile:', star, 'disabled:', disabled);
               !disabled && onChange(star);
             }}
             className="transition-colors hover:scale-110"
@@ -60,9 +61,9 @@ export function ExactRealTest() {
 
   // Fonction exacte du composant d'évaluation original
   const updateProtocol1 = (section: string, field: string, value: any) => {
-    console.log('🔄 [EXACT REAL TEST] updateProtocol1 appelé:', { section, field, value });
+    //🔄 [EXACT REAL TEST] updateProtocol1 appelé:', { section, field, value });
     updateEvaluation(prev => {
-      console.log('🔄 [EXACT REAL TEST] Données précédentes:', prev);
+      //🔄 [EXACT REAL TEST] Données précédentes:', prev);
       const newData = { ...prev };
       const newProtocol1 = { ...newData.protocol1 };
       
@@ -110,14 +111,14 @@ export function ExactRealTest() {
       }
       
       newData.protocol1 = newProtocol1;
-      console.log('🔄 [EXACT REAL TEST] Nouvelles données:', newData);
+      //🔄 [EXACT REAL TEST] Nouvelles données:', newData);
       return newData;
     });
   };
 
   const handleLoadData = () => {
     if (applicationId.trim()) {
-      console.log('🔄 [EXACT REAL TEST] Chargement des données pour:', applicationId);
+      //🔄 [EXACT REAL TEST] Chargement des données pour:', applicationId);
       setCurrentAppId(applicationId.trim());
     }
   };
@@ -190,7 +191,7 @@ export function ExactRealTest() {
                         placeholder="Commentaires métier..."
                         value={evaluationData.protocol1.mtpAdherence.metier.comments}
                         onChange={(e) => {
-                          console.log('📝 [EXACT REAL TEST] Changement commentaire métier:', e.target.value);
+                          //📝 [EXACT REAL TEST] Changement commentaire métier:', e.target.value);
                           updateProtocol1('mtpAdherence', 'metier.comments', e.target.value);
                         }}
                         className="min-h-[60px]"
@@ -207,7 +208,7 @@ export function ExactRealTest() {
                         placeholder="Commentaires talent..."
                         value={evaluationData.protocol1.mtpAdherence.talent.comments}
                         onChange={(e) => {
-                          console.log('📝 [EXACT REAL TEST] Changement commentaire talent:', e.target.value);
+                          //📝 [EXACT REAL TEST] Changement commentaire talent:', e.target.value);
                           updateProtocol1('mtpAdherence', 'talent.comments', e.target.value);
                         }}
                         className="min-h-[60px]"
@@ -224,7 +225,7 @@ export function ExactRealTest() {
                         placeholder="Commentaires paradigme..."
                         value={evaluationData.protocol1.mtpAdherence.paradigme.comments}
                         onChange={(e) => {
-                          console.log('📝 [EXACT REAL TEST] Changement commentaire paradigme:', e.target.value);
+                          //📝 [EXACT REAL TEST] Changement commentaire paradigme:', e.target.value);
                           updateProtocol1('mtpAdherence', 'paradigme.comments', e.target.value);
                         }}
                         className="min-h-[60px]"
