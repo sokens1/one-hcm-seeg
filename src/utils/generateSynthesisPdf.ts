@@ -616,7 +616,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.setTextColor(22, 163, 74);
-  doc.text('✓ Points Forts', margin + 10, yPos + 12);
+  doc.text('Points Forts', margin + 10, yPos + 12);
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
@@ -641,7 +641,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.setTextColor(234, 88, 12);
-  doc.text('⚠ Points d\'Amélioration', margin + 10, yPos + 12);
+  doc.text('Points d\'Amélioration', margin + 10, yPos + 12);
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
@@ -666,7 +666,7 @@ export const generateSynthesisPdf = (data: SynthesisData) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.setTextColor(30, 64, 175);
-  doc.text('📋 Conclusion', margin + 10, yPos + 12);
+  doc.text('Conclusion', margin + 10, yPos + 12);
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
