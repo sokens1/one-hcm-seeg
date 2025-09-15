@@ -1,86 +1,90 @@
 {
-    "Directeur Qualité, Hygiène, Sécurité & Environnement": {
-      "Wivine Mengue": {
-        "prenom": "Wivine",
-        "nom": "Mengue",
+  "Directeur Qualité, Hygiène, Sécurité & Environnement": {
+    "candidats": {
+      "Aude Murielle Akoe Mba": {
+        "prenom": "Aude",
+        "nom": "Murielle Akoe Mba",
         "conformite": {
-          "prenom": "Wivine",
-          "nom": "MENGUE",
+          "prenom": "Aude",
+          "nom": "Murielle AKOE MBA",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
-          "nom": "MENGUE",
-          "prenom": "Wivine",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
+          "nom": "AKOE MBA",
+          "prenom": "Aude",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "scores": {
-            "Metier": 39,
-            "Talent": 0,
-            "Paradigme": 46
+            "Metier": 0.43,
+            "Talent": 0.35,
+            "Paradigme": 0.56
           },
-          "Score_moyen": 28.33,
-          "niveau": "Le score moyen de 28.33 indique une forte inadéquation avec les exigences de la vision de l'entreprise. Cela suggère que le candidat n'est pas en alignement avec les besoins stratégiques et opérationnels de la SEEG.",
-          "verdict": "défavorables",
-          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui est très en deçà des attentes du poste.",
+          "Score_moyen": 44.67,
+          "niveau": "Le score moyen de 44.67 indique une tendance qui pourrait être améliorée pour mieux répondre à la vision de l'entreprise. Ce score révèle des insuffisances dans certaines compétences clés requises pour le poste visé.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen indique que le candidat doit renforcer certaines compétences pour mieux s'aligner avec la vision de l'entreprise.",
           "points_forts": [
-            "Capacité à identifier des infrastructures vieillissantes nécessitant une modernisation.",
-            "Compréhension des enjeux de gouvernance et de transparence dans la gestion.",
-            "Volonté de développer des partenariats techniques pour améliorer la qualité de service."
+            "Connaissance du cadre réglementaire en matière de qualité, hygiène, sécurité et environnement.",
+            "Capacité à identifier des enjeux stratégiques en matière de gouvernance et de transparence.",
+            "Compréhension des attentes des parties prenantes et de l'importance de leur implication."
           ],
           "points_a_travailler": [
-            "Renforcer les compétences en management et leadership pour diriger efficacement.",
-            "Développer des talents techniques spécifiques pour l'implémentation de nouvelles technologies.",
-            "Améliorer les capacités de communication et d'engagement avec les parties prenantes pour favoriser la collaboration."
+            "Développer des compétences en gestion des talents pour optimiser l'implication et la motivation des employés.",
+            "Améliorer la capacité à innover, notamment en intégrant des solutions technologiques modernes.",
+            "Renforcer les compétences techniques liées à la modernisation et à la réhabilitation des infrastructures."
           ],
-          "rang": 11
+          "rang": 2
         },
         "completude": {
-          "nom": "MENGUE",
-          "prenom": "Wivine",
+          "nom": "AKOE MBA",
+          "prenom": "Aude Murielle",
           "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 30.4,
-          "resume_experience": "13 ans dans la production, transport et distribution de l’électricité, la planification et normalisation, le contrôle-commande, la gestion QHSE",
-          "verdict": "défavorable",
-          "raison": "Le score de similarité est en dessous du seuil favorable et n'atteint même pas le niveau moyen, ce qui indique que les compétences ou expériences spécifiques au rôle visé ne correspondent pas assez aux exigences du poste.",
+          "score": 40.4,
+          "resume_experience": "14 ans d'expérience dans le domaine de la qualité, principalement dans la gestion de la qualité de l'eau.",
+          "verdict": "favorable",
+          "raison": "Aude Murielle a une solide expérience en gestion de la qualité et une connaissance approfondie des normes ISO, ce qui est crucial pour le poste de Directeur QHSE.",
           "points_forts": [
-            "Solide expérience en gestion de projets stratégiques",
-            "Compétence en élaboration et suivi des politiques QHSE",
-            "Expérience en mise en œuvre des systèmes de management énergétique et sécurité"
+            "Expérience extensive dans la gestion de la qualité",
+            "Connaissance des normes ISO, notamment ISO 9001 et ISO 17025",
+            "Expertise dans le domaine de la qualité de l'eau et la conformité réglementaire"
           ],
           "points_a_travailler": [
-            "Renforcer l'expertise spécifique dans la mise en conformité avec les normes ISO 9001, ISO 14001, ISO 45001",
-            "Développer des compétences en gestion des relations avec les organismes de contrôle et les autorités",
-            "Améliorer la capacité à piloter des enquêtes en cas d'incidents, d'accidents ou de non-conformités"
+            "Approfondir la gestion liée spécifiquement aux normes environnementales telles que ISO 14001",
+            "Renforcer les compétences en gestion de la sécurité (ISO 45001)",
+            "Élargir l'expérience en gestion des relations avec les organismes de contrôle et les parties prenantes externes"
           ],
-          "rang": 9
+          "rang": 7
         },
         "feedback": {
-          "prenom": "Wivine",
-          "nom": "MENGUE",
-          "score": 68.4,
+          "prenom": "Aude",
+          "nom": "MURIELLE AKOE MBA",
+          "score": 76.5,
           "verdict": "Favorable",
-          "raisons": "Le candidat possède de bonnes compétences managériales et un comportement satisfaisant. Cependant, un développement de son leadership est nécessaire pour répondre aux enjeux stratégiques de l'entreprise.",
+          "raisons": "Le candidat montre un bon leadership et une capacité à fédérer les équipes, ce qui est essentiel pour réussir dans un contexte de réorganisation et de modernisation. Son respect et sa capacité de dialogue avec les collègues sont des atouts pour renforcer la gouvernance et l'implication des parties prenantes. Cependant, il doit se concentrer sur le développement d'une vision stratégique plus claire pour s'aligner complètement avec les ambitions de la SEEG.",
           "Points forces": [
-            "Bon comportement managérial",
-            "Potentiel de développement"
+            "Bon leadership et apprécié des équipes",
+            "Capacité de fédération et respectueux des collègues"
           ],
           "Points à travailler": [
-            "Affirmation de son leadership",
-            "Expérience dans le secteur électrique"
+            "Développer une vision stratégique claire adaptée aux défis de la SEEG",
+            "Acquérir plus d'expérience en gestion de projets complexes"
           ],
-          "rang": 3
+          "rang": 1
         },
         "global": {
-          "score_global": 52.36,
-          "verdict": "moyen",
-          "resume": "Wivine Mengue démontre de solides compétences managériales et possède un potentiel de développement important. Malgré un score global moyen, le feedback RH est favorable, mettant en avant la nécessité de renforcer son leadership et son expérience dans le secteur électrique pour aligner ses compétences avec les enjeux stratégiques de la SEEG.",
+          "score_global": 62.5,
+          "verdict": "favorable",
+          "raison_verdict": "La capacité de leadership et de fédération du candidat, alliée à son respect et à sa collaboration avec les collègues, sont des atouts précieux pour renforcer la gouvernance et impliquer les parties prenantes, essentiels dans le contexte de transformation de la SEEG.",
+          "resume": "Aude Murielle Akoe Mba est un candidat avec un bon potentiel de leadership et une capacité à fédérer qui s'aligne bien avec les besoins de réorganisation de la SEEG. Cependant, elle doit développer une vision stratégique claire pour relever les défis complexes de l'entreprise.",
           "points_forts": [
-            "Bon comportement managérial",
-            "Potentiel de développement"
+            "Bon leadership",
+            "Capacité de fédération",
+            "Respectueux des collègues"
           ],
           "points_a_ameliorer": [
-            "Affirmation de son leadership",
-            "Expérience dans le secteur électrique"
+            "Développer une vision stratégique claire adaptée aux défis de la SEEG",
+            "Acquérir plus d'expérience en gestion de projets complexes"
           ],
           "rang": 1
         }
@@ -91,290 +95,85 @@
         "conformite": {
           "prenom": "Ian",
           "nom": "Yelnick NDJONGUE TANDA",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
-        "completude": {
-          "nom": "Yelnick NDJONGUE TANDA",
+        "mtp": {
+          "nom": "NDJONGUE TANDA",
           "prenom": "Ian",
           "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 47.1,
-          "resume_experience": "Plus de 15 ans d'expérience dans les secteurs de l'eau, de l'énergie et des infrastructures, spécialisé en management QHSE et développement durable.",
-          "verdict": "favorable, L'expérience solide et diversifiée de Ian Yelnick NDJONGUE TANDA dans les secteurs pertinents du poste visé, ainsi que ses compétences certifiées en normes ISO, en font un candidat très adéquat pour le rôle.",
+          "scores": {
+            "Metier": 0.43,
+            "Talent": 0.39,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 44.33,
+          "niveau": "Le candidat présente un niveau moyen d'alignement avec la vision de l'entreprise. Bien qu'il ait des compétences dans certains domaines, il n'atteint pas les critères favorables de l'entreprise.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 44.33 se situe dans la catégorie défavorable, indiquant un manque d'alignement avec les besoins stratégiques de la SEEG.",
           "points_forts": [
-            "Solide expérience professionnelle en management intégré QHSE (ISO 9001, 14001, 45001).",
-            "Capacité avérée à réduire les incidents HSE et à instaurer une culture de prévention.",
-            "Excellente aptitude à coordonner avec des partenaires internationaux et à assurer la conformité réglementaire."
+            "Compétences en gestion de la qualité qui pourront être cruciales pour la mise en œuvre de nouvelles normes.",
+            "Expérience en hygiène et sécurité, essentielle dans une organisation axée sur la réhabilitation d'infrastructures.",
+            "Capacité à travailler dans des environnements à haute pression, ce qui est important pour transformer la SEEG."
           ],
           "points_a_travailler": [
-            "Amélioration de la maîtrise de l'anglais pour faciliter la communication internationale.",
-            "Renforcement des compétences en gestion de projet pour coordonner efficacement de grands projets multi-sites.",
-            "Développement des capacités d'innovation pour anticiper les défis futurs du secteur."
+            "Renforcer les compétences en gestion financière afin de contribuer au plan de réduction des coûts.",
+            "Améliorer la compréhension des technologies renouvelables, cruciales pour l'innovation et la transition énergétique.",
+            "Développer des compétences en leadership et en gouvernance pour mieux gérer les équipes dans un environnement en transformation."
+          ],
+          "rang": 3
+        },
+        "completude": {
+          "nom": "NDJONGUE TANDA",
+          "prenom": "Ian Yelnick",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "score": 48.4,
+          "resume_experience": "16 années d'expérience en management QHSE dans le secteur de l'eau et de l'assainissement",
+          "verdict": "favorable",
+          "raison_verdict": "Le candidat possède une solide expérience dans le management QHSE, notamment dans le secteur de l'eau et de l'assainissement, avec des compétences démontrées en gestion des normes ISO et en leadership QHSE.",
+          "points_forts": [
+            "Expérience conséquente en management QHSE",
+            "Certifié aux normes ISO 9001, 14001, 45001",
+            "Leadership et capacité à instaurer une culture QHSE forte"
+          ],
+          "points_a_travailler": [
+            "Améliorer la fluidité en Anglais pour renforcer les interactions internationales",
+            "Explorer davantage les technologies émergentes en QHSE",
+            "Rehausser la visibilité des réalisations spécifiques à des projets récents"
           ],
           "rang": 2
         },
         "feedback": {
           "prenom": "Ian",
           "nom": "YELNICK NDJONGUE TANDA",
-          "score": 72.5,
+          "score": 68.3,
           "verdict": "Favorable",
-          "raisons": "Le candidat présente des compétences managériales confirmées et un engagement à améliorer les performances, adaptés à la vision de la SEEG. Son expérience en rigueur et en leadership est un atout clé. Son évaluation positive indique un bon potentiel de contribution au sein de l'entreprise.",
+          "raisons": "Le candidat possède une expérience de management et de leadership, ce qui est essentiel pour le poste. Son apport en termes de rigueur et de perspective est en adéquation avec la vision de transformation de la SEEG. Cependant, des points d'amélioration sont identifiés.",
           "Points forces": [
-            "Compétences en management et leadership avérées",
-            "Capacité à apporter des changements positifs dans son domaine"
+            "Expérience confirmée en management",
+            "Capacité à apporter une rigueur nécessaire"
           ],
           "Points à travailler": [
-            "Compréhension approfondie des enjeux techniques spécifiques du secteur",
-            "Développement de compétences en gestion de crises et de projets complexes"
+            "Compréhension approfondie des enjeux spécifiques de la SEEG",
+            "Capacité à gérer les crises et à rétablir la confiance avec l'État et les parties prenantes"
           ],
-          "rang": 1
+          "rang": 3
         },
         "global": {
-          "score_global": 50.67,
-          "verdict": "moyen",
-          "resume": "Ian Yelnick Ndjongue Tanda dispose de compétences managériales et de leadership solides, ce qui est cohérent avec la vision transformatrice de la SEEG. Son engagement à améliorer les performances est un atout, bien que des développements soient nécessaires dans la gestion de crises et de la compréhension technique du secteur.",
-          "points_forts": [
-            "Compétences en management et leadership avérées",
-            "Capacité à apporter des changements positifs dans son domaine"
-          ],
-          "points_a_ameliorer": [
-            "Compréhension approfondie des enjeux techniques spécifiques du secteur",
-            "Développement de compétences en gestion de crises et de projets complexes"
-          ],
-          "rang": 2
-        }
-      },
-      "Edwige Dilebou": {
-        "prenom": "Edwige",
-        "nom": "Dilebou",
-        "conformite": {
-          "prenom": "Edwige",
-          "nom": " DILEBOU",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "DILEBOU",
-          "prenom": "Edwige",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Metier": 0.4,
-            "Talent": 0.0,
-            "Paradigme": 0.5
-          },
-          "Score_moyen": 30.0,
-          "niveau": "Le candidat présente un score moyen en dessous des exigences de l'entreprise, ce qui indique une inadéquation avec la vision stratégique de la SEEG. Cela souligne un besoin critique d'amélioration dans ses compétences et expériences pertinentes pour le poste visé.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 30.0 est clairement inférieur à 43.5, ce qui atteste d'une absence de correspondance avec la vision de l'entreprise.",
-          "points_forts": [
-            "Compréhension des enjeux environnementaux et des pratiques durables.",
-            "Capacité à reformuler des stratégies en tenant en compte des défis passés.",
-            "Motivation pour apporter des changements nécessaires dans des systèmes vieillissants."
-          ],
-          "points_a_travailler": [
-            "Développer des compétences techniques spécifiques au secteur de l'hygiène et de la sécurité.",
-            "Renforcer sa capacité à travailler en équipe et à diriger des projets complexes.",
-            "Améliorer ses compétences de communication pour engager les parties prenantes efficacement."
-          ],
-          "rang": 8
-        },
-        "completude": {
-          "nom": "DILEBOU",
-          "prenom": "Edwige",
-          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 45.8,
-          "resume_experience": "19 ans dans le domaine de la Sécurité Environnement",
+          "score_global": 59.91,
           "verdict": "favorable",
+          "raison_verdict": "Le candidat est favorable car il possède l'expérience de management requise et les compétences pour mettre en œuvre la transformation nécessaire à la SEEG, malgré quelques points à travailler concernant les enjeux spécifiques de l'entreprise.",
+          "resume": "Ian Yelnick Ndjongue Tanda est un candidat avec une solide expérience en management et leadership, alignée sur la vision de transformation de la SEEG. Même si son score de conformité et son retour RH sont positifs, il reste des améliorations sur la compréhension des enjeux spécifiques de la SEEG et la gestion des crises.",
           "points_forts": [
-            "Grande expérience en QHSE avec plus de 19 ans dans le domaine",
-            "Mise en place de systèmes de management environnemental selon ISO 14001",
-            "Compétences solides en gestion et animation d'équipe"
-          ],
-          "points_a_travailler": [
-            "Renforcement des compétences en audits selon les autres normes ISO spécifiques",
-            "Augmenter l'expérience en gestion des relations externes avec les organismes de contrôle",
-            "Optimiser la prise en charge des technologies émergentes en QHSE"
-          ],
-          "rang": 3
-        },
-        "feedback": {
-          "prenom": "Edwige",
-          "nom": "DILEBOU",
-          "score": 53.5,
-          "verdict": "Moyen",
-          "raisons": "Le candidat présente des qualités pondérées et calmes mais manque de leadership et ne semble pas adapté à un environnement transformateur requérant une vision pro-active et stratégique.",
-          "Points forces": [
-            "Calme et pondéré dans ses analyses",
-            "Capacité à maintenir une ambiance de travail satisfaisante"
-          ],
-          "Points à travailler": [
-            "Développer des compétences en leadership et en transformation organisationnelle",
-            "S'adapter à des environnements dynamiques et en mutation"
-          ],
-          "rang": 4
-        },
-        "global": {
-          "score_global": 48.41,
-          "verdict": "moyen",
-          "resume": "Edwige présente des qualités d'analyse calmes et pondérées, pouvant maintenir une ambiance de travail satisfaisante. Toutefois, le candidat manque de leadership et ne semble pas prêt à s'adapter à un environnement transformateur qui demande une vision proactive et stratégique.",
-          "points_forts": [
-            "Calme et pondéré dans ses analyses",
-            "Capacité à maintenir une ambiance de travail satisfaisante"
+            "Expérience confirmée en management",
+            "Capacité à apporter une rigueur nécessaire"
           ],
           "points_a_ameliorer": [
-            "Développer des compétences en leadership et en transformation organisationnelle",
-            "S'adapter à des environnements dynamiques et en mutation"
-          ],
-          "rang": 3
-        }
-      },
-      "Aude Murielle Akoe Mba": {
-        "prenom": "Aude",
-        "nom": "Murielle Akoe Mba",
-        "conformite": {
-          "prenom": "Aude",
-          "nom": "Murielle AKOE MBA",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {
-          "nom": "AKOE MBA",
-          "prenom": "Aude Murielle",
-          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 32.0,
-          "resume_experience": "Près de 20 années d'expérience dans le domaine de l'eau, biochimie et normalisation",
-          "verdict": "défavorable",
-          "points_forts": [
-            "Solide expérience en gestion de la qualité de l'eau",
-            "Bonne connaissance des normes ISO 9001 et ISO 17025",
-            "Capacité à gérer des équipes multisites et projets d'infrastructure"
-          ],
-          "points_a_travailler": [
-            "Manque d'expérience directe en gestion de la sécurité et de l'environnement",
-            "Peu de mention des certifications QHSE spécifiques requises pour le poste",
-            "Accent principalement sur les problématiques techniques de l'eau"
-          ],
-          "rang": 8
-        },
-        "feedback": {
-          "prenom": "Aude",
-          "nom": "MURIELLE AKOE MBA",
-          "score": 68.75,
-          "verdict": "Favorable",
-          "raisons": "Candidat démontre un bon leadership et une capacité à fédérer ses équipes, qualités essentielles pour le poste, tout en s'inscrivant dans la vision de réorganisation et de gouvernance renforcée.",
-          "Points forces": [
-            "Bon leadership",
-            "Respectueux et fédérateur"
-          ],
-          "Points à travailler": [
-            "Perspective stratégique à long terme",
-            "Expérience dans la gestion de projets d'infrastructure"
+            "Compréhension approfondie des enjeux spécifiques de la SEEG",
+            "Capacité à gérer les crises et à rétablir la confiance avec l'État et les parties prenantes"
           ],
           "rang": 2
-        },
-        "global": {
-          "score_global": 45.77,
-          "verdict": "moyen",
-          "resume": "Aude Murielle Akoe Mba est un candidat qui présente des compétences en leadership et a démontré sa capacité à fédérer ses équipes, deux qualités essentielles pour le poste de Directeur QHSE. Ses compétences s'alignent avec la vision de l'entreprise pour une réorganisation et une gouvernance renforcée, bien qu'elle puisse améliorer sa perspective stratégique à long terme et son expérience dans la gestion de projets d'infrastructure.",
-          "points_forts": [
-            "Bon leadership",
-            "Respectueux",
-            "Fédérateur"
-          ],
-          "points_a_ameliorer": [
-            "Perspective stratégique à long terme",
-            "Expérience dans la gestion de projets d'infrastructure"
-          ],
-          "rang": 4
-        }
-      },
-      "Rosy Blondel Madoungou Nziengui": {
-        "prenom": "Rosy",
-        "nom": "Blondel Madoungou Nziengui",
-        "conformite": {
-          "prenom": "Rosy",
-          "nom": "Blondel  MADOUNGOU NZIENGUI",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {
-          "nom": "Blondel MADOUNGOU NZIENGUI",
-          "prenom": "Rosy",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Metier": 0.41,
-            "Talent": 0.0,
-            "Paradigme": 0.52
-          },
-          "Score_moyen": 31.0,
-          "niveau": "Le score moyen de 31.0 indique un niveau très en dessous des attentes de l'entreprise. Cela soulève des inquiétudes quant à l'apport du candidat dans la réalisation de la vision stratégique de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui suggère un manque de compétences alignées avec les priorités stratégiques définies.",
-          "points_forts": [
-            "Compréhension des enjeux liés à la modernisation des infrastructures.",
-            "Connaissance des pratiques de gestion et de contrôle de qualité.",
-            "Capacité d'intégration des approches novatrices dans le cadre de la sécurité environnementale."
-          ],
-          "points_a_travailler": [
-            "Développer des compétences managériales pour impulser la transformation organisationnelle.",
-            "Renforcer les capacités analytiques pour mieux s'aligner avec les attentes de performance.",
-            "Acquérir des compétences en gestion des ressources humaines pour une meilleure mobilisation et motivation des employés."
-          ],
-          "rang": 6
-        },
-        "completude": {
-          "nom": "MADOUNGOU NZIENGUI",
-          "prenom": "Rosy Blondel",
-          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 49.8,
-          "resume_experience": "Nombre d'années: 10, Spécialité: Santé et Sécurité au Travail",
-          "verdict": {
-            "jugement": "favorable",
-            "raison": "Le candidat possède une solide expérience en Santé et Sécurité au Travail, ainsi qu'une bonne compréhension des pratiques et réglementations liées à la qualité, à la santé, à la sécurité et à l'environnement. Ce profil s'aligne bien avec les exigences du poste visé."
-          },
-          "points_forts": [
-            "Expérience significative dans la gestion de la santé et de la sécurité au travail.",
-            "Capacité à développer et implémenter des stratégies de prévention des risques.",
-            "Bonne maîtrise des réglementations nationales et internationales en matière de QHSE."
-          ],
-          "points_a_travailler": [
-            "Renforcement des compétences en gestion environnementale globale.",
-            "Approfondissement des connaissances spécifiques aux normes ISO 9001, 14001, et 45001.",
-            "Amélioration de l'intégration des pratiques QHSE dans les opérations quotidiennes de l'entreprise."
-          ],
-          "rang": 1
-        },
-        "feedback": {
-          "prenom": "Rosy",
-          "nom": "BLONDEL MADOUNGOU NZIENGUI",
-          "score": 42.7,
-          "verdict": "Défavorable",
-          "raisons": "Le candidat manque de compétences managériales et de leadership nécessaires pour diriger un département aussi crucial que la qualité, l'hygiène, la sécurité et l'environnement, d'après le retour d'expérience. Son rôle actuel en tant que médecin du travail ne prouve pas une capacité à gérer des enjeux stratégiques complexes de la SEEG.",
-          "Points forces": [
-            "Bon comportement",
-            "Connaissance des enjeux de santé au travail"
-          ],
-          "Points à travailler": [
-            "Manque d'expérience managériale",
-            "Absence de leadership"
-          ],
-          "rang": 8
-        },
-        "global": {
-          "score_global": 44.06,
-          "verdict": "défavorable",
-          "resume": "Rosy Blondel Madoungou Nziengui possède un bon comportement et une connaissance des enjeux de santé au travail, mais manque des compétences managériales et de leadership nécessaires pour diriger le département clé de la qualité, de l'hygiène, de la sécurité et de l'environnement à la SEEG. Son expérience actuelle en tant que médecin du travail ne démontre pas une capacité à gérer les défis stratégiques complexes de l'entreprise.",
-          "points_forts": [
-            "Bon comportement",
-            "Connaissance des enjeux de santé au travail"
-          ],
-          "points_a_ameliorer": [
-            "Manque d'expérience managériale",
-            "Absence de leadership"
-          ],
-          "rang": 5
         }
       },
       "Yves Davy Ndimina Mokaghat": {
@@ -383,55 +182,240 @@
         "conformite": {
           "prenom": "Yves",
           "nom": "Davy NDIMINA MOKAGHAT",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
+        "mtp": {
+          "nom": "NDIMINA MOKAGHAT",
+          "prenom": "Yves",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "scores": {
+            "Metier": 0.41,
+            "Talent": 0.36,
+            "Paradigme": 0.54
+          },
+          "Score_moyen": 43.67,
+          "niveau": "Le score moyen de 43.67 est légèrement en-deçà de la moyenne souhaitée, ce qui laisse à penser que le candidat pourrait avoir des difficultés à s'aligner parfaitement avec la vision de l'entreprise. Toutefois, certains éléments de son profil laissent entrevoir un potentiel positif.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen est insuffisant pour garantir une adéquation parfaite avec la vision d'entreprise, cependant, certaines compétences peuvent être développées.",
+          "points_forts": [
+            "Compétences en gestion des ressources, ce qui est crucial pour l'amélioration des infrastructures selon la vision stratégique.",
+            "Capacité à encourager l'implication des parties prenantes, essentielle pour renforcer la gouvernance et la transparence.",
+            "Compréhension des enjeux de la transition énergétique, en lien direct avec la vision d'innovation et d'efficacité énergétique."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences techniques liées à la gestion des infrastructures pour pallier les problèmes de vétusté.",
+            "Améliorer la conformité aux procédures internes, élément clé pour une organisation structurée et efficace.",
+            "Développer des compétences en communication pour favoriser un dialogue constructif entre les différentes parties prenantes."
+          ],
+          "rang": 6
+        },
         "completude": {
           "nom": "NDIMINA MOKAGHAT",
           "prenom": "Yves Davy",
           "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 21.0,
-          "resume_experience": "nan",
-          "verdict": "défavorable",
-          "points_forts": [],
-          "points_a_travailler": [
-            "Absence d'informations claires sur le CV pour évaluer l'expérience et les compétences.",
-            "Score de similarité très faible par rapport aux exigences du poste.",
-            "Aucune information sur les expériences antérieures en lien avec le domaine QHSE."
+          "score": 44.8,
+          "resume_experience": "18 ans d’expérience en sécurité et environnement",
+          "verdict": "favorable",
+          "points_forts": [
+            "Solide expérience en gestion des risques et sécurité environnementale",
+            "Compétences en management d’équipes et pilotage de projets",
+            "Expertise en conformité réglementaire et audits QHSE"
           ],
-          "rang": 10
+          "points_a_travailler": [
+            "Renforcer l’expérience spécifique en mise en œuvre de normes ISO",
+            "Approfondir les méthodes de management intégré QHSE",
+            "Optimiser les compétences en reporting pour la direction"
+          ],
+          "rang": 4
         },
         "feedback": {
           "prenom": "Yves",
           "nom": "DAVY NDIMINA MOKAGHAT",
-          "score": 52.3,
-          "verdict": "Moyen",
-          "raisons": "Bien que le candidat possède un bon comportement, son manque de poigne et d'affirmation à son poste pourraient poser problème dans un contexte de réorganisation et de gouvernance renforcée, comme l'exige la vision de la SEEG.",
+          "score": 58.3,
+          "verdict": "Favorable",
+          "raisons": "Le candidat a des compétences techniques pertinentes et témoigne d'une compréhension des enjeux de qualité, d'hygiène, de sécurité et d'environnement. Cependant, son feedback indique un manque d'affirmation dans son rôle, ce qui peut poser problème dans un environnement exigeant comme celui de la SEEG.",
           "Points forces": [
-            "Compétences en gestion des ressources humaines.",
-            "Comportement satisfaisant et attitude positive."
+            "Connaissance des normes de qualité et des exigences réglementaires",
+            "Sensibilité aux enjeux de gouvernance renforcée et de transparence"
           ],
           "Points à travailler": [
-            "Affirmation de soi et leadership.",
-            "Capacité à travailler efficacement sous pression et dans un environnement complexe."
+            "Développer des compétences en leadership et assertivité",
+            "Améliorer la prise de décision rapide face aux situations critiques"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 54.03,
+          "verdict": "moyen",
+          "raison_verdict": "Bien que le candidat ait des compétences techniques solides, son manque d'affirmation et de rapidité dans la prise de décision le rend moyen par rapport aux standards élevés nécessaires pour transformer la SEEG selon sa nouvelle vision stratégique.",
+          "resume": "Yves Davy Ndimina Mokaghat possède des compétences techniques pertinentes et une bonne connaissance des normes de qualité et des exigences réglementaires. Cependant, son manque d'affirmation en leadership dans un environnement aussi exigeant que la SEEG pourrait limiter son efficacité.",
+          "points_forts": [
+            "Connaissance des normes de qualité",
+            "Compréhension des enjeux de gouvernance renforcée",
+            "Sensibilité aux exigences réglementaires"
+          ],
+          "points_a_ameliorer": [
+            "Développer des compétences en leadership et assertivité",
+            "Améliorer la prise de décision rapide face aux situations critiques"
+          ],
+          "rang": 3
+        }
+      },
+      "Wivine Mengue": {
+        "prenom": "Wivine",
+        "nom": "Mengue",
+        "conformite": {
+          "prenom": "Wivine",
+          "nom": "MENGUE",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MENGUE",
+          "prenom": "Wivine",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "scores": {
+            "Métier": 0.39,
+            "Talent": 0.41,
+            "Paradigme": 0.47
+          },
+          "Score_moyen": 42.33,
+          "niveau": "Le candidat n'atteint pas le score souhaité pour correspondre à la vision de l'entreprise. Il faudra envisager des formations et un encadrement adaptés pour l'aider à développer ses compétences clés.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen de 42.33 est inférieur au seuil critique, indiquant une inadéquation avec les exigences de la vision de l'entreprise.",
+          "points_forts": [
+            "Compréhension des enjeux réglementaires en matière de qualité et de sécurité.",
+            "Capacité à identifier les lacunes dans les pratiques actuelles de l'entreprise.",
+            "Expérience potentielle en gestion des ressources humaines."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences techniques liées aux infrastructures et aux normes de qualité.",
+            "Renforcer la capacité à élaborer et mettre en œuvre des plans de modernisation et d'investissement.",
+            "Développer des compétences en gouvernance et transparence pour répondre aux attentes de l'État et des parties prenantes."
+          ],
+          "rang": 10
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Wivine",
+          "nom": "MENGUE",
+          "score": 68.75,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente un bon comportement et a un potentiel prometteur, bien qu'il doive encore affirmer son leadership. Son expérience et son appréciation par ses pairs suggèrent qu'il pourrait s'intégrer dans la vision de transformation de la SEEG.",
+          "Points forces": [
+            "Bon comportement avéré en management",
+            "Potentiel de développement dans un nouveau rôle"
+          ],
+          "Points à travailler": [
+            "Affirmer son leadership",
+            "Gagner en expérience dans le secteur de l'électricité"
+          ],
+          "rang": 2
+        },
+        "global": {
+          "score_global": 49.96,
+          "verdict": "moyen",
+          "raison_verdict": "Bien que le candidat présente un potentiel prometteur et soit apprécié par ses pairs, des améliorations sont nécessaires en leadership et expérience sectorielle pour pleinement correspondre aux ambitions stratégiques de la SEEG.",
+          "resume": "Wivine Mengue possède un bon potentiel managérial et pourrait s'intégrer dans la vision de transformation de la SEEG. Cependant, elle doit renforcer son leadership et acquérir plus d'expérience dans le secteur de l'électricité pour répondre adéquatement aux défis posés par la vision 2025-2035 de l'entreprise.",
+          "points_forts": [
+            "Bon comportement avéré en management",
+            "Potentiel de développement dans un nouveau rôle"
+          ],
+          "points_a_ameliorer": [
+            "Affirmer son leadership",
+            "Gagner en expérience dans le secteur de l'électricité"
+          ],
+          "rang": 4
+        }
+      },
+      "Amandine Rolande Obone Mba": {
+        "prenom": "Amandine",
+        "nom": "Rolande Obone Mba",
+        "conformite": {
+          "prenom": "Amandine",
+          "nom": "Rolande OBONE MBA",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "OBONE MBA",
+          "prenom": "Amandine",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "scores": {
+            "Metier": 0.46,
+            "Talent": 0.37,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 43.67,
+          "niveau": "Le score moyen de Amandine indique une performance limitée par rapport aux attentes de l'entreprise. Sa capacité à s'aligner sur la vision stratégique de la SEEG nécessite des améliorations significatives.",
+          "verdict": "moyen",
+          "raison_verdict": "Bien qu'elle démontre certaines compétences, son score moyen indique une insuffisance pour répondre aux exigences actuelles de l'entreprise.",
+          "points_forts": [
+            "Bonne compréhension des enjeux de la qualité et de la sécurité dans un cadre réglementaire.",
+            "Capacité à identifier les lacunes dans les infrastructures et à proposer des améliorations.",
+            "Ouverture à l'innovation et aux nouvelles technologies pour résoudre les problèmes d'efficacité."
+          ],
+          "points_a_travailler": [
+            "Renforcer ses compétences en leadership pour orienter et motiver ses équipes.",
+            "Améliorer ses capacités d'analyse des processus pour optimiser la performance opérationnelle.",
+            "Développer une vision stratégique plus forte pour aligner ses actions aux besoins transformationnels de l'entreprise."
           ],
           "rang": 5
         },
-        "global": {
-          "score_global": 35.35,
-          "verdict": "défavorable",
-          "resume": "Yves possède de bonnes compétences en gestion des ressources humaines et affiche un comportement satisfaisant, mais son manque de poigne et d'affirmation de soi rendra difficile son adaptation au contexte complexe de réorganisation et de gouvernance renforcée chez SEEG. Son potentiel pourrait être mieux exploité avec un développement de ses compétences en leadership et en gestion sous pression.",
+        "completude": {
+          "nom": "OBONE MBA",
+          "prenom": "Amandine Rolande",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "score": 41.7,
+          "resume_experience": "Plus de 8 ans dans le domaine QHSE, avec une spécialisation notable en management de la qualité, de la sécurité, et de l'environnement.",
+          "verdict": "moyen",
+          "verdict_raison": "Le score montre que le candidat a une expérience riche et pertinente, bien qu'il demeure moyen par rapport aux attentes du poste.",
           "points_forts": [
-            "Compétences en gestion des ressources humaines.",
-            "Comportement satisfaisant.",
-            "Attitude positive."
+            "Expérience notable dans la mise en œuvre et la conformité ISO 9001",
+            "Compétences solides en management des risques et élaboration de politiques QHSE",
+            "Capacité à piloter des audits internes et gérer des plans d'action correctives"
           ],
-          "points_a_ameliorer": [
-            "Affirmation de soi et leadership.",
-            "Capacité à travailler efficacement sous pression et dans un environnement complexe."
+          "points_a_travailler": [
+            "Renforcer la capacité à gérer des incidents en temps réel",
+            "Développer des compétences plus approfondies en veille réglementaire et technologique QHSE",
+            "Améliorer la communication et les relations avec les parties prenantes externes"
           ],
           "rang": 6
+        },
+        "feedback": {
+          "prenom": "Amandine",
+          "nom": "OBONE MBA",
+          "score": 42.5,
+          "verdict": "Défavorable",
+          "raisons": "Le candidat ne démontre pas de compétences de leadership ou de collaboration, essentielles pour le poste, surtout dans un environnement nécessitant une transformation organisationnelle.",
+          "Points forces": [
+            "Expérience en gestion de projets",
+            "Connaissance technique du secteur Qualité, Hygiène, Sécurité & Environnement"
+          ],
+          "Points à travailler": [
+            "Leadership et esprit d'équipe",
+            "Capacité à communiquer et collaborer avec les parties prenantes"
+          ],
+          "rang": 8
+        },
+        "global": {
+          "score_global": 45.51,
+          "verdict": "moyen",
+          "raison_verdict": "Le candidat présente des compétences techniques pertinentes, mais son manque de leadership et de collaboration freine son adéquation avec un poste nécessitant une transformation organisationnelle stratégique.",
+          "resume": "Amandine possède une solide expérience en gestion de projets et une bonne connaissance technique dans le domaine QHSE. Cependant, elle doit améliorer ses compétences en leadership et sa capacité à collaborer efficacement, cruciales dans un environnement en transformation.",
+          "points_forts": [
+            "Expérience en gestion de projets",
+            "Connaissance technique du secteur Qualité, Hygiène, Sécurité & Environnement"
+          ],
+          "points_a_ameliorer": [
+            "Leadership et esprit d'équipe",
+            "Capacité à communiquer et collaborer avec les parties prenantes"
+          ],
+          "rang": 5
         }
       },
       "Ghislain Nzamagangue": {
@@ -440,64 +424,84 @@
         "conformite": {
           "prenom": "Ghislain",
           "nom": "NZAMAGANGUE",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
         "mtp": {
           "nom": "NZAMAGANGUE",
           "prenom": "Ghislain",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "scores": {
             "Metier": 0.42,
-            "Talent": 0.0,
-            "Paradigme": 0.5
+            "Talent": 0.38,
+            "Paradigme": 0.52
           },
-          "Score_moyen": 30.67,
-          "niveau": "Le score moyen de 30.67 indique une appétence limitée pour le poste visé. Cela peut poser des défis pour l'alignement avec la vision stratégique de l'entreprise.",
+          "Score_moyen": 44.0,
+          "niveau": "Le score moyen de 44.0 indique une performance considérée comme défavorable. Cela suggère que le candidat pourrait avoir des lacunes par rapport aux exigences stratégiques de l'entreprise.",
           "verdict": "défavorable",
-          "raison_verdict": "Le score moyen étant en deçà du seuil de 43.5, cela révèle un manque de préparation et d'adéquation aux exigences du poste.",
+          "raison_verdict": "Le score moyen est strictement inférieur à 43.5, ce qui reflète un alignement insuffisant avec la vision de l'entreprise.",
           "points_forts": [
-            "Connaissance des enjeux liés à la qualité, à l'hygiène et à la sécurité dans le secteur énergétique.",
-            "Capacité à comprendre les besoins en infrastructures et leur modernisation.",
-            "Compréhension des défis liés à la gouvernance et à la transparence."
+            "Expérience significative dans le domaine de la qualité et de la sécurité.",
+            "Capacité à développer des systèmes de gestion respectueux de l'environnement.",
+            "Connaissance des normes et réglementations en matière d'hygiène et de sécurité."
           ],
           "points_a_travailler": [
-            "Développer des compétences en gestion des ressources humaines et en leadership.",
-            "Améliorer les capacités d’analyse pour une meilleure gestion des risques.",
-            "Renforcer les compétences en gestion de projets et d'initiatives stratégiques."
+            "Améliorer les compétences en leadership et en gestion d'équipe.",
+            "Développer une meilleure approche stratégique alignée sur les thématiques de réorganisation et de gouvernance.",
+            "Travailler sur la vision à long terme et l'innovation pour s'adapter aux besoins futurs de l'entreprise."
           ],
-          "rang": 7
+          "rang": 4
         },
-        "completude": {},
+        "completude": {
+          "nom": "NZAMAGANGUE",
+          "prenom": "Ghislain",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "score": 36.3,
+          "resume_experience": "31 ans dans les domaines de la gestion des Exploitations d'Eau et HSE",
+          "verdict": "moyen",
+          "points_forts": [
+            "Grande expérience en gestion des réseaux et exploitation d'eau",
+            "Compétences en rédaction de modules et sensibilisation HSE",
+            "Bonne connaissance de la législation en matière de sécurité et environnement"
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en management stratégique QHSE",
+            "Expérience pratique des normes ISO 9001, ISO 14001, ISO 45001",
+            "Capacité à piloter des audits intégrés QHSE"
+          ],
+          "rang": "9"
+        },
         "feedback": {
           "prenom": "Ghislain",
           "nom": "NZAMAGANGUE",
-          "score": 42.75,
+          "score": 42.5,
           "verdict": "Défavorable",
-          "raisons": "Le candidat présente des lacunes significatives en leadership et un manque de vision stratégique, ce qui est critique pour le rôle. Les retours sur son comportement et son approche personnelle soulèvent des inquiétudes.",
+          "raisons": "Le candidat présente des lacunes en matière de leadership et d'expérience, avec un feedback négatif sur son attitude et ses relations interpersonnelles, cruciales pour le poste.",
           "Points forces": [
-            "Respectueux envers les autres",
-            "Connaissance des normes de qualité et de sécurité"
+            "Respectueux",
+            "Connaissance des bases de la gestion qualité"
           ],
           "Points à travailler": [
-            "Manque de leadership efficace",
-            "Tendance à propager des rumeurs"
+            "Leadership insatisfaisant",
+            "Problèmes d'intégrité et de communication"
           ],
-          "rang": 7
+          "rang": 10
         },
         "global": {
-          "score_global": 34.04,
+          "score_global": 44.51,
           "verdict": "défavorable",
-          "resume": "Malgré des compétences en normes de qualité et de sécurité, Ghislain présente des lacunes en leadership et en vision stratégique nécessaires pour aligner avec la vision transformatrice de la SEEG. Les préoccupations concernant son comportement remettent en question sa capacité à contribuer positivement à la mission de l'entreprise.",
+          "raison_verdict": "Le feedback RH met en évidence des problèmes de leadership et d'expérience, ainsi que des retours négatifs sur l'attitude et les relations interpersonnelles du candidat, ce qui le rend non adapté pour le poste de Directeur Qualité, Hygiène, Sécurité & Environnement.",
+          "resume": "Ghislain Nzamagangue présente des lacunes significatives en leadership et en relations interpersonnelles, essentielles pour un rôle de direction au sein de la SEEG. Bien qu'il soit respectueux et possède des connaissances de base en gestion de la qualité, ces points forts ne compensent pas les faiblesses identifiées.",
           "points_forts": [
-            "Respectueux envers les autres",
-            "Connaissance des normes de qualité et de sécurité"
+            "Respectueux",
+            "Connaissance des bases de la gestion qualité"
           ],
           "points_a_ameliorer": [
-            "Manque de leadership efficace",
-            "Tendance à propager des rumeurs"
+            "Leadership insatisfaisant",
+            "Problèmes d'intégrité et de communication"
           ],
-          "rang": 7
+          "rang": 6
         }
       },
       "Armel Thierry Nziengui": {
@@ -506,59 +510,232 @@
         "conformite": {
           "prenom": "Armel",
           "nom": "Thierry NZIENGUI",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
+        "mtp": {
+          "nom": "NZIENGUI",
+          "prenom": "Armel",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "scores": {
+            "Metier": 0.45,
+            "Talent": 0.39,
+            "Paradigme": 0.46
+          },
+          "Score_moyen": 43.33,
+          "niveau": "Le score moyen de ce candidat est en dessous du seuil défavorable de 43.5. Son profil actuel ne semble pas aligné avec les attentes stratégiques de la SEEG pour atteindre ses objectifs de performance.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen reflète un manque d'adéquation entre ses compétences et les exigences de la vision de transformation de l'entreprise.",
+          "points_forts": [
+            "Une bonne compréhension des enjeux métier liés à la qualité et la sécurité.",
+            "Un intérêt apparent pour l'innovation au sein des systèmes de gestion.",
+            "Le candidat possède une approche systémique qui pourrait être bénéfique dans le contexte de réhabilitation des infrastructures."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en management stratégique et gestion de crise.",
+            "Améliorer les capacités d'engagement et de communication avec les parties prenantes.",
+            "Développer une meilleure compréhension des normes du secteur et des attentes de performance."
+          ],
+          "rang": 7
+        },
         "completude": {
           "nom": "NZIENGUI",
           "prenom": "Armel Thierry",
           "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 44.3,
-          "resume_experience": "22 années d'expérience, dont 10 dans la prévention des risques professionnels et 12 en exploitation, principalement au sein de la SEEG",
+          "score": 45.1,
+          "resume_experience": "22 années, avec une spécialisation en prévention des risques professionnels et exploitation",
           "verdict": "favorable",
-          "rationale_verdict": "Armel Thierry NZIENGUI a une solide expérience de 22 ans dans le secteur énergétique au Gabon, avec un accent notable sur la prévention des risques QHSE.",
           "points_forts": [
-            "Expérience directe dans la mise en œuvre et suivi des normes ISO au sein de la SEEG",
-            "Participation active au comité santé sécurité au travail",
-            "Connaissance approfondie des problématiques QHSE spécifiques à la SEEG"
+            "Solide expérience dans le domaine QHSE avec une bonne connaissance des problématiques spécifiques à la SEEG",
+            "Participation active à des projets de certification ISO 9001 version 2015",
+            "Membre du comité santé sécurité au travail garantissant une connaissance des normes et réglementations"
           ],
           "points_a_travailler": [
-            "Renforcer la connaissance des technologies émergentes en matière de QHSE",
-            "Développer des compétences supplémentaires en gestion du changement pour s'assurer de l'adhésion de toute l'entreprise aux nouvelles politiques QHSE",
-            "Promouvoir une plus grande collaboration intersectorielle pour enrichir les expériences QHSE"
+            "Renforcement des compétences en management stratégique pour aligner les objectifs QHSE aux objectifs stratégiques globaux",
+            "Amélioration des compétences en gestion de la communication effective avec les parties prenantes externes",
+            "Augmenter la connaissance et l'expérience en gestion intégrée pour la mise en œuvre des systèmes de management"
           ],
-          "rang": 4
+          "rang": 3
         },
         "feedback": {
           "prenom": "Armel",
           "nom": "THIERRY NZIENGUI",
-          "score": 32.5,
+          "score": 33.5,
           "verdict": "Défavorable",
-          "raisons": "Le candidat présente des antécédents de conflits avec son autorité et manque de respect pour la hiérarchie, ce qui pourrait nuire à la mise en œuvre de la vision stratégique de la SEEG. Son manque de collaboration et son incapacité à faire l'unanimité font défaut dans le contexte de réorganisation et de gouvernance renforcée nécessaire.",
-          "Points forces": [
-            "Expérience dans le secteur de la qualité, hygiène, sécurité et environnement",
-            "Connaissance des enjeux liés à la transition énergétique"
-          ],
+          "raisons": "Le candidat présente un manque évident de respect pour l'autorité et a un historique de conflits avec sa hiérarchie, ce qui est incompatible avec les besoins de transformation et de collaboration au sein de l'entreprise. Ses traits de caractère et son comportement signalent des difficultés potentielles dans un rôle où l'implication des parties prenantes et la gouvernance renforcée sont primordiales.",
+          "Points forces": [],
           "Points à travailler": [
-            "Mauvaise gestion des relations hiérarchiques",
-            "Tentatives de syndicalisme peu constructif"
+            "Manque de respect envers la hiérarchie",
+            "Difficulté à travailler en équipe et à respecter l'autorité"
           ],
           "rang": 11
         },
         "global": {
-          "score_global": 30.11,
+          "score_global": 41.6,
           "verdict": "défavorable",
-          "resume": "Bien qu'Armel Thierry Nziengui possède une expérience notable dans le secteur de la qualité, hygiène, sécurité et environnement, ainsi qu'une connaissance des enjeux liés à la transition énergétique, son score défavorable de feedback RH met en lumière des problèmes préoccupants tels que son manque de respect envers la hiérarchie et son incapacité à collaborer efficacement. Ces aspects sont cruciaux pour conduire la vision stratégique de la SEEG basée sur une réorganisation et une gouvernance renforcée.",
+          "raison_verdict": "Le candidat présente des difficultés à travailler en équipe et à respecter l'autorité, ce qui est incompatible avec les besoins de transformation et de collaboration requis par la SEEG.",
+          "resume": "Le candidat Armel Thierry Nziengui montre une inadéquation avec le poste de Directeur QHSE à la SEEG, principalement en raison de difficultés à collaborer de manière efficace, ce qui est crucial pour atteindre les objectifs de transformation de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Manque de respect envers la hiérarchie",
+            "Difficulté à travailler en équipe"
+          ],
+          "rang": 7
+        }
+      },
+      "Rosy Blondel Madoungou Nziengui": {
+        "prenom": "Rosy",
+        "nom": "Blondel Madoungou Nziengui",
+        "conformite": {
+          "prenom": "Rosy",
+          "nom": "Blondel  MADOUNGOU NZIENGUI",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "Blondel MADOUNGOU NZIENGUI",
+          "prenom": "Rosy",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "scores": {
+            "Metier": 0.41,
+            "Talent": 0.36,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 42.67,
+          "niveau": "Le score moyen du candidat est inférieur à 43.5, ce qui indique une appartenance défavorable à la vision de l'entreprise. Cela suggère un besoin urgent d'amélioration pour répondre aux attentes de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen insuffisant indique que le candidat n'est pas suffisamment aligné avec les exigences de performance de la SEEG.",
           "points_forts": [
-            "Expérience dans le secteur de la qualité, hygiène, sécurité et environnement",
-            "Connaissance des enjeux liés à la transition énergétique"
+            "Capacité à identifier et adapter les normes de qualité aux infrastructures vieillissantes.",
+            "Possède une connaissance solide des systèmes de gestion de l'hygiène et de la sécurité.",
+            "Compétences en gestion de l'environnement et en responsabilité sociale."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences en leadership et en management d'équipe.",
+            "Renforcer ses connaissances en gestion des processus pour assurer une conformité stricte aux normes.",
+            "Développer une approche proactive pour anticiper ces crises et y répondre efficacement."
+          ],
+          "rang": 9
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Rosy",
+          "nom": "BLONDEL MADOUNGOU NZIENGUI",
+          "score": 48.7,
+          "verdict": "Moyen",
+          "raisons": "Le candidat possède des compétences techniques en tant que médecin du travail, mais son manque d'expérience en management et leadership ainsi qu'une vision limitée des enjeux organisationnels ne répondent pas aux exigences élevées du poste.",
+          "Points forces": [
+            "Compétences médicales et expertise en santé au travail",
+            "Bon comportement, apprécié par ses collègues"
+          ],
+          "Points à travailler": [
+            "Manque d'expérience en management et leadership",
+            "Vision stratégique limitée par rapport aux enjeux de transformation de la SEEG"
+          ],
+          "rang": 6
+        },
+        "global": {
+          "score_global": 40.02,
+          "verdict": "défavorable",
+          "raison_verdict": "Le manque d'expérience en management et une vision stratégique limitée face aux défis de transformation de la SEEG rendent le profil de Rosy inadapté au poste exigé.",
+          "resume": "Le candidat Rosy Blondel Madoungou Nziengui, bien que compétent dans le domaine de la santé au travail, ne possède pas l'expérience managériale et la vision stratégique nécessaires pour le poste de Directeur qualité, hygiène, sécurité et environnement. Son profil ne répond pas aux exigences de transformation organisationnelle de la SEEG.",
+          "points_forts": [
+            "Compétences médicales et expertise en santé au travail",
+            "Bon comportement, apprécié par ses collègues"
           ],
           "points_a_ameliorer": [
-            "Mauvaise gestion des relations hiérarchiques",
-            "Tentatives de syndicalisme peu constructif"
+            "Manque d'expérience en management et leadership",
+            "Vision stratégique limitée par rapport aux enjeux de transformation de la SEEG"
           ],
           "rang": 8
+        }
+      },
+      "Edwige Dilebou": {
+        "prenom": "Edwige",
+        "nom": "Dilebou",
+        "conformite": {
+          "prenom": "Edwige",
+          "nom": "DILEBOU",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "DILEBOU",
+          "prenom": "Edwige",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "scores": {
+            "Metier": 0.4,
+            "Talent": 0.37,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 41.67,
+          "niveau": "La performance moyenne du candidat en termes de compétences métier, talent et paradigme est en dessous des attentes de la SEEG pour le poste visé. Cette évaluation reflète des lacunes dans l'alignement avec les objectifs stratégiques et de modernisation de l'entreprise.",
+          "verdict": "défavorable",
+          "raison du verdict": "Le score moyen de 41.67 est inférieur au seuil de 43.5, ce qui indique une inadéquation par rapport à la vision transformatrice de la SEEG. Le poste de Directeur QHSE exige une compréhension approfondie des enjeux de modernisation et de rigueur managériale, qui semblent actuellement en décalage avec les compétences démontrées par le candidat.",
+          "points_forts": [
+            "Bonne compréhension des enjeux de paradigme lié à l'organisation",
+            "Capacité à identifier les problématiques de gestion environnementale",
+            "Connaissance de base des standards de sécurité"
+          ],
+          "points_a_travailler": [
+            "Renforcer la compétence en management des talents pour motiver et former les employés",
+            "Améliorer les compétences techniques du métier en lien avec la transition énergétique et l'innovation",
+            "Développer une approche stratégique plus cohérente avec les objectifs de modernisation et de gouvernance de la SEEG"
+          ],
+          "rang": 11
+        },
+        "completude": {
+          "nom": "DILEBOU",
+          "prenom": "Edwige",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "score": 46.0,
+          "resume_experience": "19 ans d'expérience en environnement QHSE, gestion de projets environnementaux et audits internes.",
+          "verdict": "favorable",
+          "raison_du_verdict": "Edwige Dilebou possède une riche expérience de 19 ans en environnement et QHSE, ce qui joue en sa faveur pour le poste. Bien que son score de similarité soit de 46, ses antécédents professionnels montrent une expertise avérée dans la mise en œuvre de systèmes de gestion environnementale et en conduite d'audits, ce qui correspond aux exigences du poste.",
+          "points_forts": [
+            "Grande expérience dans le domaine QHSE.",
+            "Capacité à gérer des équipes et des projets complexes.",
+            "Expertise en mise en place de systèmes de management environnementaux et audits internes."
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en gestion de veille technologique QHSE.",
+            "Amélioration continue des techniques de reporting pour une meilleure communication avec la Direction."
+          ],
+          "rang": 3
+        },
+        "feedback": {
+          "prenom": "Edwige",
+          "nom": "DILEBOU",
+          "score": 48.7,
+          "verdict": "Moyen",
+          "raisons": "Le candidat présente des qualités de calme et de pondération, mais son manque de leadership et son souhait de rester dans un environnement familier soulèvent des inquiétudes quant à sa capacité à répondre aux exigences de transformation et de gouvernance de la SEEG.",
+          "Points forces": [
+            "Calme et pondérée",
+            "Capacité d'analyse des problématiques"
+          ],
+          "Points à travailler": [
+            "Leadership et prise de décision",
+            "Adaptabilité à un environnement dynamique"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 48.97,
+          "verdict": "moyen",
+          "raison_verdict": "Le manque de leadership et d'adaptabilité à un environnement dynamique soulèvent des inquiétudes quant à la capacité d'Edwige à répondre aux exigences de transformation de la SEEG.",
+          "resume": "Edwige Dilebou est une candidate calme et pondérée, dotée d'une capacité d'analyse des problématiques. Cependant, son manque de leadership et son désir de rester dans un environnement familier peuvent constituer un obstacle à sa capacité à répondre aux exigences de transformation et de gouvernance de la SEEG.",
+          "points_forts": [
+            "Calme et pondérée",
+            "Capacité d'analyse des problématiques"
+          ],
+          "points_a_ameliorer": [
+            "Leadership et prise de décision",
+            "Adaptabilité à un environnement dynamique"
+          ],
+          "rang": 6
         }
       },
       "Augusta Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam": {
@@ -567,95 +744,58 @@
         "conformite": {
           "prenom": "AUGUSTA",
           "nom": "BRITT HONORINE HERVO-AKENDENGUE ZIZA ép. ELISEE NDAM",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
+        "mtp": {
+          "nom": "BRITT HONORINE HERVO-AKENDENGUE ZIZA ép. ELISEE NDAM",
+          "prenom": "AUGUSTA",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "scores": {
+            "Metier": 0.42,
+            "Talent": 0.37,
+            "Paradigme": 0.55
+          },
+          "Score_moyen": 44.67,
+          "niveau": "Le score moyen du candidat est situé dans la catégorie intermédiaire, reflétant une adéquation modérée avec les exigences du poste. Cela indique des domaines de compétence, mais aussi des lacunes à adresser pour une transformation réussie au sein de l'entreprise.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score moyen de 44.67 indique que le candidat a un potentiel mais peut nécessiter un développement dans certains domaines clés.",
+          "points_forts": [
+            "Compétences adaptées en matière de gestion de la qualité et de l'hygiène, essentielles pour le poste.",
+            "Expérience dans l'application des normes de sécurité, ce qui est crucial dans un contexte de réhabilitation.",
+            "Capacité à intégrer des paradigmes modernes pour la gestion des ressources, ce qui est en ligne avec la vision stratégique de l'entreprise."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences quantitatives et analytiques pour mieux évaluer la performance et optimiser les coûts.",
+            "Développer des compétences en leadership pour mieux gérer et motiver une équipe diversifiée dans un environnement de transformation.",
+            "Travailler sur la gestion des talents pour s'assurer que les employés sont non seulement formés, mais également engagés dans la mission de l'entreprise."
+          ],
+          "rang": 1
+        },
         "completude": {},
         "feedback": {
           "prenom": "Augusta",
           "nom": "BRITT HONORINE HERVO-AKENDENGUE ZIZA ÉP. ELISEE NDAM",
-          "score": 49.75,
-          "verdict": "Moyen",
-          "raisons": "Le candidat présente des lacunes en leadership et manque de vision stratégique, ce qui est préoccupant pour un poste clé dans une entreprise en phase de transformation. Cependant, des compétences techniques pourraient être valorisées.",
-          "Points forces": [
-            "Compétences techniques solides dans le domaine HSEQ",
-            "Capacité à identifier les problèmes opérationnels"
-          ],
-          "Points à travailler": [
-            "Leadership et gestion d'équipe",
-            "Vision stratégique et alignement avec la transformation de l'entreprise"
-          ],
-          "rang": 6
-        },
-        "global": {
-          "score_global": 29.88,
-          "verdict": "défavorable",
-          "resume": "Le candidat possède des compétences techniques solides dans le domaine HSEQ et démontre une capacité à identifier les problèmes opérationnels. Cependant, il présente des lacunes en leadership et manque de vision stratégique, des aspects essentiels pour un poste clé dans une entreprise en phase de transformation.",
-          "points_forts": [
-            "Compétences techniques solides dans le domaine HSEQ",
-            "Capacité à identifier les problèmes opérationnels"
-          ],
-          "points_a_ameliorer": [
-            "Leadership et gestion d'équipe",
-            "Vision stratégique et alignement avec la transformation de l'entreprise"
-          ],
-          "rang": 9
-        }
-      },
-      "Amandine Obone Mba": {
-        "prenom": "Amandine",
-        "nom": "Obone Mba",
-        "conformite": {},
-        "mtp": {
-          "nom": "OBONE MBA",
-          "prenom": "Amandine",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Metier": 0.46,
-            "Talent": 0.0,
-            "Paradigme": 0.49
-          },
-          "Score_moyen": 31.67,
-          "niveau": "Le score moyen du candidat est très en dessous de la moyenne requise pour rejoindre l'entreprise. Cela indique un alignement limité avec les exigences opérationnelles et stratégiques de la SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen du candidat est largement inférieur à 43.5, ce qui montre un manque de compétences essentielles requises par l'entreprise.",
-          "points_forts": [
-            "Bonne compréhension des enjeux environnementaux liés au secteur énergétique.",
-            "Capacité à identifier des situations critiques, comme le stress hydrique, qui pourraient influencer la mission de l'entreprise.",
-            "Éventuelles compétences en gestion de crise à travers l'expérience de maintien dans un environnement réglementé."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences en leadership pour encadrer des équipes et gérer des projets complexes.",
-            "Développer des compétences en gestion des talents pour optimiser la performance du personnel.",
-            "Renforcer la compréhension du cadre réglementaire et des pratiques de gouvernance en rapport avec la SEEG."
-          ],
-          "rang": 5
-        },
-        "completude": {},
-        "feedback": {
-          "prenom": "Amandine",
-          "nom": "OBONE MBA",
           "score": 42.5,
           "verdict": "Défavorable",
-          "raisons": "Le candidat a fait preuve d'un manque de leadership et d'interactions sociales, ce qui est essentiel pour le poste. La capacité à impliquer les collaborateurs et à travailler en équipe est critiquée, et il existe des préoccupations sur son engagement envers les valeurs de la SEEG.",
+          "raisons": "Le candidat présente un manque de leadership évident, ce qui est incompatible avec les exigences managériales du poste, notamment dans le cadre de la vision de transformation de la SEEG. Les retours négatifs de ses relations de travail soulignent des lacunes significatives dans la gestion des équipes.",
           "Points forces": [],
           "Points à travailler": [
-            "Leadership",
-            "Collaboration en équipe",
-            "Communication"
+            "Améliorer ses compétences en leadership",
+            "Renforcer ses capacités de communication et de collaboration"
           ],
           "rang": 9
         },
         "global": {
-          "score_global": 29.17,
+          "score_global": 37.42,
           "verdict": "défavorable",
-          "resume": "Le candidat ne satisfait pas aux exigences essentielles du poste, notamment en termes de leadership et d'engagement envers les valeurs de l'entreprise. Les interactions sociales et la capacité à travailler en équipe nécessitent des améliorations significatives, ce qui est crucial pour mener à bien la transformation stratégique de la SEEG.",
+          "raison_verdict": "Le manque de leadership et les feedbacks négatifs sur la gestion des équipes rendent le candidat inadapté à la vision transformatrice de la SEEG.",
+          "resume": "Le candidat présente des lacunes significatives en leadership et gestion d'équipes, essentielles pour le poste de Directeur QHSE dans un contexte de transformation stratégique de la SEEG. Les retours des relations de travail sont peu favorables, et le score MTP est également en dessous des attentes.",
           "points_forts": [],
           "points_a_ameliorer": [
-            "Leadership",
-            "Collaboration en équipe",
-            "Communication"
+            "Améliorer ses compétences en leadership",
+            "Renforcer ses capacités de communication et de collaboration"
           ],
           "rang": 10
         }
@@ -666,34 +806,60 @@
         "conformite": {
           "prenom": "Pulcherie",
           "nom": "Nicole  ASSAME Née NIGOUEGOUNI",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
           "score_conformité": 100,
           "commentaire": "Tous les documents ont été fournis."
         },
-        "mtp": {},
+        "mtp": {
+          "nom": "ASSAME Née NIGOUEGOUNI",
+          "prenom": "Pulcherie",
+          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
+          "scores": {
+            "Metier": 0.42,
+            "Talent": 0.41,
+            "Paradigme": 0.45
+          },
+          "Score_moyen": 42.67,
+          "niveau": "Le score moyen du candidat est inférieur à 43.5, indiquant un alignement insuffisant avec la vision de l'entreprise. Cela suggère des lacunes importantes dans les compétences centrales et la capacité à contribuer à la transformation de la SEEG.",
+          "verdict": "défavorable",
+          "raison_verdict": "Le score moyen du candidat est en dessous du seuil requis pour démontrer une adéquation avec les valeurs et les objectifs de l'entreprise.",
+          "points_forts": [
+            "Compétences en gestion des procédures liées à la qualité et à la sécurité.",
+            "Compréhension des enjeux de gouvernance et transparence dans le secteur public.",
+            "Expérience potentielle en gestion des ressources humaines et en formation du personnel."
+          ],
+          "points_a_travailler": [
+            "Améliorer la connaissance des enjeux techniques liés à l'énergie et à l'eau.",
+            "Renforcer les compétences en communication et en dialogue avec les parties prenantes.",
+            "Développer des compétences stratégiques en matière de planification et d'exécution des travaux d'infrastructure."
+          ],
+          "rang": 8
+        },
         "completude": {},
         "feedback": {
           "prenom": "Pulcherie",
           "nom": "NICOLE ASSAME NÉE NIGOUEGOUNI",
-          "score": 42.5,
+          "score": 42.7,
           "verdict": "Défavorable",
-          "raisons": "Le candidat présente des lacunes significatives en termes de leadership et de vision, essentielles pour le poste. Le feedback indique également des complications de santé impactant sa performance.",
+          "raisons": "Le candidat présente des lacunes significatives en leadership et en management, ainsi qu'un manque de vision stratégique, qui sont essentiels pour le poste de Directeur Qualité, Hygiène, Sécurité & Environnement. De plus, les séquelles de son AVC peuvent entraver ses capacités fonctionnelles dans un rôle exigeant. Son feedback souligne un manque d'initiative et d'inspiration, ce qui est incompatible avec les besoins de transformation de la SEEG.",
           "Points forces": [
-            "Bon comportement",
-            "Capacité à travailler en équipe malgré les circonstances"
+            "Bon comportement dans un contexte difficile",
+            "Expérience potentiellement enrichissante malgré les défis personnels"
           ],
           "Points à travailler": [
             "Manque de leadership",
             "Absence de vision stratégique"
           ],
-          "rang": 10
+          "rang": 7
         },
         "global": {
-          "score_global": 26.25,
+          "score_global": 37.02,
           "verdict": "défavorable",
-          "resume": "La candidate présente des lacunes significatives en leadership et en vision stratégique, cruciales pour mener une transformation alignée avec la vision de la SEEG. Son feedback RH est défavorable, renforcé par des complications de santé qui pourraient affecter sa performance.",
+          "raison_verdict": "Le candidat ne possède pas les compétences en leadership et en vision stratégique nécessaires pour conduire la transformation attendue par la SEEG, et sa condition personnelle post-AVC pourrait limiter ses performances dans ce rôle exigeant.",
+          "resume": "Le profil de Pulcherie Nicole Assame Née Nigouegouni présente un score défavorable pour le poste de Directeur Qualité, Hygiène, Sécurité & Environnement, en raison de lacunes notables en leadership et vision stratégique, cruciaux pour la transformation de la SEEG. Malgré une bonne gestion des défis personnels, elle risque de ne pas répondre aux exigences stratégiques et fonctionnelles dues à ses limitations actuelles.",
           "points_forts": [
-            "Bon comportement",
-            "Capacité à travailler en équipe malgré les circonstances"
+            "Bon comportement dans un contexte difficile",
+            "Expérience potentiellement enrichissante malgré les défis personnels"
           ],
           "points_a_ameliorer": [
             "Manque de leadership",
@@ -701,387 +867,111 @@
           ],
           "rang": 11
         }
-      },
-      "Amandine Rolande Obone Mba": {
-        "prenom": "Amandine",
-        "nom": "Rolande Obone Mba",
-        "conformite": {
-          "prenom": "Amandine",
-          "nom": "Rolande OBONE MBA",
-          "score_conformité": 100,
-          "commentaire": "Tous les documents ont été fournis."
-        },
-        "mtp": {},
-        "completude": {
-          "nom": "OBONE MBA",
-          "prenom": "Amandine Rolande",
-          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 41.2,
-          "resume_experience": "Plus de 8 années d'expérience en qualité, hygiène, sécurité et environnement",
-          "verdict": "favorable",
-          "raison": "Le candidat possède une vaste expérience pratique et académique dans le domaine QHSE. Amandine a occupé différents postes de responsabilité liés aux systèmes de gestion de la qualité, ce qui affirme son potentiel pour le poste de Directeur QHSE.",
-          "points_forts": [
-            "Expérience solide avec les normes ISO 9001 et autres certifications ISO.",
-            "Expertise prouvée dans la gestion de projets QHSE et la mise en œuvre de la politique QHSE.",
-            "Compétences en leadership et gestion des équipes de projet."
-          ],
-          "points_a_travailler": [
-            "Augmenter l'implication dans des projets internationaux ou d'envergure multiculturelle.",
-            "Renforcer l'approche stratégique en matière de veille technologique et normative.",
-            "Améliorer les compétences en communication de gestion auprès des parties externes et réglementaires."
-          ],
-          "rang": 6
-        },
-        "feedback": {},
-        "global": {
-          "score_global": 13.24,
-          "verdict": "défavorable",
-          "resume": "Le profil d'Amandine présente des lacunes importantes en termes de feedback RH et de complétude par rapport à l'offre. Bien que la conformité documentaire soit excellente, son score global défavorable et le manque de retour RH positif indiquent une inadéquation avec la vision et les besoins actuels de l'entreprise.",
-          "points_forts": [
-            "Conformité documentaire impeccable"
-          ],
-          "points_a_ameliorer": [
-            "Score de feedback RH très faible",
-            "Complétude du profil par rapport à l'offre"
-          ],
-          "rang": 12
-        }
-      },
-      "Augusta Hervo-Akendengue": {
-        "prenom": "Augusta",
-        "nom": "Hervo-Akendengue",
-        "conformite": {},
-        "mtp": {},
-        "completude": {
-          "nom": "HERVO-AKENDENGUE",
-          "prenom": "Augusta",
-          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 41.8,
-          "resume_experience": "23 ans d'expérience au sein de SEEG avec des compétences en gestion de projets complexes, approche Qualité, Hygiène et Sécurité",
-          "verdict": "favorable",
-          "raison_verdict": "Le score de 41.800 indique qu'elle a des qualifications solides qui correspondent bien au poste.",
-          "points_forts": [
-            "Expertise en gestion de projets complexes",
-            "Expérience avec les normes ISO 9001 et ISO 14001",
-            "Solide parcours en management et leadership"
-          ],
-          "points_a_travailler": [
-            "Renforcement des compétences en QHSE par des formations spécialisées",
-            "Amélioration des outils de suivi et de reporting",
-            "Extension de l'expérience QHSE au-delà du domaine de l'énergie"
-          ],
-          "rang": 5
-        },
-        "feedback": {},
-        "global": {
-          "score_global": 8.36,
-          "verdict": "défavorable",
-          "resume": "Le score global et les sous-scores faibles, notamment en feedback RH, indiquent une inadéquation avec les exigences du poste. Absence d'informations détaillées sur le candidat, ce qui complique l'évaluation par rapport aux attentes de la vision SEEG 2025-2035.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Manque de conformité documentaire",
-            "Absence de retour de feedback RH"
-          ],
-          "rang": 13
-        }
-      },
-      "Aude Akoe Mba": {
-        "prenom": "Aude",
-        "nom": "Akoe Mba",
-        "conformite": {},
-        "mtp": {
-          "nom": "AKOE MBA",
-          "prenom": "Aude",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Metier": 43,
-            "Talent": 0,
-            "Paradigme": 57
-          },
-          "Score_moyen": 33.33,
-          "niveau": "Le score moyen du candidat est largement en dessous des normes exigées par l'entreprise. Cela indique des lacunes significatives dans les compétences et la compréhension des exigences de la position visée.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 33.33 est strictement inférieur à 43.5, ce qui démontre un manque d'alignement avec la vision de l'entreprise.",
-          "points_forts": [
-            "Compétence métier initiale acceptable malgré un score faible.",
-            "Capacité à comprendre des enjeux paradigmatiques liés à l'hygiène et la sécurité.",
-            "Potentiel pour développer des talents dans des domaines spécifiques."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences de talent, notamment dans le leadership et la gestion d'équipe.",
-            "Renforcer la compréhension des processus industriels et des assurances qualité.",
-            "Travailler sur l'alignement avec la vision stratégique de l'entreprise, notamment en matière de gouvernance et de transparence."
-          ],
-          "rang": 1
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 8.33,
-          "verdict": "défavorable",
-          "resume": "Le candidat ne répond pas aux attentes pour le poste, avec des scores bas dans la conformité documentaire, la complétude du CV, et une absence de feedback RH. Ces éléments supportent un verdict défavorable pour ce poste crucial dans la stratégie de transformation de l'entreprise.",
-          "points_forts": [
-            "Aucune force notable identifiée"
-          ],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude du dossier de candidature"
-          ],
-          "rang": 14
-        }
-      },
-      "Ian Ndjongue Tanda": {
-        "prenom": "Ian",
-        "nom": "Ndjongue Tanda",
-        "conformite": {},
-        "mtp": {
-          "nom": "NDJONGUE TANDA",
-          "prenom": "Ian",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Metier": 0.43,
-            "Talent": 0.0,
-            "Paradigme": 0.53
-          },
-          "Score_moyen": 32.0,
-          "niveau": "Le candidat présente un score moyen très faible, indiquant une inadéquation avec les exigences du poste. Sa compréhension des attentes et des valeurs de l'entreprise semble limitée.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen largement inférieur à 43.5 démontre un manque d'alignement avec la vision de l'entreprise.",
-          "points_forts": [
-            "Compétence technique dans le domaine de la qualité et sécurité",
-            "Sensibilisation aux enjeux environnementaux",
-            "Bonne compréhension des procédures liées à l'hygiène et sécurité"
-          ],
-          "points_a_travailler": [
-            "Développer des compétences relationnelles et de communication",
-            "Renforcer la capacité d'analyse et de résolution de problèmes complexes",
-            "Améliorer la compréhension des attentes économiques et de gouvernance"
-          ],
-          "rang": 2
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 8.0,
-          "verdict": "défavorable",
-          "resume": "Le candidat ne semble pas répondre aux exigences du poste en termes de conformité documentaire et de complétude de candidature. De plus, le manque de feedback RH positif pèse grandement sur sa candidature, suggérant qu'il pourrait ne pas convenir aux besoins transformationnels de l'entreprise.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire insuffisante",
-            "Manque de complétude par rapport à l'offre"
-          ],
-          "rang": 15
-        }
-      },
-      "Yves Ndimina Mokaghat": {
-        "prenom": "Yves",
-        "nom": "Ndimina Mokaghat",
-        "conformite": {},
-        "mtp": {
-          "nom": "NDIMINA MOKAGHAT",
-          "prenom": "Yves",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Metier": 0.41,
-            "Talent": 0.0,
-            "Paradigme": 0.55
-          },
-          "Score_moyen": 32.0,
-          "niveau": "Le candidat présente un score moyen nettement inférieur aux attentes de l'entreprise. Cette situation peut poser des défis majeurs dans l'atteinte des objectifs stratégiques de SEEG.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen en dessous de 43.5 indique une insuffisance manifeste dans les compétences requises pour le poste visé.",
-          "points_forts": [
-            "Bonne compréhension des enjeux de la qualité et de l'hygiène dans un environnement organisationnel complexe.",
-            "Capacité à s'adapter à des contextes de crise grâce à son approche pragmatique.",
-            "Approche innovante pour intégrer de nouvelles pratiques dans le domaine de l'environnement."
-          ],
-          "points_a_travailler": [
-            "Développer ses compétences en leadership et en gestion d'équipe pour piloter efficacement les changements nécessaires.",
-            "Acquérir des compétences supplémentaires liées à la gestion de la performance et des opérations au sein de l'entreprise.",
-            "Renforcer son expertise technique dans le domaine de la sécurité et de l'environnement pour répondre aux défis spécifiques de SEEG."
-          ],
-          "rang": 3
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 8.0,
-          "verdict": "défavorable",
-          "resume": "Le candidat présente un score global défavorable, avec une absence de conformité documentaire et de complétude par rapport à l'offre. De plus, le feedback RH est inexistant, ce qui affecte grandement l'évaluation globale.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Complétude des documents par rapport à l'offre"
-          ],
-          "rang": 16
-        }
-      },
-      "Augusta Ziza Ép. Elisee Ndam": {
-        "prenom": "Augusta",
-        "nom": "Ziza Ép. Elisee Ndam",
-        "conformite": {},
-        "mtp": {
-          "nom": "ZIZA ép. ELISEE NDAM",
-          "prenom": "AUGUSTA",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Métier": 0.42,
-            "Talent": 0.0,
-            "Paradigme": 0.53
-          },
-          "Score_moyen": 31.67,
-          "niveau": "Le candidat présente des scores en dessous des attentes minimales pour le poste visé. Une amélioration notable est nécessaire pour aligner sa vision sur celle de l’entreprise.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen très en dessous du seuil minimum indique un manque d'adéquation avec les objectifs de transformation de l'entreprise.",
-          "points_forts": [
-            "Connaissance des normes de qualité et de sécurité dans le cadre de la gestion environnementale.",
-            "Capacité à identifier les améliorations nécessaires dans les infrastructures.",
-            "Vigilance sur les enjeux de conformité réglementaire."
-          ],
-          "points_a_travailler": [
-            "Développer des compétences en gestion de projet et en leadership pour mener les initiatives de transformation.",
-            "Renforcer les compétences relationnelles pour favoriser le dialogue entre les parties prenantes.",
-            "Améliorer la compréhension des enjeux économiques pour contribuer à la viabilité financière de l'entreprise."
-          ],
-          "rang": 4
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 7.92,
-          "verdict": "défavorable",
-          "resume": "Le score global défavorable, appuyé par l'absence de feedback RH positif et une conformité documentaire inexistante, suggère que le profil ne répond pas aux exigences actuelles et futures de la SEEG. Le manque de complétude du dossier de candidature renforce cette évaluation négative.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Absence de conformité documentaire",
-            "Manque de complétude du dossier de candidature"
-          ],
-          "rang": 17
-        }
-      },
-      "Pulcherie Assame Née Nigouegouni": {
-        "prenom": "Pulcherie",
-        "nom": "Assame Née Nigouegouni",
-        "conformite": {},
-        "mtp": {
-          "nom": "ASSAME Née NIGOUEGOUNI",
-          "prenom": "Pulcherie",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Metier": 0.43,
-            "Talent": 0.0,
-            "Paradigme": 0.46
-          },
-          "Score_moyen": 29.67,
-          "niveau": "Le score moyen du candidat est défavorable, indiquant un manque d'adéquation avec les exigences du poste et la vision de l'entreprise. Les compétences en métiers et paradigmes sont faibles, ce qui pourrait poser des enjeux pour la performance dans un rôle de direction.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen est bien en deçà du seuil requis pour une bonne adéquation avec la vision de l'entreprise.",
-          "points_forts": [
-            "Une certaine connaissance des enjeux de qualité et de sécurité.",
-            "Une expérience potentielle dans des environnements opérationnels complexes."
-          ],
-          "points_a_travailler": [
-            "Renforcer les compétences en management et leadership pour diriger efficacement une équipe.",
-            "Développer des compétences en gestion de projet et en amélioration continue.",
-            "Acquérir une meilleure compréhension des systèmes de qualité et des normes de sécurité nécessaires."
-          ],
-          "rang": 10
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 7.42,
-          "verdict": "défavorable",
-          "resume": "Le candidat présente un score global défavorable de 7.42, ce qui reflète des lacunes dans plusieurs domaines essentiels tels que la conformité documentaire et la complétude de sa candidature. Son feedback RH est inexistant, suggérant une potentielle inadéquation avec les exigences du poste. Pulcherie doit améliorer sa préparation et présentation pour être compétitive pour ce poste stratégique.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Préparation et complétude de la candidature"
-          ],
-          "rang": 18
-        }
-      },
-      "Armel Nzingui": {
-        "prenom": "Armel",
-        "nom": "Nzingui",
-        "conformite": {},
-        "mtp": {
-          "nom": "NZINGUI",
-          "prenom": "Armel",
-          "poste": "Direction Qualité Hygiène Sécurité & Environnement",
-          "scores": {
-            "Métier": 0.45,
-            "Talent": 0.0,
-            "Paradigme": 0.44
-          },
-          "Score_moyen": 29.67,
-          "niveau": "Le candidat affiche un score moyen très en dessous des attentes de l'entreprise. Son potentiel d'adéquation avec la vision stratégique de la SEEG est donc très limité.",
-          "verdict": "défavorable",
-          "raison_verdict": "Le score moyen de 29.67 indique une inadéquation avec la vision de transformation et d'innovation requise par la SEEG.",
-          "points_forts": [
-            "Indiquer des connaissances techniques dans le domaine de la qualité, hygiène, sécurité et environnement.",
-            "Capacité à travailler dans un environnement structuré basé sur des normes.",
-            "Potentiel d'adaptation aux procédures techniques, malgré le manque de talent mathématique."
-          ],
-          "points_a_travailler": [
-            "Améliorer les compétences relationnelles et interpersonnelles nécessaires pour la gestion d'équipe.",
-            "Développer des compétences stratégiques et de leadership pour contribuer à la vision transformante de l'entreprise.",
-            "Investir dans la formation continue pour renforcer les capacités techniques dans le secteur énergétique."
-          ],
-          "rang": 9
-        },
-        "completude": {},
-        "feedback": {},
-        "global": {
-          "score_global": 7.42,
-          "verdict": "défavorable",
-          "resume": "Le profil d'Armel Nzingui présente des insuffisances importantes en termes de conformité documentaire et de complétude par rapport aux exigences du poste. Le score global et le feedback RH mettent en évidence un manque d'adéquation avec la vision stratégique de transformation de la SEEG, ce qui compromet sa capacité à contribuer efficacement à la restructuration et à la modernisation de l'organisation.",
-          "points_forts": [
-            "Bonne compréhension des enjeux qualité, hygiène, sécurité et environnement"
-          ],
-          "points_a_ameliorer": [
-            "Non-conformité documentaire",
-            "Manque de préparation et de détails dans la candidature"
-          ],
-          "rang": 19
-        }
-      },
-      "Pulcherie Nicole Assame": {
-        "prenom": "Pulcherie",
-        "nom": "Nicole Assame",
-        "conformite": {},
-        "mtp": {},
-        "completude": {
-          "nom": "ASSAME",
-          "prenom": "Pulcherie Nicole",
-          "poste": "Directeur Qualité, Hygiène, Sécurité & Environnement",
-          "score": 33.6,
-          "resume_experience": "21 années d'expérience dans divers domaines dont la technique, le commercial et le HSE, 14 ans d'ancienneté à la SEEG.",
-          "verdict": "défavorable",
-          "points_forts": [
-            "Expérience significative en gestion et suivi des projets",
-            "Bonne capacité managériale et de gestion des équipes",
-            "Expérience en élaboration et suivi des indicateurs de performance"
-          ],
-          "points_a_travailler": [
-            "Faible score de similarité pour le poste de Directeur QHSE",
-            "Manque de mention explicite des compétences en sensibilisation et formation du personnel QHSE",
-            "Nécessite de renforcer ses compétences en conformité aux normes et certifications ISO spécifiques"
-          ],
-          "rang": 7
-        },
-        "feedback": {},
-        "global": {
-          "score_global": 6.72,
-          "verdict": "défavorable",
-          "resume": "Le score global pondéré de Pulcherie Nicole Assame est défavorable, principalement en raison de l'absence de feedback RH et de faibles scores dans des domaines critiques tels que la conformité documentaire et la MTP. Les documents soumis ne répondent pas entièrement aux exigences de l'offre.",
-          "points_forts": [],
-          "points_a_ameliorer": [
-            "Conformité documentaire",
-            "Feedback RH insuffisant"
-          ],
-          "rang": 20
-        }
       }
+    },
+    "classement": [
+      {
+        "rang": 1,
+        "nom": "Murielle Akoe Mba",
+        "prenom": "Aude",
+        "score_global": 62.5,
+        "verdict": "favorable",
+        "raison_verdict": "La capacité de leadership et de fédération du candidat, alliée à son respect et à sa collaboration avec les collègues, sont des atouts précieux pour renforcer la gouvernance et impliquer les parties prenantes, essentiels dans le contexte de transformation de la SEEG."
+      },
+      {
+        "rang": 2,
+        "nom": "Yelnick Ndjongue Tanda",
+        "prenom": "Ian",
+        "score_global": 59.91,
+        "verdict": "favorable",
+        "raison_verdict": "Le candidat est favorable car il possède l'expérience de management requise et les compétences pour mettre en œuvre la transformation nécessaire à la SEEG, malgré quelques points à travailler concernant les enjeux spécifiques de l'entreprise."
+      },
+      {
+        "rang": 3,
+        "nom": "Davy Ndimina Mokaghat",
+        "prenom": "Yves",
+        "score_global": 54.03,
+        "verdict": "moyen",
+        "raison_verdict": "Bien que le candidat ait des compétences techniques solides, son manque d'affirmation et de rapidité dans la prise de décision le rend moyen par rapport aux standards élevés nécessaires pour transformer la SEEG selon sa nouvelle vision stratégique."
+      },
+      {
+        "rang": 4,
+        "nom": "Mengue",
+        "prenom": "Wivine",
+        "score_global": 49.96,
+        "verdict": "moyen",
+        "raison_verdict": "Bien que le candidat présente un potentiel prometteur et soit apprécié par ses pairs, des améliorations sont nécessaires en leadership et expérience sectorielle pour pleinement correspondre aux ambitions stratégiques de la SEEG."
+      },
+      {
+        "rang": 5,
+        "nom": "Rolande Obone Mba",
+        "prenom": "Amandine",
+        "score_global": 45.51,
+        "verdict": "moyen",
+        "raison_verdict": "Le candidat présente des compétences techniques pertinentes, mais son manque de leadership et de collaboration freine son adéquation avec un poste nécessitant une transformation organisationnelle stratégique."
+      },
+      {
+        "rang": 6,
+        "nom": "Nzamagangue",
+        "prenom": "Ghislain",
+        "score_global": 44.51,
+        "verdict": "défavorable",
+        "raison_verdict": "Le feedback RH met en évidence des problèmes de leadership et d'expérience, ainsi que des retours négatifs sur l'attitude et les relations interpersonnelles du candidat, ce qui le rend non adapté pour le poste de Directeur Qualité, Hygiène, Sécurité & Environnement."
+      },
+      {
+        "rang": 7,
+        "nom": "Thierry Nziengui",
+        "prenom": "Armel",
+        "score_global": 41.6,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat présente des difficultés à travailler en équipe et à respecter l'autorité, ce qui est incompatible avec les besoins de transformation et de collaboration requis par la SEEG."
+      },
+      {
+        "rang": 8,
+        "nom": "Blondel Madoungou Nziengui",
+        "prenom": "Rosy",
+        "score_global": 40.02,
+        "verdict": "défavorable",
+        "raison_verdict": "Le manque d'expérience en management et une vision stratégique limitée face aux défis de transformation de la SEEG rendent le profil de Rosy inadapté au poste exigé."
+      },
+      {
+        "rang": 9,
+        "nom": "Dilebou",
+        "prenom": "Edwige",
+        "score_global": 39.77,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat ne démontre pas le leadership et l'adaptabilité nécessaires pour soutenir la vision ambitieuse de transformation de la SEEG."
+      },
+      {
+        "rang": 10,
+        "nom": "Britt Honorine Hervo-Akendengue Ziza Ép. Elisee Ndam",
+        "prenom": "Augusta",
+        "score_global": 37.42,
+        "verdict": "défavorable",
+        "raison_verdict": "Le manque de leadership et les feedbacks négatifs sur la gestion des équipes rendent le candidat inadapté à la vision transformatrice de la SEEG."
+      },
+      {
+        "rang": 11,
+        "nom": "Nicole Assame Née Nigouegouni",
+        "prenom": "Pulcherie",
+        "score_global": 37.02,
+        "verdict": "défavorable",
+        "raison_verdict": "Le candidat ne possède pas les compétences en leadership et en vision stratégique nécessaires pour conduire la transformation attendue par la SEEG, et sa condition personnelle post-AVC pourrait limiter ses performances dans ce rôle exigeant."
+      }
+    ],
+    "rapport_poste": {
+      "nb_candidats": 11,
+      "distribution_verdicts": {
+        "favorable": 2,
+        "moyen": 3,
+        "défavorable": 6
+      },
+      "top_raisons": [
+        "La capacité de leadership et de fédération du candidat, alliée à son respect et à sa collaboration avec les collègues, sont des atouts précieux pour renforcer la gouvernance et impliquer les parties prenantes, essentiels dans le contexte de transformation de la SEEG.",
+        "Le candidat est favorable car il possède l'expérience de management requise et les compétences pour mettre en œuvre la transformation nécessaire à la SEEG, malgré quelques points à travailler concernant les enjeux spécifiques de l'entreprise.",
+        "Bien que le candidat ait des compétences techniques solides, son manque d'affirmation et de rapidité dans la prise de décision le rend moyen par rapport aux standards élevés nécessaires pour transformer la SEEG selon sa nouvelle vision stratégique."
+      ],
+      "incoherences": []
     }
   }
+}

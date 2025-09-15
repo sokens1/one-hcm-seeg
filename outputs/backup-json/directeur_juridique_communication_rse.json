@@ -1,0 +1,468 @@
+{
+    "Directeur Juridique, Communication & RSE": {
+      "Ulrich Ndong Eyi": {
+        "prenom": "Ulrich",
+        "nom": "Ndong Eyi",
+        "conformite": {
+          "prenom": "Ulrich",
+          "nom": "NDONG EYI",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "NDONG EYI",
+          "prenom": "Ulrich",
+          "poste": "Direction Juridique, Communication & RSE",
+          "scores": {
+            "Metier": 0.48,
+            "Talent": 0.43,
+            "Paradigme": 0.55
+          },
+          "Score_moyen": 48.67,
+          "niveau": "Le candidat présente un score moyen qui indique une compatibilité moyenne avec les exigences de l'entreprise. Bien qu'il ait des atouts, des améliorations sont nécessaires pour aligner ses compétences avec la vision stratégique de SEEG.",
+          "verdict": "moyen",
+          "raison_du_verdict": "Le score moyen de 48.67 indique une adéquation partielle avec la vision de l'entreprise, nécessitant un développement supplémentaire.",
+          "points_forts": [
+            "Connaissances solides en réglementation juridique, essentielles pour la gouvernance renforcée de SEEG.",
+            "Capacité à communiquer de manière efficace, facilitant le dialogue entre les parties prenantes.",
+            "Compréhension des enjeux liés à la responsabilité sociétale, alignée à la mission de l'entreprise."
+          ],
+          "points_a_travailler": [
+            "Améliorer ses compétences techniques liées à la gestion des infrastructures.",
+            "Développer une expertise en financement et en gestion des ressources pour soutenir les investissements nécessaires.",
+            "Renforcer l'aptitude à conduire des changements organisationnels en période de restructuration."
+          ],
+          "rang": 1
+        },
+        "completude": {
+          "nom": "NDONG EYI",
+          "prenom": "Ulrich",
+          "poste": "Directeur Juridique, Communication & RSE",
+          "score": 43.2,
+          "resume_experience": "16 années dans le domaine juridique et RSE.",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expertise en droit des affaires, droit du travail et gestion des contentieux.",
+            "Maîtrise de la rédaction, négociation de contrats et veille réglementaire.",
+            "Expérience significative dans la mise en place et le suivi des projets RSE."
+          ],
+          "points_a_travailler": [
+            "Renforcement des compétences en communication digitale.",
+            "Augmentation des partenariats stratégiques en RSE.",
+            "Optimisation de la stratégie de communication pour résoudre la crise."
+          ],
+          "rang": 2
+        },
+        "feedback": {
+          "prenom": "Ulrich",
+          "nom": "NDONG EYI",
+          "score": 62.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente un bon potentiel de leadership, bien qu'il faille confirmer certaines compétences clés en gestion juridique. Son retour sur son comportement suggère une attitude positive compatible avec la vision de la SEEG.",
+          "Points forces": [
+            "Bonne compréhension des enjeux juridiques et de communication",
+            "Comportement positif et adaptable"
+          ],
+          "Points à travailler": [
+            "Nécessité de confirmer le leadership auprès des équipes",
+            "Expérience pratique à approfondir dans la gestion des aspects RSE"
+          ],
+          "rang": 2
+        },
+        "global": {
+          "score_global": 57.06,
+          "verdict": "favorable",
+          "resume": "Ulrich Ndong Eyi présente un bon potentiel de leadership et une attitude positive compatible avec la vision de la SEEG. Bien qu'il possède une bonne compréhension des enjeux juridiques et de communication, certaines compétences en gestion juridique nécessitent une confirmation.",
+          "points_forts": [
+            "Bonne compréhension des enjeux juridiques et de communication",
+            "Comportement positif",
+            "Adaptabilité"
+          ],
+          "points_a_ameliorer": [
+            "Nécessité de confirmer le leadership auprès des équipes",
+            "Expérience pratique à approfondir dans la gestion des aspects RSE"
+          ],
+          "rang": 1
+        }
+      },
+      "Victorine Iranga Makauta": {
+        "prenom": "Victorine",
+        "nom": "Iranga Makauta",
+        "conformite": {
+          "prenom": "Victorine",
+          "nom": "IRANGA MAKAUTA",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "IRANGA MAKAUTA",
+          "prenom": "Victorine",
+          "poste": "Direction Juridique, Communication & RSE",
+          "scores": {
+            "Metier": 46,
+            "Talent": 41,
+            "Paradigme": 51
+          },
+          "Score_moyen": 46.0,
+          "niveau": "Le score moyen obtenu par le candidat est de 46.0, ce qui indique une performance jugée moyenne envers les attentes de l'entreprise. Ce niveau de score souligne à la fois des forces visibles mais aussi des domaines d'amélioration nécessaires pour être aligné avec la vision SEEG.",
+          "verdict": "moyen",
+          "raison_verdict": "Bien que le score moyen soit dans la fourchette moyenne, il reste insuffisant pour répondre pleinement aux exigences élevées de transformation de l'entreprise.",
+          "points_forts": [
+            "Bonne capacité à gérer les demandes de communication et de transparence.",
+            "Compétences en matière de gestion juridique adaptées aux défis présents.",
+            "Connaissance des enjeux de responsabilité sociale et environnementale."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en leadership et en gestion financière pour accompagner la réorganisation.",
+            "Améliorer les capacités d'innovation et d'intégration des technologies nouvelles.",
+            "Développer des stratégies pour la mobilisation des parties prenantes et la gestion des relations avec les consommateurs."
+          ],
+          "rang": 4
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Victorine",
+          "nom": "IRANGA MAKAUTA",
+          "score": 68.5,
+          "verdict": "Favorable",
+          "raisons": "Le candidat présente un potentiel significatif pour le poste, avec des retours positifs sur son comportement et son aptitude managériale. Cependant, son leadership doit être davantage confirmé pour correspondre aux exigences de transformation de la SEEG.",
+          "Points forces": [
+            "Bon comportement managérial et relationnel",
+            "Adaptation aux retours d'expérience et retour positif"
+          ],
+          "Points à travailler": [
+            "Confirmation du leadership dans un contexte de crise",
+            "Capacité à gérer des réformes structurelles complexes"
+          ],
+          "rang": 1
+        },
+        "global": {
+          "score_global": 50.75,
+          "verdict": "moyen",
+          "resume": "Victorine présente un potentiel significatif pour le poste avec un bon comportement managérial et relationnel. Toutefois, son leadership doit être confirmé pour répondre aux exigences de transformation de la SEEG, notamment dans la gestion de réformes structurelles complexes.",
+          "points_forts": [
+            "Bon comportement managérial et relationnel",
+            "Adaptation aux retours d'expérience",
+            "Retour positif sur son aptitude managériale"
+          ],
+          "points_a_ameliorer": [
+            "Confirmation du leadership dans un contexte de crise",
+            "Capacité à gérer des réformes structurelles complexes"
+          ],
+          "rang": 2
+        }
+      },
+      "Sonia Matty Boussoughou": {
+        "prenom": "Sonia",
+        "nom": "Matty Boussoughou",
+        "conformite": {
+          "prenom": "Sonia",
+          "nom": "Matty BOUSSOUGHOU",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "BOUSSOUGHOU",
+          "prenom": "Sonia Matty",
+          "poste": "Directeur Juridique, Communication & RSE",
+          "score": 35.3,
+          "resume_experience": "17 ans d'expérience en droit, principalement en contentieux et gestion des risques",
+          "verdict": "moyen",
+          "points_forts": [
+            "Expérience approfondie en contentieux pénal, civil, commercial et social",
+            "Compétences démontrées en gestion des risques et assurances",
+            "Bonne capacité d'adaptation et d'apprentissage"
+          ],
+          "points_a_travailler": [
+            "Expérience limitée en communication et gestion de RSE",
+            "Exposition directe limitée à la stratégie de communication d'entreprise",
+            "Besoin de renforcer l'expérience en élaboration et déploiement de stratégies RSE"
+          ],
+          "rang": 4
+        },
+        "feedback": {
+          "prenom": "Sonia",
+          "nom": "MATTY BOUSSOUGHOU",
+          "score": 62.3,
+          "verdict": "Favorable",
+          "raisons": "Bien que le candidat soit encore à un stade junior, son potentiel et son comportement sont jugés satisfaisants. Il peut contribuer à la vision de SEEG, mais aurait besoin de soutien pour évoluer.",
+          "Points forces": [
+            "Comportement positif et motivation à évoluer",
+            "Capacité à travailler en équipe et à dialoguer avec les parties prenantes"
+          ],
+          "Points à travailler": [
+            "Expérience limitée dans des rôles managériaux",
+            "Nécessité de développer des compétences stratégiques pour la transformation organisationnelle"
+          ],
+          "rang": 3
+        },
+        "global": {
+          "score_global": 43.21,
+          "verdict": "défavorable",
+          "resume": "Sonia Matty Boussoughou présente un potentiel prometteur et manifeste une attitude positive avec une forte motivation à évoluer. Bien qu'elle soit à un stade junior, ses compétences en travail d'équipe et en collaboration avec les parties prenantes sont notables. Toutefois, son expérience managériale limitée et le besoin de développer des compétences stratégiques représentent des défis pour soutenir la transformation organisationnelle de SEEG.",
+          "points_forts": [
+            "Comportement positif et motivation à évoluer",
+            "Capacité à travailler en équipe",
+            "Aptitude à dialoguer avec les parties prenantes"
+          ],
+          "points_a_ameliorer": [
+            "Expérience limitée dans des rôles managériaux",
+            "Nécessité de développer des compétences stratégiques pour la transformation organisationnelle"
+          ],
+          "rang": 3
+        }
+      },
+      "Engo Menie Jean Robert": {
+        "prenom": "Engo",
+        "nom": "Menie Jean Robert",
+        "conformite": {
+          "prenom": "ENGO",
+          "nom": "MENIE JEAN ROBERT",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {
+          "nom": "MENIE JEAN ROBERT",
+          "prenom": "ENGO",
+          "poste": "Direction Juridique, Communication & RSE",
+          "scores": {
+            "Metier": 0.47,
+            "Talent": 0.39,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 45.67,
+          "niveau": "Le candidat présente un score moyen qui se situe dans la catégorie moyenne. Cela démontre un potentiel d'alignement avec certaines des valeurs et objectifs de l'entreprise, mais des efforts sont nécessaires pour atteindre une adéquation plus forte avec la vision de la SEEG.",
+          "verdict": "moyen",
+          "raison_verdict": "Bien que le score ne soit pas défavorable, il est également insuffisant pour indiquer une forte adéquation avec les ambitions transformantes de l'entreprise.",
+          "points_forts": [
+            "Bonne compréhension des enjeux du secteur juridique et RSE, ce qui est essentiel pour accompagner des réformes.",
+            "Capacité à intégrer des perspectives diverses, notamment sur les questions de gouvernance et de transparence.",
+            "Compétences en communication qui favoriseront le dialogue constructif entre les parties prenantes."
+          ],
+          "points_a_travailler": [
+            "Améliorer l'expertise métier pour mieux répondre aux défis juridiques spécifiques au secteur de l'énergie et de l'eau.",
+            "Renforcer les compétences en leadership et gestion du changement pour mieux mener des initiatives de transformation.",
+            "Développer une approche plus proactive en matière d'innovation et d'intégration des nouvelles technologies dans les pratiques organisationnelles."
+          ],
+          "rang": 5
+        },
+        "completude": {},
+        "feedback": {
+          "prenom": "Engo",
+          "nom": "MENIE JEAN ROBERT",
+          "score": 52.75,
+          "verdict": "Moyen",
+          "raisons": "Le candidat montre un respect envers la hiérarchie mais souffre d'un manque de leadership, ce qui est essentiel pour diriger dans un contexte de changement et de crise. Ses compétences sont à développer pour répondre aux exigences stratégiques de la SEEG.",
+          "Points forces": [
+            "Respect des procédures et des protocoles",
+            "Bon comportement général"
+          ],
+          "Points à travailler": [
+            "Améliorer ses compétences en leadership",
+            "Développer une vision stratégique plus proactive"
+          ],
+          "rang": 4
+        },
+        "global": {
+          "score_global": 42.79,
+          "verdict": "défavorable",
+          "resume": "Engo Menie Jean Robert présente un respect notable pour les procédures et les protocoles, mais montre un manque de leadership nécessaire dans un environnement en crise comme la SEEG. Ses compétences stratégiques et son adaptabilité aux exigences de la vision 2025-2035 de l'entreprise doivent être renforcées.",
+          "points_forts": [
+            "Respect des procédures et des protocoles",
+            "Bon comportement général"
+          ],
+          "points_a_ameliorer": [
+            "Améliorer ses compétences en leadership",
+            "Développer une vision stratégique plus proactive"
+          ],
+          "rang": 4
+        }
+      },
+      "Boris Armel Zue Meye": {
+        "prenom": "Boris",
+        "nom": "Armel Zue Meye",
+        "conformite": {
+          "prenom": "Boris",
+          "nom": "Armel ZUE MEYE",
+          "score_conformité": 100,
+          "commentaire": "Tous les documents ont été fournis."
+        },
+        "mtp": {},
+        "completude": {
+          "nom": "ZUE MEYE",
+          "prenom": "Boris Armel",
+          "poste": "Directeur Juridique, Communication & RSE",
+          "score": 41.8,
+          "resume_experience": "15 ans d'expérience en droit des affaires, conformité et contrats",
+          "verdict": "favorable",
+          "points_forts": [
+            "Expertise en droit des affaires et conformité",
+            "Expérience en gestion de contrats complexes et contentieux",
+            "Compétences en leadership et stratégie"
+          ],
+          "points_a_travailler": [
+            "Renforcement de l'expérience en communication stratégique",
+            "Développement des compétences en RSE",
+            "Amélioration de la gestion proactive des crises médiatiques"
+          ],
+          "rang": 3
+        },
+        "feedback": {
+          "prenom": "Boris",
+          "nom": "ARMEL ZUE MEYE",
+          "score": 52.3,
+          "verdict": "Moyen",
+          "raisons": "Le candidat présente des compétences juridiques, mais son manque de leadership et sa frilosité face à la pression sont préoccupants, surtout dans un contexte de transformation comme celui de la SEEG.",
+          "Points forces": [
+            "Bon comportement dans l'équipe",
+            "Connaissance des aspects juridiques et de la communication"
+          ],
+          "Points à travailler": [
+            "Manque de leadership",
+            "Lent dans la réalisation des livrables"
+          ],
+          "rang": 5
+        },
+        "global": {
+          "score_global": 39.51,
+          "verdict": "défavorable",
+          "resume": "Le candidat montre une solide connaissance des aspects juridiques et de la communication, ce qui est crucial pour le poste. Cependant, son manque de leadership et sa lenteur dans la réalisation des livrables sont préoccupants, surtout dans le contexte de transformation ambitieux de la SEEG.",
+          "points_forts": [
+            "Bon comportement dans l'équipe",
+            "Connaissance des aspects juridiques",
+            "Connaissance de la communication"
+          ],
+          "points_a_ameliorer": [
+            "Manque de leadership",
+            "Lent dans la réalisation des livrables"
+          ],
+          "rang": 5
+        }
+      },
+      "Sonia Boussoughou": {
+        "prenom": "Sonia",
+        "nom": "Boussoughou",
+        "conformite": {},
+        "mtp": {
+          "nom": "BOUSSOUGHOU",
+          "prenom": "Sonia",
+          "poste": "Direction Juridique, Communication & RSE",
+          "scores": {
+            "Metier": 0.48,
+            "Talent": 0.41,
+            "Paradigme": 0.51
+          },
+          "Score_moyen": 46.67,
+          "niveau": "Le score moyen de 46.67 indique une performance qui est légèrement au-dessus de la limite inférieure. Cela suggère que la candidate occupe une position intermédiaire par rapport à la vision de l'entreprise.",
+          "verdict": "moyen",
+          "raison_du_verdict": "Bien que le score soit au-dessus du seuil défavorable, il indique une nette amélioration pour atteindre les objectifs stratégiques ambitieux de l'entreprise.",
+          "points_forts": [
+            "Une bonne connaissance des enjeux juridiques liés à la gouvernance, ce qui est essentiel dans le contexte de la SEEG.",
+            "Capacité à communiquer efficacement, une compétence clé pour l'engagement des parties prenantes.",
+            "Une sensibilisation aux enjeux RSE, essentielle pour la transformation et l'alignement avec les attentes sociétales."
+          ],
+          "points_a_travailler": [
+            "Renforcer les compétences en management pour mieux diriger et inspirer les équipes dans le cadre de la réorganisation nécessaire.",
+            "Développer une expertise technique plus poussée pour contribuer à la modernisation des infrastructures.",
+            "Améliorer les capacités d'analyse stratégique pour aider à la mise en œuvre d'initiatives de transformation significatives."
+          ],
+          "rang": 3
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.67,
+          "verdict": "défavorable",
+          "resume": "Le profil de Sonia Boussoughou ne correspond pas aux attentes du poste de Directeur Juridique, Communication & RSE. Les scores de conformité documentaire et de complétude sont à zéro, ce qui indique une inadéquation significative avec le poste. De plus, le score global pondéré est défavorable.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude du dossier"
+          ],
+          "rang": 6
+        }
+      },
+      "Boris Zue Meye": {
+        "prenom": "Boris",
+        "nom": "Zue Meye",
+        "conformite": {},
+        "mtp": {
+          "nom": "ZUE MEYE",
+          "prenom": "Boris",
+          "poste": "Direction Juridique, Communication & RSE",
+          "scores": {
+            "Metier": 0.49,
+            "Talent": 0.43,
+            "Paradigme": 0.48
+          },
+          "Score_moyen": 46.67,
+          "niveau": "Le score moyen du candidat est de 46.67, ce qui indique une contribution acceptable à la vision de l'entreprise. Cependant, il reste des améliorations à apporter pour mieux s'aligner avec les objectifs stratégiques de la SEEG.",
+          "verdict": "moyen",
+          "raison_verdict": "Le score est dans la plage moyenne, indiquant que le candidat a des atouts mais nécessite des progrès dans certaines areas.",
+          "points_forts": [
+            "Connaissance approfondie des enjeux juridiques, ce qui est crucial pour la gouvernance renforcée.",
+            "Capacité d'analyse pertinente, ce qui peut contribuer à une communication efficace avec les parties prenantes.",
+            "Flexibilité et adaptation aux nouvelles technologies, en lien avec l'innovation et la transition énergétique."
+          ],
+          "points_a_travailler": [
+            "Améliorer les compétences en gestion des ressources pour aligner avec les pratiques de l'industrie.",
+            "Renforcer les capacités de leadership pour mieux mobiliser les équipes dans un contexte de changement.",
+            "Développer des stratégies pour optimiser la séparation entre les natures de travail technique et administratif."
+          ],
+          "rang": 2
+        },
+        "completude": {},
+        "feedback": {},
+        "global": {
+          "score_global": 11.67,
+          "verdict": "défavorable",
+          "resume": "Boris Zue Meye a obtenu un score global défavorable, avec des lacunes significatives dans la conformité documentaire et la complétude par rapport à l'offre d'emploi. Son score faible et l'absence de feedback RH détaillé soulignent un manque de pertinence ou d'alignement avec la vision stratégique de l'entreprise.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude par rapport à l'offre"
+          ],
+          "rang": 7
+        }
+      },
+      "Jean Robert Engo Menie": {
+        "prenom": "Jean",
+        "nom": "Robert Engo Menie",
+        "conformite": {},
+        "mtp": {},
+        "completude": {
+          "nom": "ENGO MENIE",
+          "prenom": "Jean Robert",
+          "poste": "Directeur Juridique, Communication & RSE",
+          "score": 45.3,
+          "resume_experience": "10 années en tant que juriste d'entreprise spécialisé en droit des affaires et gestion des contrats",
+          "verdict": "moyen",
+          "raison_verdict": "Le candidat possède une bonne expérience en droit des affaires et en gestion des contrats, mais une expérience limitée en communication et RSE.",
+          "points_forts": [
+            "Solide expérience en gestion et rédaction des contrats",
+            "Bonne connaissance de la législation gabonaise sur le secteur de l’énergie et de l’eau",
+            "Expérience en gestion du contentieux"
+          ],
+          "points_a_travailler": [
+            "Expérience limitée en stratégie de communication et gestion de crise",
+            "Connaissances et pratique en RSE à développer",
+            "Compétences en communication externe et relations presse"
+          ],
+          "rang": 1
+        },
+        "feedback": {},
+        "global": {
+          "score_global": 9.06,
+          "verdict": "défavorable",
+          "resume": "Le candidat ne semble pas répondre aux exigences du poste compte tenu d'une inadéquation avec les attentes documentaires et un score global très bas. Le feedback RH étant absent, il est difficile d'identifier des contributions positives potentielles.",
+          "points_forts": [],
+          "points_a_ameliorer": [
+            "Conformité documentaire",
+            "Complétude par rapport à l'offre"
+          ],
+          "rang": 8
+        }
+      }
+    }
+  }
