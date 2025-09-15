@@ -60,11 +60,11 @@ interface CandidateModalProps {
 }
 
 function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
-  console.log('[CANDIDATE MODAL DEBUG] Opening modal for candidate:', candidate);
-  console.log('[CANDIDATE MODAL DEBUG] Using applicationId:', candidate.id);
+  //console.log('[CANDIDATE MODAL DEBUG] Opening modal for candidate:', candidate);
+  //console.log('[CANDIDATE MODAL DEBUG] Using applicationId:', candidate.id);
   
   const { data: documents, isLoading, error } = useApplicationDocuments(candidate.id);
-  console.log('[CANDIDATE MODAL DEBUG] Documents from hook:', documents);
+  //console.log('[CANDIDATE MODAL DEBUG] Documents from hook:', documents);
 
   const toUrl = (path: string) => {
     if (path.startsWith('http')) return path;
@@ -267,18 +267,18 @@ export default function CandidatesPage() {
   const { applications, isLoading, error } = useRecruiterApplications();
   const { isObserver } = useAuth();
   
-  console.log('[CANDIDATES PAGE DEBUG] Applications hook result:', { applications, isLoading, error });
-  console.log('[CANDIDATES PAGE DEBUG] Applications count:', applications?.length);
+  //console.log('[CANDIDATES PAGE DEBUG] Applications hook result:', { applications, isLoading, error });
+  //console.log('[CANDIDATES PAGE DEBUG] Applications count:', applications?.length);
   
   // Log current user info for debugging
   useEffect(() => {
     const logUserInfo = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      console.log('[CANDIDATES DEBUG] Current recruiter user:', { 
-        id: user?.id, 
-        email: user?.email,
-        role: user?.user_metadata?.role 
-      });
+      // console.log('[CANDIDATES DEBUG] Current recruiter user:', { 
+      //   id: user?.id, 
+      //   email: user?.email,
+      //   role: user?.user_metadata?.role 
+      // });
       
       if (user?.id) {
         const { data: userRole, error: roleError } = await supabase
@@ -286,7 +286,7 @@ export default function CandidatesPage() {
           .select('role')
           .eq('id', user.id)
           .single();
-        console.log('[CANDIDATES DEBUG] Recruiter role from DB:', userRole, 'Error:', roleError);
+        //console.log('[CANDIDATES DEBUG] Recruiter role from DB:', userRole, 'Error:', roleError);
       }
     };
     logUserInfo();

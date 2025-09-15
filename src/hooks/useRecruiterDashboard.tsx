@@ -179,14 +179,14 @@ export function useRecruiterDashboard() {
       });
 
       // Debug: Log gender data extraction
-      console.log('[DASHBOARD DEBUG] Full candidate_details object:', JSON.stringify(allEntries?.[0]?.candidate_details, null, 2));
-      console.log('[DASHBOARD DEBUG] Direct gender from candidate_details:', allEntries?.[0]?.candidate_details?.gender);
-      console.log('[DASHBOARD DEBUG] Candidate genders map:', candidateGenders);
+      // console.log('[DASHBOARD DEBUG] Full candidate_details object:', JSON.stringify(allEntries?.[0]?.candidate_details, null, 2));
+      // console.log('[DASHBOARD DEBUG] Direct gender from candidate_details:', allEntries?.[0]?.candidate_details?.gender);
+      // console.log('[DASHBOARD DEBUG] Candidate genders map:', candidateGenders);
       
       // Extraire le genre depuis candidate_profiles si disponible
       if (allEntries?.[0]?.candidate_details?.candidate_profiles?.gender) {
         const profileGender = allEntries[0].candidate_details.candidate_profiles.gender;
-        console.log('[DASHBOARD DEBUG] Gender from candidate_profiles:', profileGender);
+        // console.log('[DASHBOARD DEBUG] Gender from candidate_profiles:', profileGender);
       }
 
       // Normalize genders for unique candidates
@@ -276,15 +276,15 @@ export function useRecruiterDashboard() {
     const departments = ['Eau', 'Électricité', 'Support'];
     
     // Debug: Log all jobs and their departments
-    console.log('[DASHBOARD DEBUG] All jobs:', jobsData);
-    console.log('[DASHBOARD DEBUG] Jobs with departments:', (jobsData || []).map(job => ({ id: job.id, title: job.title, department: job.department })));
+    // console.log('[DASHBOARD DEBUG] All jobs:', jobsData);
+    // console.log('[DASHBOARD DEBUG] Jobs with departments:', (jobsData || []).map(job => ({ id: job.id, title: job.title, department: job.department })));
     
     departments.forEach(dept => {
       const deptJobs = (jobsData || []).filter(job => job.department === dept);
       const deptJobCount = deptJobs.length;
       
       // Debug: Log department filtering
-      console.log(`[DASHBOARD DEBUG] Department "${dept}":`, { deptJobCount, jobs: deptJobs.map(j => j.title) });
+      // console.log(`[DASHBOARD DEBUG] Department "${dept}":`, { deptJobCount, jobs: deptJobs.map(j => j.title) });
       
       // Always add the department, even if no jobs
       const deptApplications = deptJobs.reduce((sum, job) => {
@@ -303,7 +303,7 @@ export function useRecruiterDashboard() {
     });
     
     // Debug: Log final department stats
-    console.log('[DASHBOARD DEBUG] Final department stats:', departmentStats);
+    // console.log('[DASHBOARD DEBUG] Final department stats:', departmentStats);
 
     // Calculate status evolution over the last 7 days
     const statusEvolution: StatusEvolutionData[] = [];
@@ -418,8 +418,8 @@ export function useCreateJobOffer() {
     }) => {
       if (!user) throw new Error("User not authenticated");
 
-      console.log('[CreateJobOffer] Input data:', { jobData, status });
-      console.log('[CreateJobOffer] User ID:', user.id);
+      // console.log('[CreateJobOffer] Input data:', { jobData, status });
+      // console.log('[CreateJobOffer] User ID:', user.id);
 
       // Build payload with proper field mapping
       const basePayload: JobOffersInsert = { 
@@ -446,7 +446,7 @@ export function useCreateJobOffer() {
         }
       });
 
-      console.log('[CreateJobOffer] Final payload:', basePayload);
+      // console.log('[CreateJobOffer] Final payload:', basePayload);
 
       const { data, error } = await supabase.from('job_offers').insert([basePayload]).select();
 
@@ -455,11 +455,11 @@ export function useCreateJobOffer() {
         throw new Error(`Erreur lors de la création de l'offre: ${error.message}`);
       }
       
-      console.log('[CreateJobOffer] Success:', data);
+      // console.log('[CreateJobOffer] Success:', data);
       return data;
     },
     onSuccess: () => {
-      console.log('[CreateJobOffer] Mutation successful, invalidating queries');
+      // console.log('[CreateJobOffer] Mutation successful, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['recruiterDashboard', user?.id] });
       queryClient.invalidateQueries({ queryKey: ['jobOffers'] });
     },
