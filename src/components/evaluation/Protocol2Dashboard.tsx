@@ -138,6 +138,8 @@ const translateStatus = (status: string) => {
 };
 
 export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candidateName, jobTitle, applicationId, onStatusChange, isReadOnly = false }: Protocol2DashboardProps) {
+  console.log('🔍 Protocol2Dashboard - isReadOnly:', isReadOnly, 'applicationId:', applicationId);
+  
   const {
     evaluationData,
     updateEvaluation,
@@ -165,19 +167,30 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
   // États pour la programmation de simulation
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [isSimulationPopoverOpen, setIsSimulationPopoverOpen] = useState(false);
 
   // Fonction pour programmer la simulation (sans changer le statut)
   const handleScheduleSimulation = useCallback(async () => {
-    if (!selectedDate || !selectedTime) return;
+    if (!selectedDate || !selectedTime) {
+      console.log('❌ Date ou heure manquante:', { selectedDate, selectedTime });
+      return;
+    }
+    
+    console.log('🚀 Début de la programmation de simulation:', { selectedDate, selectedTime, applicationId });
     
     try {
       const { supabase } = await import('@/integrations/supabase/client');
       const simulationDateTime = new Date(`${selectedDate}T${selectedTime}`);
       
+      console.log('📅 Date de simulation créée:', simulationDateTime.toISOString());
+      
       // Sauvegarder la date programmée en base de données (protocol2_evaluations)
-      await saveSimulationDate(selectedDate, selectedTime);
+      console.log('💾 Sauvegarde dans protocol2_evaluations...');
+      const saveResult = await saveSimulationDate(selectedDate, selectedTime);
+      console.log('✅ Résultat de la sauvegarde:', saveResult);
       
       // Mettre à jour seulement la date de simulation dans applications (garder le statut 'incubation')
+      console.log('🔄 Mise à jour de la table applications...');
       const { error: updateError } = await supabase
         .from('applications')
         .update({
@@ -190,8 +203,13 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
         console.error('❌ Erreur lors de la mise à jour de la date de simulation:', updateError);
         return;
       }
+      
+      console.log('✅ Table applications mise à jour avec succès');
 
       console.log('✅ Date de simulation mise à jour:', simulationDateTime.toISOString());
+      
+      // Afficher un message de succès
+      alert('✅ Simulation programmée avec succès !');
       
       // Envoyer un email de confirmation (optionnel)
       try {
@@ -229,6 +247,7 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
       // Réinitialiser la sélection
       setSelectedDate('');
       setSelectedTime('');
+      setIsSimulationPopoverOpen(false);
       
     } catch (error) {
       console.error('❌ Erreur lors de la programmation de la simulation:', error);
@@ -399,12 +418,16 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
             
             {/* Bouton Programmer la simulation */}
             <div className="flex-shrink-0">
-              <Popover>
+              <Popover open={isSimulationPopoverOpen} onOpenChange={setIsSimulationPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button 
                     size="lg"
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
                     disabled={isReadOnly}
+                    onClick={() => {
+                      console.log('🔘 Bouton "Programmer la simulation" cliqué');
+                      setIsSimulationPopoverOpen(true);
+                    }}
                   >
                     <CalendarLucide className="w-4 h-4 sm:w-5 sm:h-5" />
                     Programmer la simulation
