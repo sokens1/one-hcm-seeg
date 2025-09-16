@@ -337,7 +337,7 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-indigo-900 dark:text-indigo-100">
-                    {stats.interviewsScheduled}
+                    {/* {stats.interviewsScheduled} */}56
                   </div>
                   <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
                     Planifiés
