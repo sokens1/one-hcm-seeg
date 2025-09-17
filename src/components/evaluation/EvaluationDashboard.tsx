@@ -24,7 +24,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { InterviewCalendarModal } from './InterviewCalendarModal';
 
 
-
 interface StarRatingProps {
   value: number;
   onChange: (value: number) => void;
@@ -654,15 +653,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               <div className="flex flex-col sm:flex-row justify-end pt-4 border-t border-blue-200 gap-3">
                 <Button 
                   size="lg"
-                  onClick={() => {
-                    // Rediriger vers la page Traitement IA
-                    const currentPath = window.location.pathname;
-                    if (currentPath.includes('/observer/')) {
-                      navigate('/observer/traitements-ia');
-                    } else {
-                      navigate('/recruiter/traitements-ia');
-                    }
-                  }}
+                  onClick={handleAITreatment}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
                   disabled={isReadOnly}
                 >
@@ -1191,6 +1182,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         onClose={() => setIsCalendarModalOpen(false)}
         currentApplicationId={applicationId}
       />
+
 
     </div>
   );
