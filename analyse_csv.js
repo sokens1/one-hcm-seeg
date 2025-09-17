@@ -138,3 +138,4 @@ const rapport = {
 
 fs.writeFileSync('rapport_analyse_csv.json', JSON.stringify(rapport, null, 2));
 console.log('\nRapport sauvegardé dans rapport_analyse_csv.json');
+

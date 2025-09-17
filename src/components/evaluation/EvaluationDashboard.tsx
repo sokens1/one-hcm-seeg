@@ -37,7 +37,7 @@ const StarRating: React.FC<StarRatingProps> = ({ value, onChange, label, disable
     if (disabled) return;
     
     // Empêcher les clics involontaires en vérifiant si c'est un clic intentionnel
-    console.log('⭐ [STAR DEBUG] Clic sur étoile:', starValue, 'pour', label);
+    // console.log('⭐ [STAR DEBUG] Clic sur étoile:', starValue, 'pour', label);
     onChange(starValue);
   };
 
