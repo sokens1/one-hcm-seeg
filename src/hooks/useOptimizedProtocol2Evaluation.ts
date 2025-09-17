@@ -118,16 +118,30 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     
     setIsLoading(true);
     try {
-      // Requête optimisée - seulement les champs nécessaires
-      const { data, error } = await supabase
-        .from('protocol2_evaluations')
-        .select('*')
-        .eq('application_id', applicationId)
-        .maybeSingle();
+      // Requête optimisée - récupérer les données de protocol2_evaluations ET la date de simulation depuis applications
+      const [protocol2Result, applicationResult] = await Promise.all([
+        supabase
+          .from('protocol2_evaluations')
+          .select('*')
+          .eq('application_id', applicationId)
+          .maybeSingle(),
+        supabase
+          .from('applications')
+          .select('simulation_date')
+          .eq('id', applicationId)
+          .maybeSingle()
+      ]);
 
-      if (error && error.code !== 'PGRST116') {
-        throw error;
+      if (protocol2Result.error && protocol2Result.error.code !== 'PGRST116') {
+        throw protocol2Result.error;
       }
+
+      if (applicationResult.error && applicationResult.error.code !== 'PGRST116') {
+        throw applicationResult.error;
+      }
+
+      const data = protocol2Result.data;
+      const applicationData = applicationResult.data;
 
       let loadedData = defaultEvaluationData;
       if (data) {
@@ -170,7 +184,15 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
             }
           },
           simulation_scheduling: {
-            simulation_date: data.simulation_date || null,
+            // Récupérer la date depuis la table applications et créer la date en heure locale
+            simulation_date: applicationData?.simulation_date ? 
+              (() => {
+                // Parser la date stockée en format "YYYY-MM-DDTHH:MM:SS"
+                const [datePart, timePart] = applicationData.simulation_date.split('T');
+                const [year, month, day] = datePart.split('-').map(Number);
+                const [hours, minutes] = timePart.split(':').map(Number);
+                return new Date(year, month - 1, day, hours, minutes);
+              })() : null,
             simulation_time: data.simulation_time || null,
             simulation_scheduled_at: data.simulation_scheduled_at || null
           }
@@ -532,8 +554,8 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       const updatedData = {
         ...evaluationData,
         simulation_scheduling: {
-          simulation_date: date,
-          simulation_time: time,
+          simulation_date: date, // Garder le format YYYY-MM-DD
+          simulation_time: time, // Garder le format HH:MM:SS
           simulation_scheduled_at: new Date().toISOString()
         }
       };

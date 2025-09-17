@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import { useOptimizedProtocol2Evaluation } from "@/hooks/useOptimizedProtocol2Evaluation";
 import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
 import { useToast } from "@/hooks/use-toast";
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 interface StarRatingProps {
   value: number;
@@ -183,9 +185,13 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
     
     try {
       const { supabase } = await import('@/integrations/supabase/client');
-      const simulationDateTime = new Date(`${selectedDate}T${selectedTime}`);
+      // Créer la date en heure locale pour éviter les décalages de timezone
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const [hours, minutes] = selectedTime.split(':').map(Number);
+      const simulationDateTime = new Date(year, month - 1, day, hours, minutes);
       
-      console.log('📅 Date de simulation créée:', simulationDateTime.toISOString());
+      console.log('📅 Date de simulation créée (locale):', simulationDateTime.toISOString());
+      console.log('📅 Date de simulation créée (locale string):', simulationDateTime.toLocaleString('fr-FR'));
       
       // Sauvegarder la date programmée en base de données (protocol2_evaluations)
       console.log('💾 Sauvegarde dans protocol2_evaluations...');
@@ -197,7 +203,7 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
       const { error: updateError } = await supabase
         .from('applications')
         .update({
-          simulation_date: simulationDateTime.toISOString(),
+          simulation_date: `${selectedDate}T${selectedTime}:00`, // Stocker en format string local
           updated_at: new Date().toISOString()
         })
         .eq('id', applicationId);
@@ -214,7 +220,7 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
       // Afficher un message de succès avec toast
       toast({
         title: "Simulation programmée avec succès !",
-        description: `Simulation programmée pour le ${new Date(selectedDate).toLocaleDateString('fr-FR')} à ${selectedTime.slice(0, 5)}`,
+        description: `Simulation programmée pour le ${format(simulationDateTime, "EEEE dd MMMM yyyy", { locale: fr })} à ${selectedTime.slice(0, 5)}`,
         variant: "default"
       });
       
@@ -256,7 +262,7 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
             const notificationData = {
               user_id: candidateId,
               title: 'Simulation programmée',
-              message: `Votre simulation pour le poste de ${jobTitle} a été programmée pour le ${new Date(selectedDate).toLocaleDateString('fr-FR')} à ${selectedTime.slice(0, 5)}.`,
+              message: `Votre simulation pour le poste de ${jobTitle} a été programmée pour le ${format(simulationDateTime, "EEEE dd MMMM yyyy", { locale: fr })} à ${selectedTime.slice(0, 5)}.`,
               type: 'simulation_scheduled',
               read: false
             };
@@ -459,7 +465,7 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
                 <CalendarLucide className="w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600">
                   {evaluationData.simulation_scheduling.simulation_date && evaluationData.simulation_scheduling.simulation_time
-                    ? `${new Date(evaluationData.simulation_scheduling.simulation_date).toLocaleDateString('fr-FR')} à ${evaluationData.simulation_scheduling.simulation_time.slice(0, 5)}`
+                    ? `${format(evaluationData.simulation_scheduling.simulation_date, "EEEE dd MMMM yyyy", { locale: fr })} à ${evaluationData.simulation_scheduling.simulation_time.slice(0, 5)}`
                     : "Aucune date programmée"
                   }
                 </span>
