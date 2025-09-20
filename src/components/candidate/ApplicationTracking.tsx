@@ -41,8 +41,9 @@ const generateTimeline = (application: Application | null | undefined, hasInterv
   } else if (status === 'refuse') {
     // Pour les candidats refusés, vérifier s'ils ont eu un entretien
     if (hasInterview) {
-      treatmentStatus = 'completed';
-      treatmentDate = 'Terminé';
+      treatmentStatus = 'refused';
+      treatmentDate = 'Refusé après entretien';
+      treatmentDescription = "Protocole 1 : Évaluation et Entretien";
     } else {
       treatmentStatus = 'refused';
       treatmentDate = 'Refusé sans entretien';
@@ -116,14 +117,15 @@ export function ApplicationTracking() {
           setHasInterview(false);
         } else if (data) {
           // Un entretien a eu lieu si :
-          // 1. Il y a une date d'entretien ET
-          // 2. Au moins un des scores d'entretien est > 0
+          // 1. Il y a une date d'entretien (même si les scores sont à 0 après correction)
+          // OU
+          // 2. Au moins un des scores d'entretien est > 0 (pour les cas où la date pourrait être manquante)
           const hasInterviewDate = !!data.interview_date;
           const hasInterviewScores = (data.interview_metier_score || 0) > 0 || 
                                    (data.interview_talent_score || 0) > 0 || 
                                    (data.interview_paradigme_score || 0) > 0;
           
-          setHasInterview(hasInterviewDate && hasInterviewScores);
+          setHasInterview(hasInterviewDate || hasInterviewScores);
         } else {
           setHasInterview(false);
         }
