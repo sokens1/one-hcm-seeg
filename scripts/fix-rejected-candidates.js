@@ -116,3 +116,5 @@ async function fixRejectedCandidates() {
 
 // Exécuter le script
 fixRejectedCandidates();
+
+
