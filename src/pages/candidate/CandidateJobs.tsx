@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { JobCard } from "@/components/ui/job-card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { isApplicationClosed } from "@/utils/applicationUtils";
 export default function CandidateJobs() {
   useJobOfferNotifications();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const { data, isLoading, error } = useJobOffers();
@@ -22,6 +23,18 @@ export default function CandidateJobs() {
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
+
+  // Handle jobId parameter to open specific job application
+  useEffect(() => {
+    const jobId = searchParams.get('jobId');
+    if (jobId && jobOffers.length > 0) {
+      const job = jobOffers.find(j => j.id === jobId);
+      if (job) {
+        // Navigate to the specific job detail page
+        navigate(`/jobs/${jobId}`);
+      }
+    }
+  }, [searchParams, jobOffers, navigate]);
 
   // Helper to normalize location which can be string | string[] from the API
   const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
@@ -88,22 +101,10 @@ export default function CandidateJobs() {
                             <Button
                 variant="secondary"
                 size="lg"
-                className="bg-white/20 text-white border-white/30 opacity-50 cursor-not-allowed pointer-events-none"
-                disabled={true}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (preLaunch) {
-                    preLaunchToast();
-                  } else if (applicationsClosed) {
-                    toast.info("Les candidatures sont désormais closes.");
-                  } else if (isApplicationClosed()) {
-                    toast.info("Les candidatures sont désormais closes.");
-                  }
-                }}
-                title={applicationsClosed || isApplicationClosed() ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
+                className="bg-white/20 text-white border-white/30"
+                onClick={() => navigate('/auth')}
               >
-                Candidatures closes
+                Postuler
               </Button>
             </div>
           </div>

@@ -135,8 +135,14 @@ export function useRecruiterDashboard() {
     const totalCandidates = candidateIds.length; // uniques
     const newCandidates = processedJobs.reduce((sum, job) => sum + job.new_candidates, 0);
 
-    // Count interviews scheduled (applications in 'entretien_programme' status) from ALL applications
-    const interviewsScheduled = (allApplicationsData || []).filter(app => app.status === 'entretien_programme').length;
+    // Count unique candidates with at least one application in 'entretien_programme' status
+    const candidatesWithInterviews = new Set(
+      (allApplicationsData || [])
+        .filter(app => app.status === 'entretien_programme')
+        .map(app => app.candidate_id)
+        .filter(Boolean)
+    );
+    const interviewsScheduled = candidatesWithInterviews.size;
 
     // Compute multi-post applicants (candidates who applied to 2+ jobs)
     const applicationsByCandidate = new Map<string, Set<string>>();

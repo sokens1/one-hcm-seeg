@@ -223,24 +223,12 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 </div>
                 
                                 <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (preLaunch) {
-                      preLaunchToast();
-                    } else if (applicationsClosed) {
-                      toast.info("Les candidatures sont désormais closes.");
-                    } else if (isApplicationClosed()) {
-                      toast.info("Les candidatures sont désormais closes.");
-                    }
-                  }}
-                  className="w-full text-sm sm:text-base opacity-50 cursor-not-allowed pointer-events-none"
+                  onClick={onApply}
+                  className="w-full text-sm sm:text-base"
                   size="lg"
-                  disabled={true}
-                  title={applicationsClosed || isApplicationClosed() ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  Candidatures closes
+                  Postuler
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">

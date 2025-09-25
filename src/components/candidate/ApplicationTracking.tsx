@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Application } from "@/hooks/useApplications";
 import { ContentSpinner } from "@/components/ui/spinner";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define the structure for a timeline step
 interface TimelineStep {
@@ -18,12 +20,36 @@ interface TimelineStep {
   date?: string;
 }
 
-// Function to generate the timeline based on application status
-const generateTimeline = (application: Application | null | undefined): TimelineStep[] => {
+// Function to generate the timeline based on application status and interview data
+const generateTimeline = (application: Application | null | undefined, hasInterview: boolean = false): TimelineStep[] => {
   if (!application) return [];
 
   const status = application.status;
   const createdAt = format(new Date(application.created_at), 'dd MMMM yyyy', { locale: fr });
+
+  // Déterminer le statut de l'étape "Traitement" en fonction du statut et de l'existence d'un entretien
+  let treatmentStatus: 'completed' | 'current' | 'pending' | 'refused' = 'pending';
+  let treatmentDate = 'À venir';
+  let treatmentDescription = "Protocole 1 : Évaluation et Entretien";
+
+  if (status === 'candidature') {
+    treatmentStatus = 'current';
+    treatmentDate = 'En cours';
+  } else if (['incubation', 'embauche'].includes(status)) {
+    treatmentStatus = 'completed';
+    treatmentDate = 'Terminé';
+  } else if (status === 'refuse') {
+    // Pour les candidats refusés, vérifier s'ils ont eu un entretien
+    if (hasInterview) {
+      treatmentStatus = 'refused';
+      treatmentDate = 'Refusé après entretien';
+      treatmentDescription = "Protocole 1 : Évaluation et Entretien";
+    } else {
+      treatmentStatus = 'refused';
+      treatmentDate = 'Refusé sans entretien';
+      treatmentDescription = "Protocole 1 : Évaluation (sans entretien)";
+    }
+  }
 
   const timeline: TimelineStep[] = [
     {
@@ -35,10 +61,10 @@ const generateTimeline = (application: Application | null | undefined): Timeline
     },
     {
       title: "Traitement",
-      status: status === 'candidature' ? 'current' : (['incubation', 'embauche', 'refuse'].includes(status) ? 'completed' : 'pending'),
+      status: treatmentStatus,
       icon: Users,
-      description: "Protocole 1 : Évaluation et Entretien",
-      date: status === 'candidature' ? 'En cours' : (['incubation', 'embauche', 'refuse'].includes(status) ? 'Terminé' : 'À venir'),
+      description: treatmentDescription,
+      date: treatmentDate,
     },
     {
       title: "Présélectionné (Incubation)",
@@ -67,8 +93,54 @@ export function ApplicationTracking() {
   const effectiveId = id || queryId;
   const from = (location.state as { from?: string } | null)?.from ?? new URLSearchParams(location.search).get('from');
   const { data: application, isLoading, error } = useApplication(effectiveId);
+  
+  const [hasInterview, setHasInterview] = useState<boolean>(false);
+  const [isLoadingInterview, setIsLoadingInterview] = useState<boolean>(true);
 
-  const timeline = generateTimeline(application);
+  // Vérifier si un entretien a eu lieu
+  useEffect(() => {
+    const checkInterviewStatus = async () => {
+      if (!effectiveId) {
+        setIsLoadingInterview(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('protocol1_evaluations')
+          .select('interview_date, interview_metier_score, interview_talent_score, interview_paradigme_score')
+          .eq('application_id', effectiveId)
+          .maybeSingle();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Erreur lors de la vérification de l\'entretien:', error);
+          setHasInterview(false);
+        } else if (data) {
+          // Un entretien a eu lieu si :
+          // 1. Il y a une date d'entretien (même si les scores sont à 0 après correction)
+          // OU
+          // 2. Au moins un des scores d'entretien est > 0 (pour les cas où la date pourrait être manquante)
+          const hasInterviewDate = !!data.interview_date;
+          const hasInterviewScores = (data.interview_metier_score || 0) > 0 || 
+                                   (data.interview_talent_score || 0) > 0 || 
+                                   (data.interview_paradigme_score || 0) > 0;
+          
+          setHasInterview(hasInterviewDate || hasInterviewScores);
+        } else {
+          setHasInterview(false);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la vérification de l\'entretien:', error);
+        setHasInterview(false);
+      } finally {
+        setIsLoadingInterview(false);
+      }
+    };
+
+    checkInterviewStatus();
+  }, [effectiveId]);
+
+  const timeline = generateTimeline(application, hasInterview);
 
   const getStatusColor = (status: TimelineStep['status']) => {
     switch (status) {
@@ -88,7 +160,7 @@ export function ApplicationTracking() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingInterview) {
     return <ContentSpinner text="Chargement du suivi de la candidature..." />;
   }
 

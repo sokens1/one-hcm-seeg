@@ -304,12 +304,12 @@ export function useProtocol1Evaluation(applicationId: string) {
         gap_competence_comments: data.protocol1.interview.gapCompetence.comments,
         general_summary: data.protocol1.interview.generalSummary,
         
-        // Scores calculés SANS arrondi
-        documentary_score: sectionScores.documentaryScore,
-        mtp_score: sectionScores.mtpScore,
-        interview_score: sectionScores.interviewScore,
-        total_score: sectionScores.totalScore,
-        overall_score: sectionScores.totalScore,
+        // Scores calculés arrondis pour la base de données (INTEGER)
+        documentary_score: Math.round(sectionScores.documentaryScore),
+        mtp_score: Math.round(sectionScores.mtpScore),
+        interview_score: Math.round(sectionScores.interviewScore),
+        total_score: Math.round(sectionScores.totalScore),
+        overall_score: Math.round(sectionScores.totalScore),
         
         // Statut
         status: data.protocol1.status,

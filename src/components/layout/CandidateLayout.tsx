@@ -166,6 +166,7 @@ interface CandidateLayoutProps {
 export function CandidateLayout({ children }: CandidateLayoutProps) {
   const [currentView, setCurrentView] = useState<ViewType>("dashboard");
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -174,6 +175,7 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const viewParam = params.get("view") as ViewType | null;
+    const jobId = params.get("jobId");
     
     if (viewParam && ["dashboard","jobs","applications","profile","settings","tracking"].includes(viewParam)) {
       setCurrentView(viewParam);
@@ -185,7 +187,10 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
       window.history.replaceState({}, "", `${location.pathname}?${newParams.toString()}`);
       setCurrentView("dashboard");
     }
-  }, [location.search, location.pathname]);
+
+    // If jobId is provided, we'll handle it in the JobCatalog component instead
+    // to avoid infinite redirect loops
+  }, [location.search, location.pathname, navigate]);
 
 
   return (
