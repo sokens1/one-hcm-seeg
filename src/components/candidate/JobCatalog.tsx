@@ -5,13 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Search, Filter, Grid, List, X, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useCandidateLayout } from "@/components/layout/CandidateLayout";
 import { JobDetail } from "./JobDetail";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { isPreLaunch } from "@/utils/launchGate";
 import { isApplicationClosed } from "@/utils/applicationUtils";
+import { toast } from "sonner";
 
 export function JobCatalog() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,6 +25,7 @@ export function JobCatalog() {
   const { setCurrentView } = useCandidateLayout();
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const { data: jobs, isLoading, error } = useJobOffers();
   const preLaunch = isPreLaunch();
@@ -59,6 +61,18 @@ export function JobCatalog() {
 
   const uniqueContracts = [...new Set(jobs?.map(job => job.contract_type) || [])];
 
+  // Handle jobId parameter to open specific job detail
+  useEffect(() => {
+    const jobId = searchParams.get('jobId');
+    if (jobId && jobs && jobs.length > 0) {
+      const job = jobs.find(j => j.id === jobId);
+      if (job) {
+        console.log('JobCatalog: jobId detected, opening job detail for:', jobId);
+        setSelectedJobId(jobId);
+      }
+    }
+  }, [searchParams, jobs]);
+
   const handleJobClick = (jobId: string) => {
     setSelectedJobId(jobId);
     // Mettre à jour l'URL pour permettre le rafraîchissement sans perdre l'état
@@ -72,10 +86,19 @@ export function JobCatalog() {
   const handleApplyClick = (jobId: string) => {
     if (preLaunch) {
       preLaunchToast();
+      return;
     } else if (applicationsClosed) {
       toast.info("Les candidatures sont désormais closes.");
+      return;
     }
-    // Candidatures désactivées - aucune action
+    // Ouvrir le formulaire de candidature
+    setShowApplicationForm(true);
+    // Mettre à jour l'URL pour permettre le rafraîchissement sans perdre l'état
+    const params = new URLSearchParams(location.search);
+    params.set("view", "jobs");
+    params.set("jobId", jobId);
+    params.set("apply", "1");
+    navigate(`/candidate/dashboard?${params.toString()}`);
   };
 
   const handleBackToCatalog = () => {

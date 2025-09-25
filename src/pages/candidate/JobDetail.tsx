@@ -5,7 +5,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Calendar, Building2, Users, Banknote, Clock } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Building2, Users, Banknote, Clock, Send } from "lucide-react";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,19 +21,20 @@ export default function JobDetail() {
   const { data: applicationStatus, isLoading: isLoadingApplication } = useApplicationStatus(id || "");
 
   const handleBackToJobs = () => {
-    // Use browser history to go back to previous page
-    window.history.back();
+    // Navigate directly to home page to avoid double-click issues
+    navigate('/');
   };
 
   const handleApply = () => {
     if (!user) {
-      // Redirect to auth and then to apply page
-      const redirect = encodeURIComponent(`/jobs/${id}/apply`);
-      navigate(`/auth?redirect=${redirect}`);
+      // Redirect to auth with signup tab and then to candidate dashboard with jobs view and specific job
+      const redirect = encodeURIComponent(`/candidate/dashboard?view=jobs&jobId=${id}`);
+      navigate(`/auth?tab=signup&redirect=${redirect}`);
       return;
     }
-    // If already authenticated, go directly to apply page
-    navigate(`/jobs/${id}/apply`);
+    // If already authenticated, go directly to candidate dashboard with jobs view and specific job
+    console.log('Redirecting to candidate dashboard with jobId:', id);
+    navigate(`/candidate/dashboard?view=jobs&jobId=${id}`);
   };
 
   const handleApplicationSubmit = () => {
@@ -282,17 +283,17 @@ export default function JobDetail() {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <button 
-                        onClick={(e) => e.preventDefault()}
-                        className="w-full text-sm sm:text-base cursor-not-allowed border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8 inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-                        disabled
-                        title="Les candidatures sont désormais closes"
+                      <Button 
+                        onClick={handleApply}
+                        className="w-full text-sm sm:text-base"
+                        size="lg"
                       >
-                        Candidatures closes
-                      </button>
+                        <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                        Postuler maintenant
+                      </Button>
                       
                       <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                        La période de candidature est terminée
+                        Processus de candidature en ligne sécurisé
                       </p>
                     </div>
                   )}
