@@ -13,7 +13,7 @@ import { useJobOffers } from "@/hooks/useJobOffers";
 import { isPreLaunch } from "@/utils/launchGate";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { toast } from "sonner";
-import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+// import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
 
 export function JobCatalog() {
@@ -94,7 +94,7 @@ export function JobCatalog() {
       toast.info("Les candidatures sont désormais closes.");
       return;
     } else if (!isEligible) {
-      toast.error("Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025.");
+      toast.error("Période de candidatures close");
       return;
     }
     // Ouvrir le formulaire de candidature
@@ -323,13 +323,6 @@ export function JobCatalog() {
           </div>
         )}
       </div>
-
-      {/* Campaign Eligibility Alert */}
-      {!isEligible && (
-        <div className="max-w-7xl mx-auto mb-6 px-4">
-          <CampaignEligibilityAlert />
-        </div>
-      )}
 
       {/* Stats Bar */}
       <div className="flex justify-center px-4">

@@ -189,7 +189,7 @@ export function useApplications() {
       const userCreatedAt = new Date(user.created_at);
       
       if (userCreatedAt < campaignStartDate) {
-        throw new Error("Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025. Votre compte a été créé avant cette date.");
+        throw new Error("Période de candidatures close Votre compte a été créé avant cette date.");
       }
 
       // Vérifier si une candidature existe déjà

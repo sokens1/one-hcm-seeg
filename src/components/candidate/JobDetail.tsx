@@ -9,7 +9,7 @@ import { useJobOffer } from "@/hooks/useJobOffers";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
-import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+// import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 
 interface JobDetailProps {
   jobId: string;
@@ -228,7 +228,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                                 <Button
                   onClick={() => {
                     if (!isEligible) {
-                      toast.error("Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025.");
+                      toast.error("Période de candidatures close");
                       return;
                     }
                     onApply();
@@ -243,7 +243,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
                   {!isEligible 
-                    ? "Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025"
+                    ? ""
                     : "Processus de candidature en ligne sécurisé"
                   }
                 </p>

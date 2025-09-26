@@ -39,7 +39,7 @@ export default function JobDetail() {
     
     // Vérifier l'éligibilité avant de permettre la candidature
     if (!isEligible) {
-      toast.error("Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025.");
+      toast.error("Période de candidatures close");
       return;
     }
     
