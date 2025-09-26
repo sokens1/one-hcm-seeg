@@ -190,8 +190,8 @@ const Index = () => {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold animate-fade-in delay-100 px-2 leading-tight">
             Rejoignez l'équipe dirigeante de la SEEG
             </h1>
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold opacity-90 animate-fade-in delay-150 px-4 leading-relaxed">
-              et participez au développement énergétique du Gabon
+            <h2 className="text-sm sm:text-lg md:text-xl lg:text-xl font-semibold opacity-90 animate-fade-in delay-150 px-4 leading-relaxed">
+            La SEEG recherche des profils d’excellence, porteurs d’un leadership affirmé, capables d’articuler sa vision stratégique et d’accompagner l’entreprise dans sa transformation et sa performance durable.
             </h2>
             <div className="pt-4 sm:pt-6 animate-fade-in delay-400">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
@@ -205,20 +205,10 @@ const Index = () => {
                 </Button>
                             <Button
               size="lg"
-              className="bg-white text-blue-700 font-semibold w-full sm:w-auto opacity-50 cursor-not-allowed pointer-events-none"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (preLaunch) {
-                  preLaunchToast();
-                } else if (applicationsClosed) {
-                  toast.info("Les candidatures sont désormais closes.");
-                }
-              }}
-              disabled={true}
-              title={applicationsClosed ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
+              className="bg-white text-blue-700 font-semibold w-full sm:w-auto"
+              onClick={() => document.getElementById('job-list')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              Candidatures closes
+              Postuler
             </Button>
               </div>
             </div>

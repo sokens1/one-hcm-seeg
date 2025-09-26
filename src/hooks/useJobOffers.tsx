@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
 
 export interface JobOffer {
   id: string;
@@ -77,7 +78,11 @@ const fetchJobOffers = async () => {
     }
 
     // 3. Count total and new applications for each offer
-    const applicationStats = (applications || []).reduce((acc, app) => {
+    // Filtre campagne: ne compter que les candidatures à partir du 25/09/2025
+    const CAMPAIGN_START = new Date('2025-09-25');
+    const applicationsCampaign = (applications || []).filter(a => new Date(a.created_at) >= CAMPAIGN_START);
+
+    const applicationStats = (applicationsCampaign || []).reduce((acc, app) => {
       if (!acc[app.job_offer_id]) {
         acc[app.job_offer_id] = { total: 0, new: 0 };
       }
@@ -89,11 +94,48 @@ const fetchJobOffers = async () => {
     }, {} as Record<string, { total: number; new: number }>);
 
     // 4. Combine offers with their application counts
-    return offers.map(offer => ({
+    const offersWithStats = offers.map(offer => ({
       ...offer,
       candidate_count: applicationStats[offer.id]?.total || 0,
       new_candidates: applicationStats[offer.id]?.new || 0,
     }));
+
+    // 5. Filter offers based on campaign mode
+    if (CAMPAIGN_MODE) {
+      console.log('🔍 [CAMPAIGN] All offers titles:', offersWithStats.map(o => o.title));
+      console.log('🎯 [CAMPAIGN] Campaign jobs:', CAMPAIGN_JOBS);
+      
+      const filteredOffers = offersWithStats.filter(offer => {
+        // Essayer d'abord la correspondance exacte
+        let isIncluded = CAMPAIGN_JOBS.includes(offer.title);
+        
+        // Si pas de correspondance exacte, essayer avec les patterns
+        if (!isIncluded) {
+          isIncluded = CAMPAIGN_JOB_PATTERNS.some(pattern => pattern.test(offer.title));
+        }
+        
+        console.log(`📋 [CAMPAIGN] "${offer.title}" - ${isIncluded ? '✅ INCLUDED' : '❌ EXCLUDED'}`);
+        
+        // Debug spécial pour le poste problématique
+        if (offer.title.includes("Systèmes") || offer.title.includes("Systemes")) {
+          console.log(`🔍 [DEBUG] Systèmes title: "${offer.title}"`);
+          console.log(`🔍 [DEBUG] Title length: ${offer.title.length}`);
+          console.log(`🔍 [DEBUG] Title charCodes:`, offer.title.split('').map(c => c.charCodeAt(0)));
+          console.log(`🔍 [DEBUG] Campaign job: "${CAMPAIGN_JOBS[1]}"`);
+          console.log(`🔍 [DEBUG] Campaign job length: ${CAMPAIGN_JOBS[1].length}`);
+          console.log(`🔍 [DEBUG] Campaign job charCodes:`, CAMPAIGN_JOBS[1].split('').map(c => c.charCodeAt(0)));
+          console.log(`🔍 [DEBUG] Exact match: ${offer.title === CAMPAIGN_JOBS[1]}`);
+          console.log(`🔍 [DEBUG] Pattern match: ${CAMPAIGN_JOB_PATTERNS[1].test(offer.title)}`);
+        }
+        
+        return isIncluded;
+      });
+      
+      console.log('✅ [CAMPAIGN] Filtered offers count:', filteredOffers.length);
+      return filteredOffers;
+    }
+
+    return offersWithStats;
   } catch (error) {
     console.error('[useJobOffers] Unexpected error:', error);
     // Return fallback data in case of any error
@@ -103,12 +145,12 @@ const fetchJobOffers = async () => {
 
 // Fonction de fallback pour retourner des données de test en cas d'erreur
 const getFallbackJobOffers = (): JobOffer[] => {
-  // console.log('[useJobOffers] Using fallback data');
+  console.log('⚠️ [useJobOffers] Using fallback data - this might explain why only 2 jobs are visible');
   return [
     {
       id: 'fallback-1',
-      title: 'Directeur des Ressources Humaines',
-      description: 'Poste de direction RH pour la SEEG',
+      title: 'Directeur Juridique, Communication & RSE',
+      description: 'Poste de direction Juridique, Communication et RSE pour la SEEG',
       location: 'Libreville',
       contract_type: 'CDI',
       status: 'active',
@@ -122,6 +164,19 @@ const getFallbackJobOffers = (): JobOffer[] => {
       id: 'fallback-2',
       title: 'Directeur des Systèmes d\'Information',
       description: 'Poste de direction SI pour la SEEG',
+      location: 'Libreville',
+      contract_type: 'CDI',
+      status: 'active',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      recruiter_id: 'fallback-recruiter',
+      candidate_count: 0,
+      new_candidates: 0,
+    },
+    {
+      id: 'fallback-3',
+      title: 'Directeur Audit & Contrôle interne',
+      description: 'Poste de direction Audit et Contrôle interne pour la SEEG',
       location: 'Libreville',
       contract_type: 'CDI',
       status: 'active',
@@ -168,8 +223,14 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
       console.warn('RPC get_all_recruiter_applications failed for job offer:', rpcError.message);
       applications = [];
     } else {
+      const CAMPAIGN_START = new Date('2025-09-25');
       applications = (rpcData || [])
         .filter((app: any) => app.application_details?.job_offer_id === id)
+        .filter((app: any) => {
+          const createdAt = app?.application_details?.created_at;
+          if (!createdAt) return false;
+          return new Date(createdAt) >= CAMPAIGN_START;
+        })
         .map((app: any) => ({
           created_at: app.application_details?.created_at
         }))

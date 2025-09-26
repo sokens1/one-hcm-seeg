@@ -40,6 +40,10 @@ export default function Auth() {
 
   const searchParams = new URLSearchParams(location.search);
   const redirectParam = (location.state as any)?.redirect || searchParams.get('redirect');
+  const tabParam = searchParams.get('tab');
+  
+  // Configuration pour désactiver le champ matricule (pour les externes)
+  const MATRICULE_REQUIRED = false; // Mettre à true pour réactiver le champ matricule
 
   // Prevent duplicate success toasts on login (e.g., unexpected double submits)
   const lastLoginToastTs = useRef<number>(0);
@@ -50,6 +54,13 @@ export default function Auth() {
       return () => clearTimeout(timer);
     }
   }, [cooldown]);
+
+  // Gérer le paramètre tab pour ouvrir directement l'onglet inscription
+  useEffect(() => {
+    if (tabParam === 'signup') {
+      setActiveTab('signup');
+    }
+  }, [tabParam]);
 
   const [signInData, setSignInData] = useState({
     email: "",
@@ -67,17 +78,30 @@ export default function Auth() {
   });
 
   const [matriculeError, setMatriculeError] = useState<string>("");
-  const [isMatriculeValid, setIsMatriculeValid] = useState<boolean>(false);
+  const [isMatriculeValid, setIsMatriculeValid] = useState<boolean>(!MATRICULE_REQUIRED);
   const [isVerifyingMatricule, setIsVerifyingMatricule] = useState<boolean>(false);
   const [lastVerifiedMatricule, setLastVerifiedMatricule] = useState<string>("");
 
   useEffect(() => {
-    setIsMatriculeValid(false);
-    setMatriculeError("");
-    setLastVerifiedMatricule("");
+    if (!MATRICULE_REQUIRED) {
+      setIsMatriculeValid(true);
+      setMatriculeError("");
+      setLastVerifiedMatricule("");
+    } else {
+      setIsMatriculeValid(false);
+      setMatriculeError("");
+      setLastVerifiedMatricule("");
+    }
   }, [signUpData.matricule]);
 
   const verifyMatricule = useCallback(async (): Promise<boolean> => {
+    // Si le matricule n'est pas requis, on valide automatiquement
+    if (!MATRICULE_REQUIRED) {
+      setIsMatriculeValid(true);
+      setMatriculeError("");
+      return true;
+    }
+
     const matricule = signUpData.matricule.trim();
     if (!matricule) {
       setMatriculeError("Le matricule est requis.");
@@ -398,36 +422,12 @@ export default function Auth() {
               ) : (
                 <Tabs
                   value={activeTab}
-                  onValueChange={(val) => {
-                    if (val === "signup") {
-                      if (preLaunch) {
-                        preLaunchToast();
-                      } else if (applicationsClosed) {
-                        toast.info("Les inscriptions sont désormais closes.");
-                      }
-                      return;
-                    }
-                    setActiveTab(val);
-                  }}
+                  onValueChange={setActiveTab}
                   className="w-full"
                 >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="signin">Connexion</TabsTrigger>
-                    <TabsTrigger 
-                      value="signup" 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (preLaunch) {
-                          preLaunchToast();
-                        } else if (applicationsClosed) {
-                          toast.info("Les inscriptions sont désormais closes.");
-                        }
-                      }} 
-                      disabled={true}
-                      className="opacity-50 cursor-not-allowed pointer-events-auto"
-                      title={applicationsClosed ? "Les inscriptions sont closes" : preLaunch ? "Inscriptions indisponibles jusqu'au 25 août 2025" : ""}
-                    >
+                    <TabsTrigger value="signup">
                       Inscription
                     </TabsTrigger>
                   </TabsList>
@@ -513,7 +513,6 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
                           className="text-sm"
                           required
-                          disabled={preLaunch}
                         />
                       </div>
                       <div className="space-y-2">
@@ -525,7 +524,6 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
                           className="text-sm"
                           required
-                          disabled={preLaunch}
                         />
                       </div>
                     </div>
@@ -542,41 +540,41 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                           className="pl-10"
                           required
-                          disabled={preLaunch}
                         />
                       </div>
                     </div>
 
-                    {/* Matricule field (required, gates the rest of the form) */}
-                    <div className="space-y-2">
-                      <Label htmlFor="matricule">Matricule</Label>
-                      <div className="relative">
-                        <Input
-                          id="matricule"
-                          placeholder="Ex: 1234"
-                          title="Le matricule ne doit contenir que des chiffres."
-                          value={signUpData.matricule}
-                          onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
-                          required
-                          className={matriculeError ? "border-destructive" : isMatriculeValid ? "border-green-500" : ""}
-                          disabled={preLaunch}
-                        />
-                        {isVerifyingMatricule && (
-                          <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+                    {/* Matricule field (conditionally required) */}
+                    {MATRICULE_REQUIRED && (
+                      <div className="space-y-2">
+                        <Label htmlFor="matricule">Matricule</Label>
+                        <div className="relative">
+                          <Input
+                            id="matricule"
+                            placeholder="Ex: 1234"
+                            title="Le matricule ne doit contenir que des chiffres."
+                            value={signUpData.matricule}
+                            onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
+                            required
+                            className={matriculeError ? "border-destructive" : isMatriculeValid ? "border-green-500" : ""}
+                          />
+                          {isVerifyingMatricule && (
+                            <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+                          )}
+                        </div>
+                        {matriculeError && (
+                          <Card className="border-red-200 bg-red-50">
+                            <CardContent className="py-3 flex items-start gap-2 text-red-700">
+                              <AlertCircle className="w-4 h-4 mt-0.5" />
+                              <div>
+                                <p className="text-sm font-medium">Vérification du matricule</p>
+                                <p className="text-sm">{matriculeError}</p>
+                              </div>
+                            </CardContent>
+                          </Card>
                         )}
                       </div>
-                      {matriculeError && (
-                        <Card className="border-red-200 bg-red-50">
-                          <CardContent className="py-3 flex items-start gap-2 text-red-700">
-                            <AlertCircle className="w-4 h-4 mt-0.5" />
-                            <div>
-                              <p className="text-sm font-medium">Vérification du matricule</p>
-                              <p className="text-sm">{matriculeError}</p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </div>
+                    )}
 
                     <div className="space-y-2">
                       <Label htmlFor="phone">Téléphone</Label>
@@ -586,7 +584,7 @@ export default function Auth() {
                         placeholder="+241 01 23 45 67"
                         value={signUpData.phone}
                         onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
-                        disabled={preLaunch || !isMatriculeValid}
+                        disabled={MATRICULE_REQUIRED && !isMatriculeValid}
                         required
                       />
                     </div>
@@ -603,14 +601,13 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                           className="pl-10 pr-10"
                           required
-                          disabled={preLaunch || !isMatriculeValid}
+                          disabled={MATRICULE_REQUIRED && !isMatriculeValid}
                         />
                         <button
                           type="button"
                           aria-label={showSignupPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                           onClick={() => setShowSignupPassword((v) => !v)}
                           className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
-                          disabled={preLaunch}
                         >
                           {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
@@ -629,14 +626,13 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                           className="pl-10 pr-10"
                           required
-                          disabled={preLaunch || !isMatriculeValid}
+                          disabled={MATRICULE_REQUIRED && !isMatriculeValid}
                         />
                         <button
                           type="button"
                           aria-label={showSignupConfirm ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                           onClick={() => setShowSignupConfirm((v) => !v)}
                           className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
-                          disabled={preLaunch}
                         >
                           {showSignupConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
@@ -645,19 +641,17 @@ export default function Auth() {
 
                     <Button 
                       type="submit" 
-                      className="w-full opacity-50 cursor-not-allowed pointer-events-none" 
-                      disabled={true}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (preLaunch) {
-                          preLaunchToast();
-                        } else if (applicationsClosed) {
-                          toast.info("Les inscriptions sont désormais closes.");
-                        }
-                      }}
+                      className="w-full"
+                      disabled={isSubmitting || !isMatriculeValid}
                     >
-                      Inscriptions closes
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Inscription en cours...
+                        </>
+                      ) : (
+                        "S'inscrire"
+                      )}
                     </Button>
                   </form>
                 </div>

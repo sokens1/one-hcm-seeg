@@ -367,13 +367,33 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
                 </div>
               )}
 
-              {application.reference_contacts && (
+              {(application.reference_full_name || application.reference_email || application.reference_contact || application.reference_company) ? (
                 <div>
-                  <span className="font-medium text-xs sm:text-sm">Contacts de référence :</span>
-                  <div className="mt-2 p-3 bg-muted rounded-lg">
-                    <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.reference_contacts}</p>
+                  <span className="font-medium text-xs sm:text-sm">Référence de recommandation :</span>
+                  <div className="mt-2 p-3 bg-muted rounded-lg text-xs sm:text-sm space-y-1">
+                    {application.reference_full_name && (
+                      <div><span className="font-medium">Nom et prénom:</span> {application.reference_full_name}</div>
+                    )}
+                    {application.reference_company && (
+                      <div><span className="font-medium">Entreprise:</span> {application.reference_company}</div>
+                    )}
+                    {application.reference_email && (
+                      <div><span className="font-medium">Email:</span> {application.reference_email}</div>
+                    )}
+                    {application.reference_contact && (
+                      <div><span className="font-medium">Contact:</span> {application.reference_contact}</div>
+                    )}
                   </div>
                 </div>
+              ) : (
+                application.reference_contacts && (
+                  <div>
+                    <span className="font-medium text-xs sm:text-sm">Contacts de référence :</span>
+                    <div className="mt-2 p-3 bg-muted rounded-lg">
+                      <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.reference_contacts}</p>
+                    </div>
+                  </div>
+                )
               )}
             </CardContent>
           </Card>

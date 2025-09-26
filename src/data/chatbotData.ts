@@ -17,7 +17,7 @@ export const predefinedQuestions: PredefinedQuestion[] = [
     id: "1",
     question: "Comment postuler à une offre ?",
     keywords: ["postuler", "candidature", "procédure", "soumettre", "dossier"],
-    response: "Pour postuler interne :\n1. Connectez-vous à votre espace\n2. Ouvrez le catalogue des offres\n3. Cliquez sur 'Postuler' sur l'offre choisie\n4. Complétez le formulaire et joignez vos documents\n5. Validez l'envoi."
+    response: "Pour postuler :\n1. Connectez-vous à votre espace\n2. Ouvrez le catalogue des offres\n3. Cliquez sur 'Postuler' sur l'offre choisie\n4. Complétez le formulaire et joignez vos documents\n5. Validez l'envoi."
   },
   {
     id: "2",
@@ -124,15 +124,58 @@ export const defaultMessages = [
 export const findBestResponse = (userMessage: string): string => {
   const normalizedMessage = userMessage.toLowerCase();
   
-  // Recherche d'une correspondance exacte ou partielle
+  // Recherche d'une correspondance avec score de pertinence
+  let bestMatch = null;
+  let bestScore = 0;
+  
   for (const predefined of predefinedQuestions) {
-    const hasKeyword = predefined.keywords.some(keyword => 
-      normalizedMessage.includes(keyword.toLowerCase())
-    );
+    let score = 0;
+    const matchedKeywords = [];
     
-    if (hasKeyword) {
-      return predefined.response;
+    // Compter les mots-clés correspondants
+    for (const keyword of predefined.keywords) {
+      if (normalizedMessage.includes(keyword.toLowerCase())) {
+        score++;
+        matchedKeywords.push(keyword);
+      }
     }
+    
+    // Bonus pour les correspondances exactes de phrases
+    if (normalizedMessage.includes('suivre') && normalizedMessage.includes('candidature')) {
+      if (predefined.id === "3") score += 3; // Bonus pour la question de suivi
+    }
+    
+    if (normalizedMessage.includes('postuler') && normalizedMessage.includes('offre')) {
+      if (predefined.id === "1") score += 3; // Bonus pour la question de postulation
+    }
+    
+    if (normalizedMessage.includes('documents') || normalizedMessage.includes('fournir')) {
+      if (predefined.id === "2") score += 3; // Bonus pour la question de documents
+    }
+    
+    // Vérifier les correspondances exactes de phrases clés
+    if (normalizedMessage.includes('comment suivre') || normalizedMessage.includes('suivre ma candidature')) {
+      if (predefined.id === "3") score += 5;
+    }
+    
+    if (normalizedMessage.includes('comment postuler') || normalizedMessage.includes('postuler à')) {
+      if (predefined.id === "1") score += 5;
+    }
+    
+    if (normalizedMessage.includes('quels documents') || normalizedMessage.includes('documents requis')) {
+      if (predefined.id === "2") score += 5;
+    }
+    
+    // Garder la meilleure correspondance
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = predefined;
+    }
+  }
+  
+  // Retourner la réponse si on a une correspondance suffisante
+  if (bestMatch && bestScore > 0) {
+    return bestMatch.response;
   }
   
   // Réponse par défaut si aucune correspondance

@@ -95,9 +95,9 @@ export function JobCard({
                 variant="outline" 
                 size="sm" 
                 className="group-hover:border-primary group-hover:text-primary w-full md:w-auto text-xs sm:text-sm h-8 md:h-9"
-                disabled={candidateCount === undefined && isApplicationClosed()}
+                disabled={candidateCount === undefined}
               >
-                {candidateCount !== undefined ? 'Gérer' : (isApplicationClosed() ? 'Candidatures closes' : 'Postuler')}
+                {candidateCount !== undefined ? 'Gérer' : 'Postuler'}
               </Button>
             )}
           </div>

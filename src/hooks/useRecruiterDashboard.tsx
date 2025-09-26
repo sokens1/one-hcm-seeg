@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
 
 export interface RecruiterStats {
   totalJobs: number;
@@ -90,7 +91,12 @@ export function useRecruiterDashboard() {
 
     // Récupérer TOUTES les candidatures avec la fonction optimisée
     const { data: combinedEntries } = await supabase.rpc('get_all_recruiter_applications');
-    const allEntries = combinedEntries || [];
+    const CAMPAIGN_START = new Date('2025-09-25');
+    const allEntries = (combinedEntries || []).filter((app: any) => {
+      const createdAt = app?.application_details?.created_at;
+      if (!createdAt) return false;
+      return new Date(createdAt) >= CAMPAIGN_START;
+    });
 
     // Extraire les détails des candidatures
     const allApplicationsData = (allEntries || []).map((app: any) => app.application_details);
@@ -99,8 +105,19 @@ export function useRecruiterDashboard() {
       throw jobsError;
     }
 
-    // Process jobs data with ALL applications
-    const processedJobs: RecruiterJobOffer[] = (jobsData || []).map(job => {
+    // Filter jobs to only campaign jobs when CAMPAIGN_MODE is active
+    let campaignJobs = (jobsData || []);
+    if (CAMPAIGN_MODE) {
+      campaignJobs = campaignJobs.filter((job: any) => {
+        const title: string = job.title || "";
+        const exact = CAMPAIGN_JOBS.includes(title);
+        const pattern = CAMPAIGN_JOB_PATTERNS.some(rx => rx.test(title));
+        return exact || pattern;
+      });
+    }
+
+    // Process jobs data with filtered applications
+    const processedJobs: RecruiterJobOffer[] = (campaignJobs || []).map(job => {
       // Find all applications for this job from the separate query
       const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
       
@@ -314,8 +331,9 @@ export function useRecruiterDashboard() {
     // Calculate status evolution over the last 7 days
     const statusEvolution: StatusEvolutionData[] = [];
     
-    // Date limite de candidature : 01 septembre 2025
-    const applicationDeadline = new Date('2025-09-01T23:59:59');
+    // Nouvelle période de candidatures : 27 sept. 2025 au 05 oct. 2025
+    // Ici, on utilise la fin de période comme borne pour les courbes
+    const applicationDeadline = new Date('2025-10-05T23:59:59');
     const now = new Date();
     
     // Si on est après la date limite, on s'arrête au 31 août

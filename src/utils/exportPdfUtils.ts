@@ -125,6 +125,11 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       diplomas: (documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
       certificates: (documentsByType.certificate || []).map(doc => ({ name: doc.file_name })),
       recommendations: (documentsByType.recommendation || []).map(doc => ({ name: doc.file_name })),
+      // Références de recommandation
+      referenceFullName: application.reference_full_name || '',
+      referenceEmail: application.reference_email || '',
+      referenceContact: application.reference_contact || '',
+      referenceCompany: application.reference_company || '',
       jobTitle,
       applicationDate: new Date(application.created_at).toLocaleDateString('fr-FR', {
         year: 'numeric',

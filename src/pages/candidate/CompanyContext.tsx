@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { ArrowLeft, Users, Wrench, Shield, Coins, Handshake, Leaf } from "lucide
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CompanyContext() {
+  const navigate = useNavigate();
   const [jobCount, setJobCount] = useState<number>(0);
 
   useEffect(() => {
@@ -51,11 +53,16 @@ export default function CompanyContext() {
         <div className="container mx-auto px-4 py-12 -mt-16">
           <div className="max-w-4xl mx-auto">
             {/* Bouton retour */}
-            <Button variant="outline" className="mb-8 bg-white text-blue-600 backdrop-blur-sm" asChild>
-              <a href="/">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Retour aux offres
-              </a>
+            <Button 
+              variant="outline" 
+              className="mb-8 bg-white text-blue-600 backdrop-blur-sm"
+              onClick={() => {
+                navigate('/');
+                setTimeout(() => document.getElementById('job-list')?.scrollIntoView({ behavior: 'smooth' }), 50);
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Retour aux offres
             </Button>
 
             {/* Contenu principal */}
