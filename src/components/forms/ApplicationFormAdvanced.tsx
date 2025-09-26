@@ -28,7 +28,10 @@ interface FormData {
   motivationLetter: string;
   certificates: File[];
   recommendations: File[];
-  referenceContacts: string;
+  referenceFullName: string;
+  referenceEmail: string;
+  referenceContact: string;
+  referenceCompany: string;
   mtpQuestion1: string;
   mtpQuestion2: string;
   mtpQuestion3: string;
@@ -51,7 +54,10 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
     motivationLetter: "",
     certificates: [],
     recommendations: [],
-    referenceContacts: "",
+    referenceFullName: "",
+    referenceEmail: "",
+    referenceContact: "",
+    referenceCompany: "",
     mtpQuestion1: "",
     mtpQuestion2: "",
     mtpQuestion3: "",
@@ -362,14 +368,50 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                   </div>
 
                   <div>
-                    <Label htmlFor="referenceContacts">Références de recommandation (facultatif)</Label>
-                    <Textarea
-                      id="referenceContacts"
-                      value={formData.referenceContacts}
-                      onChange={(e) => setFormData({ ...formData, referenceContacts: e.target.value })}
-                      placeholder="Nom, poste, entreprise, téléphone/email des personnes pouvant vous recommander..."
-                      className="min-h-24"
-                    />
+                    <h4 className="font-medium mb-2">Référence de recommandation</h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="referenceFullName">Nom et prénom *</Label>
+                      <Input
+                        id="referenceFullName"
+                        value={formData.referenceFullName}
+                        onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
+                        placeholder="Ex: Jean Dupont"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceCompany">Entreprise *</Label>
+                      <Input
+                        id="referenceCompany"
+                        value={formData.referenceCompany}
+                        onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
+                        placeholder="Ex: SEEG"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceEmail">Email *</Label>
+                      <Input
+                        id="referenceEmail"
+                        type="email"
+                        value={formData.referenceEmail}
+                        onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
+                        placeholder="exemple@domaine.com"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceContact">Contact *</Label>
+                      <Input
+                        id="referenceContact"
+                        value={formData.referenceContact}
+                        onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
+                        placeholder="+241 01 23 45 67"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
               )}

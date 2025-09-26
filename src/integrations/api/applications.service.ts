@@ -5,14 +5,20 @@ export interface ApiApplicationPayload {
   candidate_id: string;
   job_offer_id: string;
   mtp_answers?: unknown;
-  reference_contacts?: string | null;
+  reference_full_name?: string | null;
+  reference_email?: string | null;
+  reference_contact?: string | null;
+  reference_company?: string | null;
 }
 
 export interface ApiApplicationUpdate {
   status?: string;
   interview_date?: string | null;
   simulation_date?: string | null;
-  reference_contacts?: string | null;
+  reference_full_name?: string | null;
+  reference_email?: string | null;
+  reference_contact?: string | null;
+  reference_company?: string | null;
 }
 
 export const applicationsService = {

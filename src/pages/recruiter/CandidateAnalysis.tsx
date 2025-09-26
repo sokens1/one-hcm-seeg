@@ -112,15 +112,22 @@ const ProfileTab = ({ application }: { application: Application }) => {
 const ReferencesTab = ({ application }: { application: Application }) => {
   return (
     <Card>
-      <CardHeader className="p-4 sm:p-6">
+      <CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 sm:pb-3">
         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
           <Users className="w-4 h-4 sm:w-5 sm:h-5" /> 
           <span className="hidden sm:inline">Références de Recommandation</span>
           <span className="sm:hidden">Références</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 sm:p-6">
-        {application.reference_contacts || application.ref_contacts ? (
+      <CardContent className="px-4 sm:px-6 pt-2 sm:pt-3 pb-4 sm:pb-6">
+        {(application.reference_full_name || application.reference_email || application.reference_contact || application.reference_company) ? (
+          <div className="text-xs sm:text-sm space-y-1">
+            {application.reference_full_name && (<div><span className="font-medium">Nom et prénom:</span> {application.reference_full_name}</div>)}
+            {application.reference_company && (<div><span className="font-medium">Entreprise:</span> {application.reference_company}</div>)}
+            {application.reference_email && (<div><span className="font-medium">Email:</span> {application.reference_email}</div>)}
+            {application.reference_contact && (<div><span className="font-medium">Contact:</span> {application.reference_contact}</div>)}
+          </div>
+        ) : application.reference_contacts || application.ref_contacts ? (
           <div className="whitespace-pre-wrap text-xs sm:text-sm">
             {application.reference_contacts || application.ref_contacts}
           </div>
