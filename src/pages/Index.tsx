@@ -205,20 +205,10 @@ const Index = () => {
                 </Button>
                             <Button
               size="lg"
-              className="bg-white text-blue-700 font-semibold w-full sm:w-auto opacity-50 cursor-not-allowed pointer-events-none"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (preLaunch) {
-                  preLaunchToast();
-                } else if (applicationsClosed) {
-                  toast.info("Les candidatures sont désormais closes.");
-                }
-              }}
-              disabled={true}
-              title={applicationsClosed ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
+              className="bg-white text-blue-700 font-semibold w-full sm:w-auto"
+              onClick={() => document.getElementById('job-list')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              Candidatures closes
+              Postuler
             </Button>
               </div>
             </div>

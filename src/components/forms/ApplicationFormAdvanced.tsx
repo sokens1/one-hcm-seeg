@@ -509,12 +509,11 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                   <Button
                     variant="default"
                     onClick={handleSubmit}
-                    disabled={!formData.consent || isApplicationClosed()}
+                    disabled={!formData.consent}
                     className="bg-green-600 hover:bg-green-700"
-                    title={isApplicationClosed() ? "Les candidatures sont closes" : ""}
                   >
-                    {isApplicationClosed() ? "Candidatures closes" : "Envoyer ma candidature..."}
-                    {!isApplicationClosed() && <Send className="w-4 h-4 ml-2" />}
+                    Envoyer ma candidature...
+                    <Send className="w-4 h-4 ml-2" />
                   </Button>
                 )}
               </div>

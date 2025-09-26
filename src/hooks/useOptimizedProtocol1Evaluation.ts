@@ -332,12 +332,12 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
         gap_competence_comments: data.protocol1.interview.gapCompetence.comments,
         general_summary: data.protocol1.interview.generalSummary,
         
-        // Scores calculés SANS arrondi
-        documentary_score: documentaryScoreExact,
-        mtp_score: mtpScoreExact,
-        interview_score: interviewScoreExact,
-        total_score: totalScoreExact,
-        overall_score: totalScoreExact,
+        // Scores calculés arrondis pour la base de données (INTEGER)
+        documentary_score: Math.round(documentaryScoreExact),
+        mtp_score: Math.round(mtpScoreExact),
+        interview_score: Math.round(interviewScoreExact),
+        total_score: Math.round(totalScoreExact),
+        overall_score: Math.round(totalScoreExact),
         
         // Statut
         status: data.protocol1.status,
@@ -420,21 +420,10 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
           })
           .eq('application_id', applicationId);
       } else {
-        // Créer un nouvel enregistrement avec un ID généré
-        const generateUUID = () => {
-          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            const r = Math.random() * 16 | 0;
-            const v = c === 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-          });
-        };
-        
+        // Créer un nouvel enregistrement (l'ID sera généré automatiquement par la DB)
         result = await supabase
           .from('protocol1_evaluations')
-          .insert({
-            ...mergedRecord,
-            id: generateUUID() // Générer un UUID pour l'ID
-          });
+          .insert(mergedRecord);
       }
 
       if (result.error) {

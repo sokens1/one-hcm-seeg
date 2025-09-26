@@ -71,10 +71,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       time,
       location,
       applicationId,
-      interviewType = 'entretien', // Par défaut 'entretien', peut être 'simulation'
     } = body || {};
 
-    console.log('📧 [EMAIL DEBUG] Données reçues:', {
+    console.log('🎭 [SIMULATION EMAIL DEBUG] Données reçues:', {
       to,
       candidateFullName,
       candidateEmail,
@@ -82,13 +81,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       date,
       time,
       location,
-      applicationId,
-      interviewType
+      applicationId
     });
-
-    // Log critique pour debug
-    console.error('🚨 [EMAIL DEBUG] INTERVIEW TYPE REÇU:', interviewType);
-    console.error('🚨 [EMAIL DEBUG] IS SIMULATION:', interviewType === 'simulation');
 
     if (!candidateFullName || !jobTitle || !date || !time) {
       res.status(400).json({ error: 'Missing fields: candidateFullName, jobTitle, date, time' });
@@ -122,40 +116,17 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     const formattedTime = String(time).slice(0, 5);
     const serif = ", Georgia, serif";
 
-    // Contenu adapté selon le type (entretien ou simulation)
-    const isSimulation = interviewType === 'simulation';
-    const eventType = isSimulation ? 'simulation' : 'entretien de recrutement';
-    const eventTypeCapitalized = isSimulation ? 'Simulation' : 'Entretien de recrutement';
-    const defaultLocation = isSimulation 
-      ? "Salle de simulation au 9ᵉ étage du siège de la SEEG sis à Libreville."
-      : "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville.";
-    const preparationText = isSimulation
-      ? `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de la simulation</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`
-      : `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`;
+    // Contenu spécifique pour les simulations
+    const eventType = 'simulation';
+    const eventTypeCapitalized = 'Simulation';
+    const defaultLocation = "Salle de simulation au 9ᵉ étage du siège de la SEEG sis à Libreville.";
+    const preparationText = `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de la simulation</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`;
 
-    console.log('📧 [EMAIL DEBUG] Variables calculées:', {
-      isSimulation,
+    console.log('🎭 [SIMULATION EMAIL DEBUG] Variables calculées:', {
       eventType,
       eventTypeCapitalized,
       defaultLocation,
       preparationText: preparationText.substring(0, 100) + '...'
-    });
-
-    // Log critique pour debug
-    console.error('🚨 [EMAIL DEBUG] FINAL CHECK:', {
-      interviewType,
-      isSimulation,
-      eventType,
-      defaultLocation: defaultLocation.substring(0, 50) + '...',
-      preparationText: preparationText.substring(0, 50) + '...'
-    });
-
-    // Log persistant pour debug
-    console.log('🔍 [EMAIL DEBUG] Type d\'événement détecté:', {
-      interviewType,
-      isSimulation,
-      eventType,
-      eventTypeCapitalized
     });
 
     const html = `
@@ -167,7 +138,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
                 <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;font-family: ui-serif${serif}; color:#000; font-size:16px; line-height:1.7;">
                   <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
                   <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
-                  <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à une ${eventType} qui se tiendra le&nbsp;:</p>
+                  <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à une <strong>simulation</strong> qui se tiendra le&nbsp;:</p>
                   <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
                   <strong>Heure :</strong> ${formattedTime}<br/>
                   <strong>Lieu :</strong> ${location || defaultLocation}</p>
@@ -210,12 +181,13 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
          info = await transporter.sendMail({
            from: from || smtpUser,
            to: String(candidateEmail || to || smtpUser),
-           subject: `Invitation à une ${eventTypeCapitalized} – Poste de ${jobTitle}`,
+           subject: `Invitation à une Simulation – Poste de ${jobTitle}`,
            html,
          });
-         console.log('✅ [EMAIL DEBUG] Email envoyé via SMTP:', info.messageId);
+         console.log('✅ [SIMULATION EMAIL DEBUG] Email envoyé via SMTP:', info.messageId);
          emailSent = true;
       } catch (e) {
+        console.error('❌ [SIMULATION EMAIL DEBUG] Erreur SMTP:', e);
         // SMTP a échoué, essai fallback si dispo
       }
     }
@@ -232,20 +204,21 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
           body: JSON.stringify({
             from: (process.env.RESEND_FROM as string) || from || `SEEG Recrutement <${smtpUser || 'no-reply@seeg-talentsource.com'}>`,
             to: String(candidateEmail || to || smtpUser),
-            subject: `Invitation à une ${eventTypeCapitalized} – Poste de ${jobTitle}`,
+            subject: `Invitation à une Simulation – Poste de ${jobTitle}`,
             html,
           }),
         });
         if (resendResp.ok) {
           const resendData = await resendResp.json();
           info = { messageId: (resendData as any)?.id };
+          console.log('✅ [SIMULATION EMAIL DEBUG] Email envoyé via Resend:', info.messageId);
           emailSent = true;
         } else {
           const errTxt = await resendResp.text();
-          console.error('[send-interview-email] Resend failed:', resendResp.status, errTxt);
+          console.error('❌ [SIMULATION EMAIL DEBUG] Resend failed:', resendResp.status, errTxt);
         }
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error('❌ [SIMULATION EMAIL DEBUG] Erreur Resend:', e);
       }
     }
 
@@ -254,8 +227,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         smtpConfigured: Boolean(smtpHost && smtpUser && smtpPass),
         resendConfigured: Boolean(process.env.RESEND_API_KEY),
       };
-      console.error('❌ [EMAIL DEBUG] Email sending failed.', providerState);
-      console.error('❌ [EMAIL DEBUG] SMTP Config:', {
+      console.error('❌ [SIMULATION EMAIL DEBUG] Email sending failed.', providerState);
+      console.error('❌ [SIMULATION EMAIL DEBUG] SMTP Config:', {
         host: smtpHost ? 'configured' : 'missing',
         user: smtpUser ? 'configured' : 'missing',
         pass: smtpPass ? 'configured' : 'missing'
@@ -269,21 +242,21 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       if (supabase) {
         await supabase.from('email_logs').insert({
           to: String(candidateEmail || to || smtpUser),
-          subject: `Invitation à un entretien de recrutement – Poste de ${jobTitle}`,
+          subject: `Invitation à une Simulation – Poste de ${jobTitle}`,
           html,
           application_id: applicationId || null,
-          category: 'interview_invitation',
+          category: 'simulation_invitation',
           provider_message_id: info?.messageId || null,
           sent_at: new Date().toISOString(),
         });
       }
-    } catch {
-      // non bloquant
+    } catch (e) {
+      console.error('❌ [SIMULATION EMAIL DEBUG] Erreur log Supabase:', e);
     }
 
     res.status(200).json({ ok: true, messageId: info?.messageId || null });
   } catch (e: any) {
-    console.error('[send-interview-email] Uncaught error:', e);
+    console.error('❌ [SIMULATION EMAIL DEBUG] Uncaught error:', e);
     res.status(500).json({ error: e?.message || 'Internal error' });
   }
 }
