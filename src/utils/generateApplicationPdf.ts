@@ -19,6 +19,11 @@ interface ApplicationData {
   diplomas?: { name: string }[];
   certificates?: { name: string }[];
   recommendations?: { name: string }[];
+  // Références de recommandation
+  referenceFullName?: string;
+  referenceEmail?: string;
+  referenceContact?: string;
+  referenceCompany?: string;
   // MTP Questions - Métier
   metier1?: string;
   metier2?: string;
@@ -241,12 +246,88 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   // Ajouter un espace supplémentaire après la section des documents
   yPos += 5;
 
+  // Références de Recommandation Section
+  yPos += 10;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(30, 64, 175);
+  doc.text('3. Références de Recommandation', margin, yPos);
+  yPos += 10;
+
+  // Vérifier l'espace disponible avant d'ajouter la section des références
+  if (yPos > doc.internal.pageSize.height - 50) {
+    doc.addPage();
+    yPos = 20;
+  }
+
+  const referenceInfo = [
+    { 
+      label: 'Nom et Prénom', 
+      value: data.referenceFullName || 'Non renseigné',
+      isFilled: !!data.referenceFullName
+    },
+    { 
+      label: 'Entreprise', 
+      value: data.referenceCompany || 'Non renseignée',
+      isFilled: !!data.referenceCompany
+    },
+    { 
+      label: 'Email', 
+      value: data.referenceEmail || 'Non renseigné',
+      isFilled: !!data.referenceEmail
+    },
+    { 
+      label: 'Contact', 
+      value: data.referenceContact || 'Non renseigné',
+      isFilled: !!data.referenceContact
+    }
+  ];
+
+  // Afficher les informations de référence
+  doc.setFont('helvetica', 'normal');
+  referenceInfo.forEach(info => {
+    // Vérifier l'espace disponible
+    if (yPos > doc.internal.pageSize.height - 20) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.setFontSize(11);
+    
+    // Afficher le label
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(31, 41, 55);
+    doc.text(`${info.label}:`, margin, yPos);
+    
+    // Afficher la valeur
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(75, 85, 99);
+    doc.text(info.value, margin + 60, yPos);
+    
+    // Afficher le statut avec la couleur appropriée
+    const status = info.isFilled ? 'Renseigné' : 'Non renseigné';
+    doc.setFont('helvetica', 'bold');
+    if (info.isFilled) {
+      doc.setTextColor(22, 163, 74); // Vert
+    } else {
+      doc.setTextColor(239, 68, 68); // Rouge
+    }
+    
+    const statusX = pageWidth - margin - doc.getTextWidth(status);
+    doc.text(status, statusX, yPos);
+    
+    yPos += 10; // Espacement entre les lignes
+  });
+
+  // Ajouter un espace supplémentaire après la section des références
+  yPos += 5;
+
   // MTP Section
   yPos += 10;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.setTextColor(30, 64, 175);
-  doc.text('3. Adhérence MTP', margin, yPos);
+  doc.text('4. Adhérence MTP', margin, yPos);
   yPos += 10;
 
   // Récupérer les questions spécifiques au poste
