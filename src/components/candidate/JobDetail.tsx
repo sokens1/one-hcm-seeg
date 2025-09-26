@@ -204,24 +204,20 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4">
                 <div className="space-y-2 sm:space-y-3">
-                  {jobOffer.start_date && (
+                  {/* Date d'embauche mise en commentaire */}
+                  {/* {jobOffer.start_date && (
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                       <span>Date d'embauche : {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</span>
                     </div>
-                  )}
+                  )} */}
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span>
-                      {jobOffer.date_limite 
-                        ? `Date limite : ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
-                        : "Candidatures ouvertes"
-                      }
-                    </span>
+                    <span>Date limite : 05/10/2025</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span>Publié le {new Date(jobOffer.created_at).toLocaleDateString('fr-FR')}</span>
+                    <span>Publié le 27/09/2025</span>
                   </div>
                 </div>
                 

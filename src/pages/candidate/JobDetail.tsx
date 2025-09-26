@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useApplicationStatus } from "@/hooks/useApplications";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
-import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+// import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 import { toast } from "sonner";
 
 export default function JobDetail() {
@@ -178,12 +178,7 @@ export default function JobDetail() {
         </div>
 
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
-          {/* Campaign Eligibility Alert */}
-          {user && !isEligible && (
-            <div className="mb-6">
-              <CampaignEligibilityAlert />
-            </div>
-          )}
+         
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Main Content */}
@@ -254,24 +249,20 @@ export default function JobDetail() {
                 </CardHeader>
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div className="space-y-2 sm:space-y-3">
-                    {jobOffer.start_date && (
+                    {/* Date d'embauche mise en commentaire */}
+                    {/* {jobOffer.start_date && (
                       <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                         <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                         <span>Date d'embauche: {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</span>
                       </div>
-                    )}
+                    )} */}
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                      <span>
-                        {jobOffer.date_limite 
-                          ? `Date limite : ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
-                          : "Candidatures ouvertes"
-                        }
-                      </span>
+                      <span>Date limite : 05/10/2025</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                      <span>Publié le {new Date(jobOffer.created_at).toLocaleDateString('fr-FR')}</span>
+                      <span>Publié le 27/09/2025</span>
                     </div>
                   </div>
                   
@@ -313,7 +304,7 @@ export default function JobDetail() {
                       
                       <p className="text-xs text-muted-foreground text-center leading-relaxed">
                         {!isEligible 
-                          ? "Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025"
+                          ? ""
                           : "Processus de candidature en ligne sécurisé"
                         }
                       </p>
