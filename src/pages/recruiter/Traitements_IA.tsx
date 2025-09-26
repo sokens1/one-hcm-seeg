@@ -33,6 +33,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { useAIData, AICandidateData } from "@/hooks/useAIData";
+import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface CandidateApplication {
@@ -239,7 +240,34 @@ export default function Traitements_IA() {
       });
     });
 
+    // Filtrer pour ne garder que les traitements IA de la nouvelle campagne
+    if (CAMPAIGN_MODE) {
+      // Filtrer par postes de la campagne uniquement
+      return allCandidates.filter(c => {
+        const title = c.poste || "";
+        const exact = CAMPAIGN_JOBS.includes(title);
+        const pattern = CAMPAIGN_JOB_PATTERNS.some(rx => rx.test(title));
+        return exact || pattern;
+      });
+    }
+
     return allCandidates;
+  }, [aiData]);
+
+  // Départements autorisés (uniquement ceux contenant des postes de la nouvelle campagne)
+  const allowedDepartments = useMemo(() => {
+    if (!aiData) return [] as string[];
+    const keys = Object.keys(aiData);
+    if (!CAMPAIGN_MODE) return keys;
+    const isCampaignPost = (title: string) => {
+      const exact = CAMPAIGN_JOBS.includes(title || "");
+      const pattern = CAMPAIGN_JOB_PATTERNS.some(rx => rx.test(title || ""));
+      return exact || pattern;
+    };
+    return keys.filter((dept) => {
+      const candidates = (aiData as any)[dept] as any[];
+      return Array.isArray(candidates) && candidates.some(c => isCampaignPost(c.poste));
+    });
   }, [aiData]);
 
   // Filtrer et trier les candidats
@@ -462,9 +490,14 @@ export default function Traitements_IA() {
                         className="block w-full h-10 rounded-lg border border-input bg-background px-3 pr-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-colors hover:border-ring/40 appearance-none"
                       >
                         <option value="all">Tous les départements</option>
-                        {aiData && Object.keys(aiData).map((departmentKey) => (
-                          <option key={departmentKey} value={departmentKey}>{departmentKey}</option>
-                        ))}
+                        {aiData && (
+                          (CAMPAIGN_MODE
+                            ? allowedDepartments
+                            : Object.keys(aiData)
+                          ).map((departmentKey) => (
+                            <option key={departmentKey} value={departmentKey}>{departmentKey}</option>
+                          ))
+                        )}
                       </select>
                       <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-muted-foreground group-hover:text-foreground/80">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
