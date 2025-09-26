@@ -54,7 +54,10 @@ interface FormData {
   yearsOfExperience: string;
   certificates: UploadedFile[];
   additionalCertificates: UploadedFile[];
-  references: string;
+  referenceFullName: string;
+  referenceEmail: string;
+  referenceContact: string;
+  referenceCompany: string;
   // Partie Métier
   metier1: string;
   metier2: string;
@@ -174,7 +177,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     yearsOfExperience: "",
     certificates: [],
     additionalCertificates: [],
-    references: "",
+    referenceFullName: "",
+    referenceEmail: "",
+    referenceContact: "",
+    referenceCompany: "",
     // Partie Métier
     metier1: "",
     metier2: "",
@@ -338,13 +344,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         
         // Pré-remplissage MTP et références indépendamment des données profil/utilisateur
         const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
-        const refContacts = (data as any).reference_contacts ?? (data as any).ref_contacts;
+        const refFullName = (data as any).reference_full_name ?? "";
+        const refEmail = (data as any).reference_email ?? "";
+        const refContact = (data as any).reference_contact ?? "";
+        const refCompany = (data as any).reference_company ?? "";
 
         setFormData(prev => {
           const next = {
           ...prev,
           // Références et MTP
-          references: refContacts ?? prev.references,
+          referenceFullName: refFullName || prev.referenceFullName,
+          referenceEmail: refEmail || prev.referenceEmail,
+          referenceContact: refContact || prev.referenceContact,
+          referenceCompany: refCompany || prev.referenceCompany,
           metier1: mtp?.metier?.[0] ?? prev.metier1,
           metier2: mtp?.metier?.[1] ?? prev.metier2,
           metier3: mtp?.metier?.[2] ?? prev.metier3,
@@ -711,15 +723,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const handleSubmit = async () => {
-    if (preLaunch) {
-      preLaunchToast();
-      return;
-    } else if (applicationsClosed) {
-      toast.info("Les candidatures sont désormais closes.");
-      return;
-    }
-    // Candidatures désactivées - aucune soumission possible
-    return;
     setIsSubmitting(true);
     try {
       const isCreateMode = mode === 'create';
@@ -729,7 +732,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const { error: updError } = await supabase
           .from('applications')
           .update({
-            reference_contacts: formData.references,
+            reference_full_name: formData.referenceFullName,
+            reference_email: formData.referenceEmail,
+            reference_contact: formData.referenceContact,
+            reference_company: formData.referenceCompany,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
               talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -764,7 +770,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         if (!jobId) throw new Error('Job ID manquant.');
         const application = await submitApplication({
           job_offer_id: jobId as string,
-          ref_contacts: formData.references,
+          ref_contacts: undefined, // legacy removed
+          reference_full_name: formData.referenceFullName,
+          reference_email: formData.referenceEmail,
+          reference_contact: formData.referenceContact,
+          reference_company: formData.referenceCompany,
           mtp_answers: {
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
             talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -1502,14 +1512,50 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   </div>
 
                   <div>
-                    <Label htmlFor="references">Références de recommandation (facultatif)</Label>
-                    <Textarea
-                      id="references"
-                      value={formData.references}
-                      onChange={(e) => setFormData({ ...formData, references: e.target.value })}
-                      placeholder="Nom, poste, entreprise, téléphone/email de vos références..."
-                      className="min-h-[80px]"
-                    />
+                    <h4 className="font-medium mb-2">Référence de recommandation</h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="referenceFullName">Nom et prénom *</Label>
+                      <Input
+                        id="referenceFullName"
+                        value={formData.referenceFullName}
+                        onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
+                        placeholder="Ex: Jean Dupont"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceCompany">Entreprise *</Label>
+                      <Input
+                        id="referenceCompany"
+                        value={formData.referenceCompany}
+                        onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
+                        placeholder="Ex: SEEG"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceEmail">Email *</Label>
+                      <Input
+                        id="referenceEmail"
+                        type="email"
+                        value={formData.referenceEmail}
+                        onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
+                        placeholder="exemple@domaine.com"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceContact">Contact *</Label>
+                      <Input
+                        id="referenceContact"
+                        value={formData.referenceContact}
+                        onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
+                        placeholder="+241 01 23 45 67"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -1740,6 +1786,31 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         <p>{formData.additionalCertificates.length} fichier(s)</p>
                       </div>
                       {/* Sections cachées non affichées: lettres de recommandation */}
+                    </div>
+
+                    <div className="bg-muted rounded-lg p-4 mt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Référence de recommandation</h5>
+                        <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Nom et prénom:</span>
+                          <p>{formData.referenceFullName || "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Entreprise:</span>
+                          <p>{formData.referenceCompany || "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Email:</span>
+                          <p>{formData.referenceEmail || "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Contact:</span>
+                          <p>{formData.referenceContact || "Non renseigné"}</p>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="bg-muted rounded-lg p-4">

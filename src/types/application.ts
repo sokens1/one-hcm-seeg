@@ -7,8 +7,12 @@ export interface Application {
   status: 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme' | 'simulation_programmee';
   motivation: string | null;
   availability_start: string | null;
-  reference_contacts?: string | null;
-  ref_contacts?: string | null;
+  reference_contacts?: string | null; // deprecated
+  ref_contacts?: string | null; // deprecated
+  reference_full_name?: string | null;
+  reference_email?: string | null;
+  reference_contact?: string | null;
+  reference_company?: string | null;
   interview_date?: string | null; // Date et heure de l'entretien programmé
   simulation_date?: string | null; // Date et heure de la simulation programmée
   mtp_answers?: {
