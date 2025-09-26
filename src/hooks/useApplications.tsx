@@ -50,8 +50,12 @@ export interface Application {
   status: 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme' | 'simulation_programmee';
   motivation: string | null;
   availability_start: string | null;
-  reference_contacts?: string | null; // Database column name
-  ref_contacts?: string | null; // API compatibility alias used by UI
+  reference_contacts?: string | null; // Deprecated
+  ref_contacts?: string | null; // Deprecated
+  reference_full_name?: string | null;
+  reference_email?: string | null;
+  reference_contact?: string | null;
+  reference_company?: string | null;
   interview_date?: string | null; // Date et heure de l'entretien programmé
   simulation_date?: string | null; // Date et heure de la simulation programmée
   mtp_answers?: {
@@ -162,7 +166,11 @@ export function useApplications() {
   const submitApplicationMutation = useMutation({
     mutationFn: async (applicationData: {
       job_offer_id: string;
-      ref_contacts?: string;
+      ref_contacts?: string; // deprecated
+      reference_full_name?: string;
+      reference_email?: string;
+      reference_contact?: string;
+      reference_company?: string;
       mtp_answers: {
         metier: string[];
         talent: string[];
@@ -210,7 +218,10 @@ export function useApplications() {
         job_offer_id: applicationData.job_offer_id,
         mtp_answers: applicationData.mtp_answers,
       };
-      if (applicationData.ref_contacts !== undefined) payload.reference_contacts = applicationData.ref_contacts;
+      if (applicationData.reference_full_name) payload.reference_full_name = applicationData.reference_full_name;
+      if (applicationData.reference_email) payload.reference_email = applicationData.reference_email;
+      if (applicationData.reference_contact) payload.reference_contact = applicationData.reference_contact;
+      if (applicationData.reference_company) payload.reference_company = applicationData.reference_company;
 
       const { data, error } = await supabase
         .from('applications')
