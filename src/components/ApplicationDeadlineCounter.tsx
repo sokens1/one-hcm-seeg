@@ -5,26 +5,34 @@ import { Button } from '@/components/ui/button';
 
 export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[] }) {
   const [timeLeft, setTimeLeft] = useState<string>('');
-  const [endDate] = useState<Date>(new Date('2025-09-01'));
+  // Nouvelle période: 27/09/2025 au 05/10/2025 inclus
+  const [startDate] = useState<Date>(new Date('2025-09-27T00:00:00'));
+  const [endDate] = useState<Date>(new Date('2025-10-05T23:59:59'));
 
-  // Toujours en mode "during" - compte à rebours jusqu'au 31 août
+  // Compte à rebours actif uniquement durant la période définie
 
   useEffect(() => {
     const updateTimer = () => {
       const now = new Date();
-      const difference = endDate.getTime() - now.getTime();
-
-      if (difference <= 0) {
-        setTimeLeft("0j 00h 00m 00s");
+      // Avant le début: ne rien afficher (compteur inactif avant ouverture)
+      if (now < startDate) {
+        setTimeLeft('');
         return;
       }
 
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      // Pendant la période: compte à rebours jusqu'à la fin
+      if (now >= startDate && now <= endDate) {
+        const diff = endDate.getTime() - now.getTime();
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+        return;
+      }
 
-      setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+      // Après la période
+      setTimeLeft("0j 00h 00m 00s");
     };
 
     // Mettre à jour immédiatement
@@ -40,13 +48,10 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
   const [showClosedMessage, setShowClosedMessage] = useState(false);
 
   useEffect(() => {
-    // Vérifier si on est après minuit aujourd'hui (31 août 2025)
-    const deadlineDate = new Date('2025-08-31T23:59:59');
     const now = new Date();
-    
-    // Afficher le message de clôture si la date actuelle est postérieure à la date limite
-    setShowClosedMessage(now > deadlineDate);
-  }, []);
+    // Message de clôture si la date actuelle est postérieure à la fin de période
+    setShowClosedMessage(now > endDate);
+  }, [endDate]);
 
   if (!timeLeft || !isVisible) return null;
 
@@ -92,12 +97,12 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-1.5 text-white/70" />
-                <span className="font-mono">25/08/2025</span>
+                <span className="font-mono">27/09/2025</span>
               </div>
               <div className="text-white/60 mx-2">→</div>
               <div className="flex items-center">
                 <CalendarDays className="w-4 h-4 mr-1.5 text-white/70" />
-                <span className="font-mono">31/08/2025</span>
+                <span className="font-mono">05/10/2025</span>
               </div>
             </div>
           </div>
