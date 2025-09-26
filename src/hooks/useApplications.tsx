@@ -472,7 +472,13 @@ export function useRecruiterApplications(jobOfferId?: string) {
       throw new Error(`Erreur lors de la récupération des candidatures: ${rpcError.message}`);
     }
     
-    let entries: any[] = rpcData || [];
+    // Filtrer pour n'afficher que les candidatures de la nouvelle campagne
+    const CAMPAIGN_START = new Date('2025-09-25');
+    let entries: any[] = (rpcData || []).filter((app: any) => {
+      const createdAt = app?.application_details?.created_at;
+      if (!createdAt) return false;
+      return new Date(createdAt) >= CAMPAIGN_START;
+    });
     
     // Si un jobOfferId est spécifié, filtrer côté client
     if (jobOfferId) {
