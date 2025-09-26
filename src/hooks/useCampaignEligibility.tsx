@@ -23,15 +23,24 @@ export function useCampaignEligibility(): CampaignEligibility {
 
   const campaignStartDate = new Date(CAMPAIGN_START_DATE);
   const userCreatedAt = new Date(user.created_at);
+  const now = new Date();
 
-  const isEligible = userCreatedAt >= campaignStartDate;
+  // Vérifier si l'utilisateur est éligible (créé après le début de campagne) ET si la campagne est ouverte
+  const isUserEligible = userCreatedAt >= campaignStartDate;
+  const isCampaignOpen = now >= campaignStartDate;
+  const isEligible = isUserEligible && isCampaignOpen;
+
+  let reason: string | undefined;
+  if (!isUserEligible) {
+    reason = 'Votre compte a été créé avant le 27/09/2025. Les candidatures ne sont ouvertes qu\'aux utilisateurs créés à partir de cette date.';
+  } else if (!isCampaignOpen) {
+    reason = 'Les candidatures ne sont pas encore ouvertes. Elles seront disponibles à partir du 27/09/2025.';
+  }
 
   return {
     isEligible,
     campaignStartDate: CAMPAIGN_START_DATE,
     userCreatedAt: user.created_at,
-    reason: isEligible 
-      ? undefined 
-      : 'Votre compte a été créé avant le 27/09/2025. Les candidatures ne sont ouvertes qu\'aux utilisateurs créés à partir de cette date.'
+    reason
   };
 }

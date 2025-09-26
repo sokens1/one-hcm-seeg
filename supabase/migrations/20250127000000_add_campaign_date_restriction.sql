@@ -5,6 +5,11 @@
 CREATE OR REPLACE FUNCTION public.check_campaign_eligibility()
 RETURNS TRIGGER AS $$
 BEGIN
+  -- Vérifier si la campagne est ouverte (à partir du 27/09/2025)
+  IF NOW() < '2025-09-27 00:00:00+00'::timestamptz THEN
+    RAISE EXCEPTION 'Les candidatures ne sont pas encore ouvertes. Elles seront disponibles à partir du 27/09/2025';
+  END IF;
+  
   -- Vérifier si l'utilisateur a été créé à partir du 27/09/2025
   IF EXISTS (
     SELECT 1 FROM public.users 
