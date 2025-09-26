@@ -25,6 +25,8 @@ import { isPreLaunch } from "@/utils/launchGate";
 import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 // Import supprimé car l'envoi d'email est désactivé
 // import { EMAIL_CONFIG } from "@/config/email";
 // import { getCandidateEmail, isValidEmail, getEmailErrorMessage } from "@/utils/emailValidation";
@@ -87,6 +89,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
+  const { isEligible } = useCampaignEligibility();
   
   // Hook pour gérer les brouillons (seulement en mode création)
   const {
@@ -1027,6 +1030,25 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           </div>
         </div>
       </Layout>
+    );
+  }
+
+  // Si l'utilisateur n'est pas éligible, afficher l'alerte et empêcher la candidature
+  if (!isEligible) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 lg:py-12">
+          <div className="max-w-2xl mx-auto">
+            <CampaignEligibilityAlert className="mb-6" />
+            <div className="text-center">
+              <Button onClick={onBack} variant="outline">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Retour à l'offre
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 

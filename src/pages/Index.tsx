@@ -18,6 +18,8 @@ import { isApplicationClosed } from "@/utils/applicationUtils";
 import { toast } from "sonner";
 import { useMaintenance } from "@/hooks/useMaintenance";
 import { supabase } from "@/integrations/supabase/client";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
 
@@ -46,6 +48,7 @@ const Index = () => {
   
   const { data, isLoading, error } = useJobOffers();
   const jobOffers: JobOffer[] = Array.isArray(data) ? data : [];
+  const { isEligible } = useCampaignEligibility();
 
   // Helper to normalize location which can be string | string[] from the API
   const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
@@ -333,6 +336,13 @@ const Index = () => {
           </div>
         </div>
 
+        {/* Campaign Eligibility Alert */}
+        {user && !isEligible && (
+          <div className="max-w-7xl mx-auto mb-6 px-4">
+            <CampaignEligibilityAlert />
+          </div>
+        )}
+
         {/* Job Listings */}
         <div className="max-w-7xl mx-auto mb-8 sm:mb-12">
           {isLoading ? (
@@ -357,7 +367,11 @@ const Index = () => {
                     isPreview={true}
                     onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")}
+                    onLockedClick={() => {
+                      if (preLaunch) {
+                        toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.");
+                      }
+                    }}
                     // candidateCount={isApplicationClosed() ? 0 : undefined} // Forcer la désactivation si les candidatures sont closes
                   />
                 </div>

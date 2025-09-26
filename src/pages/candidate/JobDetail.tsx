@@ -11,6 +11,9 @@ import { useJobOffer } from "@/hooks/useJobOffers";
 import { useAuth } from "@/hooks/useAuth";
 import { useApplicationStatus } from "@/hooks/useApplications";
 import { ContentSpinner } from "@/components/ui/spinner";
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+import { toast } from "sonner";
 
 export default function JobDetail() {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +22,7 @@ export default function JobDetail() {
   const { data: jobOffer, isLoading, error } = useJobOffer(id || "");
   const { user } = useAuth();
   const { data: applicationStatus, isLoading: isLoadingApplication } = useApplicationStatus(id || "");
+  const { isEligible } = useCampaignEligibility();
 
   const handleBackToJobs = () => {
     // Navigate directly to home page to avoid double-click issues
@@ -32,6 +36,13 @@ export default function JobDetail() {
       navigate(`/auth?tab=signup&redirect=${redirect}`);
       return;
     }
+    
+    // Vérifier l'éligibilité avant de permettre la candidature
+    if (!isEligible) {
+      toast.error("Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025.");
+      return;
+    }
+    
     // If already authenticated, go directly to candidate dashboard with jobs view and specific job
     console.log('Redirecting to candidate dashboard with jobId:', id);
     navigate(`/candidate/dashboard?view=jobs&jobId=${id}`);
@@ -167,6 +178,13 @@ export default function JobDetail() {
         </div>
 
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
+          {/* Campaign Eligibility Alert */}
+          {user && !isEligible && (
+            <div className="mb-6">
+              <CampaignEligibilityAlert />
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6 sm:space-y-8">
@@ -287,13 +305,17 @@ export default function JobDetail() {
                         onClick={handleApply}
                         className="w-full text-sm sm:text-base"
                         size="lg"
+                        disabled={!isEligible}
                       >
                         <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                        Postuler maintenant
+                        {!isEligible ? "Candidature fermée" : "Postuler maintenant"}
                       </Button>
                       
                       <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                        Processus de candidature en ligne sécurisé
+                        {!isEligible 
+                          ? "Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025"
+                          : "Processus de candidature en ligne sécurisé"
+                        }
                       </p>
                     </div>
                   )}

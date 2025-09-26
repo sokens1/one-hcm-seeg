@@ -8,6 +8,8 @@ import { isPreLaunch } from "@/utils/launchGate";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 
 interface JobDetailProps {
   jobId: string;
@@ -17,6 +19,7 @@ interface JobDetailProps {
 
 export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   const { data: jobOffer, isLoading, error } = useJobOffer(jobId);
+  const { isEligible } = useCampaignEligibility();
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
@@ -223,16 +226,26 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 </div>
                 
                                 <Button
-                  onClick={onApply}
+                  onClick={() => {
+                    if (!isEligible) {
+                      toast.error("Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025.");
+                      return;
+                    }
+                    onApply();
+                  }}
                   className="w-full text-sm sm:text-base"
                   size="lg"
+                  disabled={!isEligible}
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  Postuler
+                  {!isEligible ? "Candidature fermée" : "Postuler"}
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                  Processus de candidature en ligne sécurisé
+                  {!isEligible 
+                    ? "Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025"
+                    : "Processus de candidature en ligne sécurisé"
+                  }
                 </p>
               </CardContent>
             </Card>

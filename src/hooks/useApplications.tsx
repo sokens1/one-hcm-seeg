@@ -184,6 +184,13 @@ export function useApplications() {
     }) => {
       if (!user) throw new Error("User not authenticated");
 
+      // Vérifier si l'utilisateur est éligible pour la nouvelle campagne (créé à partir du 27/09/2025)
+      const campaignStartDate = new Date('2025-09-27T00:00:00.000Z');
+      const userCreatedAt = new Date(user.created_at);
+      
+      if (userCreatedAt < campaignStartDate) {
+        throw new Error("Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir du 27/09/2025. Votre compte a été créé avant cette date.");
+      }
 
       // Vérifier si une candidature existe déjà
       const { data: existingApplication } = await supabase
