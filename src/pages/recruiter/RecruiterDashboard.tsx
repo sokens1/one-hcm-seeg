@@ -32,6 +32,7 @@ import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useAuth } from "@/hooks/useAuth";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
 import { useCampaignStats } from "@/hooks/useCampaignStats";
+import { useCampaignDetailedStats } from "@/hooks/useCampaignDetailedStats";
 import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
 import { DashboardToggle } from "@/components/ui/DashboardToggle";
 import { formatDistanceToNow } from 'date-fns';
@@ -69,6 +70,7 @@ export default function RecruiterDashboard() {
   } = useRecruiterDashboard();
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { data: campaignStats, isLoading: isLoadingCampaignStats } = useCampaignStats();
+  const { data: detailedStats, isLoading: isLoadingDetailedStats } = useCampaignDetailedStats();
   const { isRecruiter, isObserver } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
@@ -166,10 +168,10 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    {isLoadingCampaignStats ? (
+                    {isLoadingDetailedStats ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
-                      campaignStats?.total_jobs || 0
+                      detailedStats?.total_jobs || 3
                     )}
                   </div>
                   <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
@@ -190,10 +192,10 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-green-900 dark:text-green-100">
-                    {isLoadingCampaignStats ? (
+                    {isLoadingDetailedStats ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
-                      campaignStats?.total_candidates || 0
+                      detailedStats?.total_candidates || 0
                     )}
                   </div>
                   <p className="text-xs text-green-600 dark:text-green-400 mt-1">
@@ -214,10 +216,10 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-emerald-900 dark:text-emerald-100">
-                    {isLoadingCampaignStats ? (
+                    {isLoadingDetailedStats ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
-                      campaignStats?.total_applications || 0
+                      detailedStats?.total_applications || 0
                     )}
                   </div>
                   <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
@@ -238,10 +240,10 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-100">
-                    {isLoadingCampaignStats ? (
+                    {isLoadingDetailedStats ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : campaignStats?.total_jobs && campaignStats?.total_jobs > 0 ? (
-                      Math.round((campaignStats.applications_per_job.filter(job => job.application_count > 0).length / campaignStats.total_jobs) * 100)
+                    ) : detailedStats?.total_jobs && detailedStats?.total_jobs > 0 ? (
+                      Math.round((detailedStats.applications_per_job.filter(job => job.application_count > 0).length / detailedStats.total_jobs) * 100)
                     ) : (
                       0
                     )}%
@@ -274,37 +276,37 @@ export default function RecruiterDashboard() {
                     <div className="text-center">%</div>
                   </div>
                   
-                  {/* Lignes de données */}
+                  {/* Lignes de données - Trois offres ciblées */}
                   <div className="space-y-2">
-                    {departmentStats.map((dept) => {
-                      // Calculer le pourcentage de couverture par rapport au total des candidatures
-                      const totalApplications = departmentStats.reduce((sum, d) => sum + d.applicationCount, 0);
-                      const coveragePercentage = totalApplications > 0 ? Math.round((dept.applicationCount / totalApplications) * 100) : 0;
-                      
-                      return (
-                        <div key={dept.department} className="grid grid-cols-4 gap-2 text-xs items-center">
+                    {isLoadingDetailedStats ? (
+                      <div className="flex justify-center py-4">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      </div>
+                    ) : (
+                      detailedStats?.distribution_by_type?.map((type) => (
+                        <div key={type.type} className="grid grid-cols-4 gap-2 text-xs items-center">
                           <div className="flex items-center gap-2">
                             <div className={`w-2 h-2 rounded-full ${
-                              dept.department === 'Électricité' ? 'bg-orange-500' :
-                              dept.department === 'Eau' ? 'bg-blue-500' :
-                              'bg-gray-600'
+                              type.type === 'Audit & Contrôle' ? 'bg-blue-500' :
+                              type.type === 'Systèmes d\'Information' ? 'bg-green-500' :
+                              'bg-purple-500'
                             }`}></div>
                             <span className="text-cyan-700 dark:text-cyan-300 font-medium">
-                              {dept.department}
+                              {type.type}
                             </span>
                           </div>
                           <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
-                            {dept.jobCount}
+                            {type.positions}
                           </div>
                           <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
-                            {dept.applicationCount}
+                            {type.applications}
                           </div>
                           <div className="text-center text-cyan-900 dark:text-cyan-100 font-bold">
-                            {coveragePercentage}%
+                            {type.percentage}%
                           </div>
                         </div>
-                      );
-                    })}
+                      )) || []
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -321,7 +323,11 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-orange-900 dark:text-orange-100">
-                    {stats.multiPostCandidates ?? 0}
+                    {isLoadingDetailedStats ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      detailedStats?.multi_position_candidates || 0
+                    )}
                   </div>
                   <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
                     Candidats
@@ -341,7 +347,11 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-indigo-900 dark:text-indigo-100">
-                    {stats.interviewsScheduled}
+                    {isLoadingDetailedStats ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      detailedStats?.planned_interviews || 0
+                    )}
                   </div>
                   <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
                     Planifiés
@@ -506,7 +516,7 @@ export default function RecruiterDashboard() {
                 <CardContent>
                   <div className="h-64 sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={statusEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <AreaChart data={isLoadingDetailedStats ? [] : (detailedStats?.status_evolution || [])} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <XAxis 
                           dataKey="date" 
                           tick={{ fontSize: 12 }}
@@ -583,33 +593,12 @@ export default function RecruiterDashboard() {
                      <ResponsiveContainer width="100%" height="100%">
                        <RechartsPieChart>
                          <Pie
-                           data={(() => {
-                             // Calculer la somme des candidatures pour Eau + Électricité
-                             const metierApplications = departmentStats
-                               .filter(dept => dept.department === 'Eau' || dept.department === 'Électricité')
-                               .reduce((sum, dept) => sum + dept.applicationCount, 0);
-                             
-                             // Récupérer les candidatures Support
-                             const supportApplications = departmentStats
-                               .find(dept => dept.department === 'Support')?.applicationCount || 0;
-                             
-                             const totalApplications = metierApplications + supportApplications;
-                             
-                             return [
-                               {
-                                 name: 'Métier ',
-                                 value: metierApplications,
-                                 percentage: totalApplications > 0 ? (metierApplications / totalApplications) * 100 : 0,
-                                 fill: '#3b82f6'
-                               },
-                               {
-                                 name: 'Support',
-                                 value: supportApplications,
-                                 percentage: totalApplications > 0 ? (supportApplications / totalApplications) * 100 : 0,
-                                 fill: '#6b7280'
-                               }
-                             ];
-                           })()}
+                           data={isLoadingDetailedStats ? [] : (detailedStats?.distribution_by_type?.map((type, index) => ({
+                             name: type.type || 'Non défini',
+                             value: type.applications || 0,
+                             percentage: type.percentage || 0,
+                             fill: index === 0 ? '#3b82f6' : index === 1 ? '#10b981' : '#8b5cf6'
+                           })) || [])}
                            cx="50%"
                            cy="50%"
                            outerRadius={80}
@@ -622,7 +611,7 @@ export default function RecruiterDashboard() {
                          </Pie>
                          <Tooltip 
                            formatter={(value: number, name: string, props: any) => [
-                             `${value} candidatures (${props.payload.percentage.toFixed(1)}%)`,
+                             `${value} candidatures (${(props.payload?.percentage || 0).toFixed(1)}%)`,
                              name
                            ]}
                            contentStyle={{
@@ -637,9 +626,11 @@ export default function RecruiterDashboard() {
                            height={36}
                            formatter={(value, entry: any) => {
                              const data = entry.payload;
+                             const percentage = data?.percentage || 0;
+                             const candidatures = data?.value || 0;
                              return (
                                <span style={{ color: entry.color, fontSize: '14px' }}>
-                                 {value} ({data.value} candidatures - {data.percentage.toFixed(1)}%)
+                                 {value} ({candidatures} candidatures - {percentage.toFixed(1)}%)
                                </span>
                              );
                            }}
@@ -666,20 +657,12 @@ export default function RecruiterDashboard() {
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsPieChart>
                         <Pie
-                          data={[
-                            { 
-                              name: 'Femmes', 
-                              value: stats.femalePercent ?? 0, 
-                              fill: '#ec4899',
-                              candidates: Math.round((stats.femalePercent ?? 0) * (stats.totalCandidates ?? 0) / 100)
-                            },
-                            { 
-                              name: 'Hommes', 
-                              value: stats.malePercent ?? 0, 
-                              fill: '#3b82f6',
-                              candidates: Math.round((stats.malePercent ?? 0) * (stats.totalCandidates ?? 0) / 100)
-                            },
-                          ]}
+                          data={isLoadingDetailedStats ? [] : (detailedStats?.gender_distribution?.map((gender) => ({
+                            name: gender.gender || 'Non spécifié',
+                            value: gender.percentage || 0,
+                            fill: gender.gender === 'Femmes' ? '#ec4899' : '#3b82f6',
+                            candidates: gender.count || 0
+                          })) || [])}
                           cx="50%"
                           cy="50%"
                           outerRadius={80}
@@ -687,16 +670,16 @@ export default function RecruiterDashboard() {
                           paddingAngle={5}
                           dataKey="value"
                         >
-                          {[
-                            { name: 'Femmes', value: stats.femalePercent ?? 0, fill: '#ec4899' },
-                            { name: 'Hommes', value: stats.malePercent ?? 0, fill: '#3b82f6' },
-                          ].map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                          ))}
+                          {isLoadingDetailedStats ? [] : (detailedStats?.gender_distribution?.map((gender, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={gender.gender === 'Femmes' ? '#ec4899' : '#3b82f6'} 
+                            />
+                          )) || [])}
                         </Pie>
                         <Tooltip 
                           formatter={(value: number, name: string, props: any) => [
-                            `${value.toFixed(1)}% (${props.payload.candidates} candidats)`,
+                            `${(value || 0).toFixed(1)}% (${props.payload?.candidates || 0} candidats)`,
                             name
                           ]}
                           contentStyle={{
@@ -710,10 +693,11 @@ export default function RecruiterDashboard() {
                           verticalAlign="bottom" 
                           height={36}
                           formatter={(value, entry: any) => {
-                            const candidates = Math.round((entry.payload.value) * (stats.totalCandidates ?? 0) / 100);
+                            const percentage = entry.payload?.value || 0;
+                            const candidates = entry.payload?.candidates || 0;
                             return (
                               <span style={{ color: entry.color, fontSize: '14px' }}>
-                                {value} ({(entry.payload.value).toFixed(1)}% - {candidates} candidats)
+                                {value} ({percentage.toFixed(1)}% - {candidates} candidats)
                               </span>
                             );
                           }}
