@@ -13,6 +13,8 @@ import { useJobOffers } from "@/hooks/useJobOffers";
 import { isPreLaunch } from "@/utils/launchGate";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { toast } from "sonner";
+// import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
 
 export function JobCatalog() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,6 +32,7 @@ export function JobCatalog() {
   const { data: jobs, isLoading, error } = useJobOffers();
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
+  const { isEligible } = useCampaignEligibility();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
 
   // Helper to normalize fields that can be string or string[]
@@ -89,6 +92,9 @@ export function JobCatalog() {
       return;
     } else if (applicationsClosed) {
       toast.info("Les candidatures sont désormais closes.");
+      return;
+    } else if (!isEligible) {
+      toast.error("Période de candidatures close");
       return;
     }
     // Ouvrir le formulaire de candidature
