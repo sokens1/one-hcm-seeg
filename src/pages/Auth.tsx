@@ -78,7 +78,7 @@ export default function Auth() {
     dateOfBirth: "",
     sexe: "",
     adresse: "",
-    candidateStatus: "externe", // "interne" ou "externe"
+    candidateStatus: "", // "interne" ou "externe" - vide par défaut
     noSeegEmail: false // Checkbox pour les internes sans email SEEG
   });
 
@@ -86,6 +86,21 @@ export default function Auth() {
   const [isMatriculeValid, setIsMatriculeValid] = useState<boolean>(!MATRICULE_REQUIRED);
   const [isVerifyingMatricule, setIsVerifyingMatricule] = useState<boolean>(false);
   const [lastVerifiedMatricule, setLastVerifiedMatricule] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+
+  // Validation de l'email en temps réel pour les candidats internes
+  useEffect(() => {
+    if (signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail && signUpData.email) {
+      const emailPattern = /@seeg\.com$/i;
+      if (!emailPattern.test(signUpData.email)) {
+        setEmailError("L'email doit être un email professionnel SEEG (@seeg.com)");
+      } else {
+        setEmailError("");
+      }
+    } else {
+      setEmailError("");
+    }
+  }, [signUpData.email, signUpData.candidateStatus, signUpData.noSeegEmail]);
 
   useEffect(() => {
     if (!MATRICULE_REQUIRED) {
@@ -123,7 +138,8 @@ export default function Auth() {
 
     try {
       setIsVerifyingMatricule(true);
-      const { data: isValid, error } = await supabase.rpc('verify_seeg_matricule', {
+      // Utiliser la fonction RPC correcte pour vérifier le matricule dans seeg_agents
+      const { data: isValid, error } = await supabase.rpc('verify_matricule', {
         p_matricule: matricule,
       });
 
@@ -166,6 +182,39 @@ export default function Auth() {
     }, 1000); // Augmenté de 500ms à 1000ms pour réduire les appels
     return () => clearTimeout(timer);
   }, [signUpData.matricule, verifyMatricule]);
+
+  // Vérifier si tous les champs requis sont remplis
+  const isFormValid = () => {
+    // Vérifier si un type de candidature est sélectionné
+    if (!signUpData.candidateStatus) return false;
+
+    // Champs communs requis
+    const commonFieldsFilled = 
+      signUpData.firstName.trim() !== "" &&
+      signUpData.lastName.trim() !== "" &&
+      signUpData.email.trim() !== "" &&
+      signUpData.phone.trim() !== "" &&
+      signUpData.dateOfBirth !== "" &&
+      signUpData.sexe !== "" &&
+      signUpData.adresse.trim() !== "" &&
+      signUpData.password.trim() !== "" &&
+      signUpData.confirmPassword.trim() !== "";
+
+    if (!commonFieldsFilled) return false;
+
+    // Validation de l'email (pas d'erreur)
+    if (emailError !== "") return false;
+
+    // Validation des mots de passe correspondants
+    if (signUpData.password !== signUpData.confirmPassword) return false;
+
+    // Si candidat interne, vérifier le matricule
+    if (signUpData.candidateStatus === "interne") {
+      return signUpData.matricule.trim() !== "" && isMatriculeValid;
+    }
+
+    return true;
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -514,6 +563,15 @@ export default function Auth() {
                       aria-hidden="true"
                     />
                   )}
+                  {isSubmitting && (
+                    <div className="absolute inset-0 z-10 bg-background/50 flex items-center justify-center">
+                      <div className="bg-background border rounded-lg p-6 shadow-lg flex flex-col items-center gap-3">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="text-sm font-medium">Création de votre compte...</p>
+                        <p className="text-xs text-muted-foreground">Veuillez patienter</p>
+                      </div>
+                    </div>
+                  )}
                   <form onSubmit={handleSignUp} className="space-y-4">
                     {/* Type de candidat */}
                     <div className="space-y-3">
@@ -564,30 +622,42 @@ export default function Auth() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName" className="text-sm">Prénom</Label>
-                        <Input
-                          id="firstName"
-                          placeholder="Prénom"
-                          value={signUpData.firstName}
-                          onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
-                          className="text-sm"
-                          required
-                        />
+                    {/* Afficher un message si aucun type n'est sélectionné */}
+                    {!signUpData.candidateStatus && (
+                      <div className="text-center py-8">
+                        <p className="text-sm text-muted-foreground">
+                          Veuillez sélectionner un type de candidature pour continuer
+                        </p>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName" className="text-sm">Nom</Label>
-                        <Input
-                          id="lastName"
-                          placeholder="Nom"
-                          value={signUpData.lastName}
-                          onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
-                          className="text-sm"
-                          required
-                        />
-                      </div>
-                    </div>
+                    )}
+
+                    {/* Afficher les champs uniquement si un type est sélectionné */}
+                    {signUpData.candidateStatus && (
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="firstName" className="text-sm">Prénom</Label>
+                            <Input
+                              id="firstName"
+                              placeholder="Prénom"
+                              value={signUpData.firstName}
+                              onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
+                              className="text-sm"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="lastName" className="text-sm">Nom</Label>
+                            <Input
+                              id="lastName"
+                              placeholder="Nom"
+                              value={signUpData.lastName}
+                              onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
+                              className="text-sm"
+                              required
+                            />
+                          </div>
+                        </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="signup-email">
@@ -605,20 +675,16 @@ export default function Auth() {
                           }
                           value={signUpData.email}
                           onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
-                          className="pl-10"
+                          className={`pl-10 ${emailError ? "border-red-500 focus:ring-red-500" : ""}`}
                           required
-                          pattern={
-                            signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail
-                              ? ".*@seeg\\.com$"
-                              : undefined
-                          }
-                          title={
-                            signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail
-                              ? "L'email doit être un email professionnel SEEG (@seeg.com)"
-                              : undefined
-                          }
                         />
                       </div>
+                      {emailError && (
+                        <p className="text-xs text-red-600 flex items-center gap-1 mt-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {emailError}
+                        </p>
+                      )}
                       {signUpData.candidateStatus === "interne" && (
                         <div className="flex items-center space-x-2 pt-1">
                           <input
@@ -779,20 +845,34 @@ export default function Auth() {
                       </div>
                     </div>
 
+                    {!isFormValid() && signUpData.candidateStatus && (
+                      <p className="text-xs text-center text-muted-foreground">
+                        {signUpData.candidateStatus === "interne" && !isMatriculeValid 
+                          ? "Veuillez vérifier que votre matricule est valide"
+                          : emailError 
+                            ? "Veuillez corriger l'adresse email"
+                            : signUpData.password !== signUpData.confirmPassword
+                              ? "Les mots de passe ne correspondent pas"
+                              : "Veuillez remplir tous les champs obligatoires"}
+                      </p>
+                    )}
+
                     <Button 
                       type="submit" 
                       className="w-full"
-                      disabled={isSubmitting || !isMatriculeValid}
+                      disabled={!isFormValid() || isSubmitting}
                     >
                       {isSubmitting ? (
-                        <>
+                        <div className="flex items-center justify-center">
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Inscription en cours...
-                        </>
+                          <span>Inscription en cours...</span>
+                        </div>
                       ) : (
                         "S'inscrire"
                       )}
                     </Button>
+                      </>
+                    )}
                   </form>
                 </div>
               </TabsContent>
