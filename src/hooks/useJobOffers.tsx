@@ -16,6 +16,10 @@ export interface JobOffer {
   requirements?: string | string[] | null;
   benefits?: string[] | null;
   status: string;
+  // interne | externe
+  status_offers?: string | null;
+  // handle existing typo variant in DB
+  status_offerts?: string | null;
   application_deadline?: string | null;
   created_at: string;
   updated_at: string;
@@ -34,26 +38,82 @@ export interface JobOffer {
 
 const fetchJobOffers = async () => {
   try {
-    // 1. Fetch all active job offers
-    const { data: offers, error } = await supabase
-      .from('job_offers')
-      .select('id,title,description,location,contract_type,requirements,status,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities')
-      .eq('status', 'active')
-      .order('created_at', { ascending: false });
+    // Determine current user's audience (interne/externe)
+    let candidateAudience: string | null = null;
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const uid = authData?.user?.id;
+      if (uid) {
+        const { data: u } = await supabase
+          .from('users')
+          .select('candidate_status, matricule')
+          .eq('id', uid)
+          .maybeSingle();
+        const row = u as { candidate_status?: string | null; matricule?: string | null } | null;
+        candidateAudience = row?.candidate_status || (row?.matricule ? 'interne' : 'externe');
+      }
+    } catch (e) {
+      // Fail soft if we cannot determine audience
+      candidateAudience = null;
+    }
 
-    if (error) {
-      console.error('[useJobOffers] Error fetching job offers:', error);
+    // 1. Fetch all active job offers, filtered by audience when available
+    let offers: any[] | null = null;
+    let queryError: any = null;
+    try {
+      const query = supabase
+        .from('job_offers')
+        .select('id,title,description,location,contract_type,requirements,status,status_offers,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      const { data, error } = await query;
+      if (error) throw error;
+      offers = data;
+    } catch (err: any) {
+      queryError = err;
+      // If the error is due to unknown column status_offers (e.g., migration not applied yet), retry without it
+      const isUnknownColumn = typeof err?.message === 'string' && (
+        err.message.includes('column') && err.message.includes('status_offers') ||
+        err.message.includes('42703')
+      );
+      if (isUnknownColumn) {
+        try {
+          const { data, error } = await supabase
+            .from('job_offers')
+            .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false });
+          if (error) throw error;
+          offers = data || [];
+          queryError = null;
+        } catch (e) {
+          queryError = e;
+        }
+      }
+    }
+
+    if (queryError) {
+      console.error('[useJobOffers] Error fetching job offers:', queryError);
       
       // If it's a 500 error (RLS issue), return fallback data
-      if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
+      if (String(queryError.message || '').includes('500') || String(queryError.message || '').includes('Internal Server Error')) {
         console.warn('[useJobOffers] Server error detected, returning fallback data');
         return getFallbackJobOffers();
       }
       
-      throw error;
+      // Otherwise, return empty list to avoid showing fallback jobs to candidates
+      return [] as JobOffer[];
     }
     
     if (!offers || offers.length === 0) return [];
+
+    // Client-side audience filtering to avoid column name issues
+    const filteredByAudience = (offers || []).filter((o: any) => {
+      if (!candidateAudience) return true;
+      const oa = o?.status_offers ?? o?.status_offerts ?? null;
+      return oa === candidateAudience;
+    });
 
     // 2. Récupérer les candidatures via RPC par offre (signature 1-argument)
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -94,7 +154,7 @@ const fetchJobOffers = async () => {
     }, {} as Record<string, { total: number; new: number }>);
 
     // 4. Combine offers with their application counts
-    const offersWithStats = offers.map(offer => ({
+    const offersWithStats = filteredByAudience.map(offer => ({
       ...offer,
       candidate_count: applicationStats[offer.id]?.total || 0,
       new_candidates: applicationStats[offer.id]?.new || 0,
@@ -138,8 +198,12 @@ const fetchJobOffers = async () => {
     return offersWithStats;
   } catch (error) {
     console.error('[useJobOffers] Unexpected error:', error);
-    // Return fallback data in case of any error
-    return getFallbackJobOffers();
+    const msg = String((error as any)?.message || '');
+    if (msg.includes('500') || msg.includes('Internal Server Error')) {
+      return getFallbackJobOffers();
+    }
+    // Otherwise, return empty to avoid showing fallback in candidate view
+    return [] as JobOffer[];
   }
 };
 
@@ -189,9 +253,9 @@ const getFallbackJobOffers = (): JobOffer[] => {
   ];
 };
 
-export function useJobOffers() {
+export function useJobOffers(audience?: string | null) {
   return useQuery<JobOffer[], Error>({
-    queryKey: ['jobOffers'],
+    queryKey: ['jobOffers', audience ?? 'unknown'],
     queryFn: fetchJobOffers,
   });
 }

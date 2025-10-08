@@ -217,12 +217,44 @@ export function useApplications() {
         throw new Error("Vous avez déjà postulé pour cette offre d'emploi");
       }
 
+      // Determine candidate audience and offer audience (canonical columns)
+      let candidateAudience: string | null = null;
+      let offerAudience: string | null = null;
+      try {
+        const [{ data: userRow }, { data: offerRow }] = await Promise.all([
+          supabase
+            .from('users')
+            .select('candidate_status')
+            .eq('id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('job_offers')
+            .select('status_offers, status_offerts')
+            .eq('id', applicationData.job_offer_id)
+            .maybeSingle(),
+        ]);
+        const u = userRow as { candidate_status?: string | null } | null;
+        const o = offerRow as { status_offers?: string | null; status_offerts?: string | null } | null;
+        candidateAudience = u?.candidate_status ?? null;
+        offerAudience = o?.status_offers ?? o?.status_offerts ?? null;
+      } catch {
+        // ignore, handled below
+      }
+
+      // If both are set and don't match, block the application
+      if (candidateAudience && offerAudience && candidateAudience !== offerAudience) {
+        throw new Error("Cette offre n'est pas accessible à votre type de candidature (interne/externe).");
+      }
+
       // Build payload and map API field to DB column
       const payload: Record<string, unknown> = {
         candidate_id: user.id,
         job_offer_id: applicationData.job_offer_id,
         mtp_answers: applicationData.mtp_answers,
+        // Persist candidature audience (interne/externe)
+        candidature_status: candidateAudience || offerAudience || null,
       };
+
       if (applicationData.reference_full_name) payload.reference_full_name = applicationData.reference_full_name;
       if (applicationData.reference_email) payload.reference_email = applicationData.reference_email;
       if (applicationData.reference_contact) payload.reference_contact = applicationData.reference_contact;
