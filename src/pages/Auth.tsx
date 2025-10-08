@@ -105,27 +105,21 @@ export default function Auth() {
   }, [signUpData.email, signUpData.candidateStatus, signUpData.noSeegEmail]);
 
   useEffect(() => {
-    if (!MATRICULE_REQUIRED) {
-      setIsMatriculeValid(true);
-      setMatriculeError("");
-      setLastVerifiedMatricule("");
-    } else {
+    // Réinitialiser la validation quand le matricule change
+    if (signUpData.candidateStatus === "interne" && signUpData.matricule) {
+      // Ne pas auto-valider, attendre la vérification
       setIsMatriculeValid(false);
       setMatriculeError("");
-      setLastVerifiedMatricule("");
+    } else if (signUpData.candidateStatus === "externe") {
+      // Pour les externes, pas de matricule requis
+      setIsMatriculeValid(true);
+      setMatriculeError("");
     }
-  }, [MATRICULE_REQUIRED, signUpData.matricule]);
+  }, [signUpData.matricule, signUpData.candidateStatus]);
 
   const verifyMatricule = useCallback(async (): Promise<boolean> => {
     // Si le candidat est externe, on valide automatiquement (pas de matricule requis)
     if (signUpData.candidateStatus === "externe") {
-      setIsMatriculeValid(true);
-      setMatriculeError("");
-      return true;
-    }
-
-    // Si le matricule n'est pas requis, on valide automatiquement
-    if (!MATRICULE_REQUIRED) {
       setIsMatriculeValid(true);
       setMatriculeError("");
       return true;
@@ -138,8 +132,9 @@ export default function Auth() {
       return false;
     }
 
-    // Si le matricule a déjà été vérifié, ne pas revérifier
+    // Si le matricule a déjà été vérifié avec succès, ne pas revérifier
     if (matricule === lastVerifiedMatricule && isMatriculeValid) {
+      console.log('✅ Matricule déjà vérifié, pas de nouvelle requête');
       return true;
     }
 
@@ -187,15 +182,23 @@ export default function Auth() {
     finally {
       setIsVerifyingMatricule(false);
     }
-  }, [signUpData.matricule, signUpData.candidateStatus, MATRICULE_REQUIRED, lastVerifiedMatricule, isMatriculeValid]);
+  }, [signUpData.matricule, signUpData.candidateStatus, lastVerifiedMatricule, isMatriculeValid]);
 
   useEffect(() => {
-    if (!signUpData.matricule) return;
+    // Ne vérifier que si c'est un candidat interne et qu'il y a un matricule
+    if (signUpData.candidateStatus !== "interne") return;
+    if (!signUpData.matricule || signUpData.matricule.trim() === "") {
+      setIsMatriculeValid(false);
+      setMatriculeError("");
+      return;
+    }
+    
+    console.log('⏱️ Timer de vérification du matricule démarré (1s)...');
     const timer = setTimeout(() => {
       verifyMatricule();
-    }, 1000); // Augmenté de 500ms à 1000ms pour réduire les appels
+    }, 1000);
     return () => clearTimeout(timer);
-  }, [signUpData.matricule, verifyMatricule]);
+  }, [signUpData.matricule, signUpData.candidateStatus, verifyMatricule]);
 
   // Vérifier si tous les champs requis sont remplis (Inscription)
   const isSignUpFormValid = () => {
@@ -716,7 +719,13 @@ export default function Auth() {
                             </CardContent>
                           </Card>
                         )}
-                        {isMatriculeValid && signUpData.matricule && !matriculeError && (
+                        {isVerifyingMatricule && (
+                          <p className="text-xs text-blue-600 flex items-center gap-1">
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            Vérification en cours...
+                          </p>
+                        )}
+                        {!isVerifyingMatricule && isMatriculeValid && signUpData.matricule && signUpData.matricule.trim() === lastVerifiedMatricule && !matriculeError && (
                           <p className="text-xs text-green-600 flex items-center gap-1">
                             <span className="inline-block w-2 h-2 bg-green-600 rounded-full"></span>
                             Matricule vérifié
