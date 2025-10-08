@@ -74,7 +74,12 @@ export default function Auth() {
     firstName: "",
     lastName: "",
     phone: "",
-    matricule: ""
+    matricule: "",
+    dateOfBirth: "",
+    sexe: "",
+    adresse: "",
+    candidateStatus: "externe", // "interne" ou "externe"
+    noSeegEmail: false // Checkbox pour les internes sans email SEEG
   });
 
   const [matriculeError, setMatriculeError] = useState<string>("");
@@ -92,9 +97,16 @@ export default function Auth() {
       setMatriculeError("");
       setLastVerifiedMatricule("");
     }
-  }, [signUpData.matricule]);
+  }, [MATRICULE_REQUIRED, signUpData.matricule]);
 
   const verifyMatricule = useCallback(async (): Promise<boolean> => {
+    // Si le candidat est externe, on valide automatiquement (pas de matricule requis)
+    if (signUpData.candidateStatus === "externe") {
+      setIsMatriculeValid(true);
+      setMatriculeError("");
+      return true;
+    }
+
     // Si le matricule n'est pas requis, on valide automatiquement
     if (!MATRICULE_REQUIRED) {
       setIsMatriculeValid(true);
@@ -145,7 +157,7 @@ export default function Auth() {
     finally {
       setIsVerifyingMatricule(false);
     }
-  }, [signUpData.matricule]);
+  }, [signUpData.matricule, signUpData.candidateStatus, MATRICULE_REQUIRED]);
 
   useEffect(() => {
     if (!signUpData.matricule) return;
@@ -503,6 +515,55 @@ export default function Auth() {
                     />
                   )}
                   <form onSubmit={handleSignUp} className="space-y-4">
+                    {/* Type de candidat */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">Type de candidature</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setSignUpData({ ...signUpData, candidateStatus: "interne", noSeegEmail: false })}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            signUpData.candidateStatus === "interne"
+                              ? "border-primary bg-primary/5 shadow-sm"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <Building2 className={`w-5 h-5 mx-auto mb-2 ${
+                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-400"
+                          }`} />
+                          <div className={`text-sm font-medium ${
+                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-700"
+                          }`}>
+                            Candidat Interne
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Employé SEEG
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSignUpData({ ...signUpData, candidateStatus: "externe", matricule: "" })}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            signUpData.candidateStatus === "externe"
+                              ? "border-primary bg-primary/5 shadow-sm"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <User className={`w-5 h-5 mx-auto mb-2 ${
+                            signUpData.candidateStatus === "externe" ? "text-primary" : "text-gray-400"
+                          }`} />
+                          <div className={`text-sm font-medium ${
+                            signUpData.candidateStatus === "externe" ? "text-primary" : "text-gray-700"
+                          }`}>
+                            Candidat Externe
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Hors SEEG
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName" className="text-sm">Prénom</Label>
@@ -529,34 +590,65 @@ export default function Auth() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
+                      <Label htmlFor="signup-email">
+                        Email {signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail && "(professionnel SEEG)"}
+                      </Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="signup-email"
                           type="email"
-                          placeholder="votre.email@exemple.com"
+                          placeholder={
+                            signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail
+                              ? "prenom.nom@seeg.com"
+                              : "votre.email@exemple.com"
+                          }
                           value={signUpData.email}
                           onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                           className="pl-10"
                           required
+                          pattern={
+                            signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail
+                              ? ".*@seeg\\.com$"
+                              : undefined
+                          }
+                          title={
+                            signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail
+                              ? "L'email doit être un email professionnel SEEG (@seeg.com)"
+                              : undefined
+                          }
                         />
                       </div>
+                      {signUpData.candidateStatus === "interne" && (
+                        <div className="flex items-center space-x-2 pt-1">
+                          <input
+                            type="checkbox"
+                            id="noSeegEmail"
+                            checked={signUpData.noSeegEmail}
+                            onChange={(e) => setSignUpData({ ...signUpData, noSeegEmail: e.target.checked, email: "" })}
+                            className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4"
+                          />
+                          <Label htmlFor="noSeegEmail" className="text-xs text-muted-foreground font-normal cursor-pointer">
+                            Je n'ai pas d'email professionnel SEEG
+                          </Label>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Matricule field (conditionally required) */}
-                    {MATRICULE_REQUIRED && (
+                    {/* Matricule field (only for internal candidates) */}
+                    {signUpData.candidateStatus === "interne" && (
                       <div className="space-y-2">
-                        <Label htmlFor="matricule">Matricule</Label>
+                        <Label htmlFor="matricule">Matricule SEEG</Label>
                         <div className="relative">
+                          <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="matricule"
                             placeholder="Ex: 1234"
                             title="Le matricule ne doit contenir que des chiffres."
                             value={signUpData.matricule}
                             onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
+                            className={`pl-10 ${matriculeError ? "border-destructive" : isMatriculeValid && signUpData.matricule ? "border-green-500" : ""}`}
                             required
-                            className={matriculeError ? "border-destructive" : isMatriculeValid ? "border-green-500" : ""}
                           />
                           {isVerifyingMatricule && (
                             <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
@@ -573,6 +665,12 @@ export default function Auth() {
                             </CardContent>
                           </Card>
                         )}
+                        {isMatriculeValid && signUpData.matricule && !matriculeError && (
+                          <p className="text-xs text-green-600 flex items-center gap-1">
+                            <span className="inline-block w-2 h-2 bg-green-600 rounded-full"></span>
+                            Matricule vérifié
+                          </p>
+                        )}
                       </div>
                     )}
 
@@ -584,7 +682,49 @@ export default function Auth() {
                         placeholder="+241 01 23 45 67"
                         value={signUpData.phone}
                         onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
-                        disabled={MATRICULE_REQUIRED && !isMatriculeValid}
+                        disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="dateOfBirth">Date de naissance</Label>
+                        <Input
+                          id="dateOfBirth"
+                          type="date"
+                          value={signUpData.dateOfBirth}
+                          onChange={(e) => setSignUpData({ ...signUpData, dateOfBirth: e.target.value })}
+                          disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="sexe">Sexe</Label>
+                        <select
+                          id="sexe"
+                          value={signUpData.sexe}
+                          onChange={(e) => setSignUpData({ ...signUpData, sexe: e.target.value })}
+                          disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
+                          required
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <option value="">Sélectionner</option>
+                          <option value="M">Homme</option>
+                          <option value="F">Femme</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="adresse">Adresse</Label>
+                      <Input
+                        id="adresse"
+                        type="text"
+                        placeholder="Ex: bikele"
+                        value={signUpData.adresse}
+                        onChange={(e) => setSignUpData({ ...signUpData, adresse: e.target.value })}
+                        disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
                         required
                       />
                     </div>
@@ -601,7 +741,7 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                           className="pl-10 pr-10"
                           required
-                          disabled={MATRICULE_REQUIRED && !isMatriculeValid}
+                          disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
                         />
                         <button
                           type="button"
@@ -626,7 +766,7 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                           className="pl-10 pr-10"
                           required
-                          disabled={MATRICULE_REQUIRED && !isMatriculeValid}
+                          disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
                         />
                         <button
                           type="button"
