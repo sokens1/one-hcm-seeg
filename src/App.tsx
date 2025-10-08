@@ -11,6 +11,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { AzureAuthProvider } from "@/hooks/useAzureAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
@@ -196,17 +197,19 @@ function App() {
     <ErrorBoundary FallbackComponent={CustomErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <TooltipProvider>
-            <Suspense fallback={<LoadingFallback />}>
-              {withMaintenanceCheck(
-                <>
-                  <RouterProvider router={router} />
-                  <Toaster />
-                  <Sonner />
-                </>
-              )}
-            </Suspense>
-          </TooltipProvider>
+          <AzureAuthProvider>
+            <TooltipProvider>
+              <Suspense fallback={<LoadingFallback />}>
+                {withMaintenanceCheck(
+                  <>
+                    <RouterProvider router={router} />
+                    <Toaster />
+                    <Sonner />
+                  </>
+                )}
+              </Suspense>
+            </TooltipProvider>
+          </AzureAuthProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth"; // Garde pour resetPassword
+import { useAzureAuth } from "@/hooks/useAzureAuth";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, Building2, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
@@ -17,7 +18,8 @@ import { isApplicationClosed } from "@/utils/applicationUtils";
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, signUp, isLoading } = useAuth();
+  const { resetPassword } = useAuth(); // Garde uniquement resetPassword de Supabase
+  const { signIn, signUp, verifyMatricule: azureVerifyMatricule } = useAzureAuth();
   const [activeTab, setActiveTab] = useState("signin");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -136,15 +138,24 @@ export default function Auth() {
       return false;
     }
 
+    // Si le matricule a déjà été vérifié, ne pas revérifier
+    if (matricule === lastVerifiedMatricule && isMatriculeValid) {
+      return true;
+    }
+
     try {
       setIsVerifyingMatricule(true);
-      // Utiliser la fonction RPC correcte pour vérifier le matricule dans seeg_agents
+      console.log('🔍 Vérification du matricule:', matricule);
+      
+      // Utiliser la fonction RPC de Supabase pour vérifier dans seeg_agents
       const { data: isValid, error } = await supabase.rpc('verify_matricule', {
         p_matricule: matricule,
       });
 
+      console.log('✅ Réponse vérification:', { isValid, error });
+
       if (error) {
-        console.error('Erreur vérification matricule:', error);
+        console.error('❌ Erreur vérification matricule:', error);
         // Gestion spécifique du rate limiting
         if (error.message.includes('rate limit') || error.code === 'PGRST301') {
           setMatriculeError("Trop de vérifications. Attendez quelques secondes avant de réessayer.");
@@ -156,16 +167,19 @@ export default function Auth() {
       }
 
       if (!isValid) {
+        console.log('❌ Matricule invalide');
         setMatriculeError("Ce matricule n'est pas autorisé. Vérifiez qu'il correspond à un agent SEEG actif.");
         setIsMatriculeValid(false);
         return false;
       }
 
+      console.log('✅ Matricule valide');
       setMatriculeError("");
       setIsMatriculeValid(true);
       setLastVerifiedMatricule(matricule);
       return true;
     } catch (e) {
+      console.error('❌ Exception vérification matricule:', e);
       setMatriculeError("Erreur lors de la vérification du matricule.");
       setIsMatriculeValid(false);
       return false;
@@ -173,7 +187,7 @@ export default function Auth() {
     finally {
       setIsVerifyingMatricule(false);
     }
-  }, [signUpData.matricule, signUpData.candidateStatus, MATRICULE_REQUIRED]);
+  }, [signUpData.matricule, signUpData.candidateStatus, MATRICULE_REQUIRED, lastVerifiedMatricule, isMatriculeValid]);
 
   useEffect(() => {
     if (!signUpData.matricule) return;
@@ -183,8 +197,8 @@ export default function Auth() {
     return () => clearTimeout(timer);
   }, [signUpData.matricule, verifyMatricule]);
 
-  // Vérifier si tous les champs requis sont remplis
-  const isFormValid = () => {
+  // Vérifier si tous les champs requis sont remplis (Inscription)
+  const isSignUpFormValid = () => {
     // Vérifier si un type de candidature est sélectionné
     if (!signUpData.candidateStatus) return false;
 
@@ -216,67 +230,55 @@ export default function Auth() {
     return true;
   };
 
+  // Vérifier si les champs de connexion sont remplis
+  const isSignInFormValid = () => {
+    return signInData.email.trim() !== "" && signInData.password.trim() !== "";
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isSignInFormValid()) {
+      toast.error("Veuillez remplir tous les champs");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await signIn(signInData.email, signInData.password);
+      console.log('🔐 Tentative de connexion avec Azure API...');
+      const { error, success, user } = await signIn(signInData.email, signInData.password);
 
-      if (error || !data.user) {
-        if (error && error.status === 429) {
-          toast.error("Trop de tentatives. Veuillez réessayer dans quelques instants.");
-        } else if (error && error.status === 400) {
-          toast.error("Email ou mot de passe incorrect.");
-        } else {
-          toast.error(error?.message || "Une erreur est survenue lors de la connexion.");
-        }
+      if (error || !success) {
+        console.error('❌ Erreur connexion:', error);
+        toast.error(error || "Email ou mot de passe incorrect.");
         return;
       }
 
+      console.log('✅ Connexion réussie:', user);
       const now = Date.now();
       if (now - lastLoginToastTs.current > 1500) {
         toast.success("Connexion réussie !");
         lastLoginToastTs.current = now;
       }
-      if (redirectParam) {
-        await syncUsersRowFromAuth();
-        navigate(redirectParam);
-      } else {
-        try {
-          const { data: userRow, error: userRowError } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', data.user.id)
-            .single();
 
-          const rawRole = String((!userRowError && (userRow as { role?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
-          const isAdmin = rawRole === 'admin';
-          const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
-          const isObserver = rawRole === 'observateur' || rawRole === 'observer';
-
-          await syncUsersRowFromAuth();
-          if (isAdmin) {
-            navigate('/admin/dashboard');
-          } else if (isRecruiter || isObserver) {
-            navigate('/recruiter/dashboard');
-          } else {
-            navigate('/candidate/dashboard');
-          }
-        } catch {
-          const rawRole = String(data.user.user_metadata?.role ?? '').toLowerCase();
-          await syncUsersRowFromAuth();
-          if (rawRole === 'admin') {
-            navigate('/admin/dashboard');
-          } else if (rawRole === 'recruteur' || rawRole === 'recruiter' || rawRole === 'observateur' || rawRole === 'observer') {
-            navigate('/recruiter/dashboard');
-          } else {
-            navigate('/candidate/dashboard');
-          }
+      // Redirection selon le rôle
+      if (user && user.role) {
+        const role = user.role.toLowerCase();
+        if (role === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (role === 'recruteur' || role === 'recruiter' || role === 'observateur' || role === 'observer') {
+          navigate('/recruiter/dashboard');
+        } else {
+          navigate('/candidate/dashboard');
         }
+      } else {
+        // Par défaut, rediriger vers le dashboard candidat
+        navigate('/candidate/dashboard');
       }
-    } catch (error) {
-      toast.error("Une erreur est survenue lors de la connexion");
+    } catch (error: any) {
+      console.error('❌ Exception connexion:', error);
+      toast.error(error.message || "Une erreur est survenue lors de la connexion");
     } finally {
       setIsSubmitting(false);
     }
@@ -284,6 +286,12 @@ export default function Auth() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isSignUpFormValid()) {
+      toast.error("Veuillez remplir tous les champs correctement");
+      return;
+    }
+
     setIsSubmitting(true);
 
     if (preLaunch) {
@@ -292,95 +300,58 @@ export default function Auth() {
       return;
     }
 
-    if (signUpData.password !== signUpData.confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (signUpData.password.length < 6) {
-      toast.error("Le mot de passe doit contenir au moins 6 caractères");
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Ensure matricule is valid before proceeding
-    // Eviter l'appel redondant si le matricule est déjà validé
-    const currentMatricule = signUpData.matricule.trim();
-    let ok = isMatriculeValid && lastVerifiedMatricule === currentMatricule;
-    
-    if (!ok) {
-      ok = await verifyMatricule();
-    }
-    
-    if (!ok) {
-      toast.error("Vérifiez votre matricule pour continuer.");
-      setIsSubmitting(false);
-      return;
+    // Pour les candidats internes, vérifier le matricule
+    if (signUpData.candidateStatus === "interne") {
+      const currentMatricule = signUpData.matricule.trim();
+      let ok = isMatriculeValid && lastVerifiedMatricule === currentMatricule;
+      
+      if (!ok) {
+        ok = await verifyMatricule();
+      }
+      
+      if (!ok) {
+        toast.error("Vérifiez votre matricule pour continuer.");
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     try {
-      // Le matricule a déjà été validé via verifyMatricule() ci-dessus
-
-      const { error } = await signUp(signUpData.email, signUpData.password, {
-        role: "candidat",
-        first_name: signUpData.firstName,
-        last_name: signUpData.lastName,
+      console.log('📝 Tentative d\'inscription avec Azure API...');
+      const { error, success } = await signUp({
+        email: signUpData.email,
+        password: signUpData.password,
+        confirmPassword: signUpData.confirmPassword,
+        firstName: signUpData.firstName,
+        lastName: signUpData.lastName,
         phone: signUpData.phone,
-        matricule: signUpData.matricule
-
+        matricule: signUpData.matricule,
+        dateOfBirth: signUpData.dateOfBirth,
+        sexe: signUpData.sexe,
+        adresse: signUpData.adresse,
+        candidateStatus: signUpData.candidateStatus as "interne" | "externe",
+        noSeegEmail: signUpData.noSeegEmail,
       });
-      
+
       if (error) {
-        if (error.status === 429 || error.message.includes('rate limit')) {
-          toast.error("Trop de tentatives de vérification. Attendez 60 secondes avant de réessayer.");
-          setCooldown(60); // 1 minute de cooldown
-          setTimeout(() => {
-            toast.info("💡 Astuce: Attendez que la vérification du matricule soit terminée avant de cliquer sur S'inscrire.");
-          }, 2000);
-        } else if (error.message.includes("already registered")) {
+        console.error('❌ Erreur inscription:', error);
+        if (error.includes("already")) {
           toast.error("Cette adresse email est déjà utilisée. Essayez de vous connecter.");
           setActiveTab("signin");
-        } else if (error.message.includes('email')) {
-          toast.error("Problème avec l'adresse email. Vérifiez le format.");
         } else {
-          toast.error("Erreur d'inscription: " + error.message);
+          toast.error(error);
         }
-      } else {
-        // Tenter une connexion immédiate si l'email de confirmation n'est pas requis côté Supabase
-        try {
-          const { data: sess } = await supabase.auth.getSession();
-          if (!sess.session) {
-            const { data: siData, error: siErr } = await signIn(signUpData.email, signUpData.password);
-            if (!siErr && siData.user) {
-              await syncUsersRowFromAuth();
-              toast.success("Inscription réussie ! Vous êtes connecté.");
-              navigate('/candidate/dashboard');
-              return;
-            }
-          } else {
-            await syncUsersRowFromAuth();
-            toast.success("Inscription réussie ! Vous êtes connecté.");
-            navigate('/candidate/dashboard');
-            return;
-          }
-        } catch {
-          // ignore and fall back to classic flow
-        }
-
-        // Fallback: si la connexion immédiate n'est pas possible (ex: email requis),
-        // on garde l'UX existante
-        const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        if (isDevelopment) {
-          toast.success("Inscription réussie! Vous pouvez maintenant vous connecter.");
-        } else {
-          toast.success("Inscription réussie! Vérifiez votre email pour confirmer votre compte.");
-        }
-        setActiveTab("signin");
-        setSignInData(prev => ({ ...prev, email: signUpData.email }));
+        return;
       }
-    } catch (error) {
-      toast.error("Une erreur est survenue");
+
+      if (success) {
+        console.log('✅ Inscription réussie');
+        toast.success("Inscription réussie ! Bienvenue.");
+        navigate('/candidate/dashboard');
+      }
+    } catch (error: any) {
+      console.error('❌ Exception inscription:', error);
+      toast.error(error.message || "Une erreur est survenue lors de l'inscription");
     } finally {
       setIsSubmitting(false);
     }
@@ -438,14 +409,6 @@ export default function Auth() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Header */}
@@ -495,7 +458,17 @@ export default function Auth() {
 
                   {/* Sign In Tab */}
                   <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4">
+                    <div className="relative">
+                      {isSubmitting && activeTab === "signin" && (
+                        <div className="absolute inset-0 z-10 bg-background/50 flex items-center justify-center">
+                          <div className="bg-background border rounded-lg p-6 shadow-lg flex flex-col items-center gap-3">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            <p className="text-sm font-medium">Connexion en cours...</p>
+                            <p className="text-xs text-muted-foreground">Veuillez patienter</p>
+                          </div>
+                        </div>
+                      )}
+                      <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">Email</Label>
                     <div className="relative">
@@ -507,7 +480,6 @@ export default function Auth() {
                         value={signInData.email}
                         onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                         className="pl-10"
-                        required
                       />
                     </div>
                   </div>
@@ -523,7 +495,6 @@ export default function Auth() {
                         value={signInData.password}
                         onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                         className="pl-10 pr-10"
-                        required
                       />
                       <button
                         type="button"
@@ -547,10 +518,24 @@ export default function Auth() {
                     </Button>
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? "Connexion..." : "Se connecter"}
+                  {!isSignInFormValid() && (
+                    <p className="text-xs text-center text-muted-foreground">
+                      Veuillez remplir votre email et mot de passe
+                    </p>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={!isSignInFormValid() || isSubmitting}>
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <span>Connexion en cours...</span>
+                      </div>
+                    ) : (
+                      "Se connecter"
+                    )}
                   </Button>
-                </form>
+                      </form>
+                    </div>
               </TabsContent>
 
               {/* Sign Up Tab */}
@@ -845,7 +830,7 @@ export default function Auth() {
                       </div>
                     </div>
 
-                    {!isFormValid() && signUpData.candidateStatus && (
+                    {!isSignUpFormValid() && signUpData.candidateStatus && (
                       <p className="text-xs text-center text-muted-foreground">
                         {signUpData.candidateStatus === "interne" && !isMatriculeValid 
                           ? "Veuillez vérifier que votre matricule est valide"
@@ -860,7 +845,7 @@ export default function Auth() {
                     <Button 
                       type="submit" 
                       className="w-full"
-                      disabled={!isFormValid() || isSubmitting}
+                      disabled={!isSignUpFormValid() || isSubmitting}
                     >
                       {isSubmitting ? (
                         <div className="flex items-center justify-center">
