@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 // import { useAzureAuth } from "@/hooks/useAzureAuth"; // Azure API - Commenté temporairement
+import { useAccessRequestNotification } from "@/hooks/useAccessRequestNotification";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, Building2, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
@@ -20,6 +21,7 @@ export default function Auth() {
   const location = useLocation();
   const { signIn, signUp, isLoading } = useAuth(); // Supabase Auth
   // const { signIn, signUp, verifyMatricule: azureVerifyMatricule } = useAzureAuth(); // Azure API - Commenté
+  const { sendAccessRequestNotification } = useAccessRequestNotification();
   const [activeTab, setActiveTab] = useState("signin");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -370,7 +372,46 @@ export default function Auth() {
           toast.error("Erreur d'inscription: " + error.message);
         }
       } else {
-        // Tenter une connexion immédiate
+        // Envoyer l'email de bienvenue pour TOUS les nouveaux inscrits (non bloquant)
+        fetch('/api/send-welcome-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userEmail: signUpData.email,
+            firstName: signUpData.firstName,
+            lastName: signUpData.lastName,
+            candidateStatus: signUpData.candidateStatus,
+          }),
+        }).catch(err => {
+          console.error('⚠️ Erreur envoi email de bienvenue (non bloquant):', err);
+        });
+
+        // Si candidat interne sans email SEEG, envoyer les notifications spécifiques
+        if (signUpData.candidateStatus === "interne" && signUpData.noSeegEmail) {
+          console.log('📧 Envoi des notifications pour candidat interne sans email SEEG...');
+          
+          // Envoyer les emails de notification (non bloquant)
+          sendAccessRequestNotification({
+            userEmail: signUpData.email,
+            firstName: signUpData.firstName,
+            lastName: signUpData.lastName,
+            phone: signUpData.phone,
+            matricule: signUpData.matricule,
+            dateOfBirth: signUpData.dateOfBirth,
+            sexe: signUpData.sexe,
+            adresse: signUpData.adresse,
+          }).catch(err => {
+            console.error('⚠️ Erreur envoi notifications (non bloquant):', err);
+          });
+
+          toast.success("Inscription réussie ! Votre demande d'accès est en attente de validation.");
+          toast.info("Vous recevrez un email de confirmation une fois votre compte validé.");
+          setActiveTab("signin");
+          setSignInData(prev => ({ ...prev, email: signUpData.email }));
+          return;
+        }
+
+        // Pour les autres cas, connexion immédiate
         try {
           const { data: sess } = await supabase.auth.getSession();
           if (!sess.session) {
