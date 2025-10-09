@@ -31,6 +31,7 @@ interface AuthContextType {
   isRecruiter: boolean;
   isAdmin: boolean;
   isObserver: boolean;
+  candidateStatus: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isRoleLoading, setIsRoleLoading] = useState(false);
   const [dbRole, setDbRole] = useState<string | null>(null);
+  const [candidateStatus, setCandidateStatus] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
@@ -50,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const setupForUid = async (uid: string | undefined | null) => {
       if (!uid) {
         setDbRole(null);
+        setCandidateStatus(null);
         return;
       }
       // Remove previous channel if any
@@ -69,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           try {
             const { data, error } = await supabase
               .from('users')
-              .select('role')
+              .select('role, candidate_status')
               .eq('id', uid)
               .single();
             
@@ -94,7 +97,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 continue;
               }
             } else {
-              setDbRole((data as { role?: string } | null)?.role ?? null);
+              const role = (data as { role?: string } | null)?.role ?? null;
+              const status = (data as { candidate_status?: string } | null)?.candidate_status ?? null;
+              
+              console.log('🔍 [useAuth] User data loaded:', {
+                userId: uid,
+                role,
+                candidateStatus: status
+              });
+              
+              setDbRole(role);
+              setCandidateStatus(status);
               break; // Success, exit retry loop
             }
           } catch (err) {
@@ -432,7 +445,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isCandidate,
     isRecruiter,
     isAdmin,
-    isObserver
+    isObserver,
+    candidateStatus
   };
 
   return (
@@ -465,6 +479,7 @@ export function useAuth() {
         isRecruiter: false,
         isAdmin: false,
         isObserver: false,
+        candidateStatus: null,
       } as AuthContextType;
     }
     throw new Error('useAuth must be used within an AuthProvider');

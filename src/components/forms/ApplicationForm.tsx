@@ -22,7 +22,8 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { isPreLaunch } from "@/utils/launchGate";
-import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
+import { getMTPQuestionsFromJobOffer, MTPQuestions } from '@/data/metierQuestions';
+import { useJobOffer } from '@/hooks/useJobOffers';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
 // Import supprimé car l'envoi d'email est désactivé
@@ -468,7 +469,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
-  const mtpQuestions = useMemo(() => getMetierQuestionsForTitle(jobTitle), [jobTitle]);
+  
+  // Récupérer l'offre complète pour obtenir les questions MTP dynamiques
+  const { data: jobOfferData } = useJobOffer(jobId);
+  const mtpQuestions = useMemo(() => {
+    if (jobOfferData) {
+      // Utiliser les questions MTP de l'offre (ou fallback vers les questions par défaut)
+      return getMTPQuestionsFromJobOffer(jobOfferData);
+    }
+    // Fallback si l'offre n'est pas encore chargée (utilise le titre)
+    return getMTPQuestionsFromJobOffer({ title: jobTitle });
+  }, [jobOfferData, jobTitle]);
 
   // Migrate guest data to user-specific key after login (one-time per job)
   useEffect(() => {
