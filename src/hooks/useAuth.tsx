@@ -8,11 +8,20 @@ export interface SignUpMetadata {
   first_name?: string;
   last_name?: string;
   phone?: string;
-  matricule?: string;
+  matricule?: string | null;
   birth_date?: string;
   current_position?: string;
   bio?: string;
   gender?: string; // 'Homme' | 'Femme' | autres valeurs
+  // Nouveaux champs
+  date_of_birth?: string;
+  sexe?: string;
+  adresse?: string;
+  candidate_status?: string;
+  no_seeg_email?: boolean;
+  poste_actuel?: string;
+  annees_experience?: number;
+  statut?: string;
 }
 
 interface AuthContextType {

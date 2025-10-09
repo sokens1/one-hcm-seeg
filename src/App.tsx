@@ -11,7 +11,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-import { AzureAuthProvider } from "@/hooks/useAzureAuth";
+// import { AzureAuthProvider } from "@/hooks/useAzureAuth"; // Azure API - Commenté temporairement
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
@@ -197,7 +197,7 @@ function App() {
     <ErrorBoundary FallbackComponent={CustomErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <AzureAuthProvider>
+          {/* <AzureAuthProvider> Azure API - Commenté temporairement */}
             <TooltipProvider>
               <Suspense fallback={<LoadingFallback />}>
                 {withMaintenanceCheck(
@@ -209,7 +209,7 @@ function App() {
                 )}
               </Suspense>
             </TooltipProvider>
-          </AzureAuthProvider>
+          {/* </AzureAuthProvider> */}
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
