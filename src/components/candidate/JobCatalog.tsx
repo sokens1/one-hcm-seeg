@@ -213,6 +213,7 @@ export function JobCatalog() {
         jobId={selectedJobId}
         onBack={handleBackToCatalog}
         onSubmit={handleApplicationSubmit}
+        offerStatus={job?.status_offerts || job?.status_offers || null}
       />
     );
   }
