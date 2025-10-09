@@ -206,7 +206,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
                   <div style="background-color:#fef3c7; padding:15px; border-radius:5px; margin:20px 0;">
                     <p style="margin:0; color:#92400e;">
-                      ⏳ <strong>Prochaines étapes :</strong><br>
+                      <strong>Prochaines étapes :</strong><br>
                       Notre équipe va vérifier vos informations et valider votre compte dans les plus brefs délais. Vous recevrez un email de confirmation une fois votre compte activé.
                     </p>
                   </div>
@@ -328,8 +328,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return;
     }
 
-    res.status(200).json({ 
-      ok: true, 
+    res.status(200).json({
+      ok: true,
       emailsSent: { admin: adminEmailSent, candidate: candidateEmailSent }
     });
 

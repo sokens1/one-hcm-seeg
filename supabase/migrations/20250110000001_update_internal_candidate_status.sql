@@ -173,6 +173,10 @@ CREATE OR REPLACE FUNCTION public.approve_access_request(request_id UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
   v_user_id UUID;
+  v_user_email TEXT;
+  v_first_name TEXT;
+  v_last_name TEXT;
+  v_sexe VARCHAR(1);
 BEGIN
   -- Vérifier que l'utilisateur connecté est admin/recruteur
   IF NOT EXISTS (
@@ -183,10 +187,22 @@ BEGIN
     RAISE EXCEPTION 'Non autorisé';
   END IF;
 
-  -- Récupérer l'user_id de la demande
-  SELECT user_id INTO v_user_id
-  FROM public.access_requests
-  WHERE id = request_id;
+  -- Récupérer les informations du candidat
+  SELECT 
+    ar.user_id,
+    u.email,
+    u.first_name,
+    u.last_name,
+    u.sexe
+  INTO 
+    v_user_id,
+    v_user_email,
+    v_first_name,
+    v_last_name,
+    v_sexe
+  FROM public.access_requests ar
+  JOIN public.users u ON ar.user_id = u.id
+  WHERE ar.id = request_id;
 
   IF v_user_id IS NULL THEN
     RAISE EXCEPTION 'Demande non trouvée';
@@ -204,6 +220,27 @@ BEGIN
     reviewed_at = NOW(),
     reviewed_by = auth.uid()
   WHERE id = request_id;
+
+  -- Déclencher l'envoi de l'email de validation (via webhook ou notification)
+  -- Note: L'envoi réel de l'email se fera via l'API frontend
+  -- On peut créer une entrée dans une table de notifications si besoin
+  INSERT INTO public.email_notifications (
+    user_id,
+    email_type,
+    recipient_email,
+    data,
+    status
+  ) VALUES (
+    v_user_id,
+    'access_approved',
+    v_user_email,
+    jsonb_build_object(
+      'firstName', v_first_name,
+      'lastName', v_last_name,
+      'sexe', v_sexe
+    ),
+    'pending'
+  );
 
   RETURN TRUE;
 END;

@@ -380,6 +380,7 @@ export default function Auth() {
             userEmail: signUpData.email,
             firstName: signUpData.firstName,
             lastName: signUpData.lastName,
+            sexe: signUpData.sexe,
             candidateStatus: signUpData.candidateStatus,
           }),
         }).catch(err => {
