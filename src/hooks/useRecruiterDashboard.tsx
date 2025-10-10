@@ -387,7 +387,7 @@ export function useRecruiterDashboard() {
     
     // Nouvelle période de candidatures : 27 sept. 2025 au 05 oct. 2025
     // Ici, on utilise la fin de période comme borne pour les courbes
-    const applicationDeadline = new Date('2025-10-05T23:59:59');
+    const applicationDeadline = new Date('2025-10-21T23:59:59');
     const now = new Date();
     
     // Si on est après la date limite, on s'arrête au 31 août

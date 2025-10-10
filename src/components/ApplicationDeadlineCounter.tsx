@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 
 export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[] }) {
   const [timeLeft, setTimeLeft] = useState<string>('');
-  // Nouvelle période: 27/09/2025 au 05/10/2025 inclus
-  const [startDate] = useState<Date>(new Date('2025-09-27T00:00:00'));
-  const [endDate] = useState<Date>(new Date('2025-10-05T23:59:59'));
+  // Nouvelle période: 13/10/2025 au 21/10/2025 inclus (Candidatures EXTERNES uniquement)
+  const [startDate] = useState<Date>(new Date('2025-10-13T00:00:00'));
+  const [endDate] = useState<Date>(new Date('2025-10-21T23:59:59'));
 
   // Compte à rebours actif uniquement durant la période définie
 
@@ -102,16 +102,16 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
         <div className="space-y-3">
           {/* Période de candidatures */}
           <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-xs text-white/80 mb-2 font-medium">PÉRIODE DE CANDIDATURES</div>
+            <div className="text-xs text-white/80 mb-2 font-medium">CANDIDATURES EXTERNES</div>
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-1.5 text-white/70" />
-                <span className="font-mono">27/09/2025</span>
+                <span className="font-mono">13/10/2025</span>
               </div>
               <div className="text-white/60 mx-2">→</div>
               <div className="flex items-center">
                 <CalendarDays className="w-4 h-4 mr-1.5 text-white/70" />
-                <span className="font-mono">05/10/2025</span>
+                <span className="font-mono">21/10/2025</span>
               </div>
             </div>
           </div>
