@@ -37,7 +37,17 @@ CREATE OR REPLACE FUNCTION public.verify_matricule(p_matricule TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
   v_has_active_column BOOLEAN;
+  v_matricule_bigint BIGINT;
 BEGIN
+  -- Essayer de convertir le matricule en BIGINT
+  -- Si la conversion échoue, retourner FALSE
+  BEGIN
+    v_matricule_bigint := p_matricule::BIGINT;
+  EXCEPTION
+    WHEN OTHERS THEN
+      RETURN FALSE;
+  END;
+  
   -- Vérifier si la colonne 'active' existe
   SELECT EXISTS (
     SELECT 1 
@@ -52,7 +62,7 @@ BEGIN
     RETURN EXISTS (
       SELECT 1 
       FROM public.seeg_agents 
-      WHERE matricule = p_matricule 
+      WHERE matricule = v_matricule_bigint 
         AND active = TRUE
     );
   ELSE
@@ -60,7 +70,7 @@ BEGIN
     RETURN EXISTS (
       SELECT 1 
       FROM public.seeg_agents 
-      WHERE matricule = p_matricule
+      WHERE matricule = v_matricule_bigint
     );
   END IF;
 END;
