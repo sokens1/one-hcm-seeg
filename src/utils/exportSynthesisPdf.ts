@@ -4,6 +4,52 @@ import { generateSynthesisPdf } from './generateSynthesisPdf';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
+// Fonction pour nettoyer le texte des entités HTML et caractères d'échappement
+const cleanText = (text: string | null | undefined): string => {
+  if (!text) return '';
+  
+  let cleaned = text;
+
+  // 1. Nettoyer les entités HTML standard D'ABORD
+  cleaned = cleaned
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&rsquo;/g, "'")
+    .replace(/&lsquo;/g, "'")
+    .replace(/&rdquo;/g, '"')
+    .replace(/&ldquo;/g, '"');
+  
+  // 2. Supprimer toutes les autres entités HTML
+  cleaned = cleaned.replace(/&[a-zA-Z0-9#]+;/g, '');
+
+  // 3. Remplacer les apostrophes typographiques par des apostrophes simples
+  cleaned = cleaned
+    .replace(/['']/g, "'")  // Apostrophes typographiques → apostrophe simple
+    .replace(/[""]/g, '"')  // Guillemets typographiques → guillemets droits
+    .replace(/…/g, '...')   // Points de suspension typographiques
+    .replace(/–/g, '-')     // Tiret demi-cadratin
+    .replace(/—/g, '-')     // Tiret cadratin
+    .replace(/«/g, '"')     // Guillemets français
+    .replace(/»/g, '"');    // Guillemets français
+
+  // 4. Nettoyer TOUS les caractères '&' restants (correction agressive)
+  // Ceci gère les cas comme '&& &R&e&n&s&e&i&g&n&é
+  cleaned = cleaned.replace(/&/g, '');
+
+  // 5. Supprimer les guillemets simples en début/fin si ils font partie de la corruption
+  cleaned = cleaned.replace(/^['`´]|['`´]$/g, '');
+
+  // 6. Normaliser les espaces multiples
+  cleaned = cleaned.replace(/\s+/g, ' ');
+
+  return cleaned.trim();
+};
+
 interface Protocol1Data {
   id: string;
   application_id: string;
@@ -100,10 +146,34 @@ interface SynthesisData {
   conclusion?: string;
 }
 
-// Fonction utilitaire pour nettoyer le HTML des balises <p>
+// Fonction utilitaire pour nettoyer le HTML des balises <p> et entités HTML
 const cleanHtmlText = (text: string | null): string => {
   if (!text || text.trim() === '') return '';
-  return text.replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '').trim();
+  
+  let cleaned = text
+    .replace(/<p[^>]*>/g, '')
+    .replace(/<\/p>/g, '');
+  
+  // 1. Nettoyer les entités HTML standard D'ABORD
+  cleaned = cleaned
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ');
+  
+  // 2. Supprimer toutes les autres entités HTML
+  cleaned = cleaned.replace(/&[a-zA-Z0-9#]+;/g, '');
+
+  // 3. Nettoyer TOUS les caractères '&' restants (correction agressive)
+  // Ceci gère les cas comme '&& &R&e&n&s&e&i&g&n&é
+  cleaned = cleaned.replace(/&/g, '');
+
+  // 4. Supprimer les guillemets simples en début/fin si ils font partie de la corruption
+  cleaned = cleaned.replace(/^'|'$/g, '');
+
+  return cleaned.trim();
 };
 
 export const exportSynthesisPdf = async (

@@ -25,7 +25,7 @@ export function ApplicationActionsMenu({ application, jobTitle, className = '', 
   const handleExportPdf = async () => {
     try {
       setIsLoading(true);
-      await exportApplicationPdf(application, jobTitle);
+      await exportApplicationPdf(application, jobTitle, application.job_offers?.status_offerts);
     } catch (error) {
       console.error('Error generating PDF:', error);
       // You might want to show a toast notification here

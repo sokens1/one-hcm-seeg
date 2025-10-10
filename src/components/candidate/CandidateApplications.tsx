@@ -118,7 +118,7 @@ export function CandidateApplications() {
                             onClick={async (e) => {
                               e.stopPropagation();
                               try {
-                                await exportApplicationPdf(application, application.job_offers?.title || 'Candidature');
+                                await exportApplicationPdf(application, application.job_offers?.title || 'Candidature', application.job_offers?.status_offerts);
                               } catch (error) {
                                 console.error('Error exporting PDF:', error);
                                 // Vous pourriez vouloir afficher une notification d'erreur ici

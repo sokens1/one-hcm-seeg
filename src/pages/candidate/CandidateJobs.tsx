@@ -89,7 +89,7 @@ export default function CandidateJobs() {
               Société d'Énergie et d'Eau du Gabon
             </div>
             <h1 className="text-5xl md:text-6xl font-bold animate-fade-in delay-100">
-              Nos {jobOffers.length} poste{jobOffers.length > 1 ? 's' : ''} à pourvoir
+              Nos {filteredJobs.length} poste{filteredJobs.length > 1 ? 's' : ''} à pourvoir
             </h1>
             <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold opacity-90 animate-fade-in delay-150">
               au sein du comité de direction

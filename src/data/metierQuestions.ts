@@ -31,12 +31,35 @@ export const defaultMTPQuestions: MTPQuestions = {
   ],
 };
 
-// Questions par défaut pour les offres externes (3 questions par catégorie)
+// Questions par défaut pour les offres internes (3 questions Métier, 3 Talent, 3 Paradigme)
+export const defaultMTPQuestionsInternes: MTPQuestions = {
+  metier: [
+    "1. Quelles sont vos principales compétences techniques dans ce domaine ?",
+    "2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?",
+    "3. Quels défis techniques de ce métier vous motivent le plus ?",
+  ],
+  talent: [
+    "1. Quelle est votre plus grande force en tant que professionnel ?",
+    "2. Décrivez une situation où vous avez dû apprendre une nouvelle compétence rapidement.",
+    "3. Comment gérez-vous la pression et les délais serrés ?",
+  ],
+  paradigme: [
+    "1. Qu'est-ce qui vous motive le plus dans votre carrière ?",
+    "2. Comment vous tenez-vous au courant des évolutions de votre secteur ?",
+    "3. Quelle est votre vision du travail en équipe ?",
+  ],
+};
+
+// Questions par défaut pour les offres externes (7 questions Métier, 3 Talent, 3 Paradigme)
 export const defaultMTPQuestionsExternes: MTPQuestions = {
   metier: [
     "1. Quelles sont vos principales compétences techniques dans ce domaine ?",
     "2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?",
     "3. Quels défis techniques de ce métier vous motivent le plus ?",
+    "4. Décrivez une réalisation professionnelle dont vous êtes fier dans ce domaine.",
+    "5. Quelles sont les technologies ou outils que vous maîtrisez dans ce métier ?",
+    "6. Comment abordez-vous l'apprentissage de nouvelles compétences techniques ?",
+    "7. Quelle est votre vision de l'évolution de ce métier dans les années à venir ?",
   ],
   talent: [
     "1. Quelle est votre plus grande force en tant que professionnel ?",
@@ -441,9 +464,14 @@ export const getMTPQuestionsFromJobOffer = (jobOffer: {
     };
   }
 
-  // Si l'offre est externe, utiliser les questions externes (3 par catégorie)
+  // Si l'offre est externe, utiliser les questions externes (7 Métier, 3 Talent, 3 Paradigme)
   if (jobOffer.status_offerts === 'externe') {
     return defaultMTPQuestionsExternes;
+  }
+
+  // Si l'offre est interne, utiliser les questions internes (3 Métier, 3 Talent, 3 Paradigme)
+  if (jobOffer.status_offerts === 'interne') {
+    return defaultMTPQuestionsInternes;
   }
 
   // Fallback to hardcoded questions based on title

@@ -97,7 +97,7 @@ export function JobCatalog() {
 
   const filteredJobs = baseJobs.filter(job => {
     // Audience must match when known
-    const offerAudience = (job as any).status_offers ?? (job as any).status_offerts ?? null;
+    const offerAudience = (job as any).status_offerts ?? null;
     const matchesAudience = !candidateAudience || offerAudience === candidateAudience;
     const locationText = toText(job.location);
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -213,7 +213,7 @@ export function JobCatalog() {
         jobId={selectedJobId}
         onBack={handleBackToCatalog}
         onSubmit={handleApplicationSubmit}
-        offerStatus={job?.status_offerts || job?.status_offers || null}
+        offerStatus={job?.status_offerts || null}
       />
     );
   }

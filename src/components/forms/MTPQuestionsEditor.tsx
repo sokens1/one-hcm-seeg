@@ -30,7 +30,7 @@ export function MTPQuestionsEditor({
   
   // Déterminer le nombre de questions recommandées selon le statut
   const isExterne = statusOfferts === 'externe';
-  const recommendedMetier = isExterne ? 3 : 7;
+  const recommendedMetier = isExterne ? 7 : 3; // CORRECTION: Externes = 7 questions Métier, Internes = 3 questions Métier
   const recommendedTalent = 3;
   const recommendedParadigme = 3;
   
@@ -77,8 +77,8 @@ export function MTPQuestionsEditor({
           <CardTitle className="text-lg">Questions MTP (Métier, Talent, Paradigme)</CardTitle>
           <p className="text-sm text-muted-foreground">
             Ces questions seront posées au candidat lors de sa candidature. <strong>Recommandations :</strong> {recommendedMetier} questions Métier, {recommendedTalent} questions Talent, {recommendedParadigme} questions Paradigme.
-            {isExterne && <span className="block mt-1 text-blue-600 font-medium">📢 Offre externe : 3 questions par catégorie</span>}
-            {!isExterne && statusOfferts === 'interne' && <span className="block mt-1 text-green-600 font-medium">📢 Offre interne : 7 questions Métier, 3 Talent, 3 Paradigme</span>}
+            {isExterne && <span className="block mt-1 text-blue-600 font-medium">📢 Offre externe : 7 questions Métier, 3 Talent, 3 Paradigme</span>}
+            {!isExterne && statusOfferts === 'interne' && <span className="block mt-1 text-green-600 font-medium">📢 Offre interne : 3 questions Métier, 3 Talent, 3 Paradigme</span>}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">

@@ -42,18 +42,109 @@ interface ApplicationData {
   paradigme3?: string;
   jobTitle?: string;
   applicationDate?: string;
+  // Statut de l'offre pour déterminer si les références sont requises
+  offerStatus?: string; // 'interne' | 'externe'
 }
 
-const checkIfFilled = (value: unknown): string => {
-  if (value === null || value === undefined) return 'Non renseigné';
-  if (typeof value === 'string' && value.trim() === '') return 'Non renseigné';
-  if (Array.isArray(value) && value.length === 0) return 'Non renseigné';
-  if (typeof value === 'object' && Object.keys(value).length === 0) return 'Non renseigné';
+// Fonction ULTRA-AGRESSIVE pour nettoyer le texte corrompu et forcer la compatibilité PDF
+const cleanCorruptedText = (text: string | null | undefined): string => {
+  if (!text) return '';
+  
+  let cleaned = text;
+
+  // 1. NETTOYAGE ULTRA-AGRESSIF des caractères corrompus spécifiques
+  // Supprimer complètement les patterns comme '&& &R&e&n&s&e&i&g&n&é
+  cleaned = cleaned.replace(/['`´][&]+/g, ''); // Supprimer '&, `&, ´&
+  cleaned = cleaned.replace(/[&]+/g, '');      // Supprimer TOUS les &
+  
+  // 2. Nettoyer les entités HTML
+  cleaned = cleaned
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&rsquo;/g, "'")
+    .replace(/&lsquo;/g, "'")
+    .replace(/&rdquo;/g, '"')
+    .replace(/&ldquo;/g, '"');
+  
+  // 3. Supprimer toutes les autres entités HTML
+  cleaned = cleaned.replace(/&[a-zA-Z0-9#]+;/g, '');
+
+  // 4. Remplacer les apostrophes typographiques par des apostrophes simples
+  cleaned = cleaned
+    .replace(/['']/g, "'")  // Apostrophes typographiques → apostrophe simple
+    .replace(/[""]/g, '"')  // Guillemets typographiques → guillemets droits
+    .replace(/…/g, '...')   // Points de suspension typographiques
+    .replace(/–/g, '-')     // Tiret demi-cadratin
+    .replace(/—/g, '-')     // Tiret cadratin
+    .replace(/«/g, '"')     // Guillemets français
+    .replace(/»/g, '"');    // Guillemets français
+
+  // 5. NETTOYAGE FINAL - Supprimer tous les caractères problématiques restants
+  cleaned = cleaned.replace(/[&]+/g, ''); // Supprimer tous les & restants
+  
+  // 6. Supprimer les guillemets simples en début/fin corrompus
+  cleaned = cleaned.replace(/^['`´\s]+|['`´\s]+$/g, '');
+
+  // 7. Normaliser les espaces multiples
+  cleaned = cleaned.replace(/\s+/g, ' ');
+
+  // 8. FORCER la conversion des caractères non-ASCII problématiques
+  cleaned = cleaned.replace(/[^\x00-\x7F]/g, (char) => {
+    // Table de conversion pour les caractères spéciaux courants
+    const conversions: Record<string, string> = {
+      'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
+      'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a',
+      'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u',
+      'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o',
+      'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
+      'ç': 'c', 'ñ': 'n'
+    };
+    return conversions[char] || '';
+  });
+
+  return cleaned.trim();
+};
+
+const checkIfFilled = (value: unknown, isRequired: boolean = true): string => {
+  if (value === null || value === undefined) {
+    // Si le champ n'est pas requis (ex: références pour offres internes), ne pas afficher "Non renseigné"
+    return isRequired ? 'Non renseigné' : 'Non applicable';
+  }
+  
+  // Si c'est une chaîne, la nettoyer avant de vérifier
+  if (typeof value === 'string') {
+    const cleaned = cleanCorruptedText(value);
+    
+    // Debug log pour voir ce qui se passe
+    console.log('🔍 [PDF DEBUG] checkIfFilled:', {
+      original: value,
+      cleaned: cleaned,
+      length: cleaned.trim().length,
+      isRequired: isRequired,
+      result: cleaned === '' ? (isRequired ? 'Non renseigné' : 'Non applicable') : 'Renseigné'
+    });
+    
+    if (cleaned === '') return isRequired ? 'Non renseigné' : 'Non applicable';
+    return 'Renseigné';
+  }
+  
+  if (Array.isArray(value) && value.length === 0) return isRequired ? 'Non renseigné' : 'Non applicable';
+  if (typeof value === 'object' && Object.keys(value).length === 0) return isRequired ? 'Non renseigné' : 'Non applicable';
   return 'Renseigné';
 };
 
 export const generateApplicationPdf = (data: ApplicationData) => {
   const doc = new jsPDF();
+  
+  // FORCER l'encodage et la police pour éviter les problèmes de caractères spéciaux
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(12);
+  
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 15;
   let yPos = 20;
@@ -139,15 +230,18 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     
     doc.setFontSize(11);
     
+    // Nettoyer le texte corrompu avant de l'afficher - NETTOYER AUSSI LE LABEL
+    const cleanedLabel = cleanCorruptedText(info.label);
+    const textToWrite = info.value ? cleanCorruptedText(info.value) : 'Non renseigné';
+    
     // Afficher le label
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(31, 41, 55);
-    doc.text(`${info.label}:`, margin, yPos);
+    doc.text(`${cleanedLabel}:`, margin, yPos);
     
     // Afficher la valeur
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(75, 85, 99);
-    const textToWrite = info.value || 'Non renseigné';
     if (info.label === 'Date de Naissance') {
       // console.log('=== Writing Date de Naissance to PDF ===');
       // console.log('Text being written to PDF:', textToWrite);
@@ -156,13 +250,15 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     }
     doc.text(textToWrite, margin + 60, yPos);
     
-    // Afficher le statut avec la couleur appropriée
-    const status = info.isFilled ? 'Renseigné' : 'Non renseigné';
+    // Afficher le statut avec la couleur appropriée - NETTOYER LE STATUT AUSSI
+    const status = cleanCorruptedText(info.isFilled ? 'Renseigné' : (info.isRequired ? 'Non renseigné' : 'Non applicable'));
     doc.setFont('helvetica', 'bold');
     if (info.isFilled) {
       doc.setTextColor(22, 163, 74); // Vert
+    } else if (info.isRequired) {
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
     } else {
-      doc.setTextColor(239, 68, 68); // Rouge
+      doc.setTextColor(107, 114, 128); // Gris pour "Non applicable"
     }
     
     const statusX = pageWidth - margin - doc.getTextWidth(status);
@@ -228,8 +324,8 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     doc.setTextColor(75, 85, 99);
     doc.text(docItem.value, margin + 60, yPos);
     
-    // Afficher le statut avec la couleur appropriée
-    const status = docItem.isFilled ? 'Renseigné' : 'Non renseigné';
+    // Afficher le statut avec la couleur appropriée - NETTOYER LE STATUT AUSSI
+    const status = cleanCorruptedText(docItem.isFilled ? 'Renseigné' : 'Non renseigné');
     doc.setFont('helvetica', 'bold');
     if (docItem.isFilled) {
       doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
@@ -260,26 +356,43 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     yPos = 20;
   }
 
+  // Déterminer si les références sont requises (pour les offres externes uniquement)
+  const isExternalOffer = data.offerStatus === 'externe';
+  
+  // Debug: Log reference data received
+  console.log('🔍 [generateApplicationPdf] Données de références reçues:', {
+    referenceFullName: data.referenceFullName,
+    referenceEmail: data.referenceEmail,
+    referenceContact: data.referenceContact,
+    referenceCompany: data.referenceCompany,
+    offerStatus: data.offerStatus,
+    isExternalOffer
+  });
+  
   const referenceInfo = [
     { 
       label: 'Nom et Prénom', 
-      value: data.referenceFullName || 'Non renseigné',
-      isFilled: !!data.referenceFullName
+      value: data.referenceFullName ? cleanCorruptedText(data.referenceFullName) : (isExternalOffer ? 'Non renseigné' : 'Non applicable'),
+      isFilled: data.referenceFullName ? cleanCorruptedText(data.referenceFullName).trim().length > 0 : false,
+      isRequired: isExternalOffer
     },
     { 
       label: 'Entreprise', 
-      value: data.referenceCompany || 'Non renseignée',
-      isFilled: !!data.referenceCompany
+      value: data.referenceCompany ? cleanCorruptedText(data.referenceCompany) : (isExternalOffer ? 'Non renseignée' : 'Non applicable'),
+      isFilled: data.referenceCompany ? cleanCorruptedText(data.referenceCompany).trim().length > 0 : false,
+      isRequired: isExternalOffer
     },
     { 
       label: 'Email', 
-      value: data.referenceEmail || 'Non renseigné',
-      isFilled: !!data.referenceEmail
+      value: data.referenceEmail ? cleanCorruptedText(data.referenceEmail) : (isExternalOffer ? 'Non renseigné' : 'Non applicable'),
+      isFilled: data.referenceEmail ? cleanCorruptedText(data.referenceEmail).trim().length > 0 : false,
+      isRequired: isExternalOffer
     },
     { 
       label: 'Contact', 
-      value: data.referenceContact || 'Non renseigné',
-      isFilled: !!data.referenceContact
+      value: data.referenceContact ? cleanCorruptedText(data.referenceContact) : (isExternalOffer ? 'Non renseigné' : 'Non applicable'),
+      isFilled: data.referenceContact ? cleanCorruptedText(data.referenceContact).trim().length > 0 : false,
+      isRequired: isExternalOffer
     }
   ];
 
@@ -294,23 +407,29 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     
     doc.setFontSize(11);
     
+    // Nettoyer le label et la valeur
+    const cleanedLabel = cleanCorruptedText(info.label);
+    const cleanedValue = cleanCorruptedText(info.value);
+    
     // Afficher le label
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(31, 41, 55);
-    doc.text(`${info.label}:`, margin, yPos);
+    doc.text(`${cleanedLabel}:`, margin, yPos);
     
     // Afficher la valeur
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(75, 85, 99);
-    doc.text(info.value, margin + 60, yPos);
+    doc.text(cleanedValue, margin + 60, yPos);
     
-    // Afficher le statut avec la couleur appropriée
-    const status = info.isFilled ? 'Renseigné' : 'Non renseigné';
+    // Afficher le statut avec la couleur appropriée - NETTOYER LE STATUT AUSSI
+    const status = cleanCorruptedText(info.isFilled ? 'Renseigné' : (info.isRequired ? 'Non renseigné' : 'Non applicable'));
     doc.setFont('helvetica', 'bold');
     if (info.isFilled) {
       doc.setTextColor(22, 163, 74); // Vert
+    } else if (info.isRequired) {
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
     } else {
-      doc.setTextColor(239, 68, 68); // Rouge
+      doc.setTextColor(107, 114, 128); // Gris pour "Non applicable"
     }
     
     const statusX = pageWidth - margin - doc.getTextWidth(status);
@@ -392,8 +511,9 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     doc.setFontSize(10);
     doc.setTextColor(31, 41, 55);
     
-    // Gestion du texte long pour la question
-    const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
+    // Gestion du texte long pour la question - NETTOYER la question aussi
+    const cleanedQuestion = cleanCorruptedText(q.label);
+    const questionLines = doc.splitTextToSize(cleanedQuestion, pageWidth - 2 * margin - 10);
     doc.text(questionLines, margin + 5, yPos);
     
     yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
@@ -405,8 +525,10 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       doc.setTextColor(75, 85, 99);
       
       // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+      // Nettoyer le texte corrompu avant de l'afficher
+      const cleanedValue = cleanCorruptedText(q.value);
       const textHeight = addWrappedText(
-        q.value, 
+        cleanedValue, 
         margin, 
         yPos, 
         pageWidth - 2 * margin
@@ -418,14 +540,14 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
-      doc.text('✓ Renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      doc.text(cleanCorruptedText('✓ Renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
       yPos += 6; // Espacement après le statut réduit
     } else {
       // Afficher "Non renseigné" en rouge si pas de réponse
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
-      doc.text('✗ Non renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      doc.text(cleanCorruptedText('✗ Non renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
       yPos += 6; // Espacement réduit
     }
     
@@ -468,8 +590,9 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     doc.setFontSize(10);
     doc.setTextColor(31, 41, 55);
     
-    // Gestion du texte long pour la question
-    const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
+    // Gestion du texte long pour la question - NETTOYER la question aussi
+    const cleanedQuestion = cleanCorruptedText(q.label);
+    const questionLines = doc.splitTextToSize(cleanedQuestion, pageWidth - 2 * margin - 10);
     doc.text(questionLines, margin + 5, yPos);
     
     yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
@@ -481,8 +604,10 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       doc.setTextColor(75, 85, 99);
       
       // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+      // Nettoyer le texte corrompu avant de l'afficher
+      const cleanedValue = cleanCorruptedText(q.value);
       const textHeight = addWrappedText(
-        q.value, 
+        cleanedValue, 
         margin, 
         yPos, 
         pageWidth - 2 * margin
@@ -494,14 +619,14 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
-      doc.text('✓ Renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      doc.text(cleanCorruptedText('✓ Renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
       yPos += 6; // Espacement après le statut réduit
     } else {
       // Afficher "Non renseigné" en rouge si pas de réponse
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
-      doc.text('✗ Non renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      doc.text(cleanCorruptedText('✗ Non renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
       yPos += 6; // Espacement réduit
     }
     
@@ -544,8 +669,9 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     doc.setFontSize(10);
     doc.setTextColor(31, 41, 55);
     
-    // Gestion du texte long pour la question
-    const questionLines = doc.splitTextToSize(q.label, pageWidth - 2 * margin - 10);
+    // Gestion du texte long pour la question - NETTOYER la question aussi
+    const cleanedQuestion = cleanCorruptedText(q.label);
+    const questionLines = doc.splitTextToSize(cleanedQuestion, pageWidth - 2 * margin - 10);
     doc.text(questionLines, margin + 5, yPos);
     
     yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
@@ -557,8 +683,10 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       doc.setTextColor(75, 85, 99);
       
       // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+      // Nettoyer le texte corrompu avant de l'afficher
+      const cleanedValue = cleanCorruptedText(q.value);
       const textHeight = addWrappedText(
-        q.value, 
+        cleanedValue, 
         margin, 
         yPos, 
         pageWidth - 2 * margin
@@ -570,14 +698,14 @@ export const generateApplicationPdf = (data: ApplicationData) => {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
-      doc.text('✓ Renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      doc.text(cleanCorruptedText('✓ Renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
       yPos += 6; // Espacement après le statut réduit
     } else {
       // Afficher "Non renseigné" en rouge si pas de réponse
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9); // Taille de police légèrement plus grande
       doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
-      doc.text('✗ Non renseigné', margin + 5, yPos + 1); // Décalage vertical réduit
+      doc.text(cleanCorruptedText('✗ Non renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
       yPos += 6; // Espacement réduit
     }
     
