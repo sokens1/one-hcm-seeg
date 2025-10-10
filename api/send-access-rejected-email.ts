@@ -103,7 +103,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
                   <div style="background-color:#dbeafe; padding:15px; border-radius:5px; margin:20px 0;">
                     <p style="margin:0; color:#1e40af;">
-                      📞 <strong>Contact Support :</strong> support@seeg-talentsource.com
+                      <strong>Contact Support :</strong> </br>
+                      Email: support@seeg-talentsource.com </br>
+                      Téléphone: +241 076402886
                     </p>
                   </div>
 

@@ -302,93 +302,131 @@ export default function AccessRequests() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
-            {filteredRequests.map((request) => (
-              <Card key={request.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 space-y-4">
-                      {/* En-tête */}
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-semibold flex items-center gap-2">
-                            {request.first_name} {request.last_name}
-                            {getStatusBadge(request.status)}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            Demande créée le {new Date(request.created_at).toLocaleDateString('fr-FR')} à {new Date(request.created_at).toLocaleTimeString('fr-FR')}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Informations */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{request.email}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{request.phone || 'Non renseigné'}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">Matricule: {request.matricule || 'Non renseigné'}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            {request.users?.date_of_birth 
-                              ? new Date(request.users.date_of_birth).toLocaleDateString('fr-FR')
-                              : 'Non renseigné'}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            Sexe: {request.users?.sexe === 'M' ? 'Homme' : request.users?.sexe === 'F' ? 'Femme' : 'Non renseigné'}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{request.users?.adresse || 'Non renseigné'}</span>
-                        </div>
-                      </div>
-
-                      {/* Actions */}
-                      {request.status === 'pending' && (
-                        <div className="flex gap-3 pt-2">
-                          <Button
-                            onClick={() => handleApprove(request)}
-                            disabled={isProcessing}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            {isProcessing ? (
-                              <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                            ) : (
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                            )}
-                            Approuver
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setSelectedRequest(request);
-                              setShowRejectModal(true);
-                            }}
-                            disabled={isProcessing}
-                            variant="destructive"
-                          >
-                            <XCircle className="w-4 h-4 mr-2" />
-                            Refuser
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Candidat
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Contact
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Matricule
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Informations
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Statut
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredRequests.map((request) => (
+                      <tr key={request.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                              <User className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {request.first_name} {request.last_name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {request.users?.sexe === 'M' ? 'Homme' : request.users?.sexe === 'F' ? 'Femme' : '-'}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-1">
+                            <div className="flex items-center text-sm text-gray-900">
+                              <Mail className="w-4 h-4 mr-2 text-gray-400" />
+                              {request.email}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-500">
+                              <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                              {request.phone || 'Non renseigné'}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {request.matricule || <span className="text-gray-400">Non renseigné</span>}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-1 text-sm">
+                            <div className="flex items-center text-gray-900">
+                              <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                              {request.users?.date_of_birth 
+                                ? new Date(request.users.date_of_birth).toLocaleDateString('fr-FR')
+                                : 'Non renseigné'}
+                            </div>
+                            <div className="flex items-center text-gray-500">
+                              <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                              {request.users?.adresse || 'Non renseigné'}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div>{new Date(request.created_at).toLocaleDateString('fr-FR')}</div>
+                          <div className="text-xs">{new Date(request.created_at).toLocaleTimeString('fr-FR')}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {getStatusBadge(request.status)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          {request.status === 'pending' ? (
+                            <div className="flex items-center justify-center gap-2">
+                              <Button
+                                onClick={() => handleApprove(request)}
+                                disabled={isProcessing}
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                {isProcessing ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <CheckCircle className="w-4 h-4 mr-1" />
+                                    Approuver
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  setSelectedRequest(request);
+                                  setShowRejectModal(true);
+                                }}
+                                disabled={isProcessing}
+                                size="sm"
+                                variant="destructive"
+                              >
+                                <XCircle className="w-4 h-4 mr-1" />
+                                Refuser
+                              </Button>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-gray-400">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Modal de Refus */}
