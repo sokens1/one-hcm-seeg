@@ -38,25 +38,88 @@ export interface JobOffer {
   new_candidates: number;
 }
 
-const fetchJobOffers = async (candidateStatus?: string | null, isCandidate?: boolean) => {
+const fetchJobOffers = async () => {
   try {
-    // 1. Fetch all active job offers
-    const { data: offers, error } = await supabase
-      .from('job_offers')
-      .select('id,title,description,location,contract_type,requirements,status,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,status_offerts,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme')
-      .eq('status', 'active')
-      .order('created_at', { ascending: false });
+    // Récupérer les informations de l'utilisateur connecté
+    let candidateStatus: string | null = null;
+    let isCandidate = false;
+    
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const uid = authData?.user?.id;
+      if (uid) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role, candidate_status')
+          .eq('id', uid)
+          .maybeSingle();
+        
+        if (userData) {
+          const role = userData.role;
+          isCandidate = role === 'candidat' || role === 'candidate';
+          candidateStatus = isCandidate ? (userData.candidate_status || null) : null;
+          
+          console.log('🔍 [fetchJobOffers] User info:', {
+            isCandidate,
+            candidateStatus,
+            userId: uid
+          });
+        }
+      }
+    } catch (e) {
+      // Fail soft if we cannot determine user info
+      console.warn('[fetchJobOffers] Could not determine user info:', e);
+      candidateStatus = null;
+      isCandidate = false;
+    }
 
-    if (error) {
-      console.error('[useJobOffers] Error fetching job offers:', error);
+    // 1. Fetch all active job offers, filtered by audience when available
+    let offers: any[] | null = null;
+    let queryError: any = null;
+    try {
+      const query = supabase
+        .from('job_offers')
+        .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      const { data, error } = await query;
+      if (error) throw error;
+      offers = data;
+    } catch (err: any) {
+      queryError = err;
+      // If the error is due to unknown column status_offers (e.g., migration not applied yet), retry without it
+      const isUnknownColumn = typeof err?.message === 'string' && (
+        err.message.includes('column') && err.message.includes('status_offers') ||
+        err.message.includes('42703')
+      );
+      if (isUnknownColumn) {
+        try {
+          const { data, error } = await supabase
+            .from('job_offers')
+            .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false });
+          if (error) throw error;
+          offers = data || [];
+          queryError = null;
+        } catch (e) {
+          queryError = e;
+        }
+      }
+    }
+
+    if (queryError) {
+      console.error('[useJobOffers] Error fetching job offers:', queryError);
       
       // If it's a 500 error (RLS issue), return fallback data
-      if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
+      if (String(queryError.message || '').includes('500') || String(queryError.message || '').includes('Internal Server Error')) {
         console.warn('[useJobOffers] Server error detected, returning fallback data');
         return getFallbackJobOffers();
       }
       
-      throw error;
+      // Otherwise, return empty list to avoid showing fallback jobs to candidates
+      return [] as JobOffer[];
     }
     
     if (!offers || offers.length === 0) return [];
@@ -220,8 +283,12 @@ const fetchJobOffers = async (candidateStatus?: string | null, isCandidate?: boo
     return offersFilteredByStatus;
   } catch (error) {
     console.error('[useJobOffers] Unexpected error:', error);
-    // Return fallback data in case of any error
+    const msg = String((error as any)?.message || '');
+    if (msg.includes('500') || msg.includes('Internal Server Error')) {
     return getFallbackJobOffers();
+    }
+    // Otherwise, return empty to avoid showing fallback in candidate view
+    return [] as JobOffer[];
   }
 };
 
@@ -272,22 +339,9 @@ const getFallbackJobOffers = (): JobOffer[] => {
 };
 
 export function useJobOffers() {
-  const { candidateStatus, isCandidate, user } = useAuth();
-  
-  // Le filtrage par statut ne s'applique QUE aux candidats
-  // Les recruteurs, admins et observateurs voient TOUTES les offres
-  const statusForFiltering = isCandidate ? candidateStatus : null;
-  
-  console.log('🔍 [useJobOffers] Auth info:', {
-    isCandidate,
-    candidateStatus,
-    statusForFiltering,
-    userId: user?.id
-  });
-  
   return useQuery<JobOffer[], Error>({
-    queryKey: ['jobOffers', statusForFiltering, isCandidate],
-    queryFn: () => fetchJobOffers(statusForFiltering, isCandidate),
+    queryKey: ['jobOffers'],
+    queryFn: fetchJobOffers,
   });
 }
 

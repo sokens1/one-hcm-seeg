@@ -14,9 +14,15 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
   useEffect(() => {
     const updateTimer = () => {
       const now = new Date();
-      // Avant le début: ne rien afficher (compteur inactif avant ouverture)
+      // Avant le début: afficher le temps restant avant ouverture
       if (now < startDate) {
-        setTimeLeft('');
+        const diff = startDate.getTime() - now.getTime();
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+        setCountdownText('Ouverture des candidatures dans :');
         return;
       }
 
@@ -28,11 +34,13 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+        setCountdownText('Clôture des candidatures dans :');
         return;
       }
 
       // Après la période
       setTimeLeft("0j 00h 00m 00s");
+      setCountdownText('Clôture des candidatures dans :');
     };
 
     // Mettre à jour immédiatement
@@ -46,6 +54,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
 
   const [isVisible, setIsVisible] = useState(true);
   const [showClosedMessage, setShowClosedMessage] = useState(false);
+  const [countdownText, setCountdownText] = useState('');
 
   useEffect(() => {
     const now = new Date();
@@ -110,6 +119,9 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
           {/* Compte à rebours */}
           <div className="bg-white/15 rounded-lg p-3 backdrop-blur-sm">
             <div className="text-xs text-white/80 mb-2 font-medium">COMPTE À REBOURS</div>
+            <div className="text-xs text-white/90 mb-1 font-medium">
+              {countdownText}
+            </div>
             <div className="font-mono text-base sm:text-lg font-bold tracking-wider text-yellow-400 break-words">
               {timeLeft.split(': ')[1] || timeLeft}
             </div>
