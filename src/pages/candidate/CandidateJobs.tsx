@@ -20,6 +20,7 @@ export default function CandidateJobs() {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
+  const [statusFilter, setStatusFilter] = useState<"all" | "interne" | "externe">("all");
   const { data, isLoading, error } = useJobOffers();
   const jobOffers = data ?? [];
   const preLaunch = isPreLaunch();
@@ -42,10 +43,17 @@ export default function CandidateJobs() {
   // Helper to normalize location which can be string | string[] from the API
   const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
 
-  const filteredJobs = jobOffers.filter(job => 
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    normalizeLocation(job.location).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobOffers.filter(job => {
+    // Filtre par recherche texte
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      normalizeLocation(job.location).toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Filtre par statut interne/externe
+    const matchesStatus = statusFilter === "all" || 
+      (job.status_offerts || 'externe') === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   if (error) {
     return (
@@ -140,7 +148,7 @@ export default function CandidateJobs() {
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-200">
+        <div className="max-w-2xl mx-auto mb-6 animate-fade-in delay-200">
           <div className="relative flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-2.5 sm:top-3 w-4 h-4 text-muted-foreground" />
@@ -151,8 +159,35 @@ export default function CandidateJobs() {
                 className="pl-10 h-11 sm:h-12"
               />
             </div>
-            <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12">
-              <Filter className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Filtres par statut */}
+        <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-250">
+          <div className="flex justify-center gap-2 flex-wrap">
+            <Button
+              variant={statusFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("all")}
+              className="gap-2"
+            >
+              Toutes les offres
+            </Button>
+            <Button
+              variant={statusFilter === "interne" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("interne")}
+              className="gap-2"
+            >
+              🏢 Offres internes
+            </Button>
+            <Button
+              variant={statusFilter === "externe" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("externe")}
+              className="gap-2"
+            >
+              🌍 Offres externes
             </Button>
           </div>
         </div>

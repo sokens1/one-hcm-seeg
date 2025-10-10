@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { ArrowLeft, Save, Send, Loader2 } from "lucide-react";
@@ -47,6 +48,9 @@ export default function CreateJob() {
     responsibilities: "",
     requirements: ""
   });
+
+  // État pour activer/désactiver l'offre
+  const [isActive, setIsActive] = useState(true);
 
   // États pour les questions MTP
   const [mtpQuestionsMetier, setMtpQuestionsMetier] = useState<string[]>([]);
@@ -123,8 +127,8 @@ export default function CreateJob() {
       return;
     }
 
-
-    const mappedStatus = status === 'published' ? 'active' : 'draft';
+    // Le status dépend maintenant du switch isActive
+    const mappedStatus = isActive ? 'active' : 'inactive';
 
     const jobData = {
       title: formData.title,
@@ -268,7 +272,7 @@ export default function CreateJob() {
                 </div>
               </div>
 
-              {/* Ligne Statut - Interne/Externe */}
+              {/* Ligne Statut - Interne/Externe et Activation */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="statusOfferts" className="text-sm sm:text-base font-medium">Statut de l'offre *</Label>
@@ -281,6 +285,19 @@ export default function CreateJob() {
                       <SelectItem value="externe">Externe</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="isActive" className="text-sm sm:text-base font-medium">Activer l'offre</Label>
+                  <div className="flex items-center gap-3 h-10">
+                    <Switch
+                      id="isActive"
+                      checked={isActive}
+                      onCheckedChange={setIsActive}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {isActive ? "✓ Offre active (visible)" : "✗ Offre inactive (masquée)"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
