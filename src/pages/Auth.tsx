@@ -682,6 +682,11 @@ export default function Auth() {
                             Les candidatures internes seront disponibles ultérieurement
                             <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
                           </div>
+                          
+                          {/* Texte "Disponible ultérieurement" */}
+                          <div className="text-center mt-2">
+                            <span className="text-xs text-gray-500 italic">Disponible ultérieurement</span>
+                          </div>
                         </div>
                         <button
                           type="button"
