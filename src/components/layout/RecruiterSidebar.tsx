@@ -60,12 +60,29 @@ export function RecruiterSidebar() {
   // Récupérer le nombre de demandes en attente
   useEffect(() => {
     const fetchPendingRequests = async () => {
-      const { count } = await supabase
-        .from('access_requests')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending');
-      
-      setPendingRequestsCount(count || 0);
+      try {
+        // Essayer d'abord avec le champ 'viewed' (si la migration est appliquée)
+        const { count, error } = await supabase
+          .from('access_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending')
+          .eq('viewed', false);
+        
+        // Si erreur (champ viewed n'existe pas), utiliser juste pending
+        if (error) {
+          const { count: fallbackCount } = await supabase
+            .from('access_requests')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'pending');
+          
+          setPendingRequestsCount(fallbackCount || 0);
+        } else {
+          setPendingRequestsCount(count || 0);
+        }
+      } catch (error) {
+        console.error('Erreur comptage demandes:', error);
+        setPendingRequestsCount(0);
+      }
     };
 
     fetchPendingRequests();

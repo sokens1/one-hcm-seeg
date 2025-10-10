@@ -66,7 +66,7 @@ export default function AccessRequests() {
         .from('access_requests')
         .select(`
           *,
-          users!inner(date_of_birth, sexe, adresse, statut)
+          users!access_requests_user_id_fkey(date_of_birth, sexe, adresse, statut)
         `)
         .order('created_at', { ascending: false });
 
@@ -84,6 +84,21 @@ export default function AccessRequests() {
 
   useEffect(() => {
     fetchRequests();
+
+    // Marquer toutes les demandes comme vues quand on arrive sur la page
+    // (Seulement si la migration est appliquée)
+    const markAsViewed = async () => {
+      try {
+        const { error } = await supabase.rpc('mark_all_access_requests_as_viewed');
+        if (error) {
+          console.log('Fonction mark_all_access_requests_as_viewed pas encore disponible (migration non appliquée)');
+        }
+      } catch (error) {
+        console.log('Migration 20250110000003 pas encore appliquée - le système de "vu/non vu" sera activé après la migration');
+      }
+    };
+
+    markAsViewed();
 
     // S'abonner aux changements en temps réel
     const channel = supabase
