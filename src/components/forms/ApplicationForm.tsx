@@ -39,6 +39,7 @@ interface ApplicationFormProps {
   applicationId?: string; // used in edit mode
   mode?: 'create' | 'edit';
   initialStep?: number;
+  offerStatus?: string | null; // interne | externe - pour conditionner l'affichage des références
 }
 
 interface FormData {
@@ -87,12 +88,15 @@ interface FormData {
   consent: boolean;
 }
 
-export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
+export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep, offerStatus }: ApplicationFormProps) {
   const navigate = useNavigate();
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
   const { isEligible } = useCampaignEligibility();
+  
+  // Déterminer si l'offre est externe (références de recommandation uniquement pour les offres externes)
+  const isExternalOffer = offerStatus === 'externe';
   
   // Hook pour gérer les brouillons (seulement en mode création)
   const {
@@ -632,11 +636,22 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const validateStep2 = () => {
-    return (
+    const basicDocsValid = (
       formData.cv !== null &&
       formData.coverLetter !== null &&
       formData.certificates.length > 0  // At least one diploma is required
     );
+    
+    // Les références sont requises uniquement pour les offres externes
+    if (isExternalOffer) {
+      return basicDocsValid && 
+        formData.referenceFullName.trim() !== '' &&
+        formData.referenceEmail.trim() !== '' &&
+        formData.referenceContact.trim() !== '' &&
+        formData.referenceCompany.trim() !== '';
+    }
+    
+    return basicDocsValid;
   };
 
   const validateStep3 = () => {
@@ -695,6 +710,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!formData.cv) missing.push("CV");
           if (!formData.coverLetter) missing.push("Lettre de motivation");
           if (formData.certificates.length === 0) missing.push("Au moins un diplôme");
+          // Vérifier les références uniquement pour les offres externes
+          if (isExternalOffer) {
+            if (!formData.referenceFullName.trim()) missing.push("Nom et prénom de la référence");
+            if (!formData.referenceEmail.trim()) missing.push("Email de la référence");
+            if (!formData.referenceContact.trim()) missing.push("Contact de la référence");
+            if (!formData.referenceCompany.trim()) missing.push("Entreprise de la référence");
+          }
           return missing.length > 0 ? `Documents requis: ${missing.join(', ')}` : '';
         }
         return '';
@@ -1533,52 +1555,60 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     </div>
                   </div>
 
-                  <div>
-                    <h4 className="font-medium mb-2">Référence de recommandation</h4>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="referenceFullName">Nom et prénom *</Label>
-                      <Input
-                        id="referenceFullName"
-                        value={formData.referenceFullName}
-                        onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
-                        placeholder="Ex: Jean Dupont"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="referenceCompany">Entreprise *</Label>
-                      <Input
-                        id="referenceCompany"
-                        value={formData.referenceCompany}
-                        onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
-                        placeholder="Ex: SEEG"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="referenceEmail">Email *</Label>
-                      <Input
-                        id="referenceEmail"
-                        type="email"
-                        value={formData.referenceEmail}
-                        onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
-                        placeholder="exemple@domaine.com"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="referenceContact">Contact *</Label>
-                      <Input
-                        id="referenceContact"
-                        value={formData.referenceContact}
-                        onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
-                        placeholder="+241 01 23 45 67"
-                        required
-                      />
-                    </div>
-                  </div>
+                  {/* Section Référence de recommandation - uniquement pour les offres externes */}
+                  {isExternalOffer && (
+                    <>
+                      <div>
+                        <h4 className="font-medium mb-2">Référence de recommandation</h4>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          Cette section est requise pour les candidatures externes.
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="referenceFullName">Nom et prénom *</Label>
+                          <Input
+                            id="referenceFullName"
+                            value={formData.referenceFullName}
+                            onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
+                            placeholder="Ex: Jean Dupont"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="referenceCompany">Entreprise *</Label>
+                          <Input
+                            id="referenceCompany"
+                            value={formData.referenceCompany}
+                            onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
+                            placeholder="Ex: SEEG"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="referenceEmail">Email *</Label>
+                          <Input
+                            id="referenceEmail"
+                            type="email"
+                            value={formData.referenceEmail}
+                            onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
+                            placeholder="exemple@domaine.com"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="referenceContact">Contact *</Label>
+                          <Input
+                            id="referenceContact"
+                            value={formData.referenceContact}
+                            onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
+                            placeholder="+241 01 23 45 67"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -1810,30 +1840,33 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       {/* Sections cachées non affichées: lettres de recommandation */}
                     </div>
 
-                    <div className="bg-muted rounded-lg p-4 mt-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-medium">Référence de recommandation</h5>
-                        <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                    {/* Référence de recommandation - uniquement pour les offres externes */}
+                    {isExternalOffer && (
+                      <div className="bg-muted rounded-lg p-4 mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-medium">Référence de recommandation</h5>
+                          <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Nom et prénom:</span>
+                            <p>{formData.referenceFullName || "Non renseigné"}</p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Entreprise:</span>
+                            <p>{formData.referenceCompany || "Non renseigné"}</p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Email:</span>
+                            <p>{formData.referenceEmail || "Non renseigné"}</p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Contact:</span>
+                            <p>{formData.referenceContact || "Non renseigné"}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Nom et prénom:</span>
-                          <p>{formData.referenceFullName || "Non renseigné"}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Entreprise:</span>
-                          <p>{formData.referenceCompany || "Non renseigné"}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Email:</span>
-                          <p>{formData.referenceEmail || "Non renseigné"}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Contact:</span>
-                          <p>{formData.referenceContact || "Non renseigné"}</p>
-                        </div>
-                      </div>
-                    </div>
+                    )}
 
                     <div className="bg-muted rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">

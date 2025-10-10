@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { JobCard } from "@/components/ui/job-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,8 @@ import { isApplicationClosed } from "@/utils/applicationUtils";
 import { toast } from "sonner";
 // import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export function JobCatalog() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,12 +27,16 @@ export function JobCatalog() {
   const [locationFilter, setLocationFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [candidateAudience, setCandidateAudience] = useState<string | null>(null);
+  const { user } = useAuth();
+
   const { setCurrentView } = useCandidateLayout();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const { data: jobs, isLoading, error } = useJobOffers();
+  const { data: jobs, isLoading, error } = useJobOffers(candidateAudience);
+
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const { isEligible } = useCampaignEligibility();
@@ -39,7 +46,59 @@ export function JobCatalog() {
   const toText = (val?: string | string[] | null) =>
     Array.isArray(val) ? val.filter(Boolean).join(", ") : (val ?? "");
 
-  const filteredJobs = jobs?.filter(job => {
+  // Fetch user's candidate_status (interne/externe) to enforce audience filter client-side as a safety net
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: auth } = await supabase.auth.getUser();
+        const uid = user?.id || auth?.user?.id;
+        if (!uid) {
+          setCandidateAudience(null);
+          return;
+        }
+        const { data } = await supabase
+          .from('users')
+          .select('candidate_status, matricule')
+          .eq('id', uid)
+          .maybeSingle();
+        if (!cancelled) {
+          const row = data as { candidate_status?: string | null; matricule?: string | null } | null;
+          const inferred = row?.candidate_status ?? (row?.matricule ? 'interne' : 'externe');
+          setCandidateAudience(inferred ?? null);
+        }
+      } catch {
+        if (!cancelled) setCandidateAudience(null);
+      }
+    })();
+    // Realtime updates when candidate_status changes
+    const channel = supabase.channel(`user-candidate-status-${user?.id || 'anon'}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'users',
+        filter: user?.id ? `id=eq.${user.id}` : undefined,
+      }, (payload: { new?: { candidate_status?: string | null } }) => {
+        const next = payload?.new?.candidate_status;
+        if (typeof next === 'string' || next === null) {
+          setCandidateAudience(next ?? null);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      try { supabase.removeChannel(channel); } catch { /* ignore */ }
+    };
+  }, [user?.id]);
+
+  // Never show fallback demo jobs in candidate view
+  const baseJobs = (jobs || []).filter(j => !String(j.id).startsWith('fallback-') && j.recruiter_id !== 'fallback-recruiter');
+
+  const filteredJobs = baseJobs.filter(job => {
+    // Audience must match when known
+    const offerAudience = (job as any).status_offers ?? (job as any).status_offerts ?? null;
+    const matchesAudience = !candidateAudience || offerAudience === candidateAudience;
     const locationText = toText(job.location);
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          locationText.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -51,18 +110,23 @@ export function JobCatalog() {
         : job.location === locationFilter);
     const matchesContract = contractFilter === "all" || job.contract_type === contractFilter;
     
-    return matchesSearch && matchesLocation && matchesContract;
+    return matchesAudience && matchesSearch && matchesLocation && matchesContract;
   }) || [];
+
+  // Minimal debug to verify audience and results (visible in browser console)
+  if (import.meta.env.DEV) {
+    console.debug('[JobCatalog] audience:', candidateAudience, 'jobs:', jobs?.length ?? 0, 'filtered:', filteredJobs.length);
+  }
 
   const uniqueLocations = [
     ...new Set(
-      (jobs || [])
+      baseJobs
         .flatMap(job => (Array.isArray(job.location) ? job.location : [job.location]))
         .filter((v): v is string => typeof v === "string" && v.trim().length > 0)
     ),
   ];
 
-  const uniqueContracts = [...new Set(jobs?.map(job => job.contract_type) || [])];
+  const uniqueContracts = [...new Set(baseJobs.map(job => job.contract_type))];
 
   // Handle jobId parameter to open specific job detail
   useEffect(() => {
@@ -149,6 +213,7 @@ export function JobCatalog() {
         jobId={selectedJobId}
         onBack={handleBackToCatalog}
         onSubmit={handleApplicationSubmit}
+        offerStatus={job?.status_offerts || job?.status_offers || null}
       />
     );
   }
@@ -191,6 +256,19 @@ export function JobCatalog() {
           Découvrez toutes les opportunités disponibles au sein du comité de direction.
         </p>
       </div>
+      {/* Bandeau de diagnostic temporaire */}
+      {/* <div className="max-w-4xl mx-auto px-3 sm:px-4">
+        <div className="rounded-md border border-amber-300 bg-amber-50 text-amber-900 p-3 sm:p-4 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="font-medium">
+            Statut détecté: <span className="uppercase">{candidateAudience ?? 'inconnu'}</span>
+          </div>
+          <div className="flex gap-3">
+            <span>Total récupérées: <strong>{(jobs || []).length}</strong></span>
+            <span>Après filtrage audience: <strong>{filteredJobs.length}</strong></span>
+          </div>
+          <div className="text-[11px] text-amber-700">(Bandeau temporaire pour vérification, sera retiré après vos tests)</div>
+        </div>
+      </div> */}
   
       {/* Sélecteur de vue */}
       <div className="flex justify-center px-3 sm:px-4">
