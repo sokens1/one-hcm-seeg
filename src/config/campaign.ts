@@ -15,7 +15,8 @@ export const CAMPAIGN_JOB_PATTERNS = [
 ];
 
 // Activer/désactiver le mode campagne (masquer les autres postes)
-export const CAMPAIGN_MODE = true;
+// Mode désactivé pour afficher toutes les offres selon status_offerts
+export const CAMPAIGN_MODE = false;
 
 // Message d'information sur la campagne
 export const CAMPAIGN_MESSAGE = "Nouvelle campagne de recrutement - 3 postes disponibles";

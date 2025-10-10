@@ -11,6 +11,8 @@ import { isPreLaunch } from "@/utils/launchGate";
 import { toast } from "sonner";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { isApplicationClosed } from "@/utils/applicationUtils";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
 
 export default function CandidateJobs() {
   useJobOfferNotifications();
@@ -23,6 +25,7 @@ export default function CandidateJobs() {
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
+  const { isEligible } = useCampaignEligibility();
 
   // Handle jobId parameter to open specific job application
   useEffect(() => {
@@ -154,6 +157,13 @@ export default function CandidateJobs() {
           </div>
         </div>
 
+        {/* Campaign Eligibility Alert */}
+        {!isEligible && (
+          <div className="max-w-7xl mx-auto mb-6 px-4">
+            <CampaignEligibilityAlert />
+          </div>
+        )}
+
         {/* Stats Bar */}
         <div className="flex justify-center mb-8">
           <div className="bg-card rounded-lg border p-4 shadow-soft">
@@ -179,7 +189,11 @@ export default function CandidateJobs() {
                     isPreview={true}
                     onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")}
+                    onLockedClick={() => {
+                      if (preLaunch) {
+                        toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.");
+                      }
+                    }}
                   />
                 </div>
               ))}

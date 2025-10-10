@@ -171,6 +171,7 @@ export function useApplications() {
       reference_email?: string;
       reference_contact?: string;
       reference_company?: string;
+      has_been_manager?: boolean | null; // Pour les candidatures internes
       mtp_answers: {
         metier: string[];
         talent: string[];
@@ -192,6 +193,19 @@ export function useApplications() {
     }) => {
       if (!user) throw new Error("User not authenticated");
 
+      // RESTRICTION DE CAMPAGNE DÉSACTIVÉE
+      // Tous les utilisateurs peuvent maintenant postuler sans restriction de date
+      // const campaignStartDate = new Date('2025-09-27T00:00:00.000Z');
+      // const userCreatedAt = new Date(user.created_at);
+      // const now = new Date();
+      // 
+      // if (userCreatedAt < campaignStartDate) {
+      //   throw new Error("Votre compte a été créé avant le 27/09/2025. Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir de cette date.");
+      // }
+      // 
+      // if (now < campaignStartDate) {
+      //   throw new Error("Les candidatures ne sont pas encore ouvertes. Elles seront disponibles à partir du 27/09/2025.");
+      // }
 
       // Vérifier si une candidature existe déjà
       const { data: existingApplication } = await supabase
@@ -205,16 +219,49 @@ export function useApplications() {
         throw new Error("Vous avez déjà postulé pour cette offre d'emploi");
       }
 
+      // Determine candidate audience and offer audience (canonical columns)
+      let candidateAudience: string | null = null;
+      let offerAudience: string | null = null;
+      try {
+        const [{ data: userRow }, { data: offerRow }] = await Promise.all([
+          supabase
+            .from('users')
+            .select('candidate_status')
+            .eq('id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('job_offers')
+            .select('status_offers, status_offerts')
+            .eq('id', applicationData.job_offer_id)
+            .maybeSingle(),
+        ]);
+        const u = userRow as { candidate_status?: string | null } | null;
+        const o = offerRow as { status_offers?: string | null; status_offerts?: string | null } | null;
+        candidateAudience = u?.candidate_status ?? null;
+        offerAudience = o?.status_offers ?? o?.status_offerts ?? null;
+      } catch {
+        // ignore, handled below
+      }
+
+      // If both are set and don't match, block the application
+      if (candidateAudience && offerAudience && candidateAudience !== offerAudience) {
+        throw new Error("Cette offre n'est pas accessible à votre type de candidature (interne/externe).");
+      }
+
       // Build payload and map API field to DB column
       const payload: Record<string, unknown> = {
         candidate_id: user.id,
         job_offer_id: applicationData.job_offer_id,
         mtp_answers: applicationData.mtp_answers,
+        // Persist candidature audience (interne/externe)
+        candidature_status: candidateAudience || offerAudience || null,
       };
+
       if (applicationData.reference_full_name) payload.reference_full_name = applicationData.reference_full_name;
       if (applicationData.reference_email) payload.reference_email = applicationData.reference_email;
       if (applicationData.reference_contact) payload.reference_contact = applicationData.reference_contact;
       if (applicationData.reference_company) payload.reference_company = applicationData.reference_company;
+      if (applicationData.has_been_manager !== undefined) payload.has_been_manager = applicationData.has_been_manager;
 
       const { data, error } = await supabase
         .from('applications')

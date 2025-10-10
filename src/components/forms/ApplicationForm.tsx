@@ -25,6 +25,8 @@ import { isPreLaunch } from "@/utils/launchGate";
 import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 // Import supprimé car l'envoi d'email est désactivé
 // import { EMAIL_CONFIG } from "@/config/email";
 // import { getCandidateEmail, isValidEmail, getEmailErrorMessage } from "@/utils/emailValidation";
@@ -37,6 +39,7 @@ interface ApplicationFormProps {
   applicationId?: string; // used in edit mode
   mode?: 'create' | 'edit';
   initialStep?: number;
+  offerStatus?: string | null; // interne | externe - pour conditionner l'affichage des références
 }
 
 interface FormData {
@@ -58,6 +61,7 @@ interface FormData {
   referenceEmail: string;
   referenceContact: string;
   referenceCompany: string;
+  hasBeenManager: boolean | null; // Pour les candidatures internes uniquement
   // Partie Métier
   metier1: string;
   metier2: string;
@@ -85,11 +89,17 @@ interface FormData {
   consent: boolean;
 }
 
-export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
+export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep, offerStatus }: ApplicationFormProps) {
   const navigate = useNavigate();
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
+  const { isEligible } = useCampaignEligibility();
+  
+  // Déterminer si l'offre est externe (références de recommandation uniquement pour les offres externes)
+  const isExternalOffer = offerStatus === 'externe';
+  // Déterminer si l'offre est interne (question sur l'expérience de manager uniquement pour les offres internes)
+  const isInternalOffer = offerStatus === 'interne';
   
   // Hook pour gérer les brouillons (seulement en mode création)
   const {
@@ -181,6 +191,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     referenceEmail: "",
     referenceContact: "",
     referenceCompany: "",
+    hasBeenManager: null,
     // Partie Métier
     metier1: "",
     metier2: "",
@@ -629,11 +640,27 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const validateStep2 = () => {
-    return (
+    const basicDocsValid = (
       formData.cv !== null &&
       formData.coverLetter !== null &&
       formData.certificates.length > 0  // At least one diploma is required
     );
+    
+    // Les références sont requises uniquement pour les offres externes
+    if (isExternalOffer) {
+      return basicDocsValid && 
+        formData.referenceFullName.trim() !== '' &&
+        formData.referenceEmail.trim() !== '' &&
+        formData.referenceContact.trim() !== '' &&
+        formData.referenceCompany.trim() !== '';
+    }
+    
+    // Le champ hasBeenManager est requis uniquement pour les offres internes
+    if (isInternalOffer) {
+      return basicDocsValid && formData.hasBeenManager !== null;
+    }
+    
+    return basicDocsValid;
   };
 
   const validateStep3 = () => {
@@ -692,6 +719,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!formData.cv) missing.push("CV");
           if (!formData.coverLetter) missing.push("Lettre de motivation");
           if (formData.certificates.length === 0) missing.push("Au moins un diplôme");
+          // Vérifier les références uniquement pour les offres externes
+          if (isExternalOffer) {
+            if (!formData.referenceFullName.trim()) missing.push("Nom et prénom de la référence");
+            if (!formData.referenceEmail.trim()) missing.push("Email de la référence");
+            if (!formData.referenceContact.trim()) missing.push("Contact de la référence");
+            if (!formData.referenceCompany.trim()) missing.push("Entreprise de la référence");
+          }
+          // Vérifier la question manager uniquement pour les offres internes
+          if (isInternalOffer && formData.hasBeenManager === null) {
+            missing.push("Expérience en tant que chef/manager");
+          }
           return missing.length > 0 ? `Documents requis: ${missing.join(', ')}` : '';
         }
         return '';
@@ -736,6 +774,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             reference_email: formData.referenceEmail,
             reference_contact: formData.referenceContact,
             reference_company: formData.referenceCompany,
+            has_been_manager: formData.hasBeenManager,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
               talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -775,6 +814,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           reference_email: formData.referenceEmail,
           reference_contact: formData.referenceContact,
           reference_company: formData.referenceCompany,
+          has_been_manager: formData.hasBeenManager,
           mtp_answers: {
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
             talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -1037,6 +1077,25 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           </div>
         </div>
       </Layout>
+    );
+  }
+
+  // Si l'utilisateur n'est pas éligible, afficher l'alerte et empêcher la candidature
+  if (!isEligible) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 lg:py-12">
+          <div className="max-w-2xl mx-auto">
+            <CampaignEligibilityAlert className="mb-6" />
+            <div className="text-center">
+              <Button onClick={onBack} variant="outline">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Retour à l'offre
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -1511,52 +1570,99 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     </div>
                   </div>
 
-                  <div>
-                    <h4 className="font-medium mb-2">Référence de recommandation</h4>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="referenceFullName">Nom et prénom *</Label>
-                      <Input
-                        id="referenceFullName"
-                        value={formData.referenceFullName}
-                        onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
-                        placeholder="Ex: Jean Dupont"
-                        required
-                      />
+                  {/* Section Expérience de manager - uniquement pour les offres internes */}
+                  {isInternalOffer && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-medium mb-3">Expérience professionnelle</h4>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Cette information est requise pour les candidatures internes.
+                      </p>
+                      <div className="flex items-start space-x-3">
+                        <Checkbox
+                          id="hasBeenManager"
+                          checked={formData.hasBeenManager === true}
+                          onCheckedChange={(checked) => {
+                            setFormData({ 
+                              ...formData, 
+                              hasBeenManager: checked === true ? true : checked === false ? false : null
+                            });
+                          }}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <Label 
+                            htmlFor="hasBeenManager" 
+                            className="text-sm font-medium leading-relaxed cursor-pointer"
+                          >
+                            Avez-vous déjà occupé un poste de chef ou de manager dans une structure quelconque ? *
+                          </Label>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Veuillez cocher si vous avez déjà eu des responsabilités de management ou de supervision d'équipe.
+                          </p>
+                        </div>
+                      </div>
+                      {formData.hasBeenManager === null && (
+                        <p className="text-xs text-orange-600 mt-2">
+                          ⚠️ Veuillez répondre à cette question pour continuer
+                        </p>
+                      )}
                     </div>
-                    <div>
-                      <Label htmlFor="referenceCompany">Entreprise *</Label>
-                      <Input
-                        id="referenceCompany"
-                        value={formData.referenceCompany}
-                        onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
-                        placeholder="Ex: SEEG"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="referenceEmail">Email *</Label>
-                      <Input
-                        id="referenceEmail"
-                        type="email"
-                        value={formData.referenceEmail}
-                        onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
-                        placeholder="exemple@domaine.com"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="referenceContact">Contact *</Label>
-                      <Input
-                        id="referenceContact"
-                        value={formData.referenceContact}
-                        onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
-                        placeholder="+241 01 23 45 67"
-                        required
-                      />
-                    </div>
-                  </div>
+                  )}
+
+                  {/* Section Référence de recommandation - uniquement pour les offres externes */}
+                  {isExternalOffer && (
+                    <>
+                      <div>
+                        <h4 className="font-medium mb-2">Référence de recommandation</h4>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          Cette section est requise pour les candidatures externes.
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="referenceFullName">Nom et prénom *</Label>
+                          <Input
+                            id="referenceFullName"
+                            value={formData.referenceFullName}
+                            onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
+                            placeholder="Ex: Jean Dupont"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="referenceCompany">Entreprise *</Label>
+                          <Input
+                            id="referenceCompany"
+                            value={formData.referenceCompany}
+                            onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
+                            placeholder="Ex: SEEG"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="referenceEmail">Email *</Label>
+                          <Input
+                            id="referenceEmail"
+                            type="email"
+                            value={formData.referenceEmail}
+                            onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
+                            placeholder="exemple@domaine.com"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="referenceContact">Contact *</Label>
+                          <Input
+                            id="referenceContact"
+                            value={formData.referenceContact}
+                            onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
+                            placeholder="+241 01 23 45 67"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -1788,30 +1894,51 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       {/* Sections cachées non affichées: lettres de recommandation */}
                     </div>
 
-                    <div className="bg-muted rounded-lg p-4 mt-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-medium">Référence de recommandation</h5>
-                        <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Nom et prénom:</span>
-                          <p>{formData.referenceFullName || "Non renseigné"}</p>
+                    {/* Expérience de manager - uniquement pour les offres internes */}
+                    {isInternalOffer && (
+                      <div className="bg-muted rounded-lg p-4 mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-medium">Expérience professionnelle</h5>
+                          <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
                         </div>
-                        <div>
-                          <span className="text-muted-foreground">Entreprise:</span>
-                          <p>{formData.referenceCompany || "Non renseigné"}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Email:</span>
-                          <p>{formData.referenceEmail || "Non renseigné"}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Contact:</span>
-                          <p>{formData.referenceContact || "Non renseigné"}</p>
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Avez-vous déjà été chef/manager ?</span>
+                          <p className="font-medium mt-1">
+                            {formData.hasBeenManager === true && "✅ Oui"}
+                            {formData.hasBeenManager === false && "❌ Non"}
+                            {formData.hasBeenManager === null && "Non renseigné"}
+                          </p>
                         </div>
                       </div>
-                    </div>
+                    )}
+
+                    {/* Référence de recommandation - uniquement pour les offres externes */}
+                    {isExternalOffer && (
+                      <div className="bg-muted rounded-lg p-4 mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-medium">Référence de recommandation</h5>
+                          <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Nom et prénom:</span>
+                            <p>{formData.referenceFullName || "Non renseigné"}</p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Entreprise:</span>
+                            <p>{formData.referenceCompany || "Non renseigné"}</p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Email:</span>
+                            <p>{formData.referenceEmail || "Non renseigné"}</p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Contact:</span>
+                            <p>{formData.referenceContact || "Non renseigné"}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="bg-muted rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">

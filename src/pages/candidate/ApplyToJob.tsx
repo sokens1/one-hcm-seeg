@@ -47,6 +47,7 @@ export default function ApplyToJob() {
       jobId={id || ""}
       onBack={handleBack}
       onSubmit={handleSubmit}
+      offerStatus={jobOffer.status_offerts || jobOffer.status_offers || null}
     />
   );
 }
