@@ -193,18 +193,19 @@ export function useApplications() {
     }) => {
       if (!user) throw new Error("User not authenticated");
 
-      // Vérifier si l'utilisateur est éligible pour la nouvelle campagne
-      const campaignStartDate = new Date('2025-09-27T00:00:00.000Z');
-      const userCreatedAt = new Date(user.created_at);
-      const now = new Date();
-      
-      if (userCreatedAt < campaignStartDate) {
-        throw new Error("Votre compte a été créé avant le 27/09/2025. Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir de cette date.");
-      }
-      
-      if (now < campaignStartDate) {
-        throw new Error("Les candidatures ne sont pas encore ouvertes. Elles seront disponibles à partir du 27/09/2025.");
-      }
+      // RESTRICTION DE CAMPAGNE DÉSACTIVÉE
+      // Tous les utilisateurs peuvent maintenant postuler sans restriction de date
+      // const campaignStartDate = new Date('2025-09-27T00:00:00.000Z');
+      // const userCreatedAt = new Date(user.created_at);
+      // const now = new Date();
+      // 
+      // if (userCreatedAt < campaignStartDate) {
+      //   throw new Error("Votre compte a été créé avant le 27/09/2025. Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir de cette date.");
+      // }
+      // 
+      // if (now < campaignStartDate) {
+      //   throw new Error("Les candidatures ne sont pas encore ouvertes. Elles seront disponibles à partir du 27/09/2025.");
+      // }
 
       // Vérifier si une candidature existe déjà
       const { data: existingApplication } = await supabase
