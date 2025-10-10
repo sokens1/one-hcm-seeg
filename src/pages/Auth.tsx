@@ -271,11 +271,28 @@ export default function Auth() {
         try {
           const { data: userRow, error: userRowError } = await supabase
             .from('users')
-            .select('role')
+            .select('role, statut')
             .eq('id', data.user.id)
             .single();
 
-          const rawRole = String((!userRowError && (userRow as { role?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
+          // Vérifier le statut de l'utilisateur
+          if (userRow?.statut && userRow.statut !== 'actif') {
+            await supabase.auth.signOut();
+            
+            const statutMessages: { [key: string]: string } = {
+              'en_attente': 'Votre compte est en attente de validation par notre équipe.',
+              'inactif': 'Votre compte a été désactivé. Contactez l\'administrateur.',
+              'bloqué': 'Votre compte a été bloqué. Contactez l\'administrateur.',
+              'archivé': 'Votre compte a été archivé. Contactez l\'administrateur.'
+            };
+            
+            const message = statutMessages[userRow.statut] || 'Votre compte n\'est pas actif.';
+            toast.error(message);
+            setIsSubmitting(false);
+            return;
+          }
+
+          const rawRole = String((!userRowError && (userRow as { role?: string; statut?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
           const isAdmin = rawRole === 'admin';
           const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
           const isObserver = rawRole === 'observateur' || rawRole === 'observer';

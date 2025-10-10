@@ -40,6 +40,7 @@ interface AuthContextType {
   isRecruiter: boolean;
   isAdmin: boolean;
   isObserver: boolean;
+  userStatut: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isRoleLoading, setIsRoleLoading] = useState(false);
   const [dbRole, setDbRole] = useState<string | null>(null);
+  const [userStatut, setUserStatut] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
@@ -76,11 +78,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         while (retryCount <= maxRetries) {
           try {
-            const { data, error } = await supabase
-              .from('users')
-              .select('role')
-              .eq('id', uid)
-              .single();
+          const { data, error } = await supabase
+            .from('users')
+            .select('role, statut')
+            .eq('id', uid)
+            .single();
             
             if (!mounted) return;
             
@@ -103,7 +105,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 continue;
               }
             } else {
-              setDbRole((data as { role?: string } | null)?.role ?? null);
+              setDbRole((data as { role?: string; statut?: string } | null)?.role ?? null);
+              setUserStatut((data as { role?: string; statut?: string } | null)?.statut ?? null);
               break; // Success, exit retry loop
             }
           } catch (err) {
@@ -143,7 +146,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           filter: `id=eq.${uid}`,
         }, (payload) => {
           const nextRole = (payload as any)?.new?.role as string | undefined;
+          const nextStatut = (payload as any)?.new?.statut as string | undefined;
           if (typeof nextRole === 'string') setDbRole(nextRole);
+          if (typeof nextStatut === 'string') setUserStatut(nextStatut);
         })
         .subscribe();
       channelRef.current = channel;
@@ -441,7 +446,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isCandidate,
     isRecruiter,
     isAdmin,
-    isObserver
+    isObserver,
+    userStatut
   };
 
   return (
@@ -474,6 +480,7 @@ export function useAuth() {
         isRecruiter: false,
         isAdmin: false,
         isObserver: false,
+        userStatut: null,
       } as AuthContextType;
     }
     throw new Error('useAuth must be used within an AuthProvider');
