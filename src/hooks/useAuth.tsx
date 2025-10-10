@@ -8,11 +8,20 @@ export interface SignUpMetadata {
   first_name?: string;
   last_name?: string;
   phone?: string;
-  matricule?: string;
+  matricule?: string | null;
   birth_date?: string;
   current_position?: string;
   bio?: string;
   gender?: string; // 'Homme' | 'Femme' | autres valeurs
+  // Nouveaux champs
+  date_of_birth?: string;
+  sexe?: string;
+  adresse?: string;
+  candidate_status?: string;
+  no_seeg_email?: boolean;
+  poste_actuel?: string;
+  annees_experience?: number;
+  statut?: string;
 }
 
 interface AuthContextType {
@@ -72,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           try {
             const { data, error } = await supabase
               .from('users')
-              .select('role, candidate_status')
+              .select('role')
               .eq('id', uid)
               .single();
             
@@ -97,17 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 continue;
               }
             } else {
-              const role = (data as { role?: string } | null)?.role ?? null;
-              const status = (data as { candidate_status?: string } | null)?.candidate_status ?? null;
-              
-              console.log('🔍 [useAuth] User data loaded:', {
-                userId: uid,
-                role,
-                candidateStatus: status
-              });
-              
-              setDbRole(role);
-              setCandidateStatus(status);
+              setDbRole((data as { role?: string } | null)?.role ?? null);
               break; // Success, exit retry loop
             }
           } catch (err) {
@@ -147,7 +146,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           filter: `id=eq.${uid}`,
         }, (payload) => {
           const nextRole = (payload as any)?.new?.role as string | undefined;
+          const nextCandidateStatus = (payload as any)?.new?.candidate_status as string | undefined;
           if (typeof nextRole === 'string') setDbRole(nextRole);
+          if (typeof nextCandidateStatus === 'string') setCandidateStatus(nextCandidateStatus);
         })
         .subscribe();
       channelRef.current = channel;

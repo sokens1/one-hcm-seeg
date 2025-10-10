@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
+// import { useAzureAuth } from "@/hooks/useAzureAuth"; // Azure API - Commenté temporairement
+import { useAccessRequestNotification } from "@/hooks/useAccessRequestNotification";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, Building2, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { ForgotPassword } from "@/components/auth/ForgotPassword";
@@ -17,7 +19,9 @@ import { isApplicationClosed } from "@/utils/applicationUtils";
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, signUp, isLoading } = useAuth();
+  const { signIn, signUp, isLoading } = useAuth(); // Supabase Auth
+  // const { signIn, signUp, verifyMatricule: azureVerifyMatricule } = useAzureAuth(); // Azure API - Commenté
+  const { sendAccessRequestNotification } = useAccessRequestNotification();
   const [activeTab, setActiveTab] = useState("signin");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,29 +78,50 @@ export default function Auth() {
     firstName: "",
     lastName: "",
     phone: "",
-    matricule: ""
+    matricule: "",
+    dateOfBirth: "",
+    sexe: "",
+    adresse: "",
+    candidateStatus: "", // "interne" ou "externe" - vide par défaut
+    noSeegEmail: false // Checkbox pour les internes sans email SEEG
   });
 
   const [matriculeError, setMatriculeError] = useState<string>("");
   const [isMatriculeValid, setIsMatriculeValid] = useState<boolean>(!MATRICULE_REQUIRED);
   const [isVerifyingMatricule, setIsVerifyingMatricule] = useState<boolean>(false);
   const [lastVerifiedMatricule, setLastVerifiedMatricule] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+
+  // Validation de l'email en temps réel pour les candidats internes
+  useEffect(() => {
+    if (signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail && signUpData.email) {
+      const emailPattern = /@seeg\.com$/i;
+      if (!emailPattern.test(signUpData.email)) {
+        setEmailError("L'email doit être un email professionnel SEEG (@seeg.com)");
+      } else {
+        setEmailError("");
+      }
+    } else {
+      setEmailError("");
+    }
+  }, [signUpData.email, signUpData.candidateStatus, signUpData.noSeegEmail]);
 
   useEffect(() => {
-    if (!MATRICULE_REQUIRED) {
-      setIsMatriculeValid(true);
-      setMatriculeError("");
-      setLastVerifiedMatricule("");
-    } else {
+    // Réinitialiser la validation quand le matricule change
+    if (signUpData.candidateStatus === "interne" && signUpData.matricule) {
+      // Ne pas auto-valider, attendre la vérification
       setIsMatriculeValid(false);
       setMatriculeError("");
-      setLastVerifiedMatricule("");
+    } else if (signUpData.candidateStatus === "externe") {
+      // Pour les externes, pas de matricule requis
+      setIsMatriculeValid(true);
+      setMatriculeError("");
     }
-  }, [signUpData.matricule]);
+  }, [signUpData.matricule, signUpData.candidateStatus]);
 
   const verifyMatricule = useCallback(async (): Promise<boolean> => {
-    // Si le matricule n'est pas requis, on valide automatiquement
-    if (!MATRICULE_REQUIRED) {
+    // Si le candidat est externe, on valide automatiquement (pas de matricule requis)
+    if (signUpData.candidateStatus === "externe") {
       setIsMatriculeValid(true);
       setMatriculeError("");
       return true;
@@ -109,14 +134,25 @@ export default function Auth() {
       return false;
     }
 
+    // Si le matricule a déjà été vérifié avec succès, ne pas revérifier
+    if (matricule === lastVerifiedMatricule && isMatriculeValid) {
+      console.log('✅ Matricule déjà vérifié, pas de nouvelle requête');
+      return true;
+    }
+
     try {
       setIsVerifyingMatricule(true);
-      const { data: isValid, error } = await supabase.rpc('verify_seeg_matricule', {
+      console.log('🔍 Vérification du matricule:', matricule);
+      
+      // Utiliser la fonction RPC de Supabase pour vérifier dans seeg_agents
+      const { data: isValid, error } = await supabase.rpc('verify_matricule', {
         p_matricule: matricule,
       });
 
+      console.log('✅ Réponse vérification:', { isValid, error });
+
       if (error) {
-        console.error('Erreur vérification matricule:', error);
+        console.error('❌ Erreur vérification matricule:', error);
         // Gestion spécifique du rate limiting
         if (error.message.includes('rate limit') || error.code === 'PGRST301') {
           setMatriculeError("Trop de vérifications. Attendez quelques secondes avant de réessayer.");
@@ -128,16 +164,19 @@ export default function Auth() {
       }
 
       if (!isValid) {
+        console.log('❌ Matricule invalide');
         setMatriculeError("Ce matricule n'est pas autorisé. Vérifiez qu'il correspond à un agent SEEG actif.");
         setIsMatriculeValid(false);
         return false;
       }
 
+      console.log('✅ Matricule valide');
       setMatriculeError("");
       setIsMatriculeValid(true);
       setLastVerifiedMatricule(matricule);
       return true;
     } catch (e) {
+      console.error('❌ Exception vérification matricule:', e);
       setMatriculeError("Erreur lors de la vérification du matricule.");
       setIsMatriculeValid(false);
       return false;
@@ -145,15 +184,61 @@ export default function Auth() {
     finally {
       setIsVerifyingMatricule(false);
     }
-  }, [signUpData.matricule]);
+  }, [signUpData.matricule, signUpData.candidateStatus, lastVerifiedMatricule, isMatriculeValid]);
 
   useEffect(() => {
-    if (!signUpData.matricule) return;
+    // Ne vérifier que si c'est un candidat interne et qu'il y a un matricule
+    if (signUpData.candidateStatus !== "interne") return;
+    if (!signUpData.matricule || signUpData.matricule.trim() === "") {
+      setIsMatriculeValid(false);
+      setMatriculeError("");
+      return;
+    }
+    
+    console.log('⏱️ Timer de vérification du matricule démarré (1s)...');
     const timer = setTimeout(() => {
       verifyMatricule();
-    }, 1000); // Augmenté de 500ms à 1000ms pour réduire les appels
+    }, 1000);
     return () => clearTimeout(timer);
-  }, [signUpData.matricule, verifyMatricule]);
+  }, [signUpData.matricule, signUpData.candidateStatus, verifyMatricule]);
+
+  // Vérifier si tous les champs requis sont remplis (Inscription)
+  const isSignUpFormValid = () => {
+    // Vérifier si un type de candidature est sélectionné
+    if (!signUpData.candidateStatus) return false;
+
+    // Champs communs requis
+    const commonFieldsFilled = 
+      signUpData.firstName.trim() !== "" &&
+      signUpData.lastName.trim() !== "" &&
+      signUpData.email.trim() !== "" &&
+      signUpData.phone.trim() !== "" &&
+      signUpData.dateOfBirth !== "" &&
+      signUpData.sexe !== "" &&
+      signUpData.adresse.trim() !== "" &&
+      signUpData.password.trim() !== "" &&
+      signUpData.confirmPassword.trim() !== "";
+
+    if (!commonFieldsFilled) return false;
+
+    // Validation de l'email (pas d'erreur)
+    if (emailError !== "") return false;
+
+    // Validation des mots de passe correspondants
+    if (signUpData.password !== signUpData.confirmPassword) return false;
+
+    // Si candidat interne, vérifier le matricule
+    if (signUpData.candidateStatus === "interne") {
+      return signUpData.matricule.trim() !== "" && isMatriculeValid;
+    }
+
+    return true;
+  };
+
+  // Vérifier si les champs de connexion sont remplis
+  const isSignInFormValid = () => {
+    return signInData.email.trim() !== "" && signInData.password.trim() !== "";
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,23 +258,44 @@ export default function Auth() {
         return;
       }
 
+      // Vérifier le statut AVANT d'afficher le toast de succès
+      const { data: userRow, error: userRowError } = await supabase
+        .from('users')
+        .select('role, statut')
+        .eq('id', data.user.id)
+        .single();
+
+      // Vérifier le statut de l'utilisateur
+      if (userRow?.statut && userRow.statut !== 'actif') {
+        await supabase.auth.signOut();
+        
+        const statutMessages: { [key: string]: string } = {
+          'en_attente': 'Votre compte est en attente de validation par notre équipe.',
+          'inactif': 'Votre compte a été désactivé. Contactez l\'administrateur.',
+          'bloqué': 'Votre compte a été bloqué. Contactez l\'administrateur.',
+          'archivé': 'Votre compte a été archivé. Contactez l\'administrateur.'
+        };
+        
+        const message = statutMessages[userRow.statut] || 'Votre compte n\'est pas actif.';
+        toast.error(message);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Toast de succès seulement si le statut est actif
       const now = Date.now();
       if (now - lastLoginToastTs.current > 1500) {
         toast.success("Connexion réussie !");
         lastLoginToastTs.current = now;
       }
+      
       if (redirectParam) {
         await syncUsersRowFromAuth();
         navigate(redirectParam);
       } else {
         try {
-          const { data: userRow, error: userRowError } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', data.user.id)
-            .single();
 
-          const rawRole = String((!userRowError && (userRow as { role?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
+          const rawRole = String((!userRowError && (userRow as { role?: string; statut?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
           const isAdmin = rawRole === 'admin';
           const isRecruiter = rawRole === 'recruteur' || rawRole === 'recruiter';
           const isObserver = rawRole === 'observateur' || rawRole === 'observer';
@@ -243,40 +349,40 @@ export default function Auth() {
       return;
     }
 
-    // Ensure matricule is valid before proceeding
-    // Eviter l'appel redondant si le matricule est déjà validé
-    const currentMatricule = signUpData.matricule.trim();
-    let ok = isMatriculeValid && lastVerifiedMatricule === currentMatricule;
-    
-    if (!ok) {
-      ok = await verifyMatricule();
-    }
-    
-    if (!ok) {
-      toast.error("Vérifiez votre matricule pour continuer.");
-      setIsSubmitting(false);
-      return;
+    // Pour les candidats internes, vérifier le matricule
+    if (signUpData.candidateStatus === "interne") {
+      const currentMatricule = signUpData.matricule.trim();
+      let ok = isMatriculeValid && lastVerifiedMatricule === currentMatricule;
+      
+      if (!ok) {
+        ok = await verifyMatricule();
+      }
+      
+      if (!ok) {
+        toast.error("Vérifiez votre matricule pour continuer.");
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     try {
-      // Le matricule a déjà été validé via verifyMatricule() ci-dessus
-
       const { error } = await signUp(signUpData.email, signUpData.password, {
         role: "candidat",
         first_name: signUpData.firstName,
         last_name: signUpData.lastName,
         phone: signUpData.phone,
-        matricule: signUpData.matricule
-
+        matricule: signUpData.matricule || null,
+        date_of_birth: signUpData.dateOfBirth,
+        sexe: signUpData.sexe,
+        adresse: signUpData.adresse,
+        candidate_status: signUpData.candidateStatus,
+        no_seeg_email: signUpData.noSeegEmail,
       });
       
       if (error) {
         if (error.status === 429 || error.message.includes('rate limit')) {
-          toast.error("Trop de tentatives de vérification. Attendez 60 secondes avant de réessayer.");
-          setCooldown(60); // 1 minute de cooldown
-          setTimeout(() => {
-            toast.info("💡 Astuce: Attendez que la vérification du matricule soit terminée avant de cliquer sur S'inscrire.");
-          }, 2000);
+          toast.error("Trop de tentatives. Attendez 60 secondes avant de réessayer.");
+          setCooldown(60);
         } else if (error.message.includes("already registered")) {
           toast.error("Cette adresse email est déjà utilisée. Essayez de vous connecter.");
           setActiveTab("signin");
@@ -286,7 +392,47 @@ export default function Auth() {
           toast.error("Erreur d'inscription: " + error.message);
         }
       } else {
-        // Tenter une connexion immédiate si l'email de confirmation n'est pas requis côté Supabase
+        // Envoyer l'email de bienvenue pour TOUS les nouveaux inscrits (non bloquant)
+        fetch('/api/send-welcome-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userEmail: signUpData.email,
+            firstName: signUpData.firstName,
+            lastName: signUpData.lastName,
+            sexe: signUpData.sexe,
+            candidateStatus: signUpData.candidateStatus,
+          }),
+        }).catch(err => {
+          console.error('⚠️ Erreur envoi email de bienvenue (non bloquant):', err);
+        });
+
+        // Si candidat interne sans email SEEG, envoyer les notifications spécifiques
+        if (signUpData.candidateStatus === "interne" && signUpData.noSeegEmail) {
+          console.log('📧 Envoi des notifications pour candidat interne sans email SEEG...');
+          
+          // Envoyer les emails de notification (non bloquant)
+          sendAccessRequestNotification({
+            userEmail: signUpData.email,
+            firstName: signUpData.firstName,
+            lastName: signUpData.lastName,
+            phone: signUpData.phone,
+            matricule: signUpData.matricule,
+            dateOfBirth: signUpData.dateOfBirth,
+            sexe: signUpData.sexe,
+            adresse: signUpData.adresse,
+          }).catch(err => {
+            console.error('⚠️ Erreur envoi notifications (non bloquant):', err);
+          });
+
+          toast.success("Inscription réussie ! Votre demande d'accès est en attente de validation.");
+          toast.info("Vous recevrez un email de confirmation une fois votre compte validé.");
+          setActiveTab("signin");
+          setSignInData(prev => ({ ...prev, email: signUpData.email }));
+          return;
+        }
+
+        // Pour les autres cas, connexion immédiate
         try {
           const { data: sess } = await supabase.auth.getSession();
           if (!sess.session) {
@@ -307,8 +453,6 @@ export default function Auth() {
           // ignore and fall back to classic flow
         }
 
-        // Fallback: si la connexion immédiate n'est pas possible (ex: email requis),
-        // on garde l'UX existante
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         if (isDevelopment) {
           toast.success("Inscription réussie! Vous pouvez maintenant vous connecter.");
@@ -446,7 +590,6 @@ export default function Auth() {
                         value={signInData.email}
                         onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                         className="pl-10"
-                        required
                       />
                     </div>
                   </div>
@@ -462,7 +605,6 @@ export default function Auth() {
                         value={signInData.password}
                         onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                         className="pl-10 pr-10"
-                        required
                       />
                       <button
                         type="button"
@@ -486,8 +628,21 @@ export default function Auth() {
                     </Button>
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? "Connexion..." : "Se connecter"}
+                  {!isSignInFormValid() && (
+                    <p className="text-xs text-center text-muted-foreground">
+                      Veuillez remplir votre email et mot de passe
+                    </p>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={!isSignInFormValid() || isSubmitting}>
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <span>Connexion en cours...</span>
+                      </div>
+                    ) : (
+                      "Se connecter"
+                    )}
                   </Button>
                 </form>
               </TabsContent>
@@ -503,60 +658,148 @@ export default function Auth() {
                     />
                   )}
                   <form onSubmit={handleSignUp} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName" className="text-sm">Prénom</Label>
-                        <Input
-                          id="firstName"
-                          placeholder="Prénom"
-                          value={signUpData.firstName}
-                          onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
-                          className="text-sm"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName" className="text-sm">Nom</Label>
-                        <Input
-                          id="lastName"
-                          placeholder="Nom"
-                          value={signUpData.lastName}
-                          onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
-                          className="text-sm"
-                          required
-                        />
+                    {/* Type de candidat */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">Type de candidature</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setSignUpData({ ...signUpData, candidateStatus: "interne", noSeegEmail: false })}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            signUpData.candidateStatus === "interne"
+                              ? "border-primary bg-primary/5 shadow-sm"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <Building2 className={`w-5 h-5 mx-auto mb-2 ${
+                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-400"
+                          }`} />
+                          <div className={`text-sm font-medium ${
+                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-700"
+                          }`}>
+                            Candidat Interne
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Employé SEEG
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSignUpData({ ...signUpData, candidateStatus: "externe", matricule: "" })}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            signUpData.candidateStatus === "externe"
+                              ? "border-primary bg-primary/5 shadow-sm"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <User className={`w-5 h-5 mx-auto mb-2 ${
+                            signUpData.candidateStatus === "externe" ? "text-primary" : "text-gray-400"
+                          }`} />
+                          <div className={`text-sm font-medium ${
+                            signUpData.candidateStatus === "externe" ? "text-primary" : "text-gray-700"
+                          }`}>
+                            Candidat Externe
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Hors SEEG
+                          </div>
+                        </button>
                       </div>
                     </div>
 
+                    {/* Afficher un message si aucun type n'est sélectionné */}
+                    {!signUpData.candidateStatus && (
+                      <div className="text-center py-8">
+                        <p className="text-sm text-muted-foreground">
+                          Veuillez sélectionner un type de candidature pour continuer
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Afficher les champs uniquement si un type est sélectionné */}
+                    {signUpData.candidateStatus && (
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="firstName" className="text-sm">Prénom</Label>
+                            <Input
+                              id="firstName"
+                              placeholder="Prénom"
+                              value={signUpData.firstName}
+                              onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
+                              className="text-sm"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="lastName" className="text-sm">Nom</Label>
+                            <Input
+                              id="lastName"
+                              placeholder="Nom"
+                              value={signUpData.lastName}
+                              onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
+                              className="text-sm"
+                              required
+                            />
+                          </div>
+                        </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
+                      <Label htmlFor="signup-email">
+                        Email {signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail && "(professionnel SEEG)"}
+                      </Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="signup-email"
                           type="email"
-                          placeholder="votre.email@exemple.com"
+                          placeholder={
+                            signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail
+                              ? "prenom.nom@seeg.com"
+                              : "votre.email@exemple.com"
+                          }
                           value={signUpData.email}
                           onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
-                          className="pl-10"
+                          className={`pl-10 ${emailError ? "border-red-500 focus:ring-red-500" : ""}`}
                           required
                         />
                       </div>
+                      {emailError && (
+                        <p className="text-xs text-red-600 flex items-center gap-1 mt-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {emailError}
+                        </p>
+                      )}
+                      {signUpData.candidateStatus === "interne" && (
+                        <div className="flex items-center space-x-2 pt-1">
+                          <input
+                            type="checkbox"
+                            id="noSeegEmail"
+                            checked={signUpData.noSeegEmail}
+                            onChange={(e) => setSignUpData({ ...signUpData, noSeegEmail: e.target.checked, email: "" })}
+                            className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4"
+                          />
+                          <Label htmlFor="noSeegEmail" className="text-xs text-muted-foreground font-normal cursor-pointer">
+                            Je n'ai pas d'email professionnel SEEG
+                          </Label>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Matricule field (conditionally required) */}
-                    {MATRICULE_REQUIRED && (
+                    {/* Matricule field (only for internal candidates) */}
+                    {signUpData.candidateStatus === "interne" && (
                       <div className="space-y-2">
-                        <Label htmlFor="matricule">Matricule</Label>
+                        <Label htmlFor="matricule">Matricule SEEG</Label>
                         <div className="relative">
+                          <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="matricule"
                             placeholder="Ex: 1234"
                             title="Le matricule ne doit contenir que des chiffres."
                             value={signUpData.matricule}
                             onChange={(e) => setSignUpData({ ...signUpData, matricule: e.target.value })}
+                            className={`pl-10 ${matriculeError ? "border-destructive" : isMatriculeValid && signUpData.matricule ? "border-green-500" : ""}`}
                             required
-                            className={matriculeError ? "border-destructive" : isMatriculeValid ? "border-green-500" : ""}
                           />
                           {isVerifyingMatricule && (
                             <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
@@ -573,6 +816,18 @@ export default function Auth() {
                             </CardContent>
                           </Card>
                         )}
+                        {isVerifyingMatricule && (
+                          <p className="text-xs text-blue-600 flex items-center gap-1">
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            Vérification en cours...
+                          </p>
+                        )}
+                        {!isVerifyingMatricule && isMatriculeValid && signUpData.matricule && signUpData.matricule.trim() === lastVerifiedMatricule && !matriculeError && (
+                          <p className="text-xs text-green-600 flex items-center gap-1">
+                            <span className="inline-block w-2 h-2 bg-green-600 rounded-full"></span>
+                            Matricule vérifié
+                          </p>
+                        )}
                       </div>
                     )}
 
@@ -584,7 +839,49 @@ export default function Auth() {
                         placeholder="+241 01 23 45 67"
                         value={signUpData.phone}
                         onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
-                        disabled={MATRICULE_REQUIRED && !isMatriculeValid}
+                        disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="dateOfBirth">Date de naissance</Label>
+                        <Input
+                          id="dateOfBirth"
+                          type="date"
+                          value={signUpData.dateOfBirth}
+                          onChange={(e) => setSignUpData({ ...signUpData, dateOfBirth: e.target.value })}
+                          disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="sexe">Sexe</Label>
+                        <select
+                          id="sexe"
+                          value={signUpData.sexe}
+                          onChange={(e) => setSignUpData({ ...signUpData, sexe: e.target.value })}
+                          disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
+                          required
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <option value="">Sélectionner</option>
+                          <option value="M">Homme</option>
+                          <option value="F">Femme</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="adresse">Adresse</Label>
+                      <Input
+                        id="adresse"
+                        type="text"
+                        placeholder="Ex: bikele"
+                        value={signUpData.adresse}
+                        onChange={(e) => setSignUpData({ ...signUpData, adresse: e.target.value })}
+                        disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
                         required
                       />
                     </div>
@@ -601,7 +898,7 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                           className="pl-10 pr-10"
                           required
-                          disabled={MATRICULE_REQUIRED && !isMatriculeValid}
+                          disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
                         />
                         <button
                           type="button"
@@ -626,7 +923,7 @@ export default function Auth() {
                           onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                           className="pl-10 pr-10"
                           required
-                          disabled={MATRICULE_REQUIRED && !isMatriculeValid}
+                          disabled={signUpData.candidateStatus === "interne" && !isMatriculeValid}
                         />
                         <button
                           type="button"
@@ -639,20 +936,34 @@ export default function Auth() {
                       </div>
                     </div>
 
+                    {!isSignUpFormValid() && signUpData.candidateStatus && (
+                      <p className="text-xs text-center text-muted-foreground">
+                        {signUpData.candidateStatus === "interne" && !isMatriculeValid 
+                          ? "Veuillez vérifier que votre matricule est valide"
+                          : emailError 
+                            ? "Veuillez corriger l'adresse email"
+                            : signUpData.password !== signUpData.confirmPassword
+                              ? "Les mots de passe ne correspondent pas"
+                              : "Veuillez remplir tous les champs obligatoires"}
+                      </p>
+                    )}
+
                     <Button 
                       type="submit" 
                       className="w-full"
-                      disabled={isSubmitting || !isMatriculeValid}
+                      disabled={!isSignUpFormValid() || isSubmitting}
                     >
                       {isSubmitting ? (
-                        <>
+                        <div className="flex items-center justify-center">
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Inscription en cours...
-                        </>
+                          <span>Inscription en cours...</span>
+                        </div>
                       ) : (
                         "S'inscrire"
                       )}
                     </Button>
+                      </>
+                    )}
                   </form>
                 </div>
               </TabsContent>
