@@ -5,12 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { ArrowLeft, Save, Send, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateJobOffer } from "@/hooks/useRecruiterDashboard";
 import { useToast } from "@/components/ui/use-toast";
+import { MTPQuestionsEditor } from "@/components/forms/MTPQuestionsEditor";
+import { getMetierQuestionsForTitle, defaultMTPQuestionsExternes } from "@/data/metierQuestions";
+import { useEffect } from "react";
 
 interface JobFormData {
   title: string;
@@ -21,6 +25,7 @@ interface JobFormData {
   startDate: string;
   location: string;
   dateLimite: string;
+  statusOfferts: string;
   responsibilities: string;
   requirements: string;
 }
@@ -39,9 +44,49 @@ export default function CreateJob() {
     startDate: "",
     location: "",
     dateLimite: "",
+    statusOfferts: "",
     responsibilities: "",
     requirements: ""
   });
+
+  // État pour activer/désactiver l'offre
+  const [isActive, setIsActive] = useState(true);
+
+  // États pour les questions MTP
+  const [mtpQuestionsMetier, setMtpQuestionsMetier] = useState<string[]>([]);
+  const [mtpQuestionsTalent, setMtpQuestionsTalent] = useState<string[]>([]);
+  const [mtpQuestionsParadigme, setMtpQuestionsParadigme] = useState<string[]>([]);
+
+  // Charger automatiquement les questions par défaut au changement du statut ou titre
+  useEffect(() => {
+    // Ne charger que si les questions sont vides (pas encore modifiées par l'utilisateur)
+    if (mtpQuestionsMetier.length === 0 && mtpQuestionsTalent.length === 0 && mtpQuestionsParadigme.length === 0) {
+      let defaultQuestions;
+      
+      if (formData.statusOfferts === 'externe') {
+        // Offre externe : 3 questions par catégorie
+        defaultQuestions = defaultMTPQuestionsExternes;
+        console.log('[CreateJob] Chargement questions externes (3 par catégorie)');
+      } else if (formData.title) {
+        // Offre interne : questions basées sur le titre
+        defaultQuestions = getMetierQuestionsForTitle(formData.title);
+        console.log('[CreateJob] Chargement questions pour:', formData.title);
+      } else {
+        // Pas encore de titre ou statut, ne rien faire
+        return;
+      }
+      
+      setMtpQuestionsMetier(defaultQuestions.metier);
+      setMtpQuestionsTalent(defaultQuestions.talent);
+      setMtpQuestionsParadigme(defaultQuestions.paradigme);
+      
+      console.log('[CreateJob] Questions pré-remplies:', {
+        metier: defaultQuestions.metier.length,
+        talent: defaultQuestions.talent.length,
+        paradigme: defaultQuestions.paradigme.length
+      });
+    }
+  }, [formData.statusOfferts, formData.title, mtpQuestionsMetier.length, mtpQuestionsTalent.length, mtpQuestionsParadigme.length]);
 
   // Aperçu supprimé
 
@@ -62,7 +107,7 @@ export default function CreateJob() {
     // console.log('[CreateJob] Form data:', formData);
 
     // Validate required fields for DB NOT NULL constraints
-    if (!formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements) {
+    if (!formData.title || !formData.location || !formData.contractType || !formData.statusOfferts || !formData.responsibilities || !formData.requirements) {
       toast({
         title: "Champs requis",
         description: "Veuillez remplir tous les champs obligatoires avant de continuer.",
@@ -82,8 +127,8 @@ export default function CreateJob() {
       return;
     }
 
-
-    const mappedStatus = status === 'published' ? 'active' : 'draft';
+    // Le status dépend maintenant du switch isActive
+    const mappedStatus = isActive ? 'active' : 'inactive';
 
     const jobData = {
       title: formData.title,
@@ -95,7 +140,12 @@ export default function CreateJob() {
       date_limite: formData.dateLimite ? new Date(formData.dateLimite).toISOString() : null,
       reporting_line: formData.reportingLine || null,
       salary_note: formData.salaryNote || null,
+      status_offerts: formData.statusOfferts || null,
       start_date: formData.startDate || null,
+      // Questions MTP
+      mtp_questions_metier: mtpQuestionsMetier.filter(q => q.trim() !== ''),
+      mtp_questions_talent: mtpQuestionsTalent.filter(q => q.trim() !== ''),
+      mtp_questions_paradigme: mtpQuestionsParadigme.filter(q => q.trim() !== ''),
       // Ne pas envoyer les champs HTML vers les colonnes array de la DB
       // responsibilities: formData.responsibilities,
       // requirements: formData.requirements,
@@ -222,6 +272,35 @@ export default function CreateJob() {
                 </div>
               </div>
 
+              {/* Ligne Statut - Interne/Externe et Activation */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="statusOfferts" className="text-sm sm:text-base font-medium">Statut de l'offre *</Label>
+                  <Select value={formData.statusOfferts} onValueChange={(value) => handleInputChange("statusOfferts", value)} required>
+                    <SelectTrigger className="text-sm sm:text-base">
+                      <SelectValue placeholder="Choisir le statut" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="interne">Interne</SelectItem>
+                      <SelectItem value="externe">Externe</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="isActive" className="text-sm sm:text-base font-medium">Activer l'offre</Label>
+                  <div className="flex items-center gap-3 h-10">
+                    <Switch
+                      id="isActive"
+                      checked={isActive}
+                      onCheckedChange={setIsActive}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {isActive ? "✓ Offre active (visible)" : "✗ Offre inactive (masquée)"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Quatrième ligne - Date d'embauche et Lieu de travail */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
@@ -288,12 +367,23 @@ export default function CreateJob() {
                 />
               </div>
 
+              {/* Questions MTP */}
+              <MTPQuestionsEditor
+                metierQuestions={mtpQuestionsMetier}
+                talentQuestions={mtpQuestionsTalent}
+                paradigmeQuestions={mtpQuestionsParadigme}
+                onMetierChange={setMtpQuestionsMetier}
+                onTalentChange={setMtpQuestionsTalent}
+                onParadigmeChange={setMtpQuestionsParadigme}
+                statusOfferts={formData.statusOfferts}
+              />
+
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row justify-end pt-6 border-t gap-3 sm:gap-2">
                 <Button 
                   variant="outline" 
                   onClick={handleSave}
-                  disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements}
+                  disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.statusOfferts || !formData.responsibilities || !formData.requirements}
                   className="w-full sm:w-auto text-xs sm:text-sm"
                 >
                   {isCreating ? (
@@ -306,7 +396,7 @@ export default function CreateJob() {
                 <Button 
                   variant="success" 
                   onClick={handlePublish}
-                  disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.responsibilities || !formData.requirements}
+                  disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.statusOfferts || !formData.responsibilities || !formData.requirements}
                   className="w-full sm:w-auto text-xs sm:text-sm"
                 >
                   {isCreating ? (

@@ -31,6 +31,25 @@ export const defaultMTPQuestions: MTPQuestions = {
   ],
 };
 
+// Questions par défaut pour les offres externes (3 questions par catégorie)
+export const defaultMTPQuestionsExternes: MTPQuestions = {
+  metier: [
+    "1. Quelles sont vos principales compétences techniques dans ce domaine ?",
+    "2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?",
+    "3. Quels défis techniques de ce métier vous motivent le plus ?",
+  ],
+  talent: [
+    "1. Quelle est votre plus grande force en tant que professionnel ?",
+    "2. Décrivez une situation où vous avez dû apprendre une nouvelle compétence rapidement.",
+    "3. Comment gérez-vous la pression et les délais serrés ?",
+  ],
+  paradigme: [
+    "1. Qu'est-ce qui vous motive le plus dans votre carrière ?",
+    "2. Comment vous tenez-vous au courant des évolutions de votre secteur ?",
+    "3. Quelle est votre vision du travail en équipe ?",
+  ],
+};
+
 // Helper to normalize titles for safer lookups
 const normalize = (s: string) => s
   .toLowerCase()
@@ -399,4 +418,34 @@ export const getMetierQuestionsForTitle = (title: string): MTPQuestions => {
   // Fallback to default if a specific set of MTP questions isn't found
   const questions = mtpQuestionsByOfferNormalized[key] ?? defaultMTPQuestions;
   return questions;
+}
+
+// New function to get MTP questions from job offer data or fallback to default
+export const getMTPQuestionsFromJobOffer = (jobOffer: {
+  mtp_questions_metier?: string[] | null;
+  mtp_questions_talent?: string[] | null;
+  mtp_questions_paradigme?: string[] | null;
+  title?: string;
+  status_offerts?: string | null;
+}): MTPQuestions => {
+  // If job offer has custom MTP questions and they are not empty, use them
+  const hasMetier = jobOffer.mtp_questions_metier && jobOffer.mtp_questions_metier.length > 0;
+  const hasTalent = jobOffer.mtp_questions_talent && jobOffer.mtp_questions_talent.length > 0;
+  const hasParadigme = jobOffer.mtp_questions_paradigme && jobOffer.mtp_questions_paradigme.length > 0;
+
+  if (hasMetier || hasTalent || hasParadigme) {
+    return {
+      metier: jobOffer.mtp_questions_metier || [],
+      talent: jobOffer.mtp_questions_talent || [],
+      paradigme: jobOffer.mtp_questions_paradigme || []
+    };
+  }
+
+  // Si l'offre est externe, utiliser les questions externes (3 par catégorie)
+  if (jobOffer.status_offerts === 'externe') {
+    return defaultMTPQuestionsExternes;
+  }
+
+  // Fallback to hardcoded questions based on title
+  return getMetierQuestionsForTitle(jobOffer.title || '');
 }

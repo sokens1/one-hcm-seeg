@@ -16,16 +16,22 @@ export default function RecruiterJobs() {
   const { data: jobs = [], isLoading, error } = useJobOffers();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [statusFilter, setStatusFilter] = useState<"all" | "interne" | "externe">("all");
 
   const handleEditJob = (jobId: string | number) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
   };
 
   const filteredJobs = jobs
-    .filter(job => job.status === 'active' || job.status === 'draft')
+    .filter(job => job.status === 'active' || job.status === 'draft' || job.status === 'inactive')
     .filter(job => 
       job.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    )
+    .filter(job => {
+      // Filtre par statut interne/externe
+      if (statusFilter === "all") return true;
+      return (job.status_offerts || 'externe') === statusFilter;
+    });
 
   return (
     <RecruiterLayout>
@@ -73,6 +79,33 @@ export default function RecruiterJobs() {
           </div>
         </div>
 
+        {/* Filtres par statut */}
+        <div className="flex justify-center gap-2 flex-wrap mb-6">
+          <Button
+            variant={statusFilter === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("all")}
+          >
+            Toutes
+          </Button>
+          <Button
+            variant={statusFilter === "interne" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("interne")}
+            className="gap-2"
+          >
+             Internes
+          </Button>
+          <Button
+            variant={statusFilter === "externe" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("externe")}
+            className="gap-2"
+          >
+             Externes
+          </Button>
+        </div>
+
         {isLoading ? (
           <div className="flex items-center gap-2 py-12 justify-center">
             <Loader2 className="w-6 h-6 animate-spin" />
@@ -84,14 +117,23 @@ export default function RecruiterJobs() {
           </div>
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-            {filteredJobs.map((job, index) => (
+            {filteredJobs.map((job, index) => {
+              const isInactive = job.status === 'inactive';
+              return (
               <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                <Card className="hover:shadow-medium transition-all cursor-pointer group h-full">
+                <Card className={`hover:shadow-medium transition-all cursor-pointer group h-full ${isInactive ? 'opacity-60 bg-gray-50 border-dashed' : ''}`}>
                   <CardContent className="p-4 sm:p-6 flex flex-col h-full">
                     <div className="flex-1 space-y-3">
-                      <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary-dark transition-colors">
-                        {job.title}
-                      </h3>
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary-dark transition-colors">
+                          {job.title}
+                        </h3>
+                        {isInactive && (
+                          <Badge variant="outline" className="bg-gray-200 text-gray-600 border-gray-300 flex-shrink-0">
+                            Inactive
+                          </Badge>
+                        )}
+                      </div>
                       
                       <div className="flex items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                         <span>{job.location}</span>
@@ -135,7 +177,8 @@ export default function RecruiterJobs() {
                   </CardContent>
                 </Card>
               </div>
-            ))}
+            );
+            })}
           </div>
         ) : (
           <Card>
@@ -148,11 +191,22 @@ export default function RecruiterJobs() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredJobs.map(job => (
-                  <TableRow key={job.id}>
+                {filteredJobs.map(job => {
+                  const isInactive = job.status === 'inactive';
+                  return (
+                  <TableRow key={job.id} className={isInactive ? 'opacity-60 bg-gray-50' : ''}>
                     <TableCell>
-                      <div className="font-medium">{job.title}</div>
-                      <div className="text-sm text-muted-foreground">{job.location} • {job.contract_type}</div>
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <div className="font-medium">{job.title}</div>
+                          <div className="text-sm text-muted-foreground">{job.location} • {job.contract_type}</div>
+                        </div>
+                        {isInactive && (
+                          <Badge variant="outline" className="bg-gray-200 text-gray-600 border-gray-300 ml-2">
+                            Inactive
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>{job.candidate_count}</TableCell>
                     <TableCell className="text-right">
@@ -166,7 +220,8 @@ export default function RecruiterJobs() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </Card>

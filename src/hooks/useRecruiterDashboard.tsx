@@ -108,12 +108,66 @@ export function useRecruiterDashboard() {
     // Filter jobs to only campaign jobs when CAMPAIGN_MODE is active
     let campaignJobs = (jobsData || []);
     if (CAMPAIGN_MODE) {
+      // Date limite : les offres créées ou modifiées dans les dernières 24 heures sont TOUJOURS visibles
+      const now = new Date();
+      const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      
+      console.log('🕐 [CAMPAIGN DASHBOARD] Détection offres récentes - Seuil:', last24Hours.toISOString());
+      
       campaignJobs = campaignJobs.filter((job: any) => {
         const title: string = job.title || "";
+        
+        // Validation des dates avant conversion
+        let isRecent = false;
+        let isRecentlyCreated = false;
+        let isRecentlyUpdated = false;
+        
+        try {
+          if (job.created_at || job.updated_at) {
+            const createdAt = job.created_at ? new Date(job.created_at) : null;
+            const updatedAt = job.updated_at ? new Date(job.updated_at) : null;
+            
+            // Vérifier que les dates sont valides
+            const isValidCreated = createdAt && !isNaN(createdAt.getTime());
+            const isValidUpdated = updatedAt && !isNaN(updatedAt.getTime());
+            
+            if (isValidCreated || isValidUpdated) {
+              console.log(`🔍 [CAMPAIGN DASHBOARD DEBUG] "${title}":`, {
+                created: isValidCreated ? createdAt.toISOString() : 'invalid',
+                updated: isValidUpdated ? updatedAt.toISOString() : 'invalid',
+                threshold: last24Hours.toISOString()
+              });
+              
+              // 1. Vérifier si l'offre est récente (créée ou modifiée dans les dernières 24h)
+              isRecentlyCreated = isValidCreated && createdAt >= last24Hours;
+              isRecentlyUpdated = isValidUpdated && updatedAt >= last24Hours;
+              isRecent = isRecentlyCreated || isRecentlyUpdated;
+            }
+          }
+        } catch (error) {
+          console.error(`⚠️ [CAMPAIGN DASHBOARD] Erreur de date pour "${title}":`, error);
+          isRecent = false;
+        }
+        
+        if (isRecent) {
+          console.log(`🆕 [CAMPAIGN DASHBOARD] "${title}" - ✅ AFFICHÉE (${isRecentlyCreated ? 'créée' : 'modifiée'} récemment)`);
+          return true;
+        }
+        
+        // 2. Sinon, vérifier si elle fait partie de la campagne
         const exact = CAMPAIGN_JOBS.includes(title);
         const pattern = CAMPAIGN_JOB_PATTERNS.some(rx => rx.test(title));
+        
+        if (exact || pattern) {
+          console.log(`📋 [CAMPAIGN DASHBOARD] "${title}" - ✅ CAMPAGNE`);
+        } else {
+          console.log(`❌ [CAMPAIGN DASHBOARD] "${title}" - MASQUÉE (ancienne, hors campagne)`);
+        }
+        
         return exact || pattern;
       });
+      
+      console.log('✅ [CAMPAIGN DASHBOARD] Offres affichées:', campaignJobs.length);
     }
 
     // Process jobs data with filtered applications
@@ -429,7 +483,12 @@ export function useCreateJobOffer() {
     job_grade?: string | null;
     salary_note?: string | null;
     start_date?: string | null;
+    status_offerts?: string | null;
     responsibilities?: string[] | null;
+    // MTP Questions
+    mtp_questions_metier?: string[] | null;
+    mtp_questions_talent?: string[] | null;
+    mtp_questions_paradigme?: string[] | null;
   };
   type JobOffersUpdate = Partial<Omit<JobOffersInsert, 'recruiter_id' | 'status'>> & {
     status?: 'active' | 'draft' | string;
@@ -458,9 +517,13 @@ export function useCreateJobOffer() {
         date_limite: jobData.date_limite,
         reporting_line: jobData.reporting_line,
         salary_note: jobData.salary_note,
+        status_offerts: jobData.status_offerts,
         start_date: jobData.start_date,
         responsibilities: jobData.responsibilities,
-        requirements: jobData.requirements
+        requirements: jobData.requirements,
+        mtp_questions_metier: jobData.mtp_questions_metier,
+        mtp_questions_talent: jobData.mtp_questions_talent,
+        mtp_questions_paradigme: jobData.mtp_questions_paradigme
       };
 
       // Remove undefined/null/empty values

@@ -22,7 +22,8 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { isPreLaunch } from "@/utils/launchGate";
-import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
+import { getMTPQuestionsFromJobOffer, MTPQuestions } from '@/data/metierQuestions';
+import { useJobOffer } from '@/hooks/useJobOffers';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
@@ -479,7 +480,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
-  const mtpQuestions = useMemo(() => getMetierQuestionsForTitle(jobTitle), [jobTitle]);
+  
+  // Récupérer l'offre complète pour obtenir les questions MTP dynamiques
+  const { data: jobOfferData } = useJobOffer(jobId);
+  const mtpQuestions = useMemo(() => {
+    if (jobOfferData) {
+      // Utiliser les questions MTP de l'offre (ou fallback vers les questions par défaut)
+      return getMTPQuestionsFromJobOffer(jobOfferData);
+    }
+    // Fallback si l'offre n'est pas encore chargée (utilise le titre)
+    return getMTPQuestionsFromJobOffer({ title: jobTitle });
+  }, [jobOfferData, jobTitle]);
 
   // Migrate guest data to user-specific key after login (one-time per job)
   useEffect(() => {
@@ -1612,55 +1623,55 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   {/* Section Référence de recommandation - uniquement pour les offres externes */}
                   {isExternalOffer && (
                     <>
-                      <div>
-                        <h4 className="font-medium mb-2">Référence de recommandation</h4>
+                  <div>
+                    <h4 className="font-medium mb-2">Référence de recommandation</h4>
                         <p className="text-sm text-muted-foreground mb-3">
                           Cette section est requise pour les candidatures externes.
                         </p>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                          <Label htmlFor="referenceFullName">Nom et prénom *</Label>
-                          <Input
-                            id="referenceFullName"
-                            value={formData.referenceFullName}
-                            onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
-                            placeholder="Ex: Jean Dupont"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="referenceCompany">Entreprise *</Label>
-                          <Input
-                            id="referenceCompany"
-                            value={formData.referenceCompany}
-                            onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
-                            placeholder="Ex: SEEG"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="referenceEmail">Email *</Label>
-                          <Input
-                            id="referenceEmail"
-                            type="email"
-                            value={formData.referenceEmail}
-                            onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
-                            placeholder="exemple@domaine.com"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="referenceContact">Contact *</Label>
-                          <Input
-                            id="referenceContact"
-                            value={formData.referenceContact}
-                            onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
-                            placeholder="+241 01 23 45 67"
-                            required
-                          />
-                        </div>
-                      </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="referenceFullName">Nom et prénom *</Label>
+                      <Input
+                        id="referenceFullName"
+                        value={formData.referenceFullName}
+                        onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
+                        placeholder="Ex: Jean Dupont"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceCompany">Entreprise *</Label>
+                      <Input
+                        id="referenceCompany"
+                        value={formData.referenceCompany}
+                        onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
+                        placeholder="Ex: SEEG"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceEmail">Email *</Label>
+                      <Input
+                        id="referenceEmail"
+                        type="email"
+                        value={formData.referenceEmail}
+                        onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
+                        placeholder="exemple@domaine.com"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceContact">Contact *</Label>
+                      <Input
+                        id="referenceContact"
+                        value={formData.referenceContact}
+                        onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
+                        placeholder="+241 01 23 45 67"
+                        required
+                      />
+                    </div>
+                  </div>
                     </>
                   )}
                 </div>
@@ -1914,30 +1925,30 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
                     {/* Référence de recommandation - uniquement pour les offres externes */}
                     {isExternalOffer && (
-                      <div className="bg-muted rounded-lg p-4 mt-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <h5 className="font-medium">Référence de recommandation</h5>
-                          <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                    <div className="bg-muted rounded-lg p-4 mt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Référence de recommandation</h5>
+                        <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Nom et prénom:</span>
+                          <p>{formData.referenceFullName || "Non renseigné"}</p>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">Nom et prénom:</span>
-                            <p>{formData.referenceFullName || "Non renseigné"}</p>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Entreprise:</span>
-                            <p>{formData.referenceCompany || "Non renseigné"}</p>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Email:</span>
-                            <p>{formData.referenceEmail || "Non renseigné"}</p>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Contact:</span>
-                            <p>{formData.referenceContact || "Non renseigné"}</p>
-                          </div>
+                        <div>
+                          <span className="text-muted-foreground">Entreprise:</span>
+                          <p>{formData.referenceCompany || "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Email:</span>
+                          <p>{formData.referenceEmail || "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Contact:</span>
+                          <p>{formData.referenceContact || "Non renseigné"}</p>
                         </div>
                       </div>
+                    </div>
                     )}
 
                     <div className="bg-muted rounded-lg p-4">
