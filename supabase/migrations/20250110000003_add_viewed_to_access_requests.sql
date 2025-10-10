@@ -29,7 +29,7 @@ BEGIN
   -- Vérifier que l'utilisateur connecté est admin/recruteur/observateur
   IF NOT EXISTS (
     SELECT 1 FROM public.users 
-    WHERE id = auth.uid() 
+    WHERE id = (auth.uid())::text 
     AND role IN ('admin', 'recruteur', 'observateur')
   ) THEN
     RAISE EXCEPTION 'Non autorisé';
@@ -53,7 +53,7 @@ BEGIN
   -- Vérifier que l'utilisateur connecté est admin/recruteur/observateur
   IF NOT EXISTS (
     SELECT 1 FROM public.users 
-    WHERE id = auth.uid() 
+    WHERE id = (auth.uid())::text 
     AND role IN ('admin', 'recruteur', 'observateur')
   ) THEN
     RAISE EXCEPTION 'Non autorisé';
