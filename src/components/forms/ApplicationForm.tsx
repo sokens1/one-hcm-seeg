@@ -61,6 +61,7 @@ interface FormData {
   referenceEmail: string;
   referenceContact: string;
   referenceCompany: string;
+  hasBeenManager: boolean | null; // Pour les candidatures internes uniquement
   // Partie Métier
   metier1: string;
   metier2: string;
@@ -97,6 +98,8 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   
   // Déterminer si l'offre est externe (références de recommandation uniquement pour les offres externes)
   const isExternalOffer = offerStatus === 'externe';
+  // Déterminer si l'offre est interne (question sur l'expérience de manager uniquement pour les offres internes)
+  const isInternalOffer = offerStatus === 'interne';
   
   // Hook pour gérer les brouillons (seulement en mode création)
   const {
@@ -188,6 +191,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     referenceEmail: "",
     referenceContact: "",
     referenceCompany: "",
+    hasBeenManager: null,
     // Partie Métier
     metier1: "",
     metier2: "",
@@ -651,6 +655,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         formData.referenceCompany.trim() !== '';
     }
     
+    // Le champ hasBeenManager est requis uniquement pour les offres internes
+    if (isInternalOffer) {
+      return basicDocsValid && formData.hasBeenManager !== null;
+    }
+    
     return basicDocsValid;
   };
 
@@ -717,6 +726,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             if (!formData.referenceContact.trim()) missing.push("Contact de la référence");
             if (!formData.referenceCompany.trim()) missing.push("Entreprise de la référence");
           }
+          // Vérifier la question manager uniquement pour les offres internes
+          if (isInternalOffer && formData.hasBeenManager === null) {
+            missing.push("Expérience en tant que chef/manager");
+          }
           return missing.length > 0 ? `Documents requis: ${missing.join(', ')}` : '';
         }
         return '';
@@ -761,6 +774,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             reference_email: formData.referenceEmail,
             reference_contact: formData.referenceContact,
             reference_company: formData.referenceCompany,
+            has_been_manager: formData.hasBeenManager,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
               talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -800,6 +814,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           reference_email: formData.referenceEmail,
           reference_contact: formData.referenceContact,
           reference_company: formData.referenceCompany,
+          has_been_manager: formData.hasBeenManager,
           mtp_answers: {
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
             talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -1555,6 +1570,45 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     </div>
                   </div>
 
+                  {/* Section Expérience de manager - uniquement pour les offres internes */}
+                  {isInternalOffer && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-medium mb-3">Expérience professionnelle</h4>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Cette information est requise pour les candidatures internes.
+                      </p>
+                      <div className="flex items-start space-x-3">
+                        <Checkbox
+                          id="hasBeenManager"
+                          checked={formData.hasBeenManager === true}
+                          onCheckedChange={(checked) => {
+                            setFormData({ 
+                              ...formData, 
+                              hasBeenManager: checked === true ? true : checked === false ? false : null
+                            });
+                          }}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <Label 
+                            htmlFor="hasBeenManager" 
+                            className="text-sm font-medium leading-relaxed cursor-pointer"
+                          >
+                            Avez-vous déjà occupé un poste de chef ou de manager dans une structure quelconque ? *
+                          </Label>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Veuillez cocher si vous avez déjà eu des responsabilités de management ou de supervision d'équipe.
+                          </p>
+                        </div>
+                      </div>
+                      {formData.hasBeenManager === null && (
+                        <p className="text-xs text-orange-600 mt-2">
+                          ⚠️ Veuillez répondre à cette question pour continuer
+                        </p>
+                      )}
+                    </div>
+                  )}
+
                   {/* Section Référence de recommandation - uniquement pour les offres externes */}
                   {isExternalOffer && (
                     <>
@@ -1839,6 +1893,24 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       </div>
                       {/* Sections cachées non affichées: lettres de recommandation */}
                     </div>
+
+                    {/* Expérience de manager - uniquement pour les offres internes */}
+                    {isInternalOffer && (
+                      <div className="bg-muted rounded-lg p-4 mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-medium">Expérience professionnelle</h5>
+                          <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                        </div>
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Avez-vous déjà été chef/manager ?</span>
+                          <p className="font-medium mt-1">
+                            {formData.hasBeenManager === true && "✅ Oui"}
+                            {formData.hasBeenManager === false && "❌ Non"}
+                            {formData.hasBeenManager === null && "Non renseigné"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Référence de recommandation - uniquement pour les offres externes */}
                     {isExternalOffer && (
