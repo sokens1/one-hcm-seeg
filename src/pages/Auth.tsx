@@ -95,9 +95,9 @@ export default function Auth() {
   // Validation de l'email en temps réel pour les candidats internes
   useEffect(() => {
     if (signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail && signUpData.email) {
-      const emailPattern = /@seeg\.com$/i;
+      const emailPattern = /@seeg-gabon\.com$/i;
       if (!emailPattern.test(signUpData.email)) {
-        setEmailError("L'email doit être un email professionnel SEEG (@seeg.com)");
+        setEmailError("L'email doit être un email professionnel SEEG (@seeg-gabon.com)");
       } else {
         setEmailError("");
       }
@@ -755,7 +755,7 @@ export default function Auth() {
                           type="email"
                           placeholder={
                             signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail
-                              ? "prenom.nom@seeg.com"
+                              ? "prenom.nom@seeg-gabon.com"
                               : "votre.email@exemple.com"
                           }
                           value={signUpData.email}
