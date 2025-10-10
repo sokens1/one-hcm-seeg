@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useApplication, useRecruiterApplications, Application } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
 import { getMetierQuestionsForTitle } from "@/data/metierQuestions";
+import { cleanCorruptedText } from "@/utils/textCleaner";
 import { supabase } from "@/integrations/supabase/client";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
@@ -122,14 +123,14 @@ const ReferencesTab = ({ application }: { application: Application }) => {
       <CardContent className="px-4 sm:px-6 pt-2 sm:pt-3 pb-4 sm:pb-6">
         {(application.reference_full_name || application.reference_email || application.reference_contact || application.reference_company) ? (
           <div className="text-xs sm:text-sm space-y-1">
-            {application.reference_full_name && (<div><span className="font-medium">Nom et prénom:</span> {application.reference_full_name}</div>)}
-            {application.reference_company && (<div><span className="font-medium">Entreprise:</span> {application.reference_company}</div>)}
-            {application.reference_email && (<div><span className="font-medium">Email:</span> {application.reference_email}</div>)}
-            {application.reference_contact && (<div><span className="font-medium">Contact:</span> {application.reference_contact}</div>)}
+            {application.reference_full_name && (<div><span className="font-medium">Nom et prénom:</span> {cleanCorruptedText(application.reference_full_name)}</div>)}
+            {application.reference_company && (<div><span className="font-medium">Entreprise:</span> {cleanCorruptedText(application.reference_company)}</div>)}
+            {application.reference_email && (<div><span className="font-medium">Email:</span> {cleanCorruptedText(application.reference_email)}</div>)}
+            {application.reference_contact && (<div><span className="font-medium">Contact:</span> {cleanCorruptedText(application.reference_contact)}</div>)}
           </div>
         ) : application.reference_contacts || application.ref_contacts ? (
           <div className="whitespace-pre-wrap text-xs sm:text-sm">
-            {application.reference_contacts || application.ref_contacts}
+            {cleanCorruptedText(application.reference_contacts || application.ref_contacts)}
           </div>
         ) : (
           <p className="text-xs sm:text-sm text-muted-foreground">Aucune référence fournie.</p>
@@ -165,7 +166,7 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
                   </span>
                 </p>
                 <div className="text-xs sm:text-sm text-foreground whitespace-pre-wrap break-words">
-                  {answer}
+                  {cleanCorruptedText(answer)}
                 </div>
               </div>
             ))}

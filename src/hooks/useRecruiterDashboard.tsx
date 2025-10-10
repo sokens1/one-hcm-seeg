@@ -105,70 +105,9 @@ export function useRecruiterDashboard() {
       throw jobsError;
     }
 
-    // Filter jobs to only campaign jobs when CAMPAIGN_MODE is active
+    // MODE CAMPAGNE DÉSACTIVÉ - Afficher toutes les offres
     let campaignJobs = (jobsData || []);
-    if (CAMPAIGN_MODE) {
-      // Date limite : les offres créées ou modifiées dans les dernières 24 heures sont TOUJOURS visibles
-      const now = new Date();
-      const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      
-      console.log('🕐 [CAMPAIGN DASHBOARD] Détection offres récentes - Seuil:', last24Hours.toISOString());
-      
-      campaignJobs = campaignJobs.filter((job: any) => {
-        const title: string = job.title || "";
-        
-        // Validation des dates avant conversion
-        let isRecent = false;
-        let isRecentlyCreated = false;
-        let isRecentlyUpdated = false;
-        
-        try {
-          if (job.created_at || job.updated_at) {
-            const createdAt = job.created_at ? new Date(job.created_at) : null;
-            const updatedAt = job.updated_at ? new Date(job.updated_at) : null;
-            
-            // Vérifier que les dates sont valides
-            const isValidCreated = createdAt && !isNaN(createdAt.getTime());
-            const isValidUpdated = updatedAt && !isNaN(updatedAt.getTime());
-            
-            if (isValidCreated || isValidUpdated) {
-              console.log(`🔍 [CAMPAIGN DASHBOARD DEBUG] "${title}":`, {
-                created: isValidCreated ? createdAt.toISOString() : 'invalid',
-                updated: isValidUpdated ? updatedAt.toISOString() : 'invalid',
-                threshold: last24Hours.toISOString()
-              });
-              
-              // 1. Vérifier si l'offre est récente (créée ou modifiée dans les dernières 24h)
-              isRecentlyCreated = isValidCreated && createdAt >= last24Hours;
-              isRecentlyUpdated = isValidUpdated && updatedAt >= last24Hours;
-              isRecent = isRecentlyCreated || isRecentlyUpdated;
-            }
-          }
-        } catch (error) {
-          console.error(`⚠️ [CAMPAIGN DASHBOARD] Erreur de date pour "${title}":`, error);
-          isRecent = false;
-        }
-        
-        if (isRecent) {
-          console.log(`🆕 [CAMPAIGN DASHBOARD] "${title}" - ✅ AFFICHÉE (${isRecentlyCreated ? 'créée' : 'modifiée'} récemment)`);
-          return true;
-        }
-        
-        // 2. Sinon, vérifier si elle fait partie de la campagne
-        const exact = CAMPAIGN_JOBS.includes(title);
-        const pattern = CAMPAIGN_JOB_PATTERNS.some(rx => rx.test(title));
-        
-        if (exact || pattern) {
-          console.log(`📋 [CAMPAIGN DASHBOARD] "${title}" - ✅ CAMPAGNE`);
-        } else {
-          console.log(`❌ [CAMPAIGN DASHBOARD] "${title}" - MASQUÉE (ancienne, hors campagne)`);
-        }
-        
-        return exact || pattern;
-      });
-      
-      console.log('✅ [CAMPAIGN DASHBOARD] Offres affichées:', campaignJobs.length);
-    }
+    console.log(`✅ [NO CAMPAIGN DASHBOARD] Toutes les offres affichées: ${campaignJobs.length} offres`);
 
     // Process jobs data with filtered applications
     const processedJobs: RecruiterJobOffer[] = (campaignJobs || []).map(job => {

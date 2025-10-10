@@ -27,7 +27,7 @@ import { useCreateJobOffer } from "@/hooks/useRecruiterDashboard";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { MTPQuestionsEditor } from "@/components/forms/MTPQuestionsEditor";
-import { getMetierQuestionsForTitle, defaultMTPQuestionsExternes } from "@/data/metierQuestions";
+import { getMetierQuestionsForTitle, defaultMTPQuestionsExternes, defaultMTPQuestionsInternes } from "@/data/metierQuestions";
 
 // Utiliser la même interface que pour la création pour l'harmonie
 interface JobFormData {
@@ -145,10 +145,10 @@ export default function EditJob() {
         let defaultQuestions;
         if (jobOffer.status_offerts === 'externe') {
           defaultQuestions = defaultMTPQuestionsExternes;
-          console.log('[EditJob] Offre externe : 3 questions par catégorie');
+          console.log('[EditJob] Offre externe : 7 questions Métier, 3 Talent, 3 Paradigme');
         } else {
-          defaultQuestions = getMetierQuestionsForTitle(jobOffer.title || '');
-          console.log('[EditJob] Offre interne : questions basées sur le titre');
+          defaultQuestions = defaultMTPQuestionsInternes;
+          console.log('[EditJob] Offre interne : 3 questions Métier, 3 Talent, 3 Paradigme');
         }
         
         setMtpQuestionsMetier(!hasMetierInDb ? defaultQuestions.metier : jobOffer.mtp_questions_metier);

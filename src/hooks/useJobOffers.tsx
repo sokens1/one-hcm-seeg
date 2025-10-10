@@ -97,9 +97,9 @@ const fetchJobOffers = async () => {
       offers = data;
     } catch (err: any) {
       queryError = err;
-      // If the error is due to unknown column status_offers (e.g., migration not applied yet), retry without it
+      // If the error is due to unknown column (e.g., migration not applied yet), retry
       const isUnknownColumn = typeof err?.message === 'string' && (
-        err.message.includes('column') && err.message.includes('status_offers') ||
+        err.message.includes('column') && err.message.includes('status_offerts') ||
         err.message.includes('42703')
       );
       if (isUnknownColumn) {
@@ -196,24 +196,20 @@ const fetchJobOffers = async () => {
       
       // À partir d'ici, on sait que c'est un CANDIDAT
       
-      // Si l'offre est externe ou n'a pas de statut défini, elle est visible par tous les candidats
-      if (!offer.status_offerts || offer.status_offerts === 'externe') {
-        return true;
-      }
+      // Définir le statut de l'offre (externe par défaut si NULL)
+      const offerStatus = offer.status_offerts || 'externe';
       
-      // Si l'offre est interne, vérifier le statut du candidat
-      if (offer.status_offerts === 'interne') {
-        // Si le candidat est interne, montrer l'offre
-        if (candidateStatus === 'interne') {
-          console.log(`🔒 [FILTER] Offre interne "${offer.title}" - Visible (candidat interne)`);
-          return true;
-        }
-        // Sinon, masquer l'offre (candidat externe, sans statut, ou autre)
-        console.log(`🚫 [FILTER] Offre interne "${offer.title}" - Masquée (candidat ${candidateStatus || 'sans statut'})`);
+      // Définir le statut du candidat (externe par défaut si NULL)
+      const userStatus = candidateStatus || 'externe';
+      
+      // RÈGLE SIMPLE : Le candidat ne voit QUE les offres de son statut
+      if (offerStatus === userStatus) {
+        console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat ${userStatus})`);
+        return true;
+      } else {
+        console.log(`🚫 [FILTER] "${offer.title}" (${offerStatus}) - Masquée (candidat ${userStatus} ne voit que ${userStatus})`);
         return false;
       }
-      
-      return true;
     });
 
     if (isCandidate) {
@@ -222,79 +218,10 @@ const fetchJobOffers = async () => {
       console.log(`📊 [FILTER NON-CANDIDAT] Toutes les offres visibles: ${offersFilteredByStatus.length} offres`);
     }
 
-    // 5. Filter offers based on campaign mode
-    if (CAMPAIGN_MODE) {
-      console.log('🔍 [CAMPAIGN] All offers titles:', offersFilteredByStatus.map(o => o.title));
-      console.log('🎯 [CAMPAIGN] Campaign jobs:', CAMPAIGN_JOBS);
-      
-      // Date limite : les offres créées ou modifiées dans les dernières 24 heures sont TOUJOURS visibles
-      const now = new Date();
-      const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      
-      console.log('🕐 [CAMPAIGN] Détection offres récentes - Seuil:', last24Hours.toISOString());
-      
-      const filteredOffers = offersFilteredByStatus.filter(offer => {
-        // Validation des dates avant conversion
-        let isRecent = false;
-        let isRecentlyCreated = false;
-        let isRecentlyUpdated = false;
-        
-        try {
-          if (offer.created_at || offer.updated_at) {
-            const createdAt = offer.created_at ? new Date(offer.created_at) : null;
-            const updatedAt = offer.updated_at ? new Date(offer.updated_at) : null;
-            
-            // Vérifier que les dates sont valides
-            const isValidCreated = createdAt && !isNaN(createdAt.getTime());
-            const isValidUpdated = updatedAt && !isNaN(updatedAt.getTime());
-            
-            if (isValidCreated || isValidUpdated) {
-              console.log(`🔍 [CAMPAIGN DEBUG] "${offer.title}":`, {
-                created: isValidCreated ? createdAt.toISOString() : 'invalid',
-                updated: isValidUpdated ? updatedAt.toISOString() : 'invalid',
-                threshold: last24Hours.toISOString()
-              });
-              
-              // 1. Vérifier si l'offre est récente (créée ou modifiée dans les dernières 24h)
-              isRecentlyCreated = isValidCreated && createdAt >= last24Hours;
-              isRecentlyUpdated = isValidUpdated && updatedAt >= last24Hours;
-              isRecent = isRecentlyCreated || isRecentlyUpdated;
-            }
-          }
-        } catch (error) {
-          console.error(`⚠️ [CAMPAIGN] Erreur de date pour "${offer.title}":`, error);
-          isRecent = false;
-        }
-        
-        if (isRecent) {
-          console.log(`🆕 [CAMPAIGN] "${offer.title}" - ✅ AFFICHÉE (${isRecentlyCreated ? 'créée' : 'modifiée'} récemment)`);
-          return true;
-        }
-        
-        // 2. Sinon, vérifier si elle fait partie de la campagne
-        let isIncluded = CAMPAIGN_JOBS.includes(offer.title);
-        
-        // Si pas de correspondance exacte, essayer avec les patterns
-        if (!isIncluded) {
-          isIncluded = CAMPAIGN_JOB_PATTERNS.some(pattern => pattern.test(offer.title));
-        }
-        
-        console.log(`📋 [CAMPAIGN] "${offer.title}" - ${isIncluded ? '✅ CAMPAGNE' : '❌ MASQUÉE (ancienne)'}`);
-        
-        return isIncluded;
-      });
-      
-      console.log('✅ [CAMPAIGN] Offres affichées:', filteredOffers.length);
-      console.log('   - Offres de campagne:', filteredOffers.filter(o => CAMPAIGN_JOBS.includes(o.title) || CAMPAIGN_JOB_PATTERNS.some(p => p.test(o.title))).length);
-      console.log('   - Offres récentes (24h):', filteredOffers.filter(o => {
-        const createdAt = new Date(o.created_at);
-        const updatedAt = new Date(o.updated_at);
-        return createdAt >= last24Hours || updatedAt >= last24Hours;
-      }).length);
-      
-      return filteredOffers;
-    }
-
+    // 5. MODE CAMPAGNE DÉSACTIVÉ - Retourner toutes les offres filtrées
+    // CAMPAIGN_MODE = false, donc ce bloc ne s'exécute jamais
+    console.log(`✅ [NO CAMPAIGN] Toutes les offres affichées: ${offersFilteredByStatus.length} offres`);
+    
     return offersFilteredByStatus;
   } catch (error) {
     console.error('[useJobOffers] Unexpected error:', error);

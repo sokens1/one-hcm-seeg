@@ -13,7 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCreateJobOffer } from "@/hooks/useRecruiterDashboard";
 import { useToast } from "@/components/ui/use-toast";
 import { MTPQuestionsEditor } from "@/components/forms/MTPQuestionsEditor";
-import { getMetierQuestionsForTitle, defaultMTPQuestionsExternes } from "@/data/metierQuestions";
+import { getMetierQuestionsForTitle, defaultMTPQuestionsExternes, defaultMTPQuestionsInternes } from "@/data/metierQuestions";
 import { useEffect } from "react";
 
 interface JobFormData {
@@ -64,11 +64,15 @@ export default function CreateJob() {
       let defaultQuestions;
       
       if (formData.statusOfferts === 'externe') {
-        // Offre externe : 3 questions par catégorie
+        // Offre externe : 7 questions Métier, 3 Talent, 3 Paradigme
         defaultQuestions = defaultMTPQuestionsExternes;
-        console.log('[CreateJob] Chargement questions externes (3 par catégorie)');
+        console.log('[CreateJob] Chargement questions externes (7 Métier, 3 Talent, 3 Paradigme)');
+      } else if (formData.statusOfferts === 'interne') {
+        // Offre interne : 3 questions Métier, 3 Talent, 3 Paradigme
+        defaultQuestions = defaultMTPQuestionsInternes;
+        console.log('[CreateJob] Chargement questions internes (3 Métier, 3 Talent, 3 Paradigme)');
       } else if (formData.title) {
-        // Offre interne : questions basées sur le titre
+        // Fallback : questions basées sur le titre
         defaultQuestions = getMetierQuestionsForTitle(formData.title);
         console.log('[CreateJob] Chargement questions pour:', formData.title);
       } else {

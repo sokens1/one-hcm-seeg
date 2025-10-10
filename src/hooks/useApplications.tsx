@@ -231,14 +231,14 @@ export function useApplications() {
             .maybeSingle(),
           supabase
             .from('job_offers')
-            .select('status_offers, status_offerts')
+            .select('status_offerts')
             .eq('id', applicationData.job_offer_id)
             .maybeSingle(),
         ]);
         const u = userRow as { candidate_status?: string | null } | null;
-        const o = offerRow as { status_offers?: string | null; status_offerts?: string | null } | null;
+        const o = offerRow as { status_offerts?: string | null } | null;
         candidateAudience = u?.candidate_status ?? null;
-        offerAudience = o?.status_offers ?? o?.status_offerts ?? null;
+        offerAudience = o?.status_offerts ?? null;
       } catch {
         // ignore, handled below
       }

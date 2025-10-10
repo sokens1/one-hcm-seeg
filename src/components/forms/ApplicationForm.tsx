@@ -781,10 +781,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const { error: updError } = await supabase
           .from('applications')
           .update({
-            reference_full_name: formData.referenceFullName,
-            reference_email: formData.referenceEmail,
-            reference_contact: formData.referenceContact,
-            reference_company: formData.referenceCompany,
+            reference_full_name: formData.referenceFullName || null,
+            reference_email: formData.referenceEmail || null,
+            reference_contact: formData.referenceContact || null,
+            reference_company: formData.referenceCompany || null,
             has_been_manager: formData.hasBeenManager,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
@@ -821,10 +821,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const application = await submitApplication({
           job_offer_id: jobId as string,
           ref_contacts: undefined, // legacy removed
-          reference_full_name: formData.referenceFullName,
-          reference_email: formData.referenceEmail,
-          reference_contact: formData.referenceContact,
-          reference_company: formData.referenceCompany,
+          reference_full_name: formData.referenceFullName || null,
+          reference_email: formData.referenceEmail || null,
+          reference_contact: formData.referenceContact || null,
+          reference_company: formData.referenceCompany || null,
           has_been_manager: formData.hasBeenManager,
           mtp_answers: {
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),

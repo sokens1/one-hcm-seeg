@@ -15,7 +15,7 @@ export const CAMPAIGN_JOB_PATTERNS = [
 ];
 
 // Activer/désactiver le mode campagne (masquer les autres postes)
-// Mode désactivé pour afficher toutes les offres selon status_offerts
+// Mode COMPLÈTEMENT désactivé - toutes les offres sont affichées
 export const CAMPAIGN_MODE = false;
 
 // Message d'information sur la campagne
