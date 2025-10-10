@@ -171,11 +171,11 @@ CREATE POLICY "Users can update own profile"
 CREATE OR REPLACE FUNCTION public.validate_candidate_email()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Si candidat interne sans exception et email ne finit pas par @seeg.com
+  -- Si candidat interne sans exception et email ne finit pas par @seeg-gabon.com
   IF NEW.candidate_status = 'interne' 
      AND (NEW.no_seeg_email IS NULL OR NEW.no_seeg_email = FALSE)
-     AND NEW.email NOT LIKE '%@seeg.com' THEN
-    RAISE EXCEPTION 'Les candidats internes doivent avoir un email @seeg.com ou cocher "Je n''ai pas d''email professionnel SEEG"';
+     AND NEW.email NOT LIKE '%@seeg-gabon.com' THEN
+    RAISE EXCEPTION 'Les candidats internes doivent avoir un email @seeg-gabon.com ou cocher "Je n''ai pas d''email professionnel SEEG"';
   END IF;
   
   RETURN NEW;
