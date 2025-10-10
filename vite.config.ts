@@ -724,6 +724,112 @@ export default defineConfig(({ mode }) => ({
         });
       },
     },
+    // Dev-only API: /api/send-access-rejected-email
+    mode === 'development' && {
+      name: 'dev-api-send-access-rejected-email',
+      configureServer(server: ViteDevServer) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.method === 'POST' && req.url === '/api/send-access-rejected-email') {
+            try {
+              const chunks: Buffer[] = [];
+              await new Promise<void>((resolve, reject) => {
+                req.on('data', (c) => chunks.push(Buffer.from(c)));
+                req.on('end', () => resolve());
+                req.on('error', reject);
+              });
+              const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf-8')) : {};
+              //@ts-expect-error fix it later
+              const nodemailer = (await import('nodemailer')).default;
+
+              const smtpHost = 'smtp.gmail.com';
+              const smtpPort = 587;
+              const smtpSecure = false;
+              const smtpUser = 'support@seeg-talentsource.com';
+              const smtpPass = 'njev urja zsbc spfn';
+              const from = 'One HCM - SEEG Talent Source <support@seeg-talentsource.com>';
+
+              const { userEmail, firstName, lastName, sexe, reason } = body || {};
+              
+              if (!userEmail || !firstName || !lastName || !reason) {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: 'Données manquantes' }));
+                return;
+              }
+
+              const serif = ", Georgia, serif";
+              const title = sexe === 'F' ? 'Madame' : 'Monsieur';
+
+              const html = `
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                  <tr>
+                    <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;">
+                      <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                        <tr>
+                          <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;font-family: ui-serif${serif}; color:#000; font-size:16px; line-height:1.7;">
+                            <h2 style="color:#dc2626; margin:20px 0 10px 0; font-size:20px;">Demande d'Accès Refusée</h2>
+                            <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${firstName} ${lastName}</strong>,</p>
+                            <p style="margin:0 0 10px; font-size:16px;">Nous vous informons que votre demande d'accès à la plateforme <strong>OneHCM - SEEG Talent Source</strong> n'a pas pu être validée.</p>
+                            <div style="background-color:#fee2e2; padding:20px; border-left:4px solid #dc2626; margin:20px 0;">
+                              <h3 style="color:#991b1b; margin:0 0 15px 0; font-size:16px;">Motif du refus</h3>
+                              <p style="margin:0; color:#991b1b;">${reason}</p>
+                            </div>
+                            <p style="margin:0 0 10px; font-size:16px;">Si vous pensez qu'il s'agit d'une erreur, contactez notre support.</p>
+                            <div style="background-color:#dbeafe; padding:15px; border-radius:5px; margin:20px 0;">
+                              <p style="margin:0; color:#1e40af;">📞 <strong>Contact Support :</strong> support@seeg-talentsource.com</p>
+                            </div>
+                            <br/>
+                            <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
+                            <p style="margin:0 0 6px; font-size:16px;"><strong>L'équipe OneHCM - SEEG Talent Source</strong></p>
+                            <p style="margin:0 0 6px; font-size:16px;"><strong><a href="https://www.seeg-talentsource.com" style="color: #0066cc; text-decoration: underline;">https://www.seeg-talentsource.com</a></strong></p>
+                            <br/>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                              <tr>
+                                <td align="left" style="padding:0 !important;margin:0 !important;">
+                                  <img src="https://www.seeg-talentsource.com/LOGO%20HCM4.png" alt="OneHCM Logo" style="display:block;height:44px;border:0;outline:none;text-decoration:none;" />
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              `;
+
+              const transporter = nodemailer.createTransport({
+                host: smtpHost,
+                port: smtpPort,
+                secure: smtpSecure,
+                auth: { user: smtpUser, pass: smtpPass },
+              });
+
+              const info = await transporter.sendMail({
+                from,
+                to: userEmail,
+                subject: 'Demande d\'Accès Refusée - OneHCM',
+                html,
+              });
+              
+              console.log('✅ [ACCESS REJECTED] Email envoyé via SMTP:', info?.messageId);
+
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ ok: true, messageId: info?.messageId }));
+              return;
+            } catch (e: any) {
+              console.error('❌ [ACCESS REJECTED] Erreur:', e);
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: e?.message || 'Internal error' }));
+              return;
+            }
+          }
+          next();
+        });
+      },
+    },
     // Dev-only middleware to avoid 404 on /favicon.ico by serving the SVG
     mode === 'development' && {
       name: 'serve-favicon-ico',

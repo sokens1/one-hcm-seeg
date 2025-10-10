@@ -92,6 +92,7 @@ CREATE TABLE IF NOT EXISTS public.access_requests (
   matricule TEXT,
   request_type TEXT DEFAULT 'internal_no_seeg_email',
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+  rejection_reason TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   reviewed_at TIMESTAMPTZ,
   reviewed_by UUID REFERENCES public.users(id)
@@ -249,7 +250,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 GRANT EXECUTE ON FUNCTION public.approve_access_request(UUID) TO authenticated;
 
 -- 5. Fonction pour rejeter une demande d'accès
-CREATE OR REPLACE FUNCTION public.reject_access_request(request_id UUID)
+CREATE OR REPLACE FUNCTION public.reject_access_request(request_id UUID, p_rejection_reason TEXT DEFAULT NULL)
 RETURNS BOOLEAN AS $$
 DECLARE
   v_user_id UUID;
@@ -277,10 +278,11 @@ BEGIN
   SET statut = 'bloqué', updated_at = NOW()
   WHERE id = v_user_id;
 
-  -- Mettre à jour le statut de la demande
+  -- Mettre à jour le statut de la demande avec le motif
   UPDATE public.access_requests
   SET 
     status = 'rejected',
+    rejection_reason = p_rejection_reason,
     reviewed_at = NOW(),
     reviewed_by = auth.uid()
   WHERE id = request_id;
@@ -289,7 +291,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-GRANT EXECUTE ON FUNCTION public.reject_access_request(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.reject_access_request(UUID, TEXT) TO authenticated;
 
 -- 6. Vue pour lister les demandes d'accès en attente
 CREATE OR REPLACE VIEW public.pending_access_requests AS

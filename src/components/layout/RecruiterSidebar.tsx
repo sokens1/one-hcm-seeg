@@ -1,4 +1,4 @@
-import { LayoutDashboard, Briefcase, Users, Settings, Brain } from "lucide-react";
+import { LayoutDashboard, Briefcase, Users, Settings, Brain, UserCheck } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -13,6 +13,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 
 const menuItems = [
   {
@@ -24,6 +26,12 @@ const menuItems = [
     title: "Liste des candidatures",
     url: "/recruiter/candidates",
     icon: Users,
+  },
+  {
+    title: "Demandes d'accès",
+    url: "/recruiter/access-requests",
+    icon: UserCheck,
+    badge: true, // Afficher un badge pour les nouvelles demandes
   },
   //  {
   //   title: "Traitements IA",
@@ -47,6 +55,37 @@ export function RecruiterSidebar() {
   const location = useLocation();
   const { isObserver } = useAuth();
   const currentPath = location.pathname;
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+
+  // Récupérer le nombre de demandes en attente
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      const { count } = await supabase
+        .from('access_requests')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+      
+      setPendingRequestsCount(count || 0);
+    };
+
+    fetchPendingRequests();
+
+    // S'abonner aux changements en temps réel
+    const channel = supabase
+      .channel('access_requests_changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'access_requests',
+      }, () => {
+        fetchPendingRequests();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const isActive = (path: string) => {
     if (path === "/recruiter") {
@@ -78,12 +117,17 @@ export function RecruiterSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url} 
-                      className={`${getNavCls(item.url)} text-xs sm:text-sm lg:text-base py-2 sm:py-3`}
+                      className={`${getNavCls(item.url)} text-xs sm:text-sm lg:text-base py-2 sm:py-3 relative`}
                       title={state === "collapsed" ? item.title : undefined}
                     >
                       <item.icon className="h-4 w-4 flex-shrink-0" />
                       {state !== "collapsed" && (
                         <span className="ml-2 truncate">{item.title}</span>
+                      )}
+                      {item.badge && pendingRequestsCount > 0 && (
+                        <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5 min-w-[20px] text-center">
+                          {pendingRequestsCount}
+                        </span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>

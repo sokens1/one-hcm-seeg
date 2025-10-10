@@ -60,6 +60,7 @@ const RecruiterJobs = lazy(() => import("./pages/recruiter/RecruiterJobs"));
 const RecruiterProfile = lazy(() => import("./pages/recruiter/RecruiterProfile"));
 const CandidateAnalysis = lazy(() => import("./pages/recruiter/CandidateAnalysis"));
 const Traitements_IA = lazy(() => import("./pages/recruiter/Traitements_IA"));
+const AccessRequests = lazy(() => import("./pages/recruiter/AccessRequests"));
 
 // Observer pages
 const ObserverDashboard = lazy(() => import("./pages/observer/ObserverDashboard"));
@@ -114,6 +115,7 @@ const router = createBrowserRouter(
       <Route path="recruiter/jobs/:id/edit" element={<ProtectedRecruiterRoute><EditJob /></ProtectedRecruiterRoute>} />
       <Route path="recruiter/jobs/:id/pipeline" element={<ProtectedRecruiterReadRoute><JobPipeline /></ProtectedRecruiterReadRoute>} />
       <Route path="recruiter/candidates" element={<ProtectedRecruiterReadRoute><CandidatesPage /></ProtectedRecruiterReadRoute>} />
+      <Route path="recruiter/access-requests" element={<ProtectedRecruiterReadRoute><AccessRequests /></ProtectedRecruiterReadRoute>} />
       <Route path="recruiter/jobs" element={<ProtectedRecruiterReadRoute><RecruiterJobs /></ProtectedRecruiterReadRoute>} />
       <Route path="recruiter/candidates/:id/analysis" element={<ProtectedRecruiterReadRoute><CandidateAnalysis /></ProtectedRecruiterReadRoute>} />
       <Route path="recruiter/traitements-ia" element={<ProtectedRecruiterReadRoute><Traitements_IA /></ProtectedRecruiterReadRoute>} />

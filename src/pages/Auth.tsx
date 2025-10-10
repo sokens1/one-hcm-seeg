@@ -258,6 +258,31 @@ export default function Auth() {
         return;
       }
 
+      // Vérifier le statut AVANT d'afficher le toast de succès
+      const { data: userRow, error: userRowError } = await supabase
+        .from('users')
+        .select('role, statut')
+        .eq('id', data.user.id)
+        .single();
+
+      // Vérifier le statut de l'utilisateur
+      if (userRow?.statut && userRow.statut !== 'actif') {
+        await supabase.auth.signOut();
+        
+        const statutMessages: { [key: string]: string } = {
+          'en_attente': 'Votre compte est en attente de validation par notre équipe.',
+          'inactif': 'Votre compte a été désactivé. Contactez l\'administrateur.',
+          'bloqué': 'Votre compte a été bloqué. Contactez l\'administrateur.',
+          'archivé': 'Votre compte a été archivé. Contactez l\'administrateur.'
+        };
+        
+        const message = statutMessages[userRow.statut] || 'Votre compte n\'est pas actif.';
+        toast.error(message);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Toast de succès seulement si le statut est actif
       const now = Date.now();
       if (now - lastLoginToastTs.current > 1500) {
         toast.success("Connexion réussie !");
@@ -269,28 +294,6 @@ export default function Auth() {
         navigate(redirectParam);
       } else {
         try {
-          const { data: userRow, error: userRowError } = await supabase
-            .from('users')
-            .select('role, statut')
-            .eq('id', data.user.id)
-            .single();
-
-          // Vérifier le statut de l'utilisateur
-          if (userRow?.statut && userRow.statut !== 'actif') {
-            await supabase.auth.signOut();
-            
-            const statutMessages: { [key: string]: string } = {
-              'en_attente': 'Votre compte est en attente de validation par notre équipe.',
-              'inactif': 'Votre compte a été désactivé. Contactez l\'administrateur.',
-              'bloqué': 'Votre compte a été bloqué. Contactez l\'administrateur.',
-              'archivé': 'Votre compte a été archivé. Contactez l\'administrateur.'
-            };
-            
-            const message = statutMessages[userRow.statut] || 'Votre compte n\'est pas actif.';
-            toast.error(message);
-            setIsSubmitting(false);
-            return;
-          }
 
           const rawRole = String((!userRowError && (userRow as { role?: string; statut?: string } | null)?.role) ?? data.user.user_metadata?.role ?? '').toLowerCase();
           const isAdmin = rawRole === 'admin';
