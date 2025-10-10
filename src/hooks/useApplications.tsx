@@ -171,6 +171,7 @@ export function useApplications() {
       reference_email?: string;
       reference_contact?: string;
       reference_company?: string;
+      has_been_manager?: boolean | null; // Pour les candidatures internes
       mtp_answers: {
         metier: string[];
         talent: string[];
@@ -259,6 +260,7 @@ export function useApplications() {
       if (applicationData.reference_email) payload.reference_email = applicationData.reference_email;
       if (applicationData.reference_contact) payload.reference_contact = applicationData.reference_contact;
       if (applicationData.reference_company) payload.reference_company = applicationData.reference_company;
+      if (applicationData.has_been_manager !== undefined) payload.has_been_manager = applicationData.has_been_manager;
 
       const { data, error } = await supabase
         .from('applications')
