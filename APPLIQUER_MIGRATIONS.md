@@ -15,6 +15,9 @@ Ajoute le champ `rejection_reason` à la table `access_requests`
 ### Migration 2 : `20250110000003_add_viewed_to_access_requests.sql`
 Ajoute le système "vu/non vu" avec le champ `viewed`
 
+### Migration 3 : `20250110000004_fix_approve_reject_functions.sql`
+Corrige les fonctions `approve_access_request` et `reject_access_request` pour ne pas utiliser la table `email_notifications`
+
 ---
 
 ## Méthode 1 : Via le Dashboard Supabase (Recommandé)
@@ -38,7 +41,14 @@ Ajoute le système "vu/non vu" avec le champ `viewed`
 4. Cliquer sur "Run"
 5. Vérifier qu'il n'y a pas d'erreur
 
-### Étape 4 : Vérifier
+### Étape 4 : Appliquer Migration 3 (IMPORTANT)
+1. Créer une nouvelle query
+2. Copier **tout le contenu** de `supabase/migrations/20250110000004_fix_approve_reject_functions.sql`
+3. Coller dans l'éditeur
+4. Cliquer sur "Run"
+5. Vérifier qu'il n'y a pas d'erreur
+
+### Étape 5 : Vérifier
 ```sql
 -- Vérifier que le champ 'viewed' existe
 SELECT column_name, data_type 
@@ -72,6 +82,7 @@ supabase db push
 # Ou appliquer manuellement
 supabase db execute --file supabase/migrations/20250110000002_add_rejection_reason.sql
 supabase db execute --file supabase/migrations/20250110000003_add_viewed_to_access_requests.sql
+supabase db execute --file supabase/migrations/20250110000004_fix_approve_reject_functions.sql
 ```
 
 ---
