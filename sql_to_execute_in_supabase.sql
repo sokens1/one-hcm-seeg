@@ -34,6 +34,16 @@ ALTER COLUMN id SET DEFAULT gen_random_uuid();
 ALTER TABLE job_offers
 ALTER COLUMN id SET NOT NULL;
 
+-- 6. Corriger la contrainte CHECK sur la colonne status pour accepter 'inactive'
+ALTER TABLE job_offers 
+DROP CONSTRAINT IF EXISTS job_offers_status_check;
+
+ALTER TABLE job_offers 
+ADD CONSTRAINT job_offers_status_check 
+CHECK (status IN ('active', 'inactive', 'draft', 'closed'));
+
+COMMENT ON COLUMN job_offers.status IS 'Status of the job offer: active (visible to candidates), inactive (hidden from candidates but visible to recruiters), draft, closed';
+
 -- ============================================
 -- VÉRIFICATION
 -- ============================================
@@ -45,6 +55,17 @@ SELECT
     is_nullable
 FROM information_schema.columns
 WHERE table_name = 'job_offers'
-AND column_name IN ('status_offerts', 'mtp_questions_metier', 'mtp_questions_talent', 'mtp_questions_paradigme', 'id')
+AND column_name IN ('status', 'status_offerts', 'mtp_questions_metier', 'mtp_questions_talent', 'mtp_questions_paradigme', 'id')
 ORDER BY column_name;
+
+-- Vérifier la contrainte CHECK sur status
+SELECT constraint_name, check_clause
+FROM information_schema.check_constraints
+WHERE constraint_name = 'job_offers_status_check';
+
+-- Vérifier les valeurs de status actuelles dans la table
+SELECT DISTINCT status, COUNT(*) as count
+FROM job_offers
+GROUP BY status
+ORDER BY status;
 

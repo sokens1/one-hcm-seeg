@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { ArrowLeft, Save, Loader2, Trash2 } from "lucide-react";
@@ -70,6 +71,9 @@ export default function EditJob() {
     requirements: ""
   });
 
+  // État pour activer/désactiver l'offre
+  const [isActive, setIsActive] = useState(true);
+
   // États pour les questions MTP
   const [mtpQuestionsMetier, setMtpQuestionsMetier] = useState<string[]>([]);
   const [mtpQuestionsTalent, setMtpQuestionsTalent] = useState<string[]>([]);
@@ -118,6 +122,9 @@ export default function EditJob() {
         startDate: jobOffer.start_date ? format(parseISO(jobOffer.start_date), 'yyyy-MM-dd') : "",
         dateLimite: jobOffer.date_limite ? format(parseISO(jobOffer.date_limite), 'yyyy-MM-dd') : "",
       });
+
+      // Charger le statut actif/inactif
+      setIsActive(jobOffer.status === 'active');
 
       // Charger les questions MTP
       console.log('[EditJob DEBUG] MTP questions from DB:', {
@@ -179,6 +186,7 @@ export default function EditJob() {
       job_grade: formData.jobGrade || null,
       salary_note: formData.salaryNote || null,
       status_offerts: formData.statusOfferts || null,
+      status: isActive ? 'active' : 'inactive', // Nouveau statut basé sur le switch
       start_date: formData.startDate ? new Date(formData.startDate).toISOString() : null,
       // Questions MTP
       mtp_questions_metier: mtpQuestionsMetier.filter(q => q.trim() !== ''),
@@ -366,7 +374,7 @@ export default function EditJob() {
                 </div>
               </div>
 
-              {/* Ligne Statut - Interne/Externe */}
+              {/* Ligne Statut - Interne/Externe et Activation */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="statusOfferts">Statut de l'offre *</Label>
@@ -377,6 +385,19 @@ export default function EditJob() {
                       <SelectItem value="externe">Externe</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="isActive">Activer l'offre</Label>
+                  <div className="flex items-center gap-3 h-10">
+                    <Switch
+                      id="isActive"
+                      checked={isActive}
+                      onCheckedChange={setIsActive}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {isActive ? "✓ Offre active (visible)" : "✗ Offre inactive (masquée)"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -404,7 +425,7 @@ export default function EditJob() {
               {/* Cinquième ligne - Date limite */}
               <div className="space-y-2">
                 <Label htmlFor="dateLimite">Date limite de candidature</Label>
-                <Input id="dateLimite" type="date" value={formData.dateLimite} onChange={(e) => handleInputChange("dateLimite", e.target.value)} min={new Date().toISOString().split('T')[0]} />
+                <Input id="dateLimite" type="date" value={formData.dateLimite} onChange={(e) => handleInputChange("dateLimite", e.target.value)} />
               </div>
 
               {/* Missions principales */}
@@ -465,7 +486,7 @@ export default function EditJob() {
                   <Link to="/recruiter">
                     <Button variant="outline">Annuler</Button>
                   </Link>
-                  <Button type="submit" variant="hero" className="gap-2" disabled={isUpdating || isDeleting || !formData.title || !formData.location || !formData.contractType || !formData.categorieMetier || !formData.statusOfferts || !formData.responsibilities || !formData.requirements}>
+                  <Button type="submit" variant="hero" className="gap-2" disabled={isUpdating || isDeleting}>
                     {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     {isUpdating ? 'Sauvegarde...' : 'Sauvegarder'}
                   </Button>

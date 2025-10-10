@@ -73,15 +73,24 @@ const fetchJobOffers = async () => {
       isCandidate = false;
     }
 
-    // 1. Fetch all active job offers, filtered by audience when available
+    // 1. Fetch job offers based on user role
+    // Candidats : seulement les offres actives
+    // Recruteurs/Admins : toutes les offres (actives et inactives)
     let offers: any[] | null = null;
     let queryError: any = null;
     try {
-      const query = supabase
+      let query = supabase
         .from('job_offers')
         .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme')
-        .eq('status', 'active')
         .order('created_at', { ascending: false });
+
+      // Filtrer par status='active' uniquement pour les candidats
+      if (isCandidate) {
+        query = query.eq('status', 'active');
+        console.log('🔒 [fetchJobOffers] Mode candidat : filtrage status=active');
+      } else {
+        console.log('👔 [fetchJobOffers] Mode recruteur : toutes les offres (actives et inactives)');
+      }
 
       const { data, error } = await query;
       if (error) throw error;
@@ -95,11 +104,17 @@ const fetchJobOffers = async () => {
       );
       if (isUnknownColumn) {
         try {
-          const { data, error } = await supabase
+          let fallbackQuery = supabase
             .from('job_offers')
             .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme')
-            .eq('status', 'active')
             .order('created_at', { ascending: false });
+          
+          // Filtrer par status='active' uniquement pour les candidats
+          if (isCandidate) {
+            fallbackQuery = fallbackQuery.eq('status', 'active');
+          }
+          
+          const { data, error } = await fallbackQuery;
           if (error) throw error;
           offers = data || [];
           queryError = null;
