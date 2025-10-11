@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { useState, useEffect, useCallback } from "react"; // Keep for useRecruiterApplications
+import { isInCampaignPeriod, GLOBAL_VIEW } from "@/config/campaign";
 
 export interface Experience {
   id: string;
@@ -501,11 +502,11 @@ export function useCandidateSkills(profileId: string | undefined) {
   });
 }
 
-export function useRecruiterApplications(jobOfferId?: string) {
+export function useRecruiterApplications(jobOfferId?: string, campaignId?: string) {
   const { user, isRecruiter, isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
-  const queryKey = ['recruiterApplications', user?.id, jobOfferId];
+  const queryKey = ['recruiterApplications', user?.id, jobOfferId, campaignId];
 
   const fetchRecruiterApplications = async () => {
     if (!user) {
@@ -519,12 +520,20 @@ export function useRecruiterApplications(jobOfferId?: string) {
       throw new Error(`Erreur lors de la récupération des candidatures: ${rpcError.message}`);
     }
     
-    // Filtrer pour n'afficher que les candidatures de la nouvelle campagne
-    const CAMPAIGN_START = new Date('2025-09-25');
+    // Filtrer les candidatures en fonction de la campagne sélectionnée
+    const activeCampaignId = campaignId || GLOBAL_VIEW.id;
     let entries: any[] = (rpcData || []).filter((app: any) => {
       const createdAt = app?.application_details?.created_at;
       if (!createdAt) return false;
-      return new Date(createdAt) >= CAMPAIGN_START;
+      
+      // Si vue globale, on affiche tout (depuis la première campagne)
+      if (activeCampaignId === GLOBAL_VIEW.id) {
+        const FIRST_CAMPAIGN_START = new Date('2025-08-23');
+        return new Date(createdAt) >= FIRST_CAMPAIGN_START;
+      }
+      
+      // Sinon, filtrer par la campagne spécifique
+      return isInCampaignPeriod(createdAt, activeCampaignId);
     });
     
     // Si un jobOfferId est spécifié, filtrer côté client

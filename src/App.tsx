@@ -13,6 +13,7 @@ import {
 import { AuthProvider } from "@/hooks/useAuth";
 // import { AzureAuthProvider } from "@/hooks/useAzureAuth"; // Azure API - Commenté temporairement
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { CampaignProvider } from "@/contexts/CampaignContext";
 import { ProtectedRecruiterRoute } from "./components/layout/ProtectedRecruiterRoute";
 import { ProtectedAdminRoute } from "./components/layout/ProtectedAdminRoute";
 import { ProtectedRecruiterReadRoute } from "./components/layout/ProtectedRecruiterReadRoute";
@@ -199,19 +200,21 @@ function App() {
     <ErrorBoundary FallbackComponent={CustomErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          {/* <AzureAuthProvider> Azure API - Commenté temporairement */}
-            <TooltipProvider>
-              <Suspense fallback={<LoadingFallback />}>
-                {withMaintenanceCheck(
-                  <>
-                    <RouterProvider router={router} />
-                    <Toaster />
-                    <Sonner />
-                  </>
-                )}
-              </Suspense>
-            </TooltipProvider>
-          {/* </AzureAuthProvider> */}
+          <CampaignProvider>
+            {/* <AzureAuthProvider> Azure API - Commenté temporairement */}
+              <TooltipProvider>
+                <Suspense fallback={<LoadingFallback />}>
+                  {withMaintenanceCheck(
+                    <>
+                      <RouterProvider router={router} />
+                      <Toaster />
+                      <Sonner />
+                    </>
+                  )}
+                </Suspense>
+              </TooltipProvider>
+            {/* </AzureAuthProvider> */}
+          </CampaignProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
