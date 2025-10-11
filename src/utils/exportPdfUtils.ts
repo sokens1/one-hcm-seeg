@@ -214,6 +214,7 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       referenceEmail: cleanText(application.reference_email) || '',
       referenceContact: cleanText(application.reference_contact) || '',
       referenceCompany: cleanText(application.reference_company) || '',
+      hasBeenManager: application.has_been_manager,
       
       // Debug: Log reference data
       ...(console.log('🔍 [PDF Export] Références:', {
@@ -250,4 +251,139 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
     console.error('Error generating PDF:', error);
     return false;
   }
+};
+      metier6: metier6 || '',
+
+      metier7: metier7 || '',
+
+      talent1: talent1 || '',
+
+      talent2: talent2 || '',
+
+      talent3: talent3 || '',
+
+      paradigme1: paradigme1 || '',
+
+      paradigme2: paradigme2 || '',
+
+      paradigme3: paradigme3 || '',
+
+      
+
+      // Additional/transformed fields
+
+      firstName: cleanText(user?.first_name) || '',
+      lastName: cleanText(user?.last_name) || '',
+      email: cleanText(user?.email) || '',
+      dateOfBirth: user?.date_of_birth ? new Date(user.date_of_birth) : ((profile as any)?.birth_date ? new Date((profile as any).birth_date) : null),
+
+      currentPosition: cleanText(profile?.current_position) || '',
+      gender: cleanText((profile as any)?.gender || (user as { sexe?: string; gender?: string })?.sexe || (user as { sexe?: string; gender?: string })?.gender) || '',
+      
+
+      // Map documents from database
+
+      cv: documentsByType.cv?.[0] ? { 
+
+        name: documentsByType.cv[0].file_name,
+
+        url: documentsByType.cv[0].file_url 
+
+      } : null,
+
+      coverLetter: documentsByType.cover_letter?.[0] ? { 
+
+        name: documentsByType.cover_letter[0].file_name,
+
+        url: documentsByType.cover_letter[0].file_url 
+
+      } : null,
+
+      integrityLetter: documentsByType.integrity_letter?.[0] ? { 
+
+        name: documentsByType.integrity_letter[0].file_name,
+
+        url: documentsByType.integrity_letter[0].file_url 
+
+      } : null,
+
+      projectIdea: documentsByType.project_idea?.[0] ? { 
+
+        name: documentsByType.project_idea[0].file_name,
+
+        url: documentsByType.project_idea[0].file_url 
+
+      } : null,
+
+      diplomas: (documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
+
+      certificates: (documentsByType.certificate || []).map(doc => ({ name: doc.file_name })),
+
+      recommendations: (documentsByType.recommendation || []).map(doc => ({ name: doc.file_name })),
+
+      // Références de recommandation
+
+      referenceFullName: cleanText(application.reference_full_name) || '',
+      referenceEmail: cleanText(application.reference_email) || '',
+      referenceContact: cleanText(application.reference_contact) || '',
+      referenceCompany: cleanText(application.reference_company) || '',
+      
+      // Debug: Log reference data
+      ...(console.log('🔍 [PDF Export] Références:', {
+        raw_full_name: application.reference_full_name,
+        raw_email: application.reference_email,
+        raw_contact: application.reference_contact,
+        raw_company: application.reference_company,
+        cleaned_full_name: cleanText(application.reference_full_name),
+        cleaned_email: cleanText(application.reference_email),
+        cleaned_contact: cleanText(application.reference_contact),
+        cleaned_company: cleanText(application.reference_company)
+      }), {}),
+      jobTitle,
+
+      applicationDate: new Date(application.created_at).toLocaleDateString('fr-FR', {
+
+        year: 'numeric',
+
+        month: 'long',
+
+        day: 'numeric',
+
+      }),
+
+      offerStatus: offerStatus || null,
+    };
+
+    
+
+    // console.log('Gender value passed to PDF generator:', applicationData.gender);
+
+    // console.log('DateOfBirth value passed to PDF generator:', applicationData.dateOfBirth);
+
+    
+
+    const doc = generateApplicationPdf(applicationData);
+
+    
+
+    // Save the PDF
+
+    doc.save(
+
+      `Candidature_${jobTitle.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+
+    );
+
+    
+
+    return true;
+
+  } catch (error) {
+
+    console.error('Error generating PDF:', error);
+
+    return false;
+
+  }
+
 };

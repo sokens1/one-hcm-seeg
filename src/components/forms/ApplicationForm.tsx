@@ -277,11 +277,30 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   // Gérer la restauration des brouillons
   useEffect(() => {
     if (mode === 'create' && isDraftLoaded && draftData && Object.keys(draftData.form_data).length > 0) {
+      // Liste des champs pré-remplis automatiquement (à exclure de la vérification)
+      const prefilledFields = ['firstName', 'lastName', 'email', 'phone', 'gender', 'currentPosition', 'matricule'];
+      
       // Vérifier s'il y a des données significatives dans le brouillon
+      // (c'est-à-dire des champs remplis manuellement par l'utilisateur)
       const hasSignificantData = Object.entries(draftData.form_data).some(([key, value]) => {
-        if (key === 'firstName' || key === 'lastName' || key === 'email') return false; // Données pré-remplies
-        return value && value !== '';
+        // Ignorer les champs pré-remplis
+        if (prefilledFields.includes(key)) return false;
+        
+        // Ignorer les valeurs vides, null, undefined, false, ou tableaux vides
+        if (!value) return false;
+        if (value === '') return false;
+        if (Array.isArray(value) && value.length === 0) return false;
+        
+        // Si c'est un objet (comme les fichiers), vérifier s'il est vide
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          return Object.keys(value).length > 0;
+        }
+        
+        return true;
       });
+      
+      console.log('🔍 [Draft Check] Données significatives trouvées:', hasSignificantData);
+      console.log('🔍 [Draft Check] Données du brouillon:', draftData.form_data);
       
       if (hasSignificantData) {
         setShowDraftRestore(true);
@@ -313,7 +332,71 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
   const ignoreDraft = () => {
     setShowDraftRestore(false);
-    clearDraft(); // Supprimer le brouillon de la base de données
+    
+    // Supprimer le brouillon de la base de données
+    clearDraft();
+    
+    // Supprimer également du localStorage
+    try {
+      localStorage.removeItem(storageKey);
+      localStorage.removeItem(sharedKey);
+      const uiKey = `application_form_shared_${jobId}_ui`;
+      localStorage.removeItem(uiKey);
+    } catch (e) {
+      console.warn('Error clearing localStorage:', e);
+    }
+    
+    // Réinitialiser le formulaire avec les données de base (nom, prénom, email)
+    setFormData(prevData => ({
+      firstName: prevData.firstName,
+      lastName: prevData.lastName,
+      email: prevData.email,
+      matricule: prevData.matricule || "",
+      phone: prevData.phone || "",
+      gender: prevData.gender || "",
+      dateOfBirth: null,
+      currentPosition: prevData.currentPosition || "",
+      address: "",
+      cv: null,
+      coverLetter: null,
+      yearsOfExperience: "",
+      certificates: [],
+      additionalCertificates: [],
+      referenceFullName: "",
+      referenceEmail: "",
+      referenceContact: "",
+      referenceCompany: "",
+      hasBeenManager: null,
+      metier1: "",
+      metier2: "",
+      metier3: "",
+      metier4: "",
+      metier5: "",
+      metier6: "",
+      metier7: "",
+      talent1: "",
+      talent2: "",
+      talent3: "",
+      talent4: "",
+      talent5: "",
+      talent6: "",
+      talent7: "",
+      paradigme1: "",
+      paradigme2: "",
+      paradigme3: "",
+      paradigme4: "",
+      paradigme5: "",
+      paradigme6: "",
+      paradigme7: "",
+      consent: false
+    }));
+    
+    // Réinitialiser l'étape à 1
+    setCurrentStep(1);
+    setActiveTab('metier');
+    
+    console.log('🗑️ [Draft] Brouillon supprimé et formulaire réinitialisé');
+    toast.success('Formulaire réinitialisé');
   };
 
   // Auto-save des brouillons
@@ -1277,15 +1360,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       onChange={(e) => {
                         const email = e.target.value;
                         setFormData({ ...formData, email });
-                        // Validation email en temps réel avec nos utilitaires - DÉSACTIVÉ
-                        // if (email) {
-                        //   const errorMessage = getEmailErrorMessage(email);
-                        //   e.target.setCustomValidity(errorMessage || '');
-                        // } else {
-                        //   e.target.setCustomValidity('');
-                        // }
-                        // Validation désactivée
+                        // Validation du format email
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (email && !emailRegex.test(email)) {
+                          e.target.setCustomValidity('Veuillez entrer une adresse email valide');
+                        } else {
                         e.target.setCustomValidity('');
+                        }
                       }}
                       onBlur={(e) => {
                         // Validation supplémentaire lors de la perte de focus - DÉSACTIVÉ
@@ -1372,10 +1453,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
               {/* Step 2: Experience & Documents */}
               {currentStep === 2 && (
-                <div className="space-y-6 animate-fade-in">
+                <div className="space-y-6 animate-fade-in pt-4">
                   <div>
                     <Label htmlFor="coverLetter">Lettre de motivation *</Label>
-                    <div className="mt-2">
+                    <div className="mt-4">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <Spinner size="lg" text="Upload en cours..." />
@@ -1585,31 +1666,41 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   {isInternalOffer && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <h4 className="font-medium mb-3">Expérience professionnelle</h4>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Cette information est requise pour les candidatures internes.
-                      </p>
-                      <div className="flex items-start space-x-3">
-                        <Checkbox
-                          id="hasBeenManager"
-                          checked={formData.hasBeenManager === true}
-                          onCheckedChange={(checked) => {
-                            setFormData({ 
-                              ...formData, 
-                              hasBeenManager: checked === true ? true : checked === false ? false : null
-                            });
-                          }}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <Label 
-                            htmlFor="hasBeenManager" 
-                            className="text-sm font-medium leading-relaxed cursor-pointer"
-                          >
-                            Avez-vous déjà occupé un poste de chef ou de manager dans une structure quelconque ? *
-                          </Label>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Veuillez cocher si vous avez déjà eu des responsabilités de management ou de supervision d'équipe.
-                          </p>
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium leading-relaxed">
+                          Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :
+                        </Label>
+                        <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                          <li>• Chef de service ;</li>
+                          <li>• Chef de département ;</li>
+                          <li>• Directeur ;</li>
+                          <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
+                        </ul>
+                        
+                        <div className="flex gap-4">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="hasBeenManager"
+                              value="true"
+                              checked={formData.hasBeenManager === true}
+                              onChange={(e) => setFormData({ ...formData, hasBeenManager: e.target.value === 'true' ? true : null })}
+                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm font-medium">Oui</span>
+                          </label>
+                          
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="hasBeenManager"
+                              value="false"
+                              checked={formData.hasBeenManager === false}
+                              onChange={(e) => setFormData({ ...formData, hasBeenManager: e.target.value === 'false' ? false : null })}
+                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm font-medium">Non</span>
+                          </label>
                         </div>
                       </div>
                       {formData.hasBeenManager === null && (
@@ -1641,7 +1732,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       />
                     </div>
                     <div>
-                      <Label htmlFor="referenceCompany">Entreprise *</Label>
+                      <Label htmlFor="referenceCompany" className="whitespace-nowrap">Administration / Entreprise / Organisation *</Label>
                       <Input
                         id="referenceCompany"
                         value={formData.referenceCompany}
@@ -1656,7 +1747,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         id="referenceEmail"
                         type="email"
                         value={formData.referenceEmail}
-                        onChange={(e) => setFormData({ ...formData, referenceEmail: e.target.value })}
+                        onChange={(e) => {
+                          const email = e.target.value;
+                          setFormData({ ...formData, referenceEmail: email });
+                          // Validation du format email
+                          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                          if (email && !emailRegex.test(email)) {
+                            e.target.setCustomValidity('Veuillez entrer une adresse email valide');
+                          } else {
+                            e.target.setCustomValidity('');
+                          }
+                        }}
                         placeholder="exemple@domaine.com"
                         required
                       />
@@ -1666,7 +1767,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       <Input
                         id="referenceContact"
                         value={formData.referenceContact}
-                        onChange={(e) => setFormData({ ...formData, referenceContact: e.target.value })}
+                        onChange={(e) => {
+                          const contact = e.target.value;
+                          setFormData({ ...formData, referenceContact: contact });
+                          // Validation du format téléphone (Gabon: +241 ou 241 suivi de 8 chiffres)
+                          const phoneRegex = /^(\+241|241)?\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}$/;
+                          if (contact && !phoneRegex.test(contact.replace(/\s+/g, ' ').trim())) {
+                            e.target.setCustomValidity('Format attendu: +241 01 23 45 67 ou 241 01 23 45 67');
+                          } else {
+                            e.target.setCustomValidity('');
+                          }
+                        }}
                         placeholder="+241 01 23 45 67"
                         required
                       />

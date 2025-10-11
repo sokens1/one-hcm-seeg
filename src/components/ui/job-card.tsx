@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Briefcase } from "lucide-react";
 import { isApplicationClosed } from "@/utils/applicationUtils";
+import { toast } from "sonner";
 
 interface JobCardProps {
   title: string;
@@ -14,6 +15,7 @@ interface JobCardProps {
   onClick?: () => void;
   locked?: boolean;
   onLockedClick?: () => void;
+  isExpired?: boolean; // Nouvelle prop pour les campagnes expirées
 }
 
 export function JobCard({ 
@@ -26,6 +28,7 @@ export function JobCard({
   onClick,
   locked = false,
   onLockedClick,
+  isExpired = false,
 }: JobCardProps) {
   const toPlainText = (input?: string) => {
     if (!input) return "";
@@ -40,15 +43,22 @@ export function JobCard({
 
   return (
     <Card
-      className={`hover:shadow-medium transition-all duration-300 ${locked ? "cursor-default" : "cursor-pointer"} group h-full flex flex-col`}
-      onClick={locked ? undefined : onClick}
+      className={`hover:shadow-medium transition-all duration-300 ${locked || isExpired ? "cursor-default" : "cursor-pointer"} ${isExpired ? "opacity-60 bg-gray-50 border-dashed grayscale" : ""} group h-full flex flex-col`}
+      onClick={locked || isExpired ? undefined : onClick}
     >
       <CardContent className="p-3 sm:p-4 md:p-5 lg:p-6 flex-1 flex flex-col">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4 flex-1">
           <div className="flex-1 space-y-2 md:space-y-3 flex flex-col min-w-0">
-            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-              {title}
-            </h3>
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 flex-1">
+                {title}
+              </h3>
+              {isExpired && (
+                <Badge variant="outline" className="bg-red-50 text-red-600 border-red-300 text-xs flex-shrink-0">
+                  Expirée
+                </Badge>
+              )}
+            </div>
             
             {!locked && (
               <div className="flex flex-col md:flex-row md:items-center gap-1 sm:gap-2 md:gap-4 text-xs sm:text-sm text-muted-foreground">
@@ -81,14 +91,24 @@ export function JobCard({
           <div className="flex-shrink-0 w-full md:w-auto">
             {isPreview ? (
               <Button
-                variant="hero"
+                variant={isExpired ? "outline" : "hero"}
                 size="sm"
-                className={`w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 cursor-pointer ${locked ? "opacity-60" : ""}`}
-                onClick={locked ? onLockedClick : onClick}
-                aria-disabled={locked}
+                className={`w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 ${locked || isExpired ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                onClick={locked || isExpired ? (isExpired ? () => toast.error("Cette offre n'est plus disponible (campagne expirée)") : onLockedClick) : onClick}
+                aria-disabled={locked || isExpired}
+                disabled={isExpired}
               >
-                <span className="hidden md:inline">Voir l'offre</span>
-                <span className="md:hidden">Voir</span>
+                {isExpired ? (
+                  <>
+                    <span className="hidden md:inline">Offre expirée</span>
+                    <span className="md:hidden">Expirée</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden md:inline">Voir l'offre</span>
+                    <span className="md:hidden">Voir</span>
+                  </>
+                )}
               </Button>
             ) : (
               <Button 
