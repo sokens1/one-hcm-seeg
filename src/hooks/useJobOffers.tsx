@@ -162,11 +162,10 @@ const fetchJobOffers = async () => {
     }
 
     // 3. Count total and new applications for each offer
-    // Filtre campagne: ne compter que les candidatures à partir du 25/09/2025
-    const CAMPAIGN_START = new Date('2025-09-25');
-    const applicationsCampaign = (applications || []).filter(a => new Date(a.created_at) >= CAMPAIGN_START);
+    // MODE CAMPAGNE COMPLÈTEMENT DÉSACTIVÉ - Compter toutes les candidatures
+    console.log(`✅ [NO CAMPAIGN] Toutes les candidatures comptées: ${(applications || []).length} candidatures`);
 
-    const applicationStats = (applicationsCampaign || []).reduce((acc, app) => {
+    const applicationStats = (applications || []).reduce((acc, app) => {
       if (!acc[app.job_offer_id]) {
         acc[app.job_offer_id] = { total: 0, new: 0 };
       }
@@ -314,18 +313,15 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
       console.warn('RPC get_all_recruiter_applications failed for job offer:', rpcError.message);
       applications = [];
     } else {
-      const CAMPAIGN_START = new Date('2025-09-25');
+      // MODE CAMPAGNE COMPLÈTEMENT DÉSACTIVÉ - Récupérer toutes les candidatures
       applications = (rpcData || [])
         .filter((app: any) => app.application_details?.job_offer_id === id)
-        .filter((app: any) => {
-          const createdAt = app?.application_details?.created_at;
-          if (!createdAt) return false;
-          return new Date(createdAt) >= CAMPAIGN_START;
-        })
         .map((app: any) => ({
           created_at: app.application_details?.created_at
         }))
         .filter(app => app.created_at);
+      
+      console.log(`✅ [NO CAMPAIGN] Toutes les candidatures pour l'offre ${id}: ${applications.length} candidatures`);
     }
   } catch (e) {
     console.warn('Error calling RPC get_all_recruiter_applications for job offer:', e);

@@ -519,13 +519,9 @@ export function useRecruiterApplications(jobOfferId?: string) {
       throw new Error(`Erreur lors de la récupération des candidatures: ${rpcError.message}`);
     }
     
-    // Filtrer pour n'afficher que les candidatures de la nouvelle campagne
-    const CAMPAIGN_START = new Date('2025-09-25');
-    let entries: any[] = (rpcData || []).filter((app: any) => {
-      const createdAt = app?.application_details?.created_at;
-      if (!createdAt) return false;
-      return new Date(createdAt) >= CAMPAIGN_START;
-    });
+    // MODE CAMPAGNE COMPLÈTEMENT DÉSACTIVÉ - Récupérer toutes les candidatures
+    let entries: any[] = (rpcData || []);
+    console.log(`✅ [NO CAMPAIGN] Toutes les candidatures chargées: ${entries.length} candidatures`);
     
     // Si un jobOfferId est spécifié, filtrer côté client
     if (jobOfferId) {

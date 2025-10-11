@@ -91,12 +91,10 @@ export function useRecruiterDashboard() {
 
     // Récupérer TOUTES les candidatures avec la fonction optimisée
     const { data: combinedEntries } = await supabase.rpc('get_all_recruiter_applications');
-    const CAMPAIGN_START = new Date('2025-09-25');
-    const allEntries = (combinedEntries || []).filter((app: any) => {
-      const createdAt = app?.application_details?.created_at;
-      if (!createdAt) return false;
-      return new Date(createdAt) >= CAMPAIGN_START;
-    });
+    
+    // MODE CAMPAGNE COMPLÈTEMENT DÉSACTIVÉ - Aucun filtre de date
+    const allEntries = (combinedEntries || []);
+    console.log(`✅ [NO CAMPAIGN] Toutes les candidatures chargées: ${allEntries.length} candidatures`);
 
     // Extraire les détails des candidatures
     const allApplicationsData = (allEntries || []).map((app: any) => app.application_details);
