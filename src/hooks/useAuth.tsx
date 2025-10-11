@@ -426,6 +426,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const roleValue = getUserRole();
+  console.log('🔍 [useAuth] Role detection:', { 
+    dbRole, 
+    metadataRole: user?.user_metadata?.role, 
+    roleValue,
+    userId: user?.id 
+  });
   const isCandidate = roleValue === 'candidat' || roleValue === 'candidate';
   const isRecruiter = roleValue === 'recruteur' || roleValue === 'recruiter';
   const isAdmin = roleValue === 'admin';

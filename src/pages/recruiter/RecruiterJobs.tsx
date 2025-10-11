@@ -9,6 +9,7 @@ import { Plus, Eye, Edit, Loader2, Search, LayoutGrid, List } from "lucide-react
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useJobOffers } from "@/hooks/useJobOffers";
+import { CAMPAIGN_CONFIG } from "@/config/campaigns";
 
 export default function RecruiterJobs() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function RecruiterJobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [statusFilter, setStatusFilter] = useState<"all" | "interne" | "externe">("all");
+  const [campaignFilter, setCampaignFilter] = useState<"all" | number>("all");
 
   const handleEditJob = (jobId: string | number) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
@@ -31,6 +33,11 @@ export default function RecruiterJobs() {
       // Filtre par statut interne/externe
       if (statusFilter === "all") return true;
       return (job.status_offerts || 'externe') === statusFilter;
+    })
+    .filter(job => {
+      // Filtre par campagne
+      if (campaignFilter === "all") return true;
+      return job.campaign_id === campaignFilter;
     });
 
   return (
@@ -80,30 +87,66 @@ export default function RecruiterJobs() {
         </div>
 
         {/* Filtres par statut */}
-        <div className="flex justify-center gap-2 flex-wrap mb-6">
-          <Button
-            variant={statusFilter === "all" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setStatusFilter("all")}
-          >
-            Toutes
-          </Button>
-          <Button
-            variant={statusFilter === "interne" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setStatusFilter("interne")}
-            className="gap-2"
-          >
-             Internes
-          </Button>
-          <Button
-            variant={statusFilter === "externe" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setStatusFilter("externe")}
-            className="gap-2"
-          >
-             Externes
-          </Button>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-2">Statut de l'offre :</p>
+            <div className="flex justify-center gap-2 flex-wrap">
+              <Button
+                variant={statusFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("all")}
+              >
+                Toutes
+              </Button>
+              <Button
+                variant={statusFilter === "interne" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("interne")}
+                className="gap-2"
+              >
+                 Internes
+              </Button>
+              <Button
+                variant={statusFilter === "externe" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("externe")}
+                className="gap-2"
+              >
+                 Externes
+              </Button>
+            </div>
+          </div>
+
+          {/* Filtres par campagne */}
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-2">Campagne :</p>
+            <div className="flex justify-center gap-2 flex-wrap">
+              <Button
+                variant={campaignFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCampaignFilter("all")}
+              >
+                Toutes les campagnes
+              </Button>
+              {CAMPAIGN_CONFIG.ALL_CAMPAIGNS.map(campaignId => {
+                const isActiveCampaign = campaignId === CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID;
+                return (
+                  <Button
+                    key={campaignId}
+                    variant={campaignFilter === campaignId ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCampaignFilter(campaignId)}
+                    className="gap-2"
+                  >
+                    Campagne {campaignId}
+                    {isActiveCampaign && (
+                      <Badge variant="secondary" className="ml-1 text-xs bg-green-100 text-green-700">Active</Badge>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {isLoading ? (
@@ -148,6 +191,18 @@ export default function RecruiterJobs() {
                         {job.new_candidates > 0 && (
                           <Badge variant="default" className="bg-warning text-warning-foreground animate-bounce-soft">
                             {job.new_candidates} {job.new_candidates === 1 ? 'nouveau' : 'nouveaux'}
+                          </Badge>
+                        )}
+                        {job.campaign_id && (
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs ${
+                              job.campaign_id === CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID 
+                                ? 'bg-blue-50 text-blue-700 border-blue-300' 
+                                : 'bg-gray-50 text-gray-600 border-gray-300'
+                            }`}
+                          >
+                            Campagne {job.campaign_id}
                           </Badge>
                         )}
                       </div>

@@ -95,9 +95,9 @@ export default function Auth() {
   // Validation de l'email en temps réel pour les candidats internes
   useEffect(() => {
     if (signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail && signUpData.email) {
-      const emailPattern = /@seeg\.com$/i;
+      const emailPattern = /@seeg-gabon\.com$/i;
       if (!emailPattern.test(signUpData.email)) {
-        setEmailError("L'email doit être un email professionnel SEEG (@seeg.com)");
+        setEmailError("L'email doit être un email professionnel SEEG (@seeg-gabon.com)");
       } else {
         setEmailError("");
       }
@@ -662,27 +662,32 @@ export default function Auth() {
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Type de candidature</Label>
                       <div className="grid grid-cols-2 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setSignUpData({ ...signUpData, candidateStatus: "interne", noSeegEmail: false })}
-                          className={`p-4 rounded-lg border-2 transition-all ${
-                            signUpData.candidateStatus === "interne"
-                              ? "border-primary bg-primary/5 shadow-sm"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}
-                        >
-                          <Building2 className={`w-5 h-5 mx-auto mb-2 ${
-                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-400"
-                          }`} />
-                          <div className={`text-sm font-medium ${
-                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-700"
-                          }`}>
-                            Candidat Interne
+                        <div className="relative group">
+                          <button
+                            type="button"
+                            disabled
+                            className="w-full p-4 rounded-lg border-2 border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
+                          >
+                            <Building2 className="w-5 h-5 mx-auto mb-2 text-gray-400" />
+                            <div className="text-sm font-medium text-gray-500">
+                              Candidat Interne
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              Employé SEEG
+                            </div>
+                          </button>
+                          
+                          {/* Tooltip */}
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                            Les candidatures internes seront disponibles ultérieurement
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Employé SEEG
+                          
+                          {/* Texte "Disponible ultérieurement" */}
+                          <div className="text-center mt-2">
+                            <span className="text-xs text-gray-500 italic">Disponible ultérieurement</span>
                           </div>
-                        </button>
+                        </div>
                         <button
                           type="button"
                           onClick={() => setSignUpData({ ...signUpData, candidateStatus: "externe", matricule: "" })}
@@ -755,7 +760,7 @@ export default function Auth() {
                           type="email"
                           placeholder={
                             signUpData.candidateStatus === "interne" && !signUpData.noSeegEmail
-                              ? "prenom.nom@seeg.com"
+                              ? "prenom.nom@seeg-gabon.com"
                               : "votre.email@exemple.com"
                           }
                           value={signUpData.email}

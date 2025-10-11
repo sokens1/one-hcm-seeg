@@ -32,6 +32,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
 import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
 import { DashboardToggle } from "@/components/ui/DashboardToggle";
+import { CampaignSelector } from "@/components/ui/CampaignSelector";
+import { useCampaign } from "@/contexts/CampaignContext";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
@@ -56,6 +58,7 @@ import AdvancedDashboard from "./AdvancedDashboard";
 
 export default function RecruiterDashboard() {
   const navigate = useNavigate();
+  const { selectedCampaignId } = useCampaign();
   const { 
     stats, 
     jobCoverage, 
@@ -64,7 +67,7 @@ export default function RecruiterDashboard() {
     departmentStats,
     isLoading, 
     error 
-  } = useRecruiterDashboard();
+  } = useRecruiterDashboard(selectedCampaignId);
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { isRecruiter, isObserver } = useAuth();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -112,6 +115,11 @@ export default function RecruiterDashboard() {
   return (
     <RecruiterLayout>
       <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-4 lg:py-6">
+        {/* Sélecteur de campagne */}
+        <div className="mb-4">
+          <CampaignSelector />
+        </div>
+
         {/* Basculement entre les vues */}
         <DashboardToggle 
           currentView={dashboardView} 

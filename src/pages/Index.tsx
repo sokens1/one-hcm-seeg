@@ -20,6 +20,7 @@ import { useMaintenance } from "@/hooks/useMaintenance";
 import { supabase } from "@/integrations/supabase/client";
 import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+import { isCampaignExpired } from "@/config/campaigns";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
 
@@ -357,25 +358,29 @@ const Index = () => {
             </div>
           ) : viewMode === "cards" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {filteredJobs.map((job, index) => (
-                <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
-                  <JobCard
-                    title={job.title}
-                    location={normalizeLocation(job.location)}
-                    contractType={job.contract_type}
-                    description={job.description}
-                    isPreview={true}
-                    onClick={() => navigate(`/jobs/${job.id}`)}
-                    locked={preLaunch}
-                    onLockedClick={() => {
-                      if (preLaunch) {
-                        toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.");
-                      }
-                    }}
-                    // candidateCount={isApplicationClosed() ? 0 : undefined} // Forcer la désactivation si les candidatures sont closes
-                  />
-                </div>
-              ))}
+              {filteredJobs.map((job, index) => {
+                const isExpired = isCampaignExpired(job.campaign_id);
+                return (
+                  <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
+                    <JobCard
+                      title={job.title}
+                      location={normalizeLocation(job.location)}
+                      contractType={job.contract_type}
+                      description={job.description}
+                      isPreview={true}
+                      onClick={() => navigate(`/jobs/${job.id}`)}
+                      locked={preLaunch}
+                      onLockedClick={() => {
+                        if (preLaunch) {
+                          toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.");
+                        }
+                      }}
+                      isExpired={isExpired}
+                      // candidateCount={isApplicationClosed() ? 0 : undefined} // Forcer la désactivation si les candidatures sont closes
+                    />
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-sm border overflow-hidden mx-4">

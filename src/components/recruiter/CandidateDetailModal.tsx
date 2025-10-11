@@ -178,13 +178,25 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
           <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Infos candidat */}
-            <Card>
-              <CardHeader className="p-4 sm:p-6">
-                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <User className="w-4 h-4" />
-                  Informations personnelles
-                </CardTitle>
-              </CardHeader>
+             <Card>
+               <CardHeader className="p-4 sm:p-6">
+                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                   <User className="w-4 h-4" />
+                   Informations personnelles
+                   {(() => {
+                     const candidateStatus = (candidate as any)?.candidate_status;
+                     console.log('🔍 [CandidateDetailModal] Statut du candidat:', { candidateStatus, candidate });
+                     if (!candidateStatus) return null;
+                     const statusLabel = candidateStatus === 'interne' ? 'Interne' : candidateStatus === 'externe' ? 'Externe' : 'Non défini';
+                     const statusColor = candidateStatus === 'interne' ? 'bg-blue-100 text-blue-700' : candidateStatus === 'externe' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700';
+                     return (
+                       <Badge className={`${statusColor} ml-2 text-xs`}>
+                         {statusLabel}
+                       </Badge>
+                     );
+                   })()}
+                 </CardTitle>
+               </CardHeader>
               <CardContent className="p-4 sm:p-6 pt-0 space-y-3 sm:space-y-4">
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2 sm:space-y-3">
@@ -367,34 +379,75 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
                 </div>
               )}
 
-              {(application.reference_full_name || application.reference_email || application.reference_contact || application.reference_company) ? (
-                <div>
-                  <span className="font-medium text-xs sm:text-sm">Référence de recommandation :</span>
-                  <div className="mt-2 p-3 bg-muted rounded-lg text-xs sm:text-sm space-y-1">
-                    {application.reference_full_name && (
-                      <div><span className="font-medium">Nom et prénom:</span> {application.reference_full_name}</div>
-                    )}
-                    {application.reference_company && (
-                      <div><span className="font-medium">Entreprise:</span> {application.reference_company}</div>
-                    )}
-                    {application.reference_email && (
-                      <div><span className="font-medium">Email:</span> {application.reference_email}</div>
-                    )}
-                    {application.reference_contact && (
-                      <div><span className="font-medium">Contact:</span> {application.reference_contact}</div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                application.reference_contacts && (
-                  <div>
-                    <span className="font-medium text-xs sm:text-sm">Contacts de référence :</span>
-                    <div className="mt-2 p-3 bg-muted rounded-lg">
-                      <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.reference_contacts}</p>
+              {(() => {
+                // Déterminer le type d'offre
+                const offerStatus = application.job_offers?.status_offerts;
+                const isExternalOffer = offerStatus === 'externe';
+                const isInternalOffer = offerStatus === 'interne';
+                
+                if (isExternalOffer) {
+                  // Section Références pour les offres externes
+                  return (application.reference_full_name || application.reference_email || application.reference_contact || application.reference_company) ? (
+                    <div>
+                      <span className="font-medium text-xs sm:text-sm">Référence de recommandation :</span>
+                      <div className="mt-2 p-3 bg-muted rounded-lg text-xs sm:text-sm space-y-1">
+                        {application.reference_full_name && (
+                          <div><span className="font-medium">Nom et prénom:</span> {application.reference_full_name}</div>
+                        )}
+                        {application.reference_company && (
+                          <div><span className="font-medium">Administration / Entreprise / Organisation:</span> {application.reference_company}</div>
+                        )}
+                        {application.reference_email && (
+                          <div><span className="font-medium">Email:</span> {application.reference_email}</div>
+                        )}
+                        {application.reference_contact && (
+                          <div><span className="font-medium">Contact:</span> {application.reference_contact}</div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )
-              )}
+                  ) : (
+                    application.reference_contacts && (
+                      <div>
+                        <span className="font-medium text-xs sm:text-sm">Contacts de référence :</span>
+                        <div className="mt-2 p-3 bg-muted rounded-lg">
+                          <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{application.reference_contacts}</p>
+                        </div>
+                      </div>
+                    )
+                  );
+                } else if (isInternalOffer) {
+                  // Section Expérience Professionnelle pour les offres internes
+                  return (
+                    <div>
+                      <span className="font-medium text-xs sm:text-sm">Expérience Professionnelle :</span>
+                      <div className="mt-2 p-3 bg-muted rounded-lg text-xs sm:text-sm space-y-2">
+                        <div>
+                          <p className="font-medium mb-1">Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :</p>
+                          <ul className="space-y-1 ml-4 text-muted-foreground">
+                            <li>• Chef de service ;</li>
+                            <li>• Chef de département ;</li>
+                            <li>• Directeur ;</li>
+                            <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
+                          </ul>
+                        </div>
+                        <div className="pt-2 border-t">
+                          <span className="font-medium">Réponse: </span>
+                          {application.has_been_manager === true ? (
+                            <span className="text-green-600 font-medium">Oui</span>
+                          ) : application.has_been_manager === false ? (
+                            <span className="text-red-600 font-medium">Non</span>
+                          ) : (
+                            <span className="text-muted-foreground">Non renseigné</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                } else {
+                  // Fallback pour les offres sans statut défini
+                  return null;
+                }
+              })()}
             </CardContent>
           </Card>
 

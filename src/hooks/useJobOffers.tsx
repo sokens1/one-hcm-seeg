@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
+import { getVisibleCampaignsForCandidates } from "@/config/campaigns";
 import { useAuth } from "./useAuth";
 
 export interface JobOffer {
@@ -34,6 +35,8 @@ export interface JobOffer {
   mtp_questions_metier?: string[] | null;
   mtp_questions_talent?: string[] | null;
   mtp_questions_paradigme?: string[] | null;
+  // Campaign
+  campaign_id?: number | null;
   candidate_count: number;
   new_candidates: number;
 }
@@ -43,11 +46,14 @@ const fetchJobOffers = async () => {
     // Récupérer les informations de l'utilisateur connecté
     let candidateStatus: string | null = null;
     let isCandidate = false;
+    let isRecruiter = false;
+    let isAuthenticated = false;
     
     try {
       const { data: authData } = await supabase.auth.getUser();
       const uid = authData?.user?.id;
       if (uid) {
+        isAuthenticated = true;
         const { data: userData } = await supabase
           .from('users')
           .select('role, candidate_status')
@@ -57,10 +63,13 @@ const fetchJobOffers = async () => {
         if (userData) {
           const role = userData.role;
           isCandidate = role === 'candidat' || role === 'candidate';
+          isRecruiter = role === 'recruteur' || role === 'recruiter' || role === 'admin' || role === 'observateur' || role === 'observer';
           candidateStatus = isCandidate ? (userData.candidate_status || null) : null;
           
           console.log('🔍 [fetchJobOffers] User info:', {
             isCandidate,
+            isRecruiter,
+            isAuthenticated,
             candidateStatus,
             userId: uid
           });
@@ -71,6 +80,8 @@ const fetchJobOffers = async () => {
       console.warn('[fetchJobOffers] Could not determine user info:', e);
       candidateStatus = null;
       isCandidate = false;
+      isRecruiter = false;
+      isAuthenticated = false;
     }
 
     // 1. Fetch job offers based on user role
@@ -81,7 +92,7 @@ const fetchJobOffers = async () => {
     try {
       let query = supabase
         .from('job_offers')
-        .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme')
+        .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme,campaign_id')
         .order('created_at', { ascending: false });
 
       // Filtrer par status='active' uniquement pour les candidats
@@ -217,11 +228,44 @@ const fetchJobOffers = async () => {
       console.log(`📊 [FILTER NON-CANDIDAT] Toutes les offres visibles: ${offersFilteredByStatus.length} offres`);
     }
 
-    // 5. MODE CAMPAGNE DÉSACTIVÉ - Retourner toutes les offres filtrées
-    // CAMPAIGN_MODE = false, donc ce bloc ne s'exécute jamais
-    console.log(`✅ [NO CAMPAIGN] Toutes les offres affichées: ${offersFilteredByStatus.length} offres`);
+    // 5. FILTRAGE PAR CAMPAGNE
+    // - Visiteurs NON CONNECTÉS (vue publique) : Voient uniquement la campagne active (Campagne 3)
+    // - Candidats connectés : Voient uniquement la campagne active (Campagne 3)
+    // - Recruteurs/Admins : Voient TOUTES les campagnes (1, 2, 3)
+    const offersFilteredByCampaign = offersFilteredByStatus.filter(offer => {
+      // Si l'utilisateur est un RECRUTEUR, montrer TOUTES les campagnes
+      if (isRecruiter) {
+        return true;
+      }
+      
+      // À partir d'ici : Candidat OU Visiteur non connecté
+      // Ils voient uniquement la campagne active
+      const offerCampaignId = offer.campaign_id;
+      const visibleCampaigns = getVisibleCampaignsForCandidates();
+      
+      // Si l'offre n'a pas de campaign_id, on la montre par défaut (nouvelle offre)
+      if (!offerCampaignId) {
+        console.log(`⚠️ [CAMPAIGN FILTER] "${offer.title}" - Pas de campaign_id, visible par défaut`);
+        return true;
+      }
+      
+      // Vérifier si la campagne est visible pour les candidats/visiteurs
+      if (visibleCampaigns.includes(offerCampaignId)) {
+        console.log(`✅ [CAMPAIGN FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Visible`);
+        return true;
+      } else {
+        console.log(`🚫 [CAMPAIGN FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Masquée (Campagne historique)`);
+        return false;
+      }
+    });
+
+    if (isCandidate) {
+      console.log(`📊 [FILTER CAMPAGNE] Offres visibles après filtrage campagne: ${offersFilteredByCampaign.length}/${offersFilteredByStatus.length}`);
+    }
+
+    console.log(`✅ [FINAL] Offres affichées: ${offersFilteredByCampaign.length} offres`);
     
-    return offersFilteredByStatus;
+    return offersFilteredByCampaign;
   } catch (error) {
     console.error('[useJobOffers] Unexpected error:', error);
     const msg = String((error as any)?.message || '');

@@ -31,12 +31,14 @@ import { useAdvancedRecruiterStats } from "@/hooks/useAdvancedRecruiterStats";
 import { useAuth } from "@/hooks/useAuth";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
 import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
+import { useCampaign } from "@/contexts/CampaignContext";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
 export default function AdvancedDashboard() {
   const navigate = useNavigate();
-  const { stats, activeJobs, statusEvolution, applicationsPerJob, isLoading, error } = useRecruiterDashboard();
+  const { selectedCampaignId } = useCampaign();
+  const { stats, activeJobs, statusEvolution, applicationsPerJob, isLoading, error } = useRecruiterDashboard(selectedCampaignId);
   const { stats: advancedStats, isLoading: isLoadingAdvancedStats, error: advancedStatsError } = useAdvancedRecruiterStats(activeJobs.length);
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { isRecruiter } = useAuth();

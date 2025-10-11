@@ -1365,7 +1365,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         if (email && !emailRegex.test(email)) {
                           e.target.setCustomValidity('Veuillez entrer une adresse email valide');
                         } else {
-                          e.target.setCustomValidity('');
+                        e.target.setCustomValidity('');
                         }
                       }}
                       onBlur={(e) => {
@@ -1666,31 +1666,41 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                   {isInternalOffer && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <h4 className="font-medium mb-3">Expérience professionnelle</h4>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Cette information est requise pour les candidatures internes.
-                      </p>
-                      <div className="flex items-start space-x-3">
-                        <Checkbox
-                          id="hasBeenManager"
-                          checked={formData.hasBeenManager === true}
-                          onCheckedChange={(checked) => {
-                            setFormData({ 
-                              ...formData, 
-                              hasBeenManager: checked === true ? true : checked === false ? false : null
-                            });
-                          }}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <Label 
-                            htmlFor="hasBeenManager" 
-                            className="text-sm font-medium leading-relaxed cursor-pointer"
-                          >
-                            Avez-vous déjà occupé un poste de chef ou de manager dans une structure quelconque ? *
-                          </Label>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Veuillez cocher si vous avez déjà eu des responsabilités de management ou de supervision d'équipe.
-                          </p>
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium leading-relaxed">
+                          Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :
+                        </Label>
+                        <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                          <li>• Chef de service ;</li>
+                          <li>• Chef de département ;</li>
+                          <li>• Directeur ;</li>
+                          <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
+                        </ul>
+                        
+                        <div className="flex gap-4">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="hasBeenManager"
+                              value="true"
+                              checked={formData.hasBeenManager === true}
+                              onChange={(e) => setFormData({ ...formData, hasBeenManager: e.target.value === 'true' ? true : null })}
+                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm font-medium">Oui</span>
+                          </label>
+                          
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="hasBeenManager"
+                              value="false"
+                              checked={formData.hasBeenManager === false}
+                              onChange={(e) => setFormData({ ...formData, hasBeenManager: e.target.value === 'false' ? false : null })}
+                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm font-medium">Non</span>
+                          </label>
                         </div>
                       </div>
                       {formData.hasBeenManager === null && (

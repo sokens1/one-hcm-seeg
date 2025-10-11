@@ -84,7 +84,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- 2. Créer une table pour les notifications d'accès en attente
 CREATE TABLE IF NOT EXISTS public.access_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+  user_id TEXT REFERENCES public.users(id) ON DELETE CASCADE,
   email TEXT NOT NULL,
   first_name TEXT,
   last_name TEXT,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS public.access_requests (
   rejection_reason TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   reviewed_at TIMESTAMPTZ,
-  reviewed_by UUID REFERENCES public.users(id)
+  reviewed_by TEXT REFERENCES public.users(id)
 );
 
 -- Index pour performance
@@ -114,7 +114,7 @@ CREATE POLICY "Admins can view all access requests"
   USING (
     EXISTS (
       SELECT 1 FROM public.users 
-      WHERE id = auth.uid() 
+      WHERE id = (auth.uid())::text 
       AND role IN ('admin', 'recruteur')
     )
   );
@@ -125,7 +125,7 @@ CREATE POLICY "Users can view own access requests"
   ON public.access_requests
   FOR SELECT
   TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = (auth.uid())::text);
 
 -- 3. Créer un trigger pour enregistrer automatiquement les demandes d'accès
 CREATE OR REPLACE FUNCTION public.log_access_request()
@@ -182,7 +182,7 @@ BEGIN
   -- Vérifier que l'utilisateur connecté est admin/recruteur
   IF NOT EXISTS (
     SELECT 1 FROM public.users 
-    WHERE id = auth.uid() 
+    WHERE id = (auth.uid())::text 
     AND role IN ('admin', 'recruteur')
   ) THEN
     RAISE EXCEPTION 'Non autorisé';
@@ -219,7 +219,7 @@ BEGIN
   SET 
     status = 'approved',
     reviewed_at = NOW(),
-    reviewed_by = auth.uid()
+    reviewed_by = (auth.uid())::text
   WHERE id = request_id;
 
   -- Déclencher l'envoi de l'email de validation (via webhook ou notification)
@@ -258,7 +258,7 @@ BEGIN
   -- Vérifier que l'utilisateur connecté est admin/recruteur
   IF NOT EXISTS (
     SELECT 1 FROM public.users 
-    WHERE id = auth.uid() 
+    WHERE id = (auth.uid())::text 
     AND role IN ('admin', 'recruteur')
   ) THEN
     RAISE EXCEPTION 'Non autorisé';
@@ -284,7 +284,7 @@ BEGIN
     status = 'rejected',
     rejection_reason = p_rejection_reason,
     reviewed_at = NOW(),
-    reviewed_by = auth.uid()
+    reviewed_by = (auth.uid())::text
   WHERE id = request_id;
 
   RETURN TRUE;

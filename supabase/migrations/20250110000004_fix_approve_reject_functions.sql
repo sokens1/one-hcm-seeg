@@ -4,7 +4,7 @@
 CREATE OR REPLACE FUNCTION public.approve_access_request(request_id UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
-  v_user_id UUID;
+  v_user_id TEXT;
   v_email TEXT;
   v_first_name TEXT;
   v_last_name TEXT;
@@ -12,7 +12,7 @@ BEGIN
   -- Vérifier que l'utilisateur connecté est admin/recruteur
   IF NOT EXISTS (
     SELECT 1 FROM public.users 
-    WHERE id = auth.uid() 
+    WHERE id = (auth.uid())::text 
     AND role IN ('admin', 'recruteur')
   ) THEN
     RAISE EXCEPTION 'Non autorisé';
@@ -38,7 +38,7 @@ BEGIN
   SET 
     status = 'approved',
     reviewed_at = NOW(),
-    reviewed_by = auth.uid()
+    reviewed_by = (auth.uid())::text
   WHERE id = request_id;
 
   -- Note: L'email est envoyé par le frontend via l'API /send-access-approved-email
@@ -51,7 +51,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION public.reject_access_request(request_id UUID, p_rejection_reason TEXT DEFAULT NULL)
 RETURNS BOOLEAN AS $$
 DECLARE
-  v_user_id UUID;
+  v_user_id TEXT;
   v_email TEXT;
   v_first_name TEXT;
   v_last_name TEXT;
@@ -59,7 +59,7 @@ BEGIN
   -- Vérifier que l'utilisateur connecté est admin/recruteur
   IF NOT EXISTS (
     SELECT 1 FROM public.users 
-    WHERE id = auth.uid() 
+    WHERE id = (auth.uid())::text 
     AND role IN ('admin', 'recruteur')
   ) THEN
     RAISE EXCEPTION 'Non autorisé';
@@ -86,7 +86,7 @@ BEGIN
     status = 'rejected',
     rejection_reason = p_rejection_reason,
     reviewed_at = NOW(),
-    reviewed_by = auth.uid()
+    reviewed_by = (auth.uid())::text
   WHERE id = request_id;
 
   -- Note: L'email est envoyé par le frontend via l'API /send-access-rejected-email

@@ -21,6 +21,30 @@ ADD COLUMN IF NOT EXISTS poste_actuel TEXT,
 ADD COLUMN IF NOT EXISTS annees_experience INTEGER,
 ADD COLUMN IF NOT EXISTS no_seeg_email BOOLEAN DEFAULT FALSE;
 
+-- 2.1 Nettoyer les données existantes invalides
+-- Mettre à NULL les valeurs de sexe qui ne sont pas 'M' ou 'F'
+UPDATE public.users 
+SET sexe = NULL 
+WHERE sexe IS NOT NULL 
+  AND sexe NOT IN ('M', 'F');
+
+-- Mettre à NULL les valeurs de candidate_status invalides
+UPDATE public.users 
+SET candidate_status = NULL 
+WHERE candidate_status IS NOT NULL 
+  AND candidate_status NOT IN ('interne', 'externe');
+
+-- Corriger les valeurs de statut invalides (mettre 'actif' par défaut)
+UPDATE public.users 
+SET statut = 'actif' 
+WHERE statut IS NOT NULL 
+  AND statut NOT IN ('actif', 'inactif', 'en_attente', 'bloqué', 'archivé');
+
+-- S'assurer que tous les utilisateurs ont un statut (actif par défaut)
+UPDATE public.users 
+SET statut = 'actif' 
+WHERE statut IS NULL;
+
 -- Supprimer les anciennes contraintes si elles existent (pour éviter les conflits)
 DO $$ 
 BEGIN
@@ -127,29 +151,31 @@ COMMENT ON COLUMN public.users.no_seeg_email IS 'Indique si le candidat interne 
 COMMENT ON COLUMN public.users.matricule IS 'Matricule SEEG (optionnel, uniquement pour les internes)';
 
 -- 7. Mettre à jour les politiques RLS (Row Level Security) si nécessaire
--- Les utilisateurs peuvent voir et modifier leurs propres données
+-- Commenté temporairement pour déboguer l'erreur UUID
+/*
 DROP POLICY IF EXISTS "Users can view own profile" ON public.users;
 CREATE POLICY "Users can view own profile"
   ON public.users
   FOR SELECT
-  USING (auth.uid() = id);
+  USING ((auth.uid())::uuid = id);
 
 DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
 CREATE POLICY "Users can update own profile"
   ON public.users
   FOR UPDATE
-  USING (auth.uid() = id)
-  WITH CHECK (auth.uid() = id);
+  USING ((auth.uid())::uuid = id)
+  WITH CHECK ((auth.uid())::uuid = id);
+*/
 
 -- 8. Créer une fonction pour valider le format de l'email SEEG pour les internes
 CREATE OR REPLACE FUNCTION public.validate_candidate_email()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Si candidat interne sans exception et email ne finit pas par @seeg.com
+  -- Si candidat interne sans exception et email ne finit pas par @seeg-gabon.com
   IF NEW.candidate_status = 'interne' 
      AND (NEW.no_seeg_email IS NULL OR NEW.no_seeg_email = FALSE)
-     AND NEW.email NOT LIKE '%@seeg.com' THEN
-    RAISE EXCEPTION 'Les candidats internes doivent avoir un email @seeg.com ou cocher "Je n''ai pas d''email professionnel SEEG"';
+     AND NEW.email NOT LIKE '%@seeg-gabon.com' THEN
+    RAISE EXCEPTION 'Les candidats internes doivent avoir un email @seeg-gabon.com ou cocher "Je n''ai pas d''email professionnel SEEG"';
   END IF;
   
   RETURN NEW;
@@ -220,9 +246,9 @@ BEGIN
   FROM public.users u
   WHERE u.id = candidate_id
     AND u.role = 'candidat'
-    AND (u.id = auth.uid() OR EXISTS (
+    AND (u.id = (auth.uid())::uuid OR EXISTS (
       SELECT 1 FROM public.users admin 
-      WHERE admin.id = auth.uid() 
+      WHERE admin.id = (auth.uid())::uuid 
       AND admin.role IN ('admin', 'recruteur')
     ));
 END;
@@ -248,9 +274,9 @@ RETURNS BOOLEAN AS $$
 BEGIN
   -- Vérifier que l'utilisateur peut modifier ce profil
   -- Les candidats peuvent modifier leur profil, les admins/recruteurs peuvent modifier tous les profils
-  IF auth.uid() != candidate_id AND NOT EXISTS (
+  IF (auth.uid())::uuid != candidate_id AND NOT EXISTS (
     SELECT 1 FROM public.users 
-    WHERE id = auth.uid() 
+    WHERE id = (auth.uid())::uuid 
     AND role IN ('admin', 'recruteur')
   ) THEN
     RAISE EXCEPTION 'Non autorisé à modifier ce profil';

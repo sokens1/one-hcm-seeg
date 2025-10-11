@@ -32,6 +32,8 @@ import { fr } from "date-fns/locale";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useCampaign } from "@/contexts/CampaignContext";
+import { CampaignSelector } from "@/components/ui/CampaignSelector";
 
 // Types dérivés des applications
 type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme';
@@ -264,7 +266,8 @@ const statusConfig: Record<ApplicationStatus, { label: string; color: string }> 
 export default function CandidatesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | ApplicationStatus>("all");
-  const { applications, isLoading, error } = useRecruiterApplications();
+  const { selectedCampaignId } = useCampaign();
+  const { applications, isLoading, error } = useRecruiterApplications(undefined, selectedCampaignId);
   const { isObserver } = useAuth();
   
   //console.log('[CANDIDATES PAGE DEBUG] Applications hook result:', { applications, isLoading, error });
@@ -338,6 +341,11 @@ export default function CandidatesPage() {
   return (
     <RecruiterLayout>
       <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
+        {/* Sélecteur de campagne */}
+        <div className="mb-4">
+          <CampaignSelector />
+        </div>
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
           <div>
