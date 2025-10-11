@@ -205,6 +205,7 @@ export default function ObserverAdvancedDashboard() {
                   { name: 'Incubation', value: statusEvolution.reduce((sum, day) => sum + day.incubation, 0), fill: '#f59e0b' },
                   { name: 'Embauche', value: statusEvolution.reduce((sum, day) => sum + day.embauche, 0), fill: '#10b981' },
                   { name: 'Refusé', value: statusEvolution.reduce((sum, day) => sum + day.refuse, 0), fill: '#ef4444' },
+                  { name: 'Entretien Programmé', value: statusEvolution.reduce((sum, day) => sum + (day.entretien_programme || 0), 0), fill: '#8b5cf6' },
                 ]}>
                   <XAxis dataKey="name" />
                   <YAxis />

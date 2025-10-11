@@ -452,7 +452,11 @@ export default function ObserverDashboard() {
                         <XAxis 
                           dataKey="date" 
                           tick={{ fontSize: 12 }}
-                          tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
+                          tickFormatter={(value) => {
+                            // La date est déjà au format YYYY-MM-DD, on peut l'afficher directement
+                            const [year, month, day] = value.split('-');
+                            return `${day}/${month}`;
+                          }}
                         />
                         <YAxis tick={{ fontSize: 12 }} />
                         <Tooltip 

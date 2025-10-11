@@ -45,6 +45,7 @@ export interface StatusEvolutionData {
   incubation: number;
   embauche: number;
   refuse: number;
+  entretien_programme?: number;
 }
 
 export interface ApplicationsPerJobData {
@@ -116,7 +117,7 @@ export function useRecruiterDashboard(campaignId?: string) {
     }
 
     // MODE CAMPAGNE DÉSACTIVÉ - Afficher toutes les offres
-    let campaignJobs = (jobsData || []);
+    const campaignJobs = (jobsData || []);
     console.log(`✅ [NO CAMPAIGN DASHBOARD] Toutes les offres affichées: ${campaignJobs.length} offres`);
 
     // Process jobs data with filtered applications
@@ -331,48 +332,87 @@ export function useRecruiterDashboard(campaignId?: string) {
     // Debug: Log final department stats
     // console.log('[DASHBOARD DEBUG] Final department stats:', departmentStats);
 
-    // Calculate status evolution over the last 7 days
+    // Calculate status evolution day by day
     const statusEvolution: StatusEvolutionData[] = [];
     
-    // Nouvelle période de candidatures : 27 sept. 2025 au 05 oct. 2025
-    // Ici, on utilise la fin de période comme borne pour les courbes
-    const applicationDeadline = new Date('2025-10-21T23:59:59');
-    const now = new Date();
+    // Déterminer la plage de dates en fonction de la campagne
+    let startDate: Date;
+    let endDate: Date;
     
-    // Si on est après la date limite, on s'arrête au 31 août
-    const endDate = now > applicationDeadline ? applicationDeadline : now;
+    if (activeCampaignId === GLOBAL_VIEW.id) {
+      // Vue globale : depuis la première campagne
+      startDate = new Date('2025-08-23');
+      endDate = new Date();
+    } else {
+      // Campagne spécifique : période exacte de la campagne
+      const campaign = getCampaignById(activeCampaignId);
+      if (campaign) {
+        startDate = new Date(campaign.startDate);
+        endDate = new Date(campaign.endDate);
+        // Si la campagne n'est pas encore terminée, utiliser aujourd'hui
+        const now = new Date();
+        if (now < endDate) {
+          endDate = now;
+        }
+      } else {
+        // Fallback
+        startDate = new Date('2025-08-23');
+        endDate = new Date();
+      }
+    }
     
-    // Générer les 7 derniers jours en respectant le fuseau horaire local
-    // mais en s'arrêtant à la date limite de candidature
-    const last7Days = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(endDate);
-      date.setDate(date.getDate() - i);
-      // Utiliser toLocaleDateString pour éviter les problèmes de fuseau horaire
+    // Calculer tous les jours de la période
+    const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Générer tous les jours de la période
+    const allDays = Array.from({ length: daysDiff + 1 }, (_, i) => {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
       return date.toLocaleDateString('fr-CA'); // Format YYYY-MM-DD
-    }).reverse();
+    });
 
-    last7Days.forEach(date => {
+    // Pour chaque jour de la période, calculer l'évolution des statuts
+    allDays.forEach(date => {
+      // Candidatures créées ce jour-là (pas cumulatif)
       const dayApplications = (allApplicationsData || []).filter(app => {
-        // Créer une date locale à partir de la date de création
         const appDate = new Date(app.created_at);
-        // Comparer avec la date locale du jour (00h00 à 23h59)
         const appDateLocal = appDate.toLocaleDateString('fr-CA');
-        return appDateLocal === date;
+        return appDateLocal === date; // Exactement ce jour
       });
 
+      // Compter par statut ACTUEL pour les candidatures de ce jour
       const candidature = dayApplications.filter(app => app.status === 'candidature').length;
       const incubation = dayApplications.filter(app => app.status === 'incubation').length;
       const embauche = dayApplications.filter(app => app.status === 'embauche').length;
       const refuse = dayApplications.filter(app => app.status === 'refuse').length;
+      const entretien_programme = dayApplications.filter(app => app.status === 'entretien_programme').length;
 
-      statusEvolution.push({
-        date,
-        candidature,
-        incubation,
-        embauche,
-        refuse
-      });
+      // Ne pas ajouter de jour vide (0 candidatures)
+      const totalApplications = candidature + incubation + embauche + refuse + entretien_programme;
+      
+      if (totalApplications > 0) {
+        statusEvolution.push({
+          date,
+          candidature,
+          incubation,
+          embauche,
+          refuse,
+          entretien_programme
+        });
+      }
     });
+
+    // Si aucune donnée, ajouter au moins une entrée vide pour éviter les erreurs
+    if (statusEvolution.length === 0) {
+      statusEvolution.push({
+        date: new Date().toLocaleDateString('fr-CA'),
+        candidature: 0,
+        incubation: 0,
+        embauche: 0,
+        refuse: 0,
+        entretien_programme: 0
+      });
+    }
 
     return { 
       stats, 
