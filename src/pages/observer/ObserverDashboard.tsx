@@ -22,6 +22,8 @@ import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
 import { useCampaignStats } from "@/hooks/useCampaignStats";
 import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
 import { DashboardToggle } from "@/components/ui/DashboardToggle";
+import { CampaignSelector } from "@/components/ui/CampaignSelector";
+import { useCampaign } from "@/contexts/CampaignContext";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
@@ -45,6 +47,7 @@ import {
 import ObserverAdvancedDashboard from "./ObserverAdvancedDashboard";
 
 export default function ObserverDashboard() {
+  const { selectedCampaignId } = useCampaign();
   const { 
     stats, 
     jobCoverage, 
@@ -52,7 +55,7 @@ export default function ObserverDashboard() {
     applicationsPerJob, 
     isLoading, 
     error 
-  } = useRecruiterDashboard();
+  } = useRecruiterDashboard(selectedCampaignId);
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
   const { data: campaignStats, isLoading: isLoadingCampaignStats } = useCampaignStats();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -95,6 +98,11 @@ export default function ObserverDashboard() {
   return (
     <ObserverLayout>
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        {/* Sélecteur de campagne */}
+        <div className="mb-4">
+          <CampaignSelector />
+        </div>
+
         {/* Basculement entre les vues */}
         <DashboardToggle 
           currentView={dashboardView} 

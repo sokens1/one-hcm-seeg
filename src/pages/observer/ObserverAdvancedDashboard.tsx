@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
+import { useCampaign } from "@/contexts/CampaignContext";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
@@ -30,13 +31,14 @@ import {
 } from 'recharts';
 
 export default function ObserverAdvancedDashboard() {
+  const { selectedCampaignId } = useCampaign();
   const { 
     stats, 
     jobCoverage, 
     statusEvolution, 
     applicationsPerJob, 
     isLoading 
-  } = useRecruiterDashboard();
+  } = useRecruiterDashboard(selectedCampaignId);
   
   const { data: activities } = useRecruiterActivity();
 

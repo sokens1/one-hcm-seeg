@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
-import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
+import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS, isInCampaignPeriod, getCampaignById, GLOBAL_VIEW } from "@/config/campaign";
 
 export interface RecruiterStats {
   totalJobs: number;
@@ -54,7 +54,7 @@ export interface ApplicationsPerJobData {
   new_applications_24h: number;
 }
 
-export function useRecruiterDashboard() {
+export function useRecruiterDashboard(campaignId?: string) {
   const { user } = useAuth();
 
   const fetchDashboardData = async () => {
@@ -91,11 +91,21 @@ export function useRecruiterDashboard() {
 
     // Récupérer TOUTES les candidatures avec la fonction optimisée
     const { data: combinedEntries } = await supabase.rpc('get_all_recruiter_applications');
-    const CAMPAIGN_START = new Date('2025-09-25');
+    
+    // Filtrer les candidatures en fonction de la campagne sélectionnée
+    const activeCampaignId = campaignId || GLOBAL_VIEW.id;
     const allEntries = (combinedEntries || []).filter((app: any) => {
       const createdAt = app?.application_details?.created_at;
       if (!createdAt) return false;
-      return new Date(createdAt) >= CAMPAIGN_START;
+      
+      // Si vue globale, on affiche tout (depuis la première campagne)
+      if (activeCampaignId === GLOBAL_VIEW.id) {
+        const FIRST_CAMPAIGN_START = new Date('2025-08-23');
+        return new Date(createdAt) >= FIRST_CAMPAIGN_START;
+      }
+      
+      // Sinon, filtrer par la campagne spécifique
+      return isInCampaignPeriod(createdAt, activeCampaignId);
     });
 
     // Extraire les détails des candidatures
@@ -375,7 +385,7 @@ export function useRecruiterDashboard() {
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['recruiterDashboard', user?.id],
+    queryKey: ['recruiterDashboard', user?.id, campaignId || GLOBAL_VIEW.id],
     queryFn: fetchDashboardData,
     enabled: !!user,
     refetchInterval: 30000, // Refresh every 30 seconds for real-time data
