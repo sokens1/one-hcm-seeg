@@ -183,27 +183,32 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     { 
       label: 'Nom Complet', 
       value: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
-      isFilled: !!(data.firstName || data.lastName)
+      isFilled: !!(data.firstName || data.lastName),
+      isRequired: true
     },
     { 
       label: 'Email', 
       value: data.email,
-      isFilled: !!data.email
+      isFilled: !!data.email,
+      isRequired: true
     },
     { 
       label: 'Date de Naissance', 
       value: data.dateOfBirth ? format(new Date(data.dateOfBirth), 'dd MMMM yyyy', { locale: fr }) : 'Non renseignée',
-      isFilled: !!data.dateOfBirth
+      isFilled: !!data.dateOfBirth,
+      isRequired: true
     },
     { 
       label: 'Sexe', 
       value: data.gender || 'Non renseigné',
-      isFilled: !!data.gender && data.gender.trim() !== ''
+      isFilled: !!data.gender && data.gender.trim() !== '',
+      isRequired: true
     },
     { 
       label: 'Poste Actuel', 
       value: data.currentPosition || 'Non renseigné',
-      isFilled: !!data.currentPosition
+      isFilled: !!data.currentPosition,
+      isRequired: true
     },
   ];
 
@@ -480,8 +485,8 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     // Style différent selon le type d'élément
     if (info.isQuestion) {
       // Question principale
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(31, 41, 55);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(31, 41, 55);
       doc.text(cleanedLabel, margin, yPos);
     } else if (info.isSubItem) {
       // Sous-éléments (puces)
