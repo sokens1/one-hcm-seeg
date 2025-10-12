@@ -223,18 +223,14 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 
                                 <Button
                   onClick={() => {
-                    if (!isEligible) {
-                      toast.error("Période de candidatures close");
-                      return;
-                    }
                     onApply();
                   }}
                   className="w-full text-sm sm:text-base"
                   size="lg"
-                  disabled={!isEligible}
+                  disabled={false}
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  {!isEligible ? "Candidature fermée" : "Postuler"}
+                  Postuler
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
