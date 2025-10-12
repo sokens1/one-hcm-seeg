@@ -88,7 +88,7 @@ export default function RecruiterJobs() {
 
         {/* Filtres par statut */}
         <div className="space-y-4">
-          <div>
+          {/* <div>
             <p className="text-sm font-medium text-muted-foreground mb-2">Statut de l'offre :</p>
             <div className="flex justify-center gap-2 flex-wrap">
               <Button
@@ -115,7 +115,7 @@ export default function RecruiterJobs() {
                  Externes
               </Button>
             </div>
-          </div>
+          </div> */}
 
           {/* Filtres par campagne */}
           <div>

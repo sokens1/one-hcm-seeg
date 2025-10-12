@@ -220,6 +220,20 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
 
   if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
 
+  // Si mtp_answers est une string JSON, la parser
+  let parsedAnswers = mtpAnswers;
+  if (typeof mtpAnswers === 'string') {
+    try {
+      parsedAnswers = JSON.parse(mtpAnswers);
+    } catch (error) {
+      console.error('❌ [MtpAnswersDisplay] Erreur de parsing JSON:', error);
+      return <p className="text-xs sm:text-sm text-red-500">Erreur de format des réponses MTP.</p>;
+    }
+  }
+
+  // Utiliser parsedAnswers au lieu de mtpAnswers
+  mtpAnswers = parsedAnswers;
+
   const renderSection = (title, section, color, answers, badgeColor) => {
     const validAnswers = (answers || []).filter(answer => answer && answer.trim() !== '');
     const sectionQuestions = questions[section] || [];
