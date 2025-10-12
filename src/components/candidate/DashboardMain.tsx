@@ -21,6 +21,9 @@ export function DashboardMain() {
   const { data: applications, isLoading: isLoadingApps, error: errorApps } = useApplications();
   const { data: jobOffers, isLoading: isLoadingJobs, error: errorJobs } = useJobOffers();
 
+  // Debug: Log job offers count
+  console.log('🔍 [DashboardMain] Nombre d\'offres reçues:', jobOffers?.length, jobOffers);
+
   const [locationFilter, setLocationFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
 

@@ -24,6 +24,8 @@ interface ApplicationData {
   referenceEmail?: string;
   referenceContact?: string;
   referenceCompany?: string;
+  // Expérience professionnelle (pour les offres internes)
+  hasBeenManager?: boolean | null;
   // MTP Questions - Métier
   metier1?: string;
   metier2?: string;
@@ -347,58 +349,122 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.setTextColor(30, 64, 175);
+  // Déterminer le type d'offre
+  const isExternalOffer = data.offerStatus === 'externe';
+  const isInternalOffer = data.offerStatus === 'interne';
+  
+  // Titre de section selon le type d'offre
+  if (isExternalOffer) {
   doc.text('3. Références de Recommandation', margin, yPos);
+  } else if (isInternalOffer) {
+    doc.text('3. Expérience Professionnelle', margin, yPos);
+  } else {
+    doc.text('3. Informations Complémentaires', margin, yPos);
+  }
   yPos += 10;
 
-  // Vérifier l'espace disponible avant d'ajouter la section des références
+  // Vérifier l'espace disponible avant d'ajouter la section
   if (yPos > doc.internal.pageSize.height - 50) {
     doc.addPage();
     yPos = 20;
   }
 
-  // Déterminer si les références sont requises (pour les offres externes uniquement)
-  const isExternalOffer = data.offerStatus === 'externe';
-  
-  // Debug: Log reference data received
-  console.log('🔍 [generateApplicationPdf] Données de références reçues:', {
+  // Debug: Log data received
+  console.log('🔍 [generateApplicationPdf] Données reçues:', {
     referenceFullName: data.referenceFullName,
     referenceEmail: data.referenceEmail,
     referenceContact: data.referenceContact,
     referenceCompany: data.referenceCompany,
+    hasBeenManager: data.hasBeenManager,
     offerStatus: data.offerStatus,
-    isExternalOffer
+    isExternalOffer,
+    isInternalOffer
   });
   
-  const referenceInfo = [
+  let sectionInfo = [];
+  
+  if (isExternalOffer) {
+    // Section Références pour les offres externes
+    sectionInfo = [
     { 
       label: 'Nom et Prénom', 
-      value: data.referenceFullName ? cleanCorruptedText(data.referenceFullName) : (isExternalOffer ? 'Non renseigné' : 'Non applicable'),
-      isFilled: data.referenceFullName ? cleanCorruptedText(data.referenceFullName).trim().length > 0 : false,
-      isRequired: isExternalOffer
-    },
-    { 
-      label: 'Entreprise', 
-      value: data.referenceCompany ? cleanCorruptedText(data.referenceCompany) : (isExternalOffer ? 'Non renseignée' : 'Non applicable'),
-      isFilled: data.referenceCompany ? cleanCorruptedText(data.referenceCompany).trim().length > 0 : false,
-      isRequired: isExternalOffer
+        value: data.referenceFullName ? cleanCorruptedText(data.referenceFullName) : 'Non renseigné',
+        isFilled: data.referenceFullName ? cleanCorruptedText(data.referenceFullName).trim().length > 0 : false,
+        isRequired: true
+      },
+      { 
+        label: 'Administration / Entreprise / Organisation', 
+        value: data.referenceCompany ? cleanCorruptedText(data.referenceCompany) : 'Non renseignée',
+        isFilled: data.referenceCompany ? cleanCorruptedText(data.referenceCompany).trim().length > 0 : false,
+        isRequired: true,
+        isLongLabel: true  // Flag pour indiquer un label long
     },
     { 
       label: 'Email', 
-      value: data.referenceEmail ? cleanCorruptedText(data.referenceEmail) : (isExternalOffer ? 'Non renseigné' : 'Non applicable'),
-      isFilled: data.referenceEmail ? cleanCorruptedText(data.referenceEmail).trim().length > 0 : false,
-      isRequired: isExternalOffer
+        value: data.referenceEmail ? cleanCorruptedText(data.referenceEmail) : 'Non renseigné',
+        isFilled: data.referenceEmail ? cleanCorruptedText(data.referenceEmail).trim().length > 0 : false,
+        isRequired: true
     },
     { 
       label: 'Contact', 
-      value: data.referenceContact ? cleanCorruptedText(data.referenceContact) : (isExternalOffer ? 'Non renseigné' : 'Non applicable'),
-      isFilled: data.referenceContact ? cleanCorruptedText(data.referenceContact).trim().length > 0 : false,
-      isRequired: isExternalOffer
-    }
-  ];
+        value: data.referenceContact ? cleanCorruptedText(data.referenceContact) : 'Non renseigné',
+        isFilled: data.referenceContact ? cleanCorruptedText(data.referenceContact).trim().length > 0 : false,
+        isRequired: true
+      }
+    ];
+  } else if (isInternalOffer) {
+    // Section Expérience Professionnelle pour les offres internes
+    const experienceAnswer = data.hasBeenManager === true ? 'Oui' : data.hasBeenManager === false ? 'Non' : 'Non renseigné';
+    const isFilled = data.hasBeenManager !== null;
+    
+    sectionInfo = [
+      {
+        label: 'Avez vous déjà eu, pour ce métier, l\'une des expériences suivantes :',
+        value: '',
+        isFilled: false,
+        isRequired: false,
+        isQuestion: true
+      },
+      {
+        label: '• Chef de service ;',
+        value: '',
+        isFilled: false,
+        isRequired: false,
+        isSubItem: true
+      },
+      {
+        label: '• Chef de département ;',
+        value: '',
+        isFilled: false,
+        isRequired: false,
+        isSubItem: true
+      },
+      {
+        label: '• Directeur ;',
+        value: '',
+        isFilled: false,
+        isRequired: false,
+        isSubItem: true
+      },
+      {
+        label: '• Senior/Expert avec au moins 5 ans d\'expérience ?',
+        value: '',
+        isFilled: false,
+        isRequired: false,
+        isSubItem: true
+      },
+      {
+        label: 'Réponse',
+        value: experienceAnswer,
+        isFilled: isFilled,
+        isRequired: true
+      }
+    ];
+  }
 
-  // Afficher les informations de référence
+  // Afficher les informations de la section
   doc.setFont('helvetica', 'normal');
-  referenceInfo.forEach(info => {
+  sectionInfo.forEach(info => {
     // Vérifier l'espace disponible
     if (yPos > doc.internal.pageSize.height - 20) {
       doc.addPage();
@@ -411,29 +477,72 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     const cleanedLabel = cleanCorruptedText(info.label);
     const cleanedValue = cleanCorruptedText(info.value);
     
-    // Afficher le label
+    // Style différent selon le type d'élément
+    if (info.isQuestion) {
+      // Question principale
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(31, 41, 55);
+      doc.text(cleanedLabel, margin, yPos);
+    } else if (info.isSubItem) {
+      // Sous-éléments (puces)
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(75, 85, 99);
+      doc.text(cleanedLabel, margin + 10, yPos);
+    } else {
+      // Éléments normaux avec valeur
+      const hasLongLabel = (info as any).isLongLabel;
+      
+      if (hasLongLabel) {
+        // Pour les labels longs : afficher le label sur une ligne séparée
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(31, 41, 55);
+        doc.text(`${cleanedLabel}:`, margin, yPos);
+        yPos += 7; // Espacement réduit pour la ligne suivante
+        
+        // Afficher la valeur sur la ligne suivante, alignée avec les autres valeurs (margin + 60)
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(75, 85, 99);
+        doc.text(cleanedValue, margin + 60, yPos);
+        
+        // Afficher le statut avec la couleur appropriée
+        const status = cleanCorruptedText(info.isFilled ? 'Renseigné' : (info.isRequired ? 'Non renseigné' : 'Non applicable'));
+        doc.setFont('helvetica', 'bold');
+        if (info.isFilled) {
+          doc.setTextColor(22, 163, 74); // Vert
+        } else if (info.isRequired) {
+          doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+        } else {
+          doc.setTextColor(107, 114, 128); // Gris pour "Non applicable"
+        }
+        
+        const statusX = pageWidth - margin - doc.getTextWidth(status);
+        doc.text(status, statusX, yPos);
+      } else {
+        // Pour les labels normaux : afficher sur une seule ligne
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(31, 41, 55);
-    doc.text(`${cleanedLabel}:`, margin, yPos);
+        doc.text(`${cleanedLabel}:`, margin, yPos);
     
     // Afficher la valeur
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(75, 85, 99);
-    doc.text(cleanedValue, margin + 60, yPos);
+        doc.text(cleanedValue, margin + 60, yPos);
     
-    // Afficher le statut avec la couleur appropriée - NETTOYER LE STATUT AUSSI
-    const status = cleanCorruptedText(info.isFilled ? 'Renseigné' : (info.isRequired ? 'Non renseigné' : 'Non applicable'));
+    // Afficher le statut avec la couleur appropriée
+        const status = cleanCorruptedText(info.isFilled ? 'Renseigné' : (info.isRequired ? 'Non renseigné' : 'Non applicable'));
     doc.setFont('helvetica', 'bold');
     if (info.isFilled) {
       doc.setTextColor(22, 163, 74); // Vert
-    } else if (info.isRequired) {
-      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+        } else if (info.isRequired) {
+          doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
     } else {
-      doc.setTextColor(107, 114, 128); // Gris pour "Non applicable"
+          doc.setTextColor(107, 114, 128); // Gris pour "Non applicable"
     }
     
     const statusX = pageWidth - margin - doc.getTextWidth(status);
     doc.text(status, statusX, yPos);
+      }
+    }
     
     yPos += 10; // Espacement entre les lignes
   });
@@ -732,3 +841,567 @@ export const generateApplicationPdf = (data: ApplicationData) => {
 
   return doc;
 };
+
+  yPos += 5;
+
+
+
+  // MTP Section
+
+  yPos += 10;
+
+  doc.setFont('helvetica', 'bold');
+
+  doc.setFontSize(14);
+
+  doc.setTextColor(30, 64, 175);
+
+  doc.text('4. Adhérence MTP', margin, yPos);
+
+  yPos += 10;
+
+
+
+  // Récupérer les questions spécifiques au poste
+
+  const mtpQuestions = getMetierQuestionsForTitle(data.jobTitle || '');
+
+
+
+  // Métier
+
+  doc.setFont('helvetica', 'bold');
+
+  doc.setFontSize(12);
+
+  doc.setTextColor(37, 99, 235); // Blue-600
+
+  doc.text('Métier', margin, yPos);
+
+  yPos += 7;
+
+
+
+  // Créer le tableau des questions métier avec les réponses
+
+  const metierQuestions = [
+
+    { label: mtpQuestions.metier[0] || '1. Question métier 1', value: data.metier1 },
+
+    { label: mtpQuestions.metier[1] || '2. Question métier 2', value: data.metier2 },
+
+    { label: mtpQuestions.metier[2] || '3. Question métier 3', value: data.metier3 },
+
+    { label: mtpQuestions.metier[3] || '4. Question métier 4', value: data.metier4 },
+
+    { label: mtpQuestions.metier[4] || '5. Question métier 5', value: data.metier5 },
+
+    { label: mtpQuestions.metier[5] || '6. Question métier 6', value: data.metier6 },
+
+    { label: mtpQuestions.metier[6] || '7. Question métier 7', value: data.metier7 }
+
+  ];
+
+
+
+  // Fonction pour ajouter un texte avec gestion de la pagination
+
+  const addWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight = 5) => {
+
+    if (!text) return 0; // Ne rien faire si le texte est vide
+
+    
+
+    const splitText = doc.splitTextToSize(text, maxWidth - 15); // Marge réduite pour le texte
+
+    let currentY = y;
+
+    
+
+    // Ajouter chaque ligne de texte
+
+    for (let i = 0; i < splitText.length; i++) {
+
+      // Vérifier si on doit ajouter une nouvelle page
+
+      if (currentY > doc.internal.pageSize.height - 30) {
+
+        doc.addPage();
+
+        currentY = 20;
+
+      }
+
+      
+
+      doc.text(splitText[i], x + 5, currentY);
+
+      currentY += lineHeight;
+
+    }
+
+    
+
+    return currentY - y + 2; // Retourne la hauteur totale utilisée
+
+  };
+
+
+
+  doc.setFont('helvetica', 'normal');
+
+  metierQuestions.forEach((q) => {
+
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+
+    if (yPos > doc.internal.pageSize.height - 50) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+    
+
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+
+    if (yPos > doc.internal.pageSize.height - 40) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+    
+
+    // Afficher la question
+
+    doc.setFont('helvetica', 'bold');
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(31, 41, 55);
+
+    
+
+    // Gestion du texte long pour la question - NETTOYER la question aussi
+    const cleanedQuestion = cleanCorruptedText(q.label);
+    const questionLines = doc.splitTextToSize(cleanedQuestion, pageWidth - 2 * margin - 10);
+    doc.text(questionLines, margin + 5, yPos);
+
+    
+
+    yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
+
+    
+
+    // Afficher la réponse si elle existe
+
+    if (q.value) {
+
+      doc.setFont('helvetica', 'normal');
+
+      doc.setFontSize(9);
+
+      doc.setTextColor(75, 85, 99);
+
+      
+
+      // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+
+      // Nettoyer le texte corrompu avant de l'afficher
+      const cleanedValue = cleanCorruptedText(q.value);
+      const textHeight = addWrappedText(
+
+        cleanedValue, 
+        margin, 
+
+        yPos, 
+
+        pageWidth - 2 * margin
+
+      );
+
+      
+
+      yPos += textHeight + 2; // Espacement réduit après la réponse
+
+      
+
+      // Afficher le statut "Renseigné" en vert juste après la réponse
+
+      doc.setFont('helvetica', 'bold');
+
+      doc.setFontSize(9); // Taille de police légèrement plus grande
+
+      doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
+
+      doc.text(cleanCorruptedText('✓ Renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement après le statut réduit
+
+    } else {
+
+      // Afficher "Non renseigné" en rouge si pas de réponse
+
+      doc.setFont('helvetica', 'bold');
+
+      doc.setFontSize(9); // Taille de police légèrement plus grande
+
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+
+      doc.text(cleanCorruptedText('✗ Non renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement réduit
+
+    }
+
+    
+
+    if (yPos > 270) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+  });
+
+
+
+  // Talent
+
+  yPos += 10; // Plus d'espace avant la section
+
+  doc.setFont('helvetica', 'bold');
+
+  doc.setFontSize(12);
+
+  doc.setTextColor(37, 99, 235);
+
+  doc.text('Talent', margin, yPos);
+
+  yPos += 7;
+
+
+
+  // Créer le tableau des questions talent avec les réponses
+
+  const talentQuestions = [
+
+    { label: mtpQuestions.talent[0] || '1. Question talent 1', value: data.talent1 },
+
+    { label: mtpQuestions.talent[1] || '2. Question talent 2', value: data.talent2 },
+
+    { label: mtpQuestions.talent[2] || '3. Question talent 3', value: data.talent3 }
+
+  ];
+
+
+
+  talentQuestions.forEach((q) => {
+
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+
+    if (yPos > doc.internal.pageSize.height - 50) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+    
+
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+
+    if (yPos > doc.internal.pageSize.height - 40) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+    
+
+    // Afficher la question
+
+    doc.setFont('helvetica', 'bold');
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(31, 41, 55);
+
+    
+
+    // Gestion du texte long pour la question - NETTOYER la question aussi
+    const cleanedQuestion = cleanCorruptedText(q.label);
+    const questionLines = doc.splitTextToSize(cleanedQuestion, pageWidth - 2 * margin - 10);
+    doc.text(questionLines, margin + 5, yPos);
+
+    
+
+    yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
+
+    
+
+    // Afficher la réponse si elle existe
+
+    if (q.value) {
+
+      doc.setFont('helvetica', 'normal');
+
+      doc.setFontSize(9);
+
+      doc.setTextColor(75, 85, 99);
+
+      
+
+      // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+
+      // Nettoyer le texte corrompu avant de l'afficher
+      const cleanedValue = cleanCorruptedText(q.value);
+      const textHeight = addWrappedText(
+
+        cleanedValue, 
+        margin, 
+
+        yPos, 
+
+        pageWidth - 2 * margin
+
+      );
+
+      
+
+      yPos += textHeight + 2; // Espacement réduit après la réponse
+
+      
+
+      // Afficher le statut "Renseigné" en vert juste après la réponse
+
+      doc.setFont('helvetica', 'bold');
+
+      doc.setFontSize(9); // Taille de police légèrement plus grande
+
+      doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
+
+      doc.text(cleanCorruptedText('✓ Renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement après le statut réduit
+
+    } else {
+
+      // Afficher "Non renseigné" en rouge si pas de réponse
+
+      doc.setFont('helvetica', 'bold');
+
+      doc.setFontSize(9); // Taille de police légèrement plus grande
+
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+
+      doc.text(cleanCorruptedText('✗ Non renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement réduit
+
+    }
+
+    
+
+    if (yPos > doc.internal.pageSize.height - 20) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+  });
+
+
+
+  // Paradigme
+
+  yPos += 10; // Plus d'espace avant la section
+
+  doc.setFont('helvetica', 'bold');
+
+  doc.setFontSize(12);
+
+  doc.setTextColor(37, 99, 235);
+
+  doc.text('Paradigme', margin, yPos);
+
+  yPos += 7;
+
+
+
+  // Créer le tableau des questions paradigme avec les réponses
+
+  const paradigmeQuestions = [
+
+    { label: mtpQuestions.paradigme[0] || '1. Question paradigme 1', value: data.paradigme1 },
+
+    { label: mtpQuestions.paradigme[1] || '2. Question paradigme 2', value: data.paradigme2 },
+
+    { label: mtpQuestions.paradigme[2] || '3. Question paradigme 3', value: data.paradigme3 }
+
+  ];
+
+
+
+  paradigmeQuestions.forEach((q) => {
+
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+
+    if (yPos > doc.internal.pageSize.height - 50) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+    
+
+    // Vérifier l'espace disponible avant d'ajouter une nouvelle question
+
+    if (yPos > doc.internal.pageSize.height - 40) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+    
+
+    // Afficher la question
+
+    doc.setFont('helvetica', 'bold');
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(31, 41, 55);
+
+    
+
+    // Gestion du texte long pour la question - NETTOYER la question aussi
+    const cleanedQuestion = cleanCorruptedText(q.label);
+    const questionLines = doc.splitTextToSize(cleanedQuestion, pageWidth - 2 * margin - 10);
+    doc.text(questionLines, margin + 5, yPos);
+
+    
+
+    yPos += questionLines.length * 5; // Ajuster l'espacement en fonction du nombre de lignes
+
+    
+
+    // Afficher la réponse si elle existe
+
+    if (q.value) {
+
+      doc.setFont('helvetica', 'normal');
+
+      doc.setFontSize(9);
+
+      doc.setTextColor(75, 85, 99);
+
+      
+
+      // Utiliser la fonction d'ajout de texte avec gestion de la pagination
+
+      // Nettoyer le texte corrompu avant de l'afficher
+      const cleanedValue = cleanCorruptedText(q.value);
+      const textHeight = addWrappedText(
+
+        cleanedValue, 
+        margin, 
+
+        yPos, 
+
+        pageWidth - 2 * margin
+
+      );
+
+      
+
+      yPos += textHeight + 2; // Espacement réduit après la réponse
+
+      
+
+      // Afficher le statut "Renseigné" en vert juste après la réponse
+
+      doc.setFont('helvetica', 'bold');
+
+      doc.setFontSize(9); // Taille de police légèrement plus grande
+
+      doc.setTextColor(22, 163, 74); // Vert pour "Renseigné"
+
+      doc.text(cleanCorruptedText('✓ Renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement après le statut réduit
+
+    } else {
+
+      // Afficher "Non renseigné" en rouge si pas de réponse
+
+      doc.setFont('helvetica', 'bold');
+
+      doc.setFontSize(9); // Taille de police légèrement plus grande
+
+      doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
+
+      doc.text(cleanCorruptedText('✗ Non renseigné'), margin + 5, yPos + 1); // Décalage vertical réduit
+      yPos += 6; // Espacement réduit
+
+    }
+
+    
+
+    if (yPos > doc.internal.pageSize.height - 20) {
+
+      doc.addPage();
+
+      yPos = 20;
+
+    }
+
+  });
+
+
+
+  // Footer
+
+  //@ts-expect-error fix it later
+
+  const totalPages = doc.internal.getNumberOfPages();
+
+  for (let i = 1; i <= totalPages; i++) {
+
+    doc.setPage(i);
+
+    doc.setFontSize(8);
+
+    doc.setTextColor(107, 114, 128); // Gray-500
+
+    doc.text(
+
+      `Page ${i} sur ${totalPages} - ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: fr })} - OneHCM`, 
+
+      pageWidth / 2, 
+
+      doc.internal.pageSize.getHeight() - 10,
+
+      { align: 'center' }
+
+    );
+
+  }
+
+
+
+  return doc;
+
+};
+
+

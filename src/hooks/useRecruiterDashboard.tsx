@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS, isInCampaignPeriod, getCampaignById, GLOBAL_VIEW } from "@/config/campaign";
+import { CAMPAIGN_CONFIG } from "@/config/campaigns";
 
 export interface RecruiterStats {
   totalJobs: number;

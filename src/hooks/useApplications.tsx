@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { useState, useEffect, useCallback } from "react"; // Keep for useRecruiterApplications
 import { isInCampaignPeriod, GLOBAL_VIEW } from "@/config/campaign";
+import { getVisibleCampaignsForCandidates } from "@/config/campaigns";
 
 export interface Experience {
   id: string;
@@ -72,6 +73,7 @@ export interface Application {
     location: string;
     contract_type: string;
     recruiter_id?: string;
+    campaign_id?: number | null;
   } | null;
   users: {
     first_name: string;
@@ -80,6 +82,7 @@ export interface Application {
     phone?: string;
     date_of_birth?: string;
     candidate_profiles?: CandidateProfile;
+    candidate_status?: string;
   } | null;
 }
 
@@ -132,11 +135,26 @@ export function useApplications() {
         job_offers: app.job_offer_details,
         users: {
           ...app.candidate_details,
-          candidate_profiles: app.candidate_details?.candidate_profiles
+          candidate_profiles: app.candidate_details?.candidate_profiles,
+          candidate_status: app.candidate_details?.candidate_status
         }
       }));
 
-      return applications as Application[];
+      // Filtrer les candidatures par campagne visible
+      const visibleCampaigns = getVisibleCampaignsForCandidates();
+      const filteredApplications = applications.filter((app: any) => {
+        const campaignId = app.job_offers?.campaign_id;
+        
+        // Si pas de campaign_id, on montre la candidature
+        if (!campaignId) return true;
+        
+        // Vérifier si la campagne est visible
+        return visibleCampaigns.includes(campaignId);
+      });
+
+      console.log(`📊 [useApplications] Candidatures filtrées par campagne: ${filteredApplications.length}/${applications.length}`);
+
+      return filteredApplications as Application[];
     }
 
     // Pour les recruteurs/admins, utiliser l'ancienne méthode directe
@@ -379,7 +397,8 @@ export function useApplication(id: string | undefined) {
           job_offers: rpcResult.job_offer_details,
           users: {
             ...rpcResult.candidate_details,
-            candidate_profiles: rpcResult.candidate_details?.candidate_profiles
+            candidate_profiles: rpcResult.candidate_details?.candidate_profiles,
+            candidate_status: rpcResult.candidate_details?.candidate_status
           }
         };
         return application as Application;
@@ -418,7 +437,8 @@ export function useApplication(id: string | undefined) {
           job_offers: rpcResult.job_offer_details,
           users: {
             ...rpcResult.candidate_details,
-            candidate_profiles: rpcResult.candidate_details?.candidate_profiles
+            candidate_profiles: rpcResult.candidate_details?.candidate_profiles,
+            candidate_status: rpcResult.candidate_details?.candidate_status
           }
         };
         return application as Application;
