@@ -157,9 +157,6 @@ export function JobCatalog() {
     } else if (applicationsClosed) {
       toast.info("Les candidatures sont désormais closes.");
       return;
-    } else if (!isEligible) {
-      toast.error("Période de candidatures close");
-      return;
     }
     // Ouvrir le formulaire de candidature
     setShowApplicationForm(true);
