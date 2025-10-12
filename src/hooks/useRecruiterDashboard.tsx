@@ -77,8 +77,10 @@ export function useRecruiterDashboard(campaignId?: string) {
       .eq('id', user.id)
       .single();
 
-    // Fetch ALL active job offers for recruiters and admins
-    const { data: jobsData, error: jobsError } = await supabase
+    // Fetch job offers filtered by campaign
+    const activeCampaignId = campaignId || GLOBAL_VIEW.id;
+    
+    let jobsQuery = supabase
       .from('job_offers')
       .select(`
         id,
@@ -87,28 +89,57 @@ export function useRecruiterDashboard(campaignId?: string) {
         contract_type,
         created_at,
         recruiter_id,
-        department
+        department,
+        campaign_id
       `)
       .eq('status', 'active');
+    
+    // Filtrer par campagne si ce n'est pas la vue globale
+    if (activeCampaignId !== GLOBAL_VIEW.id) {
+      // Extraire le numéro depuis "campaign-1" → 1, "campaign-2" → 2, etc.
+      const match = activeCampaignId.match(/campaign-(\d+)/);
+      if (match) {
+        const campaignIdNumber = parseInt(match[1], 10);
+        console.log(`🔍 [DASHBOARD] Filtre campagne: "${activeCampaignId}" → campaign_id=${campaignIdNumber}`);
+        jobsQuery = jobsQuery.eq('campaign_id', campaignIdNumber);
+      } else {
+        console.warn(`⚠️ [DASHBOARD] ID de campagne invalide: "${activeCampaignId}"`);
+      }
+    } else {
+      console.log(`🔍 [DASHBOARD] Vue globale - Toutes les campagnes`);
+    }
+    
+    const { data: jobsData, error: jobsError } = await jobsQuery;
 
     // Récupérer TOUTES les candidatures avec la fonction optimisée
-    const { data: combinedEntries } = await supabase.rpc('get_all_recruiter_applications');
+    const { data: combinedEntries, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    
+    if (rpcError) {
+      console.error('❌ [DASHBOARD] Erreur RPC get_all_recruiter_applications:', rpcError);
+    } else {
+      console.log(`✅ [DASHBOARD] RPC réussie - ${(combinedEntries || []).length} candidatures récupérées`);
+    }
     
     // Filtrer les candidatures en fonction de la campagne sélectionnée
-    const activeCampaignId = campaignId || GLOBAL_VIEW.id;
-    const allEntries = (combinedEntries || []).filter((app: any) => {
-      const createdAt = app?.application_details?.created_at;
-      if (!createdAt) return false;
-      
-      // Si vue globale, on affiche tout (depuis la première campagne)
-      if (activeCampaignId === GLOBAL_VIEW.id) {
-        const FIRST_CAMPAIGN_START = new Date('2025-08-23');
-        return new Date(createdAt) >= FIRST_CAMPAIGN_START;
+    let allEntries = (combinedEntries || []);
+    
+    // Si on a filtré les offres par campagne, filtrer aussi les candidatures
+    if (activeCampaignId !== GLOBAL_VIEW.id) {
+      // Extraire le numéro de campagne
+      const match = activeCampaignId.match(/campaign-(\d+)/);
+      if (match) {
+        const campaignIdNumber = parseInt(match[1], 10);
+        // Filtrer les candidatures par les offres de cette campagne uniquement
+        const campaignJobIds = new Set((jobsData || []).map((j: any) => j.id));
+        allEntries = allEntries.filter((app: any) => {
+          const jobOfferId = app?.application_details?.job_offer_id;
+          return campaignJobIds.has(jobOfferId);
+        });
+        console.log(`🔍 [DASHBOARD] Candidatures filtrées pour campagne ${campaignIdNumber}: ${allEntries.length} candidatures`);
       }
-      
-      // Sinon, filtrer par la campagne spécifique
-      return isInCampaignPeriod(createdAt, activeCampaignId);
-    });
+    } else {
+      console.log(`🔍 [DASHBOARD] Vue globale - ${allEntries.length} candidatures au total`);
+    }
 
     // Extraire les détails des candidatures
     const allApplicationsData = (allEntries || []).map((app: any) => app.application_details);
@@ -116,10 +147,37 @@ export function useRecruiterDashboard(campaignId?: string) {
     if (jobsError) {
       throw jobsError;
     }
-
-    // MODE CAMPAGNE DÉSACTIVÉ - Afficher toutes les offres
+    
+    // Offres filtrées par campagne
     const campaignJobs = (jobsData || []);
-    console.log(`✅ [NO CAMPAIGN DASHBOARD] Toutes les offres affichées: ${campaignJobs.length} offres`);
+    
+    // Debug: Afficher les campaign_id des offres récupérées
+    const campaignDistribution = campaignJobs.reduce((acc: Record<string, number>, job: any) => {
+      const cid = job.campaign_id ?? 'NULL';
+      acc[cid] = (acc[cid] || 0) + 1;
+      return acc;
+    }, {});
+    
+    // Debug: Afficher le nombre de candidatures par offre
+    const appsPerJob = campaignJobs.reduce((acc: Record<string, number>, job: any) => {
+      const count = allApplicationsData.filter((app: any) => app.job_offer_id === job.id).length;
+      if (count > 0) {
+        acc[job.title] = count;
+      }
+      return acc;
+    }, {});
+    
+    if (activeCampaignId === GLOBAL_VIEW.id) {
+      console.log(`📊 [DASHBOARD] Vue globale - ${campaignJobs.length} offres affichées (toutes campagnes)`);
+      console.log(`📊 [DASHBOARD] Distribution par campagne:`, campaignDistribution);
+      console.log(`📊 [DASHBOARD] Total des candidatures: ${allApplicationsData.length}`);
+      console.log(`📊 [DASHBOARD] Candidatures par offre:`, appsPerJob);
+    } else {
+      console.log(`📊 [DASHBOARD] Campagne ${activeCampaignId} - ${campaignJobs.length} offres affichées`);
+      console.log(`📊 [DASHBOARD] Distribution par campagne:`, campaignDistribution);
+      console.log(`📊 [DASHBOARD] Total des candidatures: ${allApplicationsData.length}`);
+      console.log(`📊 [DASHBOARD] Candidatures par offre:`, appsPerJob);
+    }
 
     // Process jobs data with filtered applications
     const processedJobs: RecruiterJobOffer[] = (campaignJobs || []).map(job => {
@@ -479,6 +537,8 @@ export function useCreateJobOffer() {
     mtp_questions_metier?: string[] | null;
     mtp_questions_talent?: string[] | null;
     mtp_questions_paradigme?: string[] | null;
+    // Campaign
+    campaign_id?: number | null;
   };
   type JobOffersUpdate = Partial<Omit<JobOffersInsert, 'recruiter_id' | 'status'>> & {
     status?: 'active' | 'draft' | string;
@@ -494,6 +554,9 @@ export function useCreateJobOffer() {
       // console.log('[CreateJobOffer] Input data:', { jobData, status });
       // console.log('[CreateJobOffer] User ID:', user.id);
 
+      // Déterminer la campagne active
+      const activeCampaignId = CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID;
+      
       // Build payload with proper field mapping
       const basePayload: JobOffersInsert = { 
         recruiter_id: user.id, 
@@ -513,8 +576,11 @@ export function useCreateJobOffer() {
         requirements: jobData.requirements,
         mtp_questions_metier: jobData.mtp_questions_metier,
         mtp_questions_talent: jobData.mtp_questions_talent,
-        mtp_questions_paradigme: jobData.mtp_questions_paradigme
+        mtp_questions_paradigme: jobData.mtp_questions_paradigme,
+        campaign_id: activeCampaignId
       };
+      
+      console.log(`📊 [CreateJobOffer] Création d'offre avec campaign_id: ${activeCampaignId}`);
 
       // Remove undefined/null/empty values
       Object.keys(basePayload).forEach(key => {

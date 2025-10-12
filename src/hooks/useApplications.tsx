@@ -540,21 +540,50 @@ export function useRecruiterApplications(jobOfferId?: string, campaignId?: strin
       throw new Error(`Erreur lors de la récupération des candidatures: ${rpcError.message}`);
     }
     
+    console.log(`✅ [useRecruiterApplications] RPC réussie - ${(rpcData || []).length} candidatures récupérées`);
+    
+    // Debug: Afficher les campaign_id des candidatures
+    if ((rpcData || []).length > 0) {
+      const sampleApp = rpcData[0];
+      console.log(`🔍 [useRecruiterApplications] Exemple de candidature:`, {
+        job_title: sampleApp?.job_offer_details?.title,
+        campaign_id: sampleApp?.job_offer_details?.campaign_id,
+        created_at: sampleApp?.application_details?.created_at
+      });
+    }
+    
     // Filtrer les candidatures en fonction de la campagne sélectionnée
     const activeCampaignId = campaignId || GLOBAL_VIEW.id;
-    let entries: any[] = (rpcData || []).filter((app: any) => {
-      const createdAt = app?.application_details?.created_at;
-      if (!createdAt) return false;
-      
-      // Si vue globale, on affiche tout (depuis la première campagne)
-      if (activeCampaignId === GLOBAL_VIEW.id) {
-        const FIRST_CAMPAIGN_START = new Date('2025-08-23');
-        return new Date(createdAt) >= FIRST_CAMPAIGN_START;
+    let entries: any[] = (rpcData || []);
+    
+    // Filtrer par campaign_id des offres au lieu de par date
+    if (activeCampaignId !== GLOBAL_VIEW.id) {
+      // Extraire le numéro depuis "campaign-1" → 1
+      const match = activeCampaignId.match(/campaign-(\d+)/);
+      if (match) {
+        const campaignIdNumber = parseInt(match[1], 10);
+        
+        // Debug avant filtrage
+        const beforeCount = entries.length;
+        
+        entries = entries.filter((app: any) => {
+          const jobOfferCampaignId = app?.job_offer_details?.campaign_id;
+          return jobOfferCampaignId === campaignIdNumber;
+        });
+        
+        console.log(`🔍 [useRecruiterApplications] Filtré par campagne ${campaignIdNumber}: ${entries.length}/${beforeCount} candidatures`);
+        
+        // Debug: Distribution des campaign_id dans les candidatures
+        const distribution = (rpcData || []).reduce((acc: Record<string, number>, app: any) => {
+          const cid = app?.job_offer_details?.campaign_id ?? 'NULL';
+          acc[cid] = (acc[cid] || 0) + 1;
+          return acc;
+        }, {});
+        console.log(`📊 [useRecruiterApplications] Distribution des candidatures par campagne:`, distribution);
       }
-      
-      // Sinon, filtrer par la campagne spécifique
-      return isInCampaignPeriod(createdAt, activeCampaignId);
-    });
+    } else {
+      console.log(`🔍 [useRecruiterApplications] Vue globale - ${entries.length} candidatures`);
+    }
     
     // Si un jobOfferId est spécifié, filtrer côté client
     if (jobOfferId) {
