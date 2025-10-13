@@ -248,11 +248,11 @@ export default function JobDetail() {
                     )} */}
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                      <span>Date limite : 05/10/2025</span>
+                      <span>Date limite : 21/10/2025</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                      <span>Publié le 27/09/2025</span>
+                      <span>Publié le 13/10/2025</span>
                     </div>
                   </div>
                   
