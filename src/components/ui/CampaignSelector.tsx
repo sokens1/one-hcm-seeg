@@ -28,38 +28,38 @@ export function CampaignSelector() {
 
   return (
     <div className="relative">
-      {/* Card moderne avec dégradé */}
+      {/* Card moderne avec dégradé - Optimisé pour mobile */}
       <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 rounded-xl border border-blue-200/50 dark:border-blue-800/50 shadow-lg shadow-blue-100/50 dark:shadow-none overflow-hidden backdrop-blur-sm">
-        <div className="p-4 sm:p-5">
-          {/* Titre */}
-          <div className="flex items-center gap-2 mb-4">
-            <Filter className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <span className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+        <div className="p-3 sm:p-4 lg:p-5">
+          {/* Titre - Optimisé pour mobile */}
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
+            <span className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300">
               Filtrer par campagne
             </span>
           </div>
 
-          {/* Boutons de campagne sur une seule ligne */}
-          <div className="flex flex-wrap gap-3">
-            {/* Vue Globale */}
+          {/* Boutons de campagne - Optimisé pour mobile */}
+          <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 sm:gap-3">
+            {/* Vue Globale - Optimisé pour mobile */}
             <button
               onClick={() => setSelectedCampaignId(GLOBAL_VIEW.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
+              className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border-2 transition-all duration-200 hover:shadow-md w-full sm:w-auto ${
                 isGlobalView
                   ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-600 shadow-md'
                   : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-blue-300'
               }`}
             >
-              <div className={`flex items-center justify-center w-8 h-8 rounded-md ${
+              <div className={`flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-md flex-shrink-0 ${
                 isGlobalView
                   ? 'bg-white/20'
                   : 'bg-gradient-to-br from-blue-500 to-indigo-600'
               }`}>
-                <Globe className={`h-4 w-4 ${isGlobalView ? 'text-white' : 'text-white'}`} />
+                <Globe className={`h-3 w-3 sm:h-4 sm:w-4 ${isGlobalView ? 'text-white' : 'text-white'}`} />
               </div>
-              <div className="text-left">
-                <div className="font-semibold text-sm">{GLOBAL_VIEW.name}</div>
-                <div className={`text-xs ${isGlobalView ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
+              <div className="text-left min-w-0 flex-1">
+                <div className="font-semibold text-xs sm:text-sm truncate">{GLOBAL_VIEW.name}</div>
+                <div className={`text-xs ${isGlobalView ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'} truncate`}>
                   {GLOBAL_VIEW.description}
                 </div>
               </div>
@@ -81,7 +81,7 @@ export function CampaignSelector() {
                   key={campaign.id}
                   onClick={() => !isDisabled && setSelectedCampaignId(campaign.id)}
                   disabled={isDisabled}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all duration-200 ${
+                  className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border-2 transition-all duration-200 w-full sm:w-auto ${
                     isDisabled 
                       ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border-gray-300 dark:border-gray-700 cursor-not-allowed opacity-50'
                       : isSelected
@@ -89,23 +89,23 @@ export function CampaignSelector() {
                         : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:shadow-md'
                   }`}
                 >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-md ${
+                  <div className={`flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-md flex-shrink-0 ${
                     isSelected
                       ? 'bg-white/20'
                       : `bg-gradient-to-br ${colorClass}`
                   }`}>
-                    <Calendar className={`h-4 w-4 ${isSelected ? 'text-white' : 'text-white'}`} />
+                    <Calendar className={`h-3 w-3 sm:h-4 sm:w-4 ${isSelected ? 'text-white' : 'text-white'}`} />
                   </div>
-                  <div className="text-left">
-                    <div className="font-semibold text-sm flex items-center gap-2">
-                      {campaign.name}
+                  <div className="text-left min-w-0 flex-1">
+                    <div className="font-semibold text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                      <span className="truncate">{campaign.name}</span>
                       {isDisabled && (
-                        <Badge variant="secondary" className="text-xs">
-                          Bientôt disponible
+                        <Badge variant="secondary" className="text-xs flex-shrink-0">
+                          Bientôt
                         </Badge>
                       )}
                     </div>
-                    <div className={`text-xs ${
+                    <div className={`text-xs truncate ${
                       isDisabled
                         ? 'text-gray-400 dark:text-gray-600'
                         : isSelected 
