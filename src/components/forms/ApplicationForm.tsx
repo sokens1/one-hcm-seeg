@@ -121,13 +121,6 @@ function ReferenceSection({
       return;
     }
 
-    // Validation téléphone
-    const phoneRegex = /^(\+241|241)?\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}$/;
-    if (!phoneRegex.test(formRef.contact.replace(/\s+/g, ' ').trim())) {
-      toast.error('Format de contact attendu: +241 01 23 45 67');
-      return;
-    }
-
     if (editingReference) {
       onEditReference(editingReference.id, formRef);
       toast.success('Recommandation mise à jour');
@@ -208,10 +201,8 @@ function ReferenceSection({
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    if (confirm('Êtes-vous sûr de vouloir supprimer cette recommandation ?')) {
-                      onDeleteReference(reference.id);
-                      toast.success('Recommandation supprimée');
-                    }
+                    onDeleteReference(reference.id);
+                    toast.success('Recommandation supprimée');
                   }}
                   className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900 text-red-600"
                 >
@@ -312,9 +303,6 @@ function ReferenceSection({
                 placeholder="+241 01 23 45 67"
                 className="border-2"
               />
-              <p className="text-xs text-muted-foreground">
-                Format: +241 01 23 45 67 ou 241 01 23 45 67
-              </p>
             </div>
           </div>
 
