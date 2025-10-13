@@ -89,14 +89,31 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     const files = e.target.files;
-    if (files) {
-      if (field === "cv") {
-        setFormData({ ...formData, cv: files[0] });
-      } else if (field === "certificates") {
-        setFormData({ ...formData, certificates: [...formData.certificates, ...Array.from(files)] });
-      } else if (field === "recommendations") {
-        setFormData({ ...formData, recommendations: [...formData.recommendations, ...Array.from(files)] });
-      }
+    if (!files) return;
+
+    // Validation stricte : seuls les fichiers PDF sont acceptés
+    const filesArray = Array.from(files);
+    const invalidFiles = filesArray.filter(file => 
+      !(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))
+    );
+    
+    if (invalidFiles.length > 0) {
+      toast({
+        title: "Format non accepté",
+        description: `Seuls les fichiers PDF sont acceptés. ${invalidFiles.length} fichier(s) invalide(s) détecté(s).`,
+        variant: "destructive",
+      });
+      // Réinitialiser l'input
+      e.target.value = '';
+      return;
+    }
+
+    if (field === "cv") {
+      setFormData({ ...formData, cv: files[0] });
+    } else if (field === "certificates") {
+      setFormData({ ...formData, certificates: [...formData.certificates, ...Array.from(files)] });
+    } else if (field === "recommendations") {
+      setFormData({ ...formData, recommendations: [...formData.recommendations, ...Array.from(files)] });
     }
   };
 
@@ -281,7 +298,7 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                         </p>
                         <input
                           type="file"
-                          accept=".pdf,.doc,.docx"
+                          accept=".pdf"
                           onChange={(e) => handleFileUpload(e, "cv")}
                           className="hidden"
                           id="cv-upload"
@@ -314,7 +331,7 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                     <div className="mt-2">
                       <input
                         type="file"
-                        accept=".pdf,.doc,.docx,.jpg,.png"
+                        accept=".pdf"
                         onChange={(e) => handleFileUpload(e, "certificates")}
                         className="hidden"
                         id="certificates-upload"
@@ -343,7 +360,7 @@ export function ApplicationFormAdvanced({ jobTitle, onBack }: ApplicationFormAdv
                     <div className="mt-2">
                       <input
                         type="file"
-                        accept=".pdf,.doc,.docx"
+                        accept=".pdf"
                         onChange={(e) => handleFileUpload(e, "recommendations")}
                         className="hidden"
                         id="recommendations-upload"

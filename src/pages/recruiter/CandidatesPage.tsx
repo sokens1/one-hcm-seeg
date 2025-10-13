@@ -53,6 +53,7 @@ interface UICandidate {
   jobTitle?: string;
   linkedin_url?: string;
   portfolio_url?: string;
+  candidateStatus?: 'interne' | 'externe' | null;
 }
 
 interface CandidateModalProps {
@@ -74,8 +75,28 @@ function CandidateModal({ candidate, isOpen, onClose }: CandidateModalProps) {
     return data.publicUrl;
   };
 
+  // Badge pour le statut interne/externe
+  const renderCandidateStatusBadge = () => {
+    if (!candidate.candidateStatus) return null;
+    const statusLabel = candidate.candidateStatus === 'interne' ? 'Interne' : 'Externe';
+    const statusColor = candidate.candidateStatus === 'interne' 
+      ? 'bg-blue-100 text-blue-700 border-blue-300' 
+      : 'bg-green-100 text-green-700 border-green-300';
+    return (
+      <Badge className={`${statusColor} text-xs font-semibold`}>
+        {statusLabel}
+      </Badge>
+    );
+  };
+
   return (
     <div className="space-y-6">
+      {/* Header avec statut interne/externe */}
+      <div className="flex items-center gap-2 pb-2">
+        <h3 className="text-lg font-semibold">Informations personnelles</h3>
+        {renderCandidateStatusBadge()}
+      </div>
+      
       {/* Informations personnelles */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -169,8 +190,28 @@ function CandidateDetails({ candidate, isObserver }: { candidate: UICandidate, i
     return data.publicUrl;
   };
 
+  // Badge pour le statut interne/externe
+  const renderCandidateStatusBadge = () => {
+    if (!candidate.candidateStatus) return null;
+    const statusLabel = candidate.candidateStatus === 'interne' ? 'Interne' : 'Externe';
+    const statusColor = candidate.candidateStatus === 'interne' 
+      ? 'bg-blue-100 text-blue-700 border-blue-300' 
+      : 'bg-green-100 text-green-700 border-green-300';
+    return (
+      <Badge className={`${statusColor} text-xs font-semibold`}>
+        {statusLabel}
+      </Badge>
+    );
+  };
+
   return (
     <div className="space-y-6">
+      {/* Header avec statut interne/externe */}
+      <div className="flex items-center gap-2 pb-2">
+        <h3 className="text-lg font-semibold">Informations personnelles</h3>
+        {renderCandidateStatusBadge()}
+      </div>
+      
       {/* Informations personnelles */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -320,6 +361,7 @@ export default function CandidatesPage() {
         jobTitle: app.job_offers?.title || undefined,
         linkedin_url: profile.linkedin_url || user.linkedin_url || undefined,
         portfolio_url: profile.portfolio_url || user.portfolio_url || undefined,
+        candidateStatus: user.candidate_status || null,
       };
     });
   }, [applications]);

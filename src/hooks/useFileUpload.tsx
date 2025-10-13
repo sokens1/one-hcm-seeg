@@ -17,6 +17,14 @@ export function useFileUpload() {
   const uploadFile = async (file: File, folder: string = "documents"): Promise<UploadedFile> => {
     if (!user) throw new Error("User not authenticated");
 
+    // Validation stricte PDF - double vérification
+    const isValidPDF = file.type === 'application/pdf' || 
+                      file.name.toLowerCase().endsWith('.pdf');
+    
+    if (!isValidPDF) {
+      throw new Error("Seuls les fichiers PDF sont acceptés pour les candidatures. Veuillez convertir votre fichier au format PDF.");
+    }
+
     setIsUploading(true);
     setUploadProgress(0);
 
@@ -47,6 +55,15 @@ export function useFileUpload() {
   };
 
   const uploadMultipleFiles = async (files: File[], folder: string = "documents"): Promise<UploadedFile[]> => {
+    // Validation PDF pour tous les fichiers
+    const invalidFiles = files.filter(file => 
+      !(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))
+    );
+    
+    if (invalidFiles.length > 0) {
+      throw new Error(`Seuls les fichiers PDF sont acceptés. ${invalidFiles.length} fichier(s) invalide(s) détecté(s).`);
+    }
+
     const uploadPromises = files.map(file => uploadFile(file, folder));
     return Promise.all(uploadPromises);
   };
