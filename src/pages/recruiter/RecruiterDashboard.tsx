@@ -59,6 +59,8 @@ import AdvancedDashboard from "./AdvancedDashboard";
 export default function RecruiterDashboard() {
   const navigate = useNavigate();
   const { selectedCampaignId } = useCampaign();
+  
+  
   const { 
     stats, 
     jobCoverage, 
@@ -119,6 +121,7 @@ export default function RecruiterDashboard() {
         <div className="mb-4">
           <CampaignSelector />
         </div>
+        
 
         {/* Basculement entre les vues */}
         <DashboardToggle 
@@ -157,7 +160,7 @@ export default function RecruiterDashboard() {
         ) : (
           <>
             {/* Stats Cards - Harmonisation de l'affichage */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Offres */}
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
                 <CardHeader className="pb-2">
@@ -257,9 +260,14 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Deuxième rangée de KPIs - 3 cartes pour l'équilibre */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
-              {/* Taux de couverture par département */}
+            {/* Deuxième rangée de KPIs - Grille adaptative selon la campagne */}
+            <div className={`grid grid-cols-1 gap-3 sm:gap-4 mt-3 sm:mt-4 ${
+              selectedCampaignId === 'campaign-2' || selectedCampaignId === 'campaign-3' 
+                ? 'md:grid-cols-2' 
+                : 'md:grid-cols-2 lg:grid-cols-3'
+            }`}>
+              {/* Taux de couverture par département - masqué pour campagnes 2 et 3 */}
+              {selectedCampaignId !== 'campaign-2' && selectedCampaignId !== 'campaign-3' && (
               <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
@@ -312,6 +320,7 @@ export default function RecruiterDashboard() {
                   </div>
                 </CardContent>
               </Card>
+              )}
               
               {/* Candidats multi-postes */}
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800">
@@ -354,8 +363,12 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Charts Section - Two per Row Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
+            {/* Charts Section - Grille adaptative selon la campagne */}
+            <div className={`grid grid-cols-1 gap-4 sm:gap-6 mt-6 sm:mt-8 ${
+              selectedCampaignId === 'campaign-2' || selectedCampaignId === 'campaign-3' 
+                ? 'md:grid-cols-2 xl:grid-cols-3' 
+                : 'md:grid-cols-2 xl:grid-cols-3'
+            }`}>
               {/* Coverage Rate Chart */}
               <Card>
                 <CardHeader className="pb-3">
@@ -571,7 +584,8 @@ export default function RecruiterDashboard() {
                 </CardContent>
               </Card>
 
-                             {/* Répartition des candidatures par type de métier */}
+              {/* Répartition des candidatures par type de métier - masqué pour campagnes 2 et 3 */}
+              {selectedCampaignId !== 'campaign-2' && selectedCampaignId !== 'campaign-3' && (
                <Card>
                  <CardHeader className="pb-3">
                    <div className="flex items-center gap-2">
@@ -653,6 +667,7 @@ export default function RecruiterDashboard() {
                    </div>
                  </CardContent>
                </Card>
+              )}
 
               {/* Gender Distribution */}
               <Card>
