@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Wrench, Shield, Coins, Handshake, Leaf } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveCampaignId } from "@/config/campaigns";
 
 export default function CompanyContext() {
   const navigate = useNavigate();
@@ -12,10 +13,13 @@ export default function CompanyContext() {
 
   useEffect(() => {
     const fetchJobCount = async () => {
+      const activeCampaignId = getActiveCampaignId();
+      
       const { count, error } = await supabase
         .from('job_offers')
         .select('*', { count: 'exact', head: true })
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .eq('campaign_id', activeCampaignId);
 
       if (!error && count !== null) {
         setJobCount(count);
