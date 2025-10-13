@@ -363,12 +363,8 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Charts Section - Grille adaptative selon la campagne */}
-            <div className={`grid grid-cols-1 gap-4 sm:gap-6 mt-6 sm:mt-8 ${
-              selectedCampaignId === 'campaign-2' || selectedCampaignId === 'campaign-3' 
-                ? 'md:grid-cols-2 xl:grid-cols-3' 
-                : 'md:grid-cols-2 xl:grid-cols-3'
-            }`}>
+            {/* Charts Section - Affichage deux par deux */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
               {/* Coverage Rate Chart */}
               <Card>
                 <CardHeader className="pb-3">
