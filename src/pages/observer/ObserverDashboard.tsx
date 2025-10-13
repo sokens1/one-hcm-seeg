@@ -48,6 +48,8 @@ import ObserverAdvancedDashboard from "./ObserverAdvancedDashboard";
 
 export default function ObserverDashboard() {
   const { selectedCampaignId } = useCampaign();
+  
+  
   const { 
     stats, 
     jobCoverage, 
@@ -238,8 +240,12 @@ export default function ObserverDashboard() {
               </Card>
             </div>
 
-            {/* Deuxième rangée de KPIs - 3 cartes pour l'équilibre */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
+            {/* Deuxième rangée de KPIs - Affichage deux par deux sur mobile */}
+            <div className={`grid grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4 ${
+              selectedCampaignId === 'campaign-2' || selectedCampaignId === 'campaign-3' 
+                ? 'lg:grid-cols-2' 
+                : 'lg:grid-cols-3'
+            }`}>
               {/* Candidats multi-postes */}
               <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800">
                 <CardHeader className="pb-2">
@@ -301,8 +307,8 @@ export default function ObserverDashboard() {
               </Card>
             </div>
 
-            {/* Charts Section - Two per Row Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
+            {/* Charts Section - Affichage deux par deux */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
               {/* Coverage Rate Chart */}
               <Card>
                 <CardHeader className="pb-3">
@@ -509,8 +515,9 @@ export default function ObserverDashboard() {
                 </CardContent>
               </Card>
 
-              {/* Gender Distribution */}
-              <Card>
+              {/* Gender Distribution - masqué pour campagnes 2 et 3 */}
+              {selectedCampaignId !== 'campaign-2' && selectedCampaignId !== 'campaign-3' && (
+               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <PieChart className="h-5 w-5 text-primary" />
@@ -582,6 +589,7 @@ export default function ObserverDashboard() {
                   </div>
                 </CardContent>
               </Card>
+              )}
             </div>
 
             {/* Quick Actions - Version Observateur */}

@@ -88,21 +88,175 @@ const ProfileTab = ({ application }: { application: Application }) => {
 };
 
 const ReferencesTab = ({ application }: { application: Application }) => {
+  // Fonction pour nettoyer le texte corrompu
+  const cleanCorruptedText = (text: string | null | undefined): string => {
+    if (!text) return '';
+    try {
+      return text
+        .replace(/â€™/g, "'")
+        .replace(/Ã©/g, "é")
+        .replace(/Ã¨/g, "è")
+        .replace(/Ãª/g, "ê")
+        .replace(/Ã /g, "à")
+        .replace(/Ã§/g, "ç")
+        .replace(/Ã´/g, "ô")
+        .replace(/Ã®/g, "î")
+        .replace(/Ã»/g, "û")
+        .replace(/Ã«/g, "ë")
+        .replace(/Ã¯/g, "ï")
+        .replace(/â€"/g, "—")
+        .replace(/â€"/g, "–")
+        .replace(/â€œ/g, '"')
+        .replace(/â€/g, '"')
+        .replace(/Ã‰/g, "É")
+        .replace(/Ãˆ/g, "È")
+        .replace(/ÃŠ/g, "Ê")
+        .replace(/Ã‡/g, "Ç")
+        .replace(/Ã"/g, "Ô");
+    } catch (error) {
+      console.error('Erreur nettoyage texte:', error);
+      return text;
+    }
+  };
+
+  const isExternalOffer = application.job_offers?.status_offerts === 'externe';
+  
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><Users className="w-4 h-4 sm:w-5 sm:h-5" /> Références de Recommandation</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Users className="w-4 h-4 sm:w-5 sm:h-5" /> 
+          {isExternalOffer ? 'Références de Recommandation' : 'Expérience Professionnelle'}
+        </CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
-        <div className="text-center py-8">
-          <div className="text-muted-foreground mb-4">
-            <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-medium mb-2">Références</h3>
-            <p className="text-sm">
-              Consultez les références de recommandation des candidats.
-            </p>
+        {isExternalOffer ? (
+          // Section Références pour les offres externes - Afficher toutes les recommandations
+          (() => {
+            try {
+              // Reconstruire les recommandations depuis les listes ordonnées
+              const parseField = (field: any): string[] => {
+                if (!field) return [];
+                if (Array.isArray(field)) return field;
+                if (typeof field === 'string') {
+                  try {
+                    const parsed = JSON.parse(field);
+                    return Array.isArray(parsed) ? parsed : [field];
+                  } catch {
+                    return [field];
+                  }
+                }
+                return [];
+              };
+
+              const names = parseField(application.reference_full_name);
+              const emails = parseField(application.reference_email);
+              const contacts = parseField(application.reference_contact);
+              const companies = parseField(application.reference_company);
+
+              const maxLength = Math.max(names.length, emails.length, contacts.length, companies.length);
+              const hasReferences = maxLength > 0 && (names.some(n => n) || emails.some(e => e) || contacts.some(c => c) || companies.some(co => co));
+
+              if (!hasReferences) {
+                return (
+                  <div className="text-center py-8">
+                    <div className="text-muted-foreground mb-4">
+                      <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <h3 className="text-lg font-medium mb-2">Aucune référence</h3>
+                      <p className="text-sm">Aucune référence de recommandation fournie.</p>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-4">
+                  {Array.from({ length: maxLength }, (_, i) => {
+                    const hasData = names[i] || emails[i] || contacts[i] || companies[i];
+                    if (!hasData) return null;
+                    
+                    return (
+                      <div key={i} className="p-4 bg-muted/50 rounded-lg space-y-2">
+                        <div className="font-semibold text-sm text-primary flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          Recommandation {i + 1}
+                        </div>
+                        <div className="text-xs sm:text-sm space-y-2 ml-6">
+                          {names[i] && (
+                            <div className="flex items-start gap-2">
+                              <User className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                              <div>
+                                <span className="font-medium">Nom et prénom:</span> {cleanCorruptedText(names[i])}
+                              </div>
+                            </div>
+                          )}
+                          {companies[i] && (
+                            <div className="flex items-start gap-2">
+                              <Briefcase className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                              <div>
+                                <span className="font-medium">Administration / Entreprise / Organisation:</span> {cleanCorruptedText(companies[i])}
+                              </div>
+                            </div>
+                          )}
+                          {emails[i] && (
+                            <div className="flex items-start gap-2">
+                              <Mail className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                              <div>
+                                <span className="font-medium">Email:</span> {cleanCorruptedText(emails[i])}
+                              </div>
+                            </div>
+                          )}
+                          {contacts[i] && (
+                            <div className="flex items-start gap-2">
+                              <Phone className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                              <div>
+                                <span className="font-medium">Contact:</span> {cleanCorruptedText(contacts[i])}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            } catch (error) {
+              console.error('Erreur reconstruction recommandations:', error);
+              return (
+                <div className="text-center py-8">
+                  <div className="text-red-500 mb-4">
+                    <AlertCircle className="w-12 h-12 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium mb-2">Erreur</h3>
+                    <p className="text-sm">Erreur lors du chargement des références.</p>
+                  </div>
+                </div>
+              );
+            }
+          })()
+        ) : (
+          // Section Expérience Professionnelle pour les offres internes
+          <div className="text-xs sm:text-sm space-y-3">
+            <div>
+              <p className="font-medium mb-2">Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :</p>
+              <ul className="space-y-1 ml-4 text-muted-foreground">
+                <li>• Chef de service ;</li>
+                <li>• Chef de département ;</li>
+                <li>• Directeur ;</li>
+                <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
+              </ul>
+            </div>
+            <div className="pt-2 border-t">
+              <span className="font-medium">Réponse: </span>
+              {application.has_been_manager === true ? (
+                <span className="text-green-600 font-semibold">Oui</span>
+              ) : application.has_been_manager === false ? (
+                <span className="text-orange-600 font-semibold">Non</span>
+              ) : (
+                <span className="text-muted-foreground">Non renseigné</span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

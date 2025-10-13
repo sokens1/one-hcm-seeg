@@ -209,19 +209,103 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       diplomas: (documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
       certificates: (documentsByType.certificate || []).map(doc => ({ name: doc.file_name })),
       recommendations: (documentsByType.recommendation || []).map(doc => ({ name: doc.file_name })),
-      // Références de recommandation
+      // Références de recommandation - utiliser les nouvelles données
       referenceFullName: cleanText(application.reference_full_name) || '',
       referenceEmail: cleanText(application.reference_email) || '',
       referenceContact: cleanText(application.reference_contact) || '',
       referenceCompany: cleanText(application.reference_company) || '',
+      // Reconstruire les recommandations à partir des listes ordonnées dans chaque champ
+      recommandations: (() => {
+        try {
+          // Parser les listes ordonnées depuis chaque champ
+          const names = (() => {
+            if (!application.reference_full_name) return [];
+            if (Array.isArray(application.reference_full_name)) return application.reference_full_name;
+            if (typeof application.reference_full_name === 'string') {
+              try {
+                return JSON.parse(application.reference_full_name);
+              } catch {
+                // Si ce n'est pas du JSON, c'est une valeur unique
+                return [application.reference_full_name];
+              }
+            }
+            return [];
+          })();
+
+          const emails = (() => {
+            if (!application.reference_email) return [];
+            if (Array.isArray(application.reference_email)) return application.reference_email;
+            if (typeof application.reference_email === 'string') {
+              try {
+                return JSON.parse(application.reference_email);
+              } catch {
+                return [application.reference_email];
+              }
+            }
+            return [];
+          })();
+
+          const contacts = (() => {
+            if (!application.reference_contact) return [];
+            if (Array.isArray(application.reference_contact)) return application.reference_contact;
+            if (typeof application.reference_contact === 'string') {
+              try {
+                return JSON.parse(application.reference_contact);
+              } catch {
+                return [application.reference_contact];
+              }
+            }
+            return [];
+          })();
+
+          const companies = (() => {
+            if (!application.reference_company) return [];
+            if (Array.isArray(application.reference_company)) return application.reference_company;
+            if (typeof application.reference_company === 'string') {
+              try {
+                return JSON.parse(application.reference_company);
+              } catch {
+                return [application.reference_company];
+              }
+            }
+            return [];
+          })();
+
+          // Reconstruire les recommandations en combinant les listes par index
+          const maxLength = Math.max(names.length, emails.length, contacts.length, companies.length);
+          const recommendations = [];
+
+          for (let i = 0; i < maxLength; i++) {
+            if (names[i] || emails[i] || contacts[i] || companies[i]) {
+              recommendations.push({
+                id: `ref-${i + 1}`,
+                fullName: names[i] || '',
+                email: emails[i] || '',
+                contact: contacts[i] || '',
+                company: companies[i] || ''
+              });
+            }
+          }
+
+          return recommendations;
+        } catch (error) {
+          console.error('❌ [PDF Export] Erreur reconstruction recommandations:', error);
+          return [];
+        }
+      })(),
       hasBeenManager: application.has_been_manager,
       
       // Debug: Log reference data
       ...(console.log('🔍 [PDF Export] Références:', {
+        application_id: application.id,
         raw_full_name: application.reference_full_name,
         raw_email: application.reference_email,
         raw_contact: application.reference_contact,
         raw_company: application.reference_company,
+        raw_full_name_type: typeof application.reference_full_name,
+        raw_email_type: typeof application.reference_email,
+        raw_contact_type: typeof application.reference_contact,
+        raw_company_type: typeof application.reference_company,
         cleaned_full_name: cleanText(application.reference_full_name),
         cleaned_email: cleanText(application.reference_email),
         cleaned_contact: cleanText(application.reference_contact),
@@ -238,6 +322,13 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
     
     // console.log('Gender value passed to PDF generator:', applicationData.gender);
     // console.log('DateOfBirth value passed to PDF generator:', applicationData.dateOfBirth);
+    
+    // Debug: Log final data passed to PDF generator
+    console.log('🔍 [PDF Export] Données finales passées au générateur:', {
+      recommandations: applicationData.recommandations,
+      recommandationsLength: applicationData.recommandations?.length,
+      offerStatus: applicationData.offerStatus
+    });
     
     const doc = generateApplicationPdf(applicationData);
     

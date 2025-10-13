@@ -167,21 +167,61 @@ const ReferencesTab = ({ application }: { application: Application }) => {
       </CardHeader>
       <CardContent className="px-4 sm:px-6 pt-2 sm:pt-3 pb-4 sm:pb-6">
         {isExternalOffer ? (
-          // Section Références pour les offres externes
-          (application.reference_full_name || application.reference_email || application.reference_contact || application.reference_company) ? (
-            <div className="text-xs sm:text-sm space-y-1">
-              {application.reference_full_name && (<div><span className="font-medium">Nom et prénom:</span> {cleanCorruptedText(application.reference_full_name)}</div>)}
-              {application.reference_company && (<div><span className="font-medium">Administration / Entreprise / Organisation:</span> {cleanCorruptedText(application.reference_company)}</div>)}
-              {application.reference_email && (<div><span className="font-medium">Email:</span> {cleanCorruptedText(application.reference_email)}</div>)}
-              {application.reference_contact && (<div><span className="font-medium">Contact:</span> {cleanCorruptedText(application.reference_contact)}</div>)}
-            </div>
-          ) : application.reference_contacts || application.ref_contacts ? (
-            <div className="whitespace-pre-wrap text-xs sm:text-sm">
-              {cleanCorruptedText(application.reference_contacts || application.ref_contacts)}
-            </div>
-          ) : (
-            <p className="text-xs sm:text-sm text-muted-foreground">Aucune référence fournie.</p>
-          )
+          // Section Références pour les offres externes - Afficher toutes les recommandations
+          (() => {
+            try {
+              // Reconstruire les recommandations depuis les listes ordonnées
+              const parseField = (field: any): string[] => {
+                if (!field) return [];
+                if (Array.isArray(field)) return field;
+                if (typeof field === 'string') {
+                  try {
+                    const parsed = JSON.parse(field);
+                    return Array.isArray(parsed) ? parsed : [field];
+                  } catch {
+                    return [field];
+                  }
+                }
+                return [];
+              };
+
+              const names = parseField(application.reference_full_name);
+              const emails = parseField(application.reference_email);
+              const contacts = parseField(application.reference_contact);
+              const companies = parseField(application.reference_company);
+
+              const maxLength = Math.max(names.length, emails.length, contacts.length, companies.length);
+              const hasReferences = maxLength > 0 && (names.some(n => n) || emails.some(e => e) || contacts.some(c => c) || companies.some(co => co));
+
+              if (!hasReferences) {
+                return <p className="text-xs sm:text-sm text-muted-foreground">Aucune référence fournie.</p>;
+              }
+
+              return (
+                <div className="space-y-4">
+                  {Array.from({ length: maxLength }, (_, i) => {
+                    const hasData = names[i] || emails[i] || contacts[i] || companies[i];
+                    if (!hasData) return null;
+                    
+                    return (
+                      <div key={i} className="p-3 bg-muted/50 rounded-lg space-y-2">
+                        <div className="font-semibold text-sm text-primary">Recommandation {i + 1}</div>
+                        <div className="text-xs sm:text-sm space-y-1">
+                          {names[i] && (<div><span className="font-medium">Nom et prénom:</span> {cleanCorruptedText(names[i])}</div>)}
+                          {companies[i] && (<div><span className="font-medium">Administration / Entreprise / Organisation:</span> {cleanCorruptedText(companies[i])}</div>)}
+                          {emails[i] && (<div><span className="font-medium">Email:</span> {cleanCorruptedText(emails[i])}</div>)}
+                          {contacts[i] && (<div><span className="font-medium">Contact:</span> {cleanCorruptedText(contacts[i])}</div>)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            } catch (error) {
+              console.error('Erreur reconstruction recommandations:', error);
+              return <p className="text-xs sm:text-sm text-muted-foreground">Erreur lors du chargement des références.</p>;
+            }
+          })()
         ) : isInternalOffer ? (
           // Section Expérience Professionnelle pour les offres internes
           <div className="text-xs sm:text-sm space-y-3">
