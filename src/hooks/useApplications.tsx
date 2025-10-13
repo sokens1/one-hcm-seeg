@@ -58,6 +58,7 @@ export interface Application {
   reference_email?: string | null;
   reference_contact?: string | null;
   reference_company?: string | null;
+  recommandations?: string | null; // Nouveau champ unifié
   interview_date?: string | null; // Date et heure de l'entretien programmé
   simulation_date?: string | null; // Date et heure de la simulation programmée
   mtp_answers?: {

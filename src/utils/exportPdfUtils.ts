@@ -209,19 +209,53 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       diplomas: (documentsByType.diploma || []).map(doc => ({ name: doc.file_name })),
       certificates: (documentsByType.certificate || []).map(doc => ({ name: doc.file_name })),
       recommendations: (documentsByType.recommendation || []).map(doc => ({ name: doc.file_name })),
-      // Références de recommandation
+      // Références de recommandation - utiliser les nouvelles données
       referenceFullName: cleanText(application.reference_full_name) || '',
       referenceEmail: cleanText(application.reference_email) || '',
       referenceContact: cleanText(application.reference_contact) || '',
       referenceCompany: cleanText(application.reference_company) || '',
+      // Nouvelles recommandations - utiliser le nouvel attribut 'recommandations'
+      recommandations: (() => {
+        try {
+          // Priorité au nouvel attribut 'recommandations'
+          if (application.recommandations) {
+            if (Array.isArray(application.recommandations)) return application.recommandations;
+            if (typeof application.recommandations === 'string') {
+              const parsed = JSON.parse(application.recommandations);
+              return Array.isArray(parsed) ? parsed : [];
+            }
+          }
+          
+          // Fallback vers l'ancien système reference_contacts
+          if (application.reference_contacts) {
+            if (Array.isArray(application.reference_contacts)) return application.reference_contacts;
+            if (typeof application.reference_contacts === 'string') {
+              const parsed = JSON.parse(application.reference_contacts);
+              return Array.isArray(parsed) ? parsed : [];
+            }
+          }
+          
+          return [];
+        } catch (error) {
+          console.error('❌ [PDF Export] Erreur parsing recommandations:', error);
+          return [];
+        }
+      })(),
       hasBeenManager: application.has_been_manager,
       
       // Debug: Log reference data
       ...(console.log('🔍 [PDF Export] Références:', {
+        application_id: application.id,
         raw_full_name: application.reference_full_name,
         raw_email: application.reference_email,
         raw_contact: application.reference_contact,
         raw_company: application.reference_company,
+        recommandations: application.recommandations,
+        recommandations_type: typeof application.recommandations,
+        recommandations_length: Array.isArray(application.recommandations) ? application.recommandations.length : 'N/A',
+        reference_contacts: application.reference_contacts,
+        reference_contacts_type: typeof application.reference_contacts,
+        reference_contacts_length: Array.isArray(application.reference_contacts) ? application.reference_contacts.length : 'N/A',
         cleaned_full_name: cleanText(application.reference_full_name),
         cleaned_email: cleanText(application.reference_email),
         cleaned_contact: cleanText(application.reference_contact),
@@ -238,6 +272,13 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
     
     // console.log('Gender value passed to PDF generator:', applicationData.gender);
     // console.log('DateOfBirth value passed to PDF generator:', applicationData.dateOfBirth);
+    
+    // Debug: Log final data passed to PDF generator
+    console.log('🔍 [PDF Export] Données finales passées au générateur:', {
+      recommandations: applicationData.recommandations,
+      recommandationsLength: applicationData.recommandations?.length,
+      offerStatus: applicationData.offerStatus
+    });
     
     const doc = generateApplicationPdf(applicationData);
     

@@ -19,11 +19,19 @@ interface ApplicationData {
   diplomas?: { name: string }[];
   certificates?: { name: string }[];
   recommendations?: { name: string }[];
-  // Références de recommandation
+  // Références de recommandation (anciennes - pour compatibilité)
   referenceFullName?: string;
   referenceEmail?: string;
   referenceContact?: string;
   referenceCompany?: string;
+  // Nouvelle structure unifiée
+  recommandations?: Array<{
+    id: string;
+    fullName: string;
+    email: string;
+    contact: string;
+    company: string;
+  }>;
   // Expérience professionnelle (pour les offres internes)
   hasBeenManager?: boolean | null;
   // MTP Questions - Métier
@@ -380,6 +388,7 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     referenceEmail: data.referenceEmail,
     referenceContact: data.referenceContact,
     referenceCompany: data.referenceCompany,
+    recommandations: data.recommandations,
     hasBeenManager: data.hasBeenManager,
     offerStatus: data.offerStatus,
     isExternalOffer,
@@ -389,34 +398,40 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   let sectionInfo = [];
   
   if (isExternalOffer) {
-    // Section Références pour les offres externes
-    sectionInfo = [
-    { 
-      label: 'Nom et Prénom', 
-        value: data.referenceFullName ? cleanCorruptedText(data.referenceFullName) : 'Non renseigné',
-        isFilled: data.referenceFullName ? cleanCorruptedText(data.referenceFullName).trim().length > 0 : false,
-        isRequired: true
-      },
-      { 
-        label: 'Administration / Entreprise / Organisation', 
-        value: data.referenceCompany ? cleanCorruptedText(data.referenceCompany) : 'Non renseignée',
-        isFilled: data.referenceCompany ? cleanCorruptedText(data.referenceCompany).trim().length > 0 : false,
+    // Section Références pour les offres externes - Utiliser le nouvel attribut 'recommandations'
+    const hasRecommendations = data.recommandations && Array.isArray(data.recommandations) && data.recommandations.length > 0;
+    
+    console.log('🔍 [PDF] Vérification recommandations:', {
+      hasRecommendations,
+      recommandationsLength: data.recommandations?.length,
+      recommandations: data.recommandations
+    });
+    
+    if (hasRecommendations) {
+      // Utiliser le nouvel attribut recommandations - AFFICHER TOUTES LES RECOMMANDATIONS
+      sectionInfo = data.recommandations.map((ref, index) => ({
+        label: `Recommandation ${index + 1}`,
+        value: `${cleanCorruptedText(ref.fullName)} - ${cleanCorruptedText(ref.company)}`,
+        isFilled: true,
         isRequired: true,
-        isLongLabel: true  // Flag pour indiquer un label long
-    },
-    { 
-      label: 'Email', 
-        value: data.referenceEmail ? cleanCorruptedText(data.referenceEmail) : 'Non renseigné',
-        isFilled: data.referenceEmail ? cleanCorruptedText(data.referenceEmail).trim().length > 0 : false,
-        isRequired: true
-    },
-    { 
-      label: 'Contact', 
-        value: data.referenceContact ? cleanCorruptedText(data.referenceContact) : 'Non renseigné',
-        isFilled: data.referenceContact ? cleanCorruptedText(data.referenceContact).trim().length > 0 : false,
-        isRequired: true
-      }
-    ];
+        isReference: true,
+        referenceData: ref
+      }));
+      
+      console.log('✅ [PDF] Utilisation des recommandations:', sectionInfo.length, 'recommandations trouvées');
+    } else {
+      // Aucune recommandation trouvée
+      sectionInfo = [
+        {
+          label: 'Recommandations',
+          value: 'Aucune recommandation renseignée',
+          isFilled: false,
+          isRequired: true
+        }
+      ];
+      
+      console.log('❌ [PDF] Aucune recommandation trouvée dans recommandations');
+    }
   } else if (isInternalOffer) {
     // Section Expérience Professionnelle pour les offres internes
     const experienceAnswer = data.hasBeenManager === true ? 'Oui' : data.hasBeenManager === false ? 'Non' : 'Non renseigné';
@@ -496,8 +511,34 @@ export const generateApplicationPdf = (data: ApplicationData) => {
     } else {
       // Éléments normaux avec valeur
       const hasLongLabel = (info as any).isLongLabel;
+      const isReference = (info as any).isReference;
+      const referenceData = (info as any).referenceData;
       
-      if (hasLongLabel) {
+      if (isReference && referenceData) {
+        // Affichage spécial pour les nouvelles recommandations
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(31, 41, 55);
+        doc.text(`${cleanedLabel}:`, margin, yPos);
+        yPos += 7;
+        
+        // Afficher les détails de la recommandation
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(75, 85, 99);
+        doc.text(`Nom: ${cleanCorruptedText(referenceData.fullName)}`, margin + 10, yPos);
+        yPos += 5;
+        doc.text(`Email: ${cleanCorruptedText(referenceData.email)}`, margin + 10, yPos);
+        yPos += 5;
+        doc.text(`Contact: ${cleanCorruptedText(referenceData.contact)}`, margin + 10, yPos);
+        yPos += 5;
+        doc.text(`Entreprise: ${cleanCorruptedText(referenceData.company)}`, margin + 10, yPos);
+        
+        // Afficher le statut
+        const status = 'Renseigné';
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(22, 163, 74);
+        const statusX = pageWidth - margin - doc.getTextWidth(status);
+        doc.text(status, statusX, yPos - 15); // Positionner le statut au niveau du nom
+      } else if (hasLongLabel) {
         // Pour les labels longs : afficher le label sur une ligne séparée
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(31, 41, 55);
@@ -524,28 +565,28 @@ export const generateApplicationPdf = (data: ApplicationData) => {
         doc.text(status, statusX, yPos);
       } else {
         // Pour les labels normaux : afficher sur une seule ligne
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(31, 41, 55);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(31, 41, 55);
         doc.text(`${cleanedLabel}:`, margin, yPos);
     
-    // Afficher la valeur
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(75, 85, 99);
+        // Afficher la valeur
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(75, 85, 99);
         doc.text(cleanedValue, margin + 60, yPos);
     
-    // Afficher le statut avec la couleur appropriée
+        // Afficher le statut avec la couleur appropriée
         const status = cleanCorruptedText(info.isFilled ? 'Renseigné' : (info.isRequired ? 'Non renseigné' : 'Non applicable'));
-    doc.setFont('helvetica', 'bold');
-    if (info.isFilled) {
-      doc.setTextColor(22, 163, 74); // Vert
+        doc.setFont('helvetica', 'bold');
+        if (info.isFilled) {
+          doc.setTextColor(22, 163, 74); // Vert
         } else if (info.isRequired) {
           doc.setTextColor(239, 68, 68); // Rouge pour "Non renseigné"
-    } else {
+        } else {
           doc.setTextColor(107, 114, 128); // Gris pour "Non applicable"
-    }
+        }
     
-    const statusX = pageWidth - margin - doc.getTextWidth(status);
-    doc.text(status, statusX, yPos);
+        const statusX = pageWidth - margin - doc.getTextWidth(status);
+        doc.text(status, statusX, yPos);
       }
     }
     

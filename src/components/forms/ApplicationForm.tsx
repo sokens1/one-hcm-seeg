@@ -1156,7 +1156,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
             reference_email: firstReference?.email || null,
             reference_contact: firstReference?.contact || null,
             reference_company: firstReference?.company || null,
-            reference_contacts: formData.references, // Enregistrer toutes les références au format JSON
+            recommandations: formData.references, // Enregistrer toutes les références au format JSON
             has_been_manager: formData.hasBeenManager,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
@@ -1199,7 +1199,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           reference_email: firstReference?.email || null,
           reference_contact: firstReference?.contact || null,
           reference_company: firstReference?.company || null,
-          reference_contacts: formData.references, // Enregistrer toutes les références au format JSON
+          recommandations: formData.references, // Enregistrer toutes les références au format JSON
           has_been_manager: formData.hasBeenManager,
           mtp_answers: {
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
