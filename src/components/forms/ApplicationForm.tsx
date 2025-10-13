@@ -1115,6 +1115,22 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     const files = e.target.files;
     if (!files) return;
 
+    // Validation stricte : seuls les fichiers PDF sont acceptés
+    const filesArray = Array.from(files);
+    const invalidFiles = filesArray.filter(file => 
+      !(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))
+    );
+    
+    if (invalidFiles.length > 0) {
+      toast.error(`Seuls les fichiers PDF sont acceptés. ${invalidFiles.length} fichier(s) invalide(s) détecté(s).`, {
+        duration: 5000,
+        closeButton: true,
+      });
+      // Réinitialiser l'input
+      e.target.value = '';
+      return;
+    }
+
     try {
       if (type === 'cv') {
         const uploadedFile = await uploadFile(files[0], 'cv');
@@ -1466,11 +1482,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.coverLetter ? formData.coverLetter.name : "Glissez votre lettre de motivation ici ou cliquez pour parcourir"}
                             </p>
+                            <p className="text-xs text-muted-foreground/70">Format accepté : PDF uniquement</p>
                           </>
                         )}
                         <input
                           type="file"
-                          accept=".pdf,.doc,.docx"
+                          accept=".pdf"
                           onChange={(e) => handleFileUpload(e, 'coverLetter')}
                           className="hidden"
                           id="cover-letter-upload"
@@ -1515,11 +1532,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.cv ? formData.cv.name : "Glissez votre CV ici ou cliquez pour parcourir"}
                             </p>
+                            <p className="text-xs text-muted-foreground/70">Format accepté : PDF uniquement</p>
                           </>
                         )}
                         <input
                           type="file"
-                          accept=".pdf,.doc,.docx"
+                          accept=".pdf"
                           onChange={(e) => handleFileUpload(e, 'cv')}
                           className="hidden"
                           id="cv-upload"
@@ -1564,11 +1582,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             <p className="text-sm text-muted-foreground mb-2">
                               Glissez vos diplômes ici ou cliquez pour parcourir (plusieurs fichiers acceptés)
                             </p>
+                            <p className="text-xs text-muted-foreground/70">Format accepté : PDF uniquement</p>
                           </>
                         )}
                         <input
                           type="file"
-                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                          accept=".pdf"
                           multiple
                           onChange={(e) => handleFileUpload(e, 'certificates')}
                           className="hidden"
@@ -1619,11 +1638,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             <p className="text-sm text-muted-foreground mb-2">
                               Certificats professionnels, formations, etc. (plusieurs fichiers acceptés)
                             </p>
+                            <p className="text-xs text-muted-foreground/70">Format accepté : PDF uniquement</p>
                           </>
                         )}
                         <input
                           type="file"
-                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                          accept=".pdf"
                           multiple
                           onChange={(e) => handleFileUpload(e, 'additional_certificates')}
                           className="hidden"
