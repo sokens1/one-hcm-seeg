@@ -68,6 +68,7 @@ export function CampaignSelector() {
             {/* Campagnes individuelles */}
             {allCampaigns.map((campaign, index) => {
               const isSelected = selectedCampaignId === campaign.id;
+              const isDisabled = campaign.id === 'campaign-3'; // Désactiver la campagne 3
               const colors = [
                 'from-green-500 to-emerald-600',
                 'from-orange-500 to-amber-600',
@@ -78,11 +79,14 @@ export function CampaignSelector() {
               return (
                 <button
                   key={campaign.id}
-                  onClick={() => setSelectedCampaignId(campaign.id)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
-                    isSelected
-                      ? `bg-gradient-to-r ${colorClass} text-white border-transparent shadow-md`
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300'
+                  onClick={() => !isDisabled && setSelectedCampaignId(campaign.id)}
+                  disabled={isDisabled}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all duration-200 ${
+                    isDisabled 
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border-gray-300 dark:border-gray-700 cursor-not-allowed opacity-50'
+                      : isSelected
+                        ? `bg-gradient-to-r ${colorClass} text-white border-transparent shadow-md hover:shadow-lg`
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:shadow-md'
                   }`}
                 >
                   <div className={`flex items-center justify-center w-8 h-8 rounded-md ${
@@ -93,11 +97,20 @@ export function CampaignSelector() {
                     <Calendar className={`h-4 w-4 ${isSelected ? 'text-white' : 'text-white'}`} />
                   </div>
                   <div className="text-left">
-                    <div className="font-semibold text-sm">{campaign.name}</div>
+                    <div className="font-semibold text-sm flex items-center gap-2">
+                      {campaign.name}
+                      {isDisabled && (
+                        <Badge variant="secondary" className="text-xs">
+                          Bientôt disponible
+                        </Badge>
+                      )}
+                    </div>
                     <div className={`text-xs ${
-                      isSelected 
-                        ? 'text-white/80' 
-                        : 'text-gray-500 dark:text-gray-400'
+                      isDisabled
+                        ? 'text-gray-400 dark:text-gray-600'
+                        : isSelected 
+                          ? 'text-white/80' 
+                          : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {formatDateRange(campaign.startDate, campaign.endDate)}
                     </div>
