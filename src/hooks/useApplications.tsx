@@ -54,11 +54,10 @@ export interface Application {
   availability_start: string | null;
   reference_contacts?: string | null; // Deprecated
   ref_contacts?: string | null; // Deprecated
-  reference_full_name?: string | null;
-  reference_email?: string | null;
-  reference_contact?: string | null;
-  reference_company?: string | null;
-  recommandations?: string | null; // Nouveau champ unifié
+  reference_full_name?: string | null; // Maintenant contient une liste JSON
+  reference_email?: string | null; // Maintenant contient une liste JSON
+  reference_contact?: string | null; // Maintenant contient une liste JSON
+  reference_company?: string | null; // Maintenant contient une liste JSON
   interview_date?: string | null; // Date et heure de l'entretien programmé
   simulation_date?: string | null; // Date et heure de la simulation programmée
   mtp_answers?: {

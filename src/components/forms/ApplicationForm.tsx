@@ -734,10 +734,90 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const refContact = (data as any).reference_contact ?? "";
         const refCompany = (data as any).reference_company ?? "";
 
+        // Reconstruire les recommandations depuis les listes ordonnées
+        const reconstructedReferences = (() => {
+          try {
+            const names = (() => {
+              if (!refFullName) return [];
+              if (Array.isArray(refFullName)) return refFullName;
+              if (typeof refFullName === 'string') {
+                try {
+                  return JSON.parse(refFullName);
+                } catch {
+                  return [refFullName];
+                }
+              }
+              return [];
+            })();
+
+            const emails = (() => {
+              if (!refEmail) return [];
+              if (Array.isArray(refEmail)) return refEmail;
+              if (typeof refEmail === 'string') {
+                try {
+                  return JSON.parse(refEmail);
+                } catch {
+                  return [refEmail];
+                }
+              }
+              return [];
+            })();
+
+            const contacts = (() => {
+              if (!refContact) return [];
+              if (Array.isArray(refContact)) return refContact;
+              if (typeof refContact === 'string') {
+                try {
+                  return JSON.parse(refContact);
+                } catch {
+                  return [refContact];
+                }
+              }
+              return [];
+            })();
+
+            const companies = (() => {
+              if (!refCompany) return [];
+              if (Array.isArray(refCompany)) return refCompany;
+              if (typeof refCompany === 'string') {
+                try {
+                  return JSON.parse(refCompany);
+                } catch {
+                  return [refCompany];
+                }
+              }
+              return [];
+            })();
+
+            // Reconstruire les recommandations
+            const maxLength = Math.max(names.length, emails.length, contacts.length, companies.length);
+            const references = [];
+
+            for (let i = 0; i < maxLength; i++) {
+              if (names[i] || emails[i] || contacts[i] || companies[i]) {
+                references.push({
+                  id: `ref-${i + 1}`,
+                  fullName: names[i] || '',
+                  email: emails[i] || '',
+                  contact: contacts[i] || '',
+                  company: companies[i] || ''
+                });
+              }
+            }
+
+            return references;
+          } catch (error) {
+            console.error('❌ Erreur reconstruction références:', error);
+            return [];
+          }
+        })();
+
         setFormData(prev => {
           const next = {
           ...prev,
-          // Références et MTP
+          // Références reconstruites
+          references: reconstructedReferences,
+          // Anciens champs pour compatibilité
           referenceFullName: refFullName || prev.referenceFullName,
           referenceEmail: refEmail || prev.referenceEmail,
           referenceContact: refContact || prev.referenceContact,
@@ -1147,16 +1227,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       let applicationIdForDocs: string | undefined;
 
       if (mode === 'edit' && applicationId) {
-        // Préparer les données de références
-        const firstReference = formData.references[0];
+        // Préparer les données de références - chaque champ reçoit une liste ordonnée
+        const referenceNames = formData.references.map(ref => ref.fullName);
+        const referenceEmails = formData.references.map(ref => ref.email);
+        const referenceContacts = formData.references.map(ref => ref.contact);
+        const referenceCompanies = formData.references.map(ref => ref.company);
+        
         const { error: updError } = await supabase
           .from('applications')
           .update({
-            reference_full_name: firstReference?.fullName || null,
-            reference_email: firstReference?.email || null,
-            reference_contact: firstReference?.contact || null,
-            reference_company: firstReference?.company || null,
-            recommandations: formData.references, // Enregistrer toutes les références au format JSON
+            reference_full_name: JSON.stringify(referenceNames),
+            reference_email: JSON.stringify(referenceEmails),
+            reference_contact: JSON.stringify(referenceContacts),
+            reference_company: JSON.stringify(referenceCompanies),
             has_been_manager: formData.hasBeenManager,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
@@ -1190,16 +1273,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         applicationIdForDocs = applicationId;
       } else {
         if (!jobId) throw new Error('Job ID manquant.');
-        // Préparer les données de références
-        const firstReference = formData.references[0];
+        // Préparer les données de références - chaque champ reçoit une liste ordonnée
+        const referenceNames = formData.references.map(ref => ref.fullName);
+        const referenceEmails = formData.references.map(ref => ref.email);
+        const referenceContacts = formData.references.map(ref => ref.contact);
+        const referenceCompanies = formData.references.map(ref => ref.company);
+        
         const application = await submitApplication({
           job_offer_id: jobId as string,
           ref_contacts: undefined, // legacy removed
-          reference_full_name: firstReference?.fullName || null,
-          reference_email: firstReference?.email || null,
-          reference_contact: firstReference?.contact || null,
-          reference_company: firstReference?.company || null,
-          recommandations: formData.references, // Enregistrer toutes les références au format JSON
+          reference_full_name: JSON.stringify(referenceNames),
+          reference_email: JSON.stringify(referenceEmails),
+          reference_contact: JSON.stringify(referenceContacts),
+          reference_company: JSON.stringify(referenceCompanies),
           has_been_manager: formData.hasBeenManager,
           mtp_answers: {
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),

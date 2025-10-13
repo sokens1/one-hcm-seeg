@@ -214,30 +214,82 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       referenceEmail: cleanText(application.reference_email) || '',
       referenceContact: cleanText(application.reference_contact) || '',
       referenceCompany: cleanText(application.reference_company) || '',
-      // Nouvelles recommandations - utiliser le nouvel attribut 'recommandations'
+      // Reconstruire les recommandations à partir des listes ordonnées dans chaque champ
       recommandations: (() => {
         try {
-          // Priorité au nouvel attribut 'recommandations'
-          if (application.recommandations) {
-            if (Array.isArray(application.recommandations)) return application.recommandations;
-            if (typeof application.recommandations === 'string') {
-              const parsed = JSON.parse(application.recommandations);
-              return Array.isArray(parsed) ? parsed : [];
+          // Parser les listes ordonnées depuis chaque champ
+          const names = (() => {
+            if (!application.reference_full_name) return [];
+            if (Array.isArray(application.reference_full_name)) return application.reference_full_name;
+            if (typeof application.reference_full_name === 'string') {
+              try {
+                return JSON.parse(application.reference_full_name);
+              } catch {
+                // Si ce n'est pas du JSON, c'est une valeur unique
+                return [application.reference_full_name];
+              }
+            }
+            return [];
+          })();
+
+          const emails = (() => {
+            if (!application.reference_email) return [];
+            if (Array.isArray(application.reference_email)) return application.reference_email;
+            if (typeof application.reference_email === 'string') {
+              try {
+                return JSON.parse(application.reference_email);
+              } catch {
+                return [application.reference_email];
+              }
+            }
+            return [];
+          })();
+
+          const contacts = (() => {
+            if (!application.reference_contact) return [];
+            if (Array.isArray(application.reference_contact)) return application.reference_contact;
+            if (typeof application.reference_contact === 'string') {
+              try {
+                return JSON.parse(application.reference_contact);
+              } catch {
+                return [application.reference_contact];
+              }
+            }
+            return [];
+          })();
+
+          const companies = (() => {
+            if (!application.reference_company) return [];
+            if (Array.isArray(application.reference_company)) return application.reference_company;
+            if (typeof application.reference_company === 'string') {
+              try {
+                return JSON.parse(application.reference_company);
+              } catch {
+                return [application.reference_company];
+              }
+            }
+            return [];
+          })();
+
+          // Reconstruire les recommandations en combinant les listes par index
+          const maxLength = Math.max(names.length, emails.length, contacts.length, companies.length);
+          const recommendations = [];
+
+          for (let i = 0; i < maxLength; i++) {
+            if (names[i] || emails[i] || contacts[i] || companies[i]) {
+              recommendations.push({
+                id: `ref-${i + 1}`,
+                fullName: names[i] || '',
+                email: emails[i] || '',
+                contact: contacts[i] || '',
+                company: companies[i] || ''
+              });
             }
           }
-          
-          // Fallback vers l'ancien système reference_contacts
-          if (application.reference_contacts) {
-            if (Array.isArray(application.reference_contacts)) return application.reference_contacts;
-            if (typeof application.reference_contacts === 'string') {
-              const parsed = JSON.parse(application.reference_contacts);
-              return Array.isArray(parsed) ? parsed : [];
-            }
-          }
-          
-          return [];
+
+          return recommendations;
         } catch (error) {
-          console.error('❌ [PDF Export] Erreur parsing recommandations:', error);
+          console.error('❌ [PDF Export] Erreur reconstruction recommandations:', error);
           return [];
         }
       })(),
@@ -250,12 +302,10 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
         raw_email: application.reference_email,
         raw_contact: application.reference_contact,
         raw_company: application.reference_company,
-        recommandations: application.recommandations,
-        recommandations_type: typeof application.recommandations,
-        recommandations_length: Array.isArray(application.recommandations) ? application.recommandations.length : 'N/A',
-        reference_contacts: application.reference_contacts,
-        reference_contacts_type: typeof application.reference_contacts,
-        reference_contacts_length: Array.isArray(application.reference_contacts) ? application.reference_contacts.length : 'N/A',
+        raw_full_name_type: typeof application.reference_full_name,
+        raw_email_type: typeof application.reference_email,
+        raw_contact_type: typeof application.reference_contact,
+        raw_company_type: typeof application.reference_company,
         cleaned_full_name: cleanText(application.reference_full_name),
         cleaned_email: cleanText(application.reference_email),
         cleaned_contact: cleanText(application.reference_contact),
