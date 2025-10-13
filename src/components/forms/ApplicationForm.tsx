@@ -1482,7 +1482,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.coverLetter ? formData.coverLetter.name : "Glissez votre lettre de motivation ici ou cliquez pour parcourir"}
                             </p>
-                            <p className="text-xs text-muted-foreground/70">Format accepté : PDF uniquement</p>
+                            <p className="text-xs text-orange-500">Format accepté : PDF uniquement</p>
                           </>
                         )}
                         <input
@@ -1532,7 +1532,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             <p className="text-sm text-muted-foreground mb-2">
                               {formData.cv ? formData.cv.name : "Glissez votre CV ici ou cliquez pour parcourir"}
                             </p>
-                            <p className="text-xs text-muted-foreground/70">Format accepté : PDF uniquement</p>
+                            <p className="text-xs text-orange-500">Format accepté : PDF uniquement</p>
                           </>
                         )}
                         <input
@@ -1582,7 +1582,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             <p className="text-sm text-muted-foreground mb-2">
                               Glissez vos diplômes ici ou cliquez pour parcourir (plusieurs fichiers acceptés)
                             </p>
-                            <p className="text-xs text-muted-foreground/70">Format accepté : PDF uniquement</p>
+                            <p className="text-xs text-orange-500">Format accepté : PDF uniquement</p>
                           </>
                         )}
                         <input
@@ -1638,7 +1638,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             <p className="text-sm text-muted-foreground mb-2">
                               Certificats professionnels, formations, etc. (plusieurs fichiers acceptés)
                             </p>
-                            <p className="text-xs text-muted-foreground/70">Format accepté : PDF uniquement</p>
+                            <p className="text-xs text-orange-500">Format accepté : PDF uniquement</p>
                           </>
                         )}
                         <input
