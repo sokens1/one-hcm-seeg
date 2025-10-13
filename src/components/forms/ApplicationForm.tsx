@@ -9,7 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X, Users, Edit, AlertCircle, Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useApplications } from "@/hooks/useApplications";
 import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
@@ -43,6 +45,301 @@ interface ApplicationFormProps {
   offerStatus?: string | null; // interne | externe - pour conditionner l'affichage des références
 }
 
+interface Reference {
+  id: string;
+  fullName: string;
+  email: string;
+  contact: string;
+  company: string;
+}
+
+// Composant pour gérer les recommandations
+function ReferenceSection({
+  references,
+  onAddReference,
+  onEditReference,
+  onDeleteReference,
+}: {
+  references: Reference[];
+  onAddReference: (reference: Reference) => void;
+  onEditReference: (id: string, reference: Reference) => void;
+  onDeleteReference: (id: string) => void;
+}) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingReference, setEditingReference] = useState<Reference | null>(null);
+  const [formRef, setFormRef] = useState<Reference>({
+    id: '',
+    fullName: '',
+    email: '',
+    contact: '',
+    company: '',
+  });
+
+  const minReferences = 2;
+  const maxReferences = 5;
+
+  const handleOpenModal = (reference?: Reference) => {
+    if (reference) {
+      setEditingReference(reference);
+      setFormRef(reference);
+    } else {
+      setEditingReference(null);
+      setFormRef({
+        id: crypto.randomUUID(),
+        fullName: '',
+        email: '',
+        contact: '',
+        company: '',
+      });
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingReference(null);
+    setFormRef({
+      id: '',
+      fullName: '',
+      email: '',
+      contact: '',
+      company: '',
+    });
+  };
+
+  const handleSaveReference = () => {
+    // Validation
+    if (!formRef.fullName.trim() || !formRef.email.trim() || !formRef.contact.trim() || !formRef.company.trim()) {
+      toast.error('Veuillez remplir tous les champs');
+      return;
+    }
+
+    // Validation email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formRef.email)) {
+      toast.error('Veuillez entrer une adresse email valide');
+      return;
+    }
+
+    // Validation téléphone
+    const phoneRegex = /^(\+241|241)?\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}$/;
+    if (!phoneRegex.test(formRef.contact.replace(/\s+/g, ' ').trim())) {
+      toast.error('Format de contact attendu: +241 01 23 45 67');
+      return;
+    }
+
+    if (editingReference) {
+      onEditReference(editingReference.id, formRef);
+      toast.success('Recommandation mise à jour');
+    } else {
+      onAddReference(formRef);
+      toast.success('Recommandation ajoutée');
+    }
+
+    handleCloseModal();
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* En-tête avec badge */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Recommandations professionnelles
+            </h4>
+            <Badge 
+              variant={references.length >= minReferences ? "default" : "destructive"}
+              className="text-xs"
+            >
+              {references.length}/{minReferences} minimum
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Ajoutez {minReferences} à {maxReferences} personnes qui peuvent attester de votre parcours professionnel.
+          </p>
+        </div>
+      </div>
+
+      {/* Liste des recommandations */}
+      {references.length > 0 && (
+        <div className="grid gap-3">
+          {references.map((reference, index) => (
+            <div
+              key={reference.id}
+              className="group relative bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4 hover:shadow-md transition-all duration-200"
+            >
+              {/* Badge numéro */}
+              <div className="absolute -top-2 -left-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-md">
+                {index + 1}
+              </div>
+
+              {/* Contenu */}
+              <div className="ml-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Nom complet</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{reference.fullName}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Entreprise</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{reference.company}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Email</p>
+                  <p className="text-sm text-blue-600 dark:text-blue-400">{reference.email}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Contact</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{reference.contact}</p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleOpenModal(reference)}
+                  className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    if (confirm('Êtes-vous sûr de vouloir supprimer cette recommandation ?')) {
+                      onDeleteReference(reference.id);
+                      toast.success('Recommandation supprimée');
+                    }
+                  }}
+                  className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900 text-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Message si aucune recommandation */}
+      {references.length === 0 && (
+        <div className="text-center py-8 bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
+          <Users className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            Aucune recommandation ajoutée
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-500">
+            Cliquez sur le bouton ci-dessous pour ajouter votre première recommandation
+          </p>
+        </div>
+      )}
+
+      {/* Bouton ajouter */}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => handleOpenModal()}
+        disabled={references.length >= maxReferences}
+        className="w-full border-2 border-dashed border-blue-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all"
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Ajouter une recommandation {references.length < minReferences && `(${minReferences - references.length} minimum requis)`}
+      </Button>
+
+      {references.length < minReferences && (
+        <p className="text-xs text-orange-600 dark:text-orange-400 flex items-center gap-2">
+          <AlertCircle className="h-4 w-4" />
+          Vous devez ajouter au moins {minReferences} recommandations pour continuer
+        </p>
+      )}
+
+      {/* Modal pour ajouter/éditer une recommandation */}
+      <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+              <Users className="h-5 w-5 text-blue-600" />
+              {editingReference ? 'Modifier la recommandation' : 'Ajouter une recommandation'}
+            </DialogTitle>
+            <DialogDescription>
+              Renseignez les informations d'une personne qui peut attester de votre parcours professionnel.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="modal-fullName">Nom et prénom *</Label>
+              <Input
+                id="modal-fullName"
+                value={formRef.fullName}
+                onChange={(e) => setFormRef({ ...formRef, fullName: e.target.value })}
+                placeholder="Ex: Jean Dupont"
+                className="border-2"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="modal-company">Administration / Entreprise / Organisation *</Label>
+              <Input
+                id="modal-company"
+                value={formRef.company}
+                onChange={(e) => setFormRef({ ...formRef, company: e.target.value })}
+                placeholder="Ex: SEEG"
+                className="border-2"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="modal-email">Email professionnel *</Label>
+              <Input
+                id="modal-email"
+                type="email"
+                value={formRef.email}
+                onChange={(e) => setFormRef({ ...formRef, email: e.target.value })}
+                placeholder="exemple@domaine.com"
+                className="border-2"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="modal-contact">Numéro de téléphone *</Label>
+              <Input
+                id="modal-contact"
+                value={formRef.contact}
+                onChange={(e) => setFormRef({ ...formRef, contact: e.target.value })}
+                placeholder="+241 01 23 45 67"
+                className="border-2"
+              />
+              <p className="text-xs text-muted-foreground">
+                Format: +241 01 23 45 67 ou 241 01 23 45 67
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCloseModal}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSaveReference}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {editingReference ? 'Mettre à jour' : 'Ajouter'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 interface FormData {
   firstName: string;
   lastName: string;
@@ -58,7 +355,8 @@ interface FormData {
   yearsOfExperience: string;
   certificates: UploadedFile[];
   additionalCertificates: UploadedFile[];
-  referenceFullName: string;
+  references: Reference[]; // Nouvelle structure pour plusieurs recommandations
+  referenceFullName: string; // Conservé pour compatibilité
   referenceEmail: string;
   referenceContact: string;
   referenceCompany: string;
@@ -188,6 +486,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     yearsOfExperience: "",
     certificates: [],
     additionalCertificates: [],
+    references: [],
     referenceFullName: "",
     referenceEmail: "",
     referenceContact: "",
@@ -740,13 +1039,9 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       formData.certificates.length > 0  // At least one diploma is required
     );
     
-    // Les références sont requises uniquement pour les offres externes
+    // Les références sont requises uniquement pour les offres externes (minimum 2)
     if (isExternalOffer) {
-      return basicDocsValid && 
-        formData.referenceFullName.trim() !== '' &&
-        formData.referenceEmail.trim() !== '' &&
-        formData.referenceContact.trim() !== '' &&
-        formData.referenceCompany.trim() !== '';
+      return basicDocsValid && formData.references.length >= 2;
     }
     
     // Le champ hasBeenManager est requis uniquement pour les offres internes
@@ -813,12 +1108,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!formData.cv) missing.push("CV");
           if (!formData.coverLetter) missing.push("Lettre de motivation");
           if (formData.certificates.length === 0) missing.push("Au moins un diplôme");
-          // Vérifier les références uniquement pour les offres externes
+          // Vérifier les références uniquement pour les offres externes (minimum 2)
           if (isExternalOffer) {
-            if (!formData.referenceFullName.trim()) missing.push("Nom et prénom de la référence");
-            if (!formData.referenceEmail.trim()) missing.push("Email de la référence");
-            if (!formData.referenceContact.trim()) missing.push("Contact de la référence");
-            if (!formData.referenceCompany.trim()) missing.push("Entreprise de la référence");
+            if (formData.references.length < 2) {
+              missing.push(`Au moins 2 recommandations (${formData.references.length}/2)`);
+            }
           }
           // Vérifier la question manager uniquement pour les offres internes
           if (isInternalOffer && formData.hasBeenManager === null) {
@@ -861,13 +1155,16 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       let applicationIdForDocs: string | undefined;
 
       if (mode === 'edit' && applicationId) {
+        // Préparer les données de références
+        const firstReference = formData.references[0];
         const { error: updError } = await supabase
           .from('applications')
           .update({
-            reference_full_name: formData.referenceFullName || null,
-            reference_email: formData.referenceEmail || null,
-            reference_contact: formData.referenceContact || null,
-            reference_company: formData.referenceCompany || null,
+            reference_full_name: firstReference?.fullName || null,
+            reference_email: firstReference?.email || null,
+            reference_contact: firstReference?.contact || null,
+            reference_company: firstReference?.company || null,
+            reference_contacts: formData.references, // Enregistrer toutes les références au format JSON
             has_been_manager: formData.hasBeenManager,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
@@ -901,13 +1198,16 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         applicationIdForDocs = applicationId;
       } else {
         if (!jobId) throw new Error('Job ID manquant.');
+        // Préparer les données de références
+        const firstReference = formData.references[0];
         const application = await submitApplication({
           job_offer_id: jobId as string,
           ref_contacts: undefined, // legacy removed
-          reference_full_name: formData.referenceFullName || null,
-          reference_email: formData.referenceEmail || null,
-          reference_contact: formData.referenceContact || null,
-          reference_company: formData.referenceCompany || null,
+          reference_full_name: firstReference?.fullName || null,
+          reference_email: firstReference?.email || null,
+          reference_contact: firstReference?.contact || null,
+          reference_company: firstReference?.company || null,
+          reference_contacts: formData.references, // Enregistrer toutes les références au format JSON
           has_been_manager: formData.hasBeenManager,
           mtp_answers: {
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
@@ -1711,79 +2011,31 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     </div>
                   )}
 
-                  {/* Section Référence de recommandation - uniquement pour les offres externes */}
+                  {/* Section Recommandations - uniquement pour les offres externes */}
                   {isExternalOffer && (
-                    <>
-                  <div>
-                    <h4 className="font-medium mb-2">Référence de recommandation</h4>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          Cette section est requise pour les candidatures externes.
-                        </p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="referenceFullName">Nom et prénom *</Label>
-                      <Input
-                        id="referenceFullName"
-                        value={formData.referenceFullName}
-                        onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
-                        placeholder="Ex: Jean Dupont"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="referenceCompany" className="whitespace-nowrap">Administration / Entreprise / Organisation *</Label>
-                      <Input
-                        id="referenceCompany"
-                        value={formData.referenceCompany}
-                        onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
-                        placeholder="Ex: SEEG"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="referenceEmail">Email *</Label>
-                      <Input
-                        id="referenceEmail"
-                        type="email"
-                        value={formData.referenceEmail}
-                        onChange={(e) => {
-                          const email = e.target.value;
-                          setFormData({ ...formData, referenceEmail: email });
-                          // Validation du format email
-                          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                          if (email && !emailRegex.test(email)) {
-                            e.target.setCustomValidity('Veuillez entrer une adresse email valide');
-                          } else {
-                            e.target.setCustomValidity('');
-                          }
-                        }}
-                        placeholder="exemple@domaine.com"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="referenceContact">Contact *</Label>
-                      <Input
-                        id="referenceContact"
-                        value={formData.referenceContact}
-                        onChange={(e) => {
-                          const contact = e.target.value;
-                          setFormData({ ...formData, referenceContact: contact });
-                          // Validation du format téléphone (Gabon: +241 ou 241 suivi de 8 chiffres)
-                          const phoneRegex = /^(\+241|241)?\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}$/;
-                          if (contact && !phoneRegex.test(contact.replace(/\s+/g, ' ').trim())) {
-                            e.target.setCustomValidity('Format attendu: +241 01 23 45 67 ou 241 01 23 45 67');
-                          } else {
-                            e.target.setCustomValidity('');
-                          }
-                        }}
-                        placeholder="+241 01 23 45 67"
-                        required
-                      />
-                    </div>
-                  </div>
-                    </>
+                    <ReferenceSection
+                      references={formData.references}
+                      onAddReference={(newReference) => {
+                        setFormData({
+                          ...formData,
+                          references: [...formData.references, newReference]
+                        });
+                      }}
+                      onEditReference={(id, updatedReference) => {
+                        setFormData({
+                          ...formData,
+                          references: formData.references.map(ref =>
+                            ref.id === id ? updatedReference : ref
+                          )
+                        });
+                      }}
+                      onDeleteReference={(id) => {
+                        setFormData({
+                          ...formData,
+                          references: formData.references.filter(ref => ref.id !== id)
+                        });
+                      }}
+                    />
                   )}
                 </div>
               )}

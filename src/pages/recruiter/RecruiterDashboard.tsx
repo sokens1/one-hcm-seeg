@@ -571,7 +571,7 @@ export default function RecruiterDashboard() {
                 </CardContent>
               </Card>
 
-                             {/* Répartition des candidatures par type de métier */}
+              {/* Répartition des candidatures par type de métier */}
                <Card>
                  <CardHeader className="pb-3">
                    <div className="flex items-center gap-2">
