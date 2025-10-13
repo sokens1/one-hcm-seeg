@@ -159,8 +159,8 @@ export default function RecruiterDashboard() {
           </div>
         ) : (
           <>
-            {/* Stats Cards - Harmonisation de l'affichage */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {/* Stats Cards - Affichage deux par deux sur mobile */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Offres */}
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
                 <CardHeader className="pb-2">
@@ -260,11 +260,11 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Deuxième rangée de KPIs - Grille adaptative selon la campagne */}
-            <div className={`grid grid-cols-1 gap-3 sm:gap-4 mt-3 sm:mt-4 ${
+            {/* Deuxième rangée de KPIs - Affichage deux par deux sur mobile */}
+            <div className={`grid grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4 ${
               selectedCampaignId === 'campaign-2' || selectedCampaignId === 'campaign-3' 
-                ? 'md:grid-cols-2' 
-                : 'md:grid-cols-2 lg:grid-cols-3'
+                ? 'lg:grid-cols-2' 
+                : 'lg:grid-cols-3'
             }`}>
               {/* Taux de couverture par département - masqué pour campagnes 2 et 3 */}
               {selectedCampaignId !== 'campaign-2' && selectedCampaignId !== 'campaign-3' && (
