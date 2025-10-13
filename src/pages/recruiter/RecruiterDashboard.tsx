@@ -260,8 +260,12 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Deuxième rangée de KPIs - 3 cartes pour l'équilibre */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
+            {/* Deuxième rangée de KPIs - Grille adaptative selon la campagne */}
+            <div className={`grid grid-cols-1 gap-3 sm:gap-4 mt-3 sm:mt-4 ${
+              selectedCampaignId === 'campaign-2' || selectedCampaignId === 'campaign-3' 
+                ? 'md:grid-cols-2' 
+                : 'md:grid-cols-2 lg:grid-cols-3'
+            }`}>
               {/* Taux de couverture par département - masqué pour campagnes 2 et 3 */}
               {selectedCampaignId !== 'campaign-2' && selectedCampaignId !== 'campaign-3' && (
               <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900 border-cyan-200 dark:border-cyan-800">
