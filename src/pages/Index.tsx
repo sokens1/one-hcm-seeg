@@ -194,7 +194,7 @@ const Index = () => {
             Rejoignez l'équipe dirigeante de la SEEG
             </h1>
             <h2 className="text-sm sm:text-lg md:text-xl lg:text-xl font-semibold opacity-90 animate-fade-in delay-150 px-4 leading-relaxed">
-            La SEEG recherche des profils d’excellence, porteurs d’un leadership affirmé, capables d’articuler sa vision stratégique et d’accompagner l’entreprise dans sa transformation et sa performance durable.
+            La SEEG recherche des profils d’excellence, porteurs d’un leadership affirmé, capables d’articuler sa vision stratégique et d’accompagner l’entreprise dans sa transformation.
             </h2>
             <div className="pt-4 sm:pt-6 animate-fade-in delay-400">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
