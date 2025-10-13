@@ -530,7 +530,7 @@ export const generateApplicationPdf = (data: ApplicationData) => {
         yPos += 5;
         doc.text(`Contact: ${cleanCorruptedText(referenceData.contact)}`, margin + 10, yPos);
         yPos += 5;
-        doc.text(`Entreprise: ${cleanCorruptedText(referenceData.company)}`, margin + 10, yPos);
+        doc.text(`Administration / Entreprise / Organisation: ${cleanCorruptedText(referenceData.company)}`, margin + 10, yPos);
         
         // Afficher le statut
         const status = 'Renseigné';
