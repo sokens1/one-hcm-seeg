@@ -452,10 +452,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       if (!raw) raw = localStorage.getItem(sharedKey);
       if (raw) {
         const parsed = JSON.parse(raw) as FormData;
-        // Restaurer Date
+        // Restaurer Date et s'assurer que les tableaux sont définis
         return {
           ...parsed,
           dateOfBirth: parsed.dateOfBirth ? new Date(parsed.dateOfBirth as unknown as string) : null,
+          certificates: parsed.certificates || [],
+          references: parsed.references || [],
+          additionalCertificates: parsed.additionalCertificates || [],
         };
       }
     } catch { /* ignore */ }
@@ -1024,12 +1027,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     const basicDocsValid = (
       formData.cv !== null &&
       formData.coverLetter !== null &&
-      formData.certificates.length > 0  // At least one diploma is required
+      formData.certificates && formData.certificates.length > 0  // At least one diploma is required
     );
     
     // Les références sont requises uniquement pour les offres externes (minimum 2)
     if (isExternalOffer) {
-      return basicDocsValid && formData.references.length >= 2;
+      return basicDocsValid && formData.references && formData.references.length >= 2;
     }
     
     // Le champ hasBeenManager est requis uniquement pour les offres internes
@@ -1095,11 +1098,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           const missing = [];
           if (!formData.cv) missing.push("CV");
           if (!formData.coverLetter) missing.push("Lettre de motivation");
-          if (formData.certificates.length === 0) missing.push("Au moins un diplôme");
+          if (!formData.certificates || formData.certificates.length === 0) missing.push("Au moins un diplôme");
           // Vérifier les références uniquement pour les offres externes (minimum 2)
           if (isExternalOffer) {
-            if (formData.references.length < 2) {
-              missing.push(`Au moins 2 recommandations (${formData.references.length}/2)`);
+            const refCount = formData.references ? formData.references.length : 0;
+            if (refCount < 2) {
+              missing.push(`Au moins 2 recommandations (${refCount}/2)`);
             }
           }
           // Vérifier la question manager uniquement pour les offres internes
@@ -1871,7 +1875,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         >
                           {isUploading ? "Upload..." : "Choisir des fichiers"}
                         </Button>
-                        {formData.certificates.length > 0 && (
+                        {formData.certificates && formData.certificates.length > 0 && (
                           <div className="mt-3 space-y-2">
                             {formData.certificates.map((cert, index) => (
                               <div key={index} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
@@ -1926,7 +1930,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         >
                           {isUploading ? "Upload..." : "Choisir des fichiers"}
                         </Button>
-                        {formData.additionalCertificates.length > 0 && (
+                        {formData.additionalCertificates && formData.additionalCertificates.length > 0 && (
                           <div className="mt-3 space-y-2">
                             {formData.additionalCertificates.map((cert, index) => (
                               <div key={index} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
@@ -2012,15 +2016,15 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       onEditReference={(id, updatedReference) => {
                         setFormData({
                           ...formData,
-                          references: formData.references.map(ref =>
+                          references: formData.references ? formData.references.map(ref =>
                             ref.id === id ? updatedReference : ref
-                          )
+                          ) : []
                         });
                       }}
                       onDeleteReference={(id) => {
                         setFormData({
                           ...formData,
-                          references: formData.references.filter(ref => ref.id !== id)
+                          references: formData.references ? formData.references.filter(ref => ref.id !== id) : []
                         });
                       }}
                     />
@@ -2247,11 +2251,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       {/* Sections cachées non affichées en récapitulatif: intégrité et idée de projet */}
                       <div>
                         <span className="text-muted-foreground">Diplômes:</span>
-                        <p>{formData.certificates.length} fichier(s)</p>
+                        <p>{formData.certificates ? formData.certificates.length : 0} fichier(s)</p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Certificats</span>
-                        <p>{formData.additionalCertificates.length} fichier(s)</p>
+                        <p>{formData.additionalCertificates ? formData.additionalCertificates.length : 0} fichier(s)</p>
                       </div>
                       {/* Sections cachées non affichées: lettres de recommandation */}
                     </div>
@@ -2274,30 +2278,30 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       </div>
                     )}
 
-                    {/* Référence de recommandation - uniquement pour les offres externes */}
+                    {/* Recommandations - uniquement pour les offres externes */}
                     {isExternalOffer && (
                     <div className="bg-muted rounded-lg p-4 mt-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-medium">Référence de recommandation</h5>
+                        <h5 className="font-medium">Recommandations</h5>
                         <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Nom et prénom:</span>
-                          <p>{formData.referenceFullName || "Non renseigné"}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Entreprise:</span>
-                          <p>{formData.referenceCompany || "Non renseigné"}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Email:</span>
-                          <p>{formData.referenceEmail || "Non renseigné"}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Contact:</span>
-                          <p>{formData.referenceContact || "Non renseigné"}</p>
-                        </div>
+                      <div className="text-sm">
+                        {formData.references && formData.references.length > 0 ? (
+                          <div className="space-y-3">
+                            {formData.references.map((ref) => (
+                              <div key={ref.id} className="p-3 bg-white rounded border space-y-1">
+                                <div className="font-medium text-base">{ref.fullName}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  <div>📧 {ref.email}</div>
+                                  <div>📞 {ref.contact}</div>
+                                  <div>🏢 {ref.company}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-muted-foreground">Aucune recommandation renseignée</p>
+                        )}
                       </div>
                     </div>
                     )}
