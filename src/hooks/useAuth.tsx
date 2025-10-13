@@ -8,11 +8,20 @@ export interface SignUpMetadata {
   first_name?: string;
   last_name?: string;
   phone?: string;
-  matricule?: string;
+  matricule?: string | null;
   birth_date?: string;
   current_position?: string;
   bio?: string;
   gender?: string; // 'Homme' | 'Femme' | autres valeurs
+  // Nouveaux champs
+  date_of_birth?: string;
+  sexe?: string;
+  adresse?: string;
+  candidate_status?: string;
+  no_seeg_email?: boolean;
+  poste_actuel?: string;
+  annees_experience?: number;
+  statut?: string;
 }
 
 interface AuthContextType {
@@ -31,6 +40,7 @@ interface AuthContextType {
   isRecruiter: boolean;
   isAdmin: boolean;
   isObserver: boolean;
+  candidateStatus: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isRoleLoading, setIsRoleLoading] = useState(false);
   const [dbRole, setDbRole] = useState<string | null>(null);
+  const [candidateStatus, setCandidateStatus] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
@@ -50,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const setupForUid = async (uid: string | undefined | null) => {
       if (!uid) {
         setDbRole(null);
+        setCandidateStatus(null);
         return;
       }
       // Remove previous channel if any
@@ -134,7 +146,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           filter: `id=eq.${uid}`,
         }, (payload) => {
           const nextRole = (payload as any)?.new?.role as string | undefined;
+          const nextCandidateStatus = (payload as any)?.new?.candidate_status as string | undefined;
           if (typeof nextRole === 'string') setDbRole(nextRole);
+          if (typeof nextCandidateStatus === 'string') setCandidateStatus(nextCandidateStatus);
         })
         .subscribe();
       channelRef.current = channel;
@@ -412,6 +426,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const roleValue = getUserRole();
+  console.log('🔍 [useAuth] Role detection:', { 
+    dbRole, 
+    metadataRole: user?.user_metadata?.role, 
+    roleValue,
+    userId: user?.id 
+  });
   const isCandidate = roleValue === 'candidat' || roleValue === 'candidate';
   const isRecruiter = roleValue === 'recruteur' || roleValue === 'recruiter';
   const isAdmin = roleValue === 'admin';
@@ -432,7 +452,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isCandidate,
     isRecruiter,
     isAdmin,
-    isObserver
+    isObserver,
+    candidateStatus
   };
 
   return (
@@ -465,6 +486,7 @@ export function useAuth() {
         isRecruiter: false,
         isAdmin: false,
         isObserver: false,
+        candidateStatus: null,
       } as AuthContextType;
     }
     throw new Error('useAuth must be used within an AuthProvider');

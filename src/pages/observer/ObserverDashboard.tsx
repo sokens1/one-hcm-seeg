@@ -19,8 +19,11 @@ import {
 import { Link } from "react-router-dom";
 import { useRecruiterDashboard } from "@/hooks/useRecruiterDashboard";
 import { useRecruiterActivity } from "@/hooks/useRecruiterActivity";
+import { useCampaignStats } from "@/hooks/useCampaignStats";
 import { ActivityHistoryModal } from "@/components/modals/ActivityHistoryModal";
 import { DashboardToggle } from "@/components/ui/DashboardToggle";
+import { CampaignSelector } from "@/components/ui/CampaignSelector";
+import { useCampaign } from "@/contexts/CampaignContext";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
@@ -44,6 +47,7 @@ import {
 import ObserverAdvancedDashboard from "./ObserverAdvancedDashboard";
 
 export default function ObserverDashboard() {
+  const { selectedCampaignId } = useCampaign();
   const { 
     stats, 
     jobCoverage, 
@@ -51,8 +55,9 @@ export default function ObserverDashboard() {
     applicationsPerJob, 
     isLoading, 
     error 
-  } = useRecruiterDashboard();
+  } = useRecruiterDashboard(selectedCampaignId);
   const { data: activities, isLoading: isLoadingActivities, error: errorActivities } = useRecruiterActivity();
+  const { data: campaignStats, isLoading: isLoadingCampaignStats } = useCampaignStats();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
 
@@ -93,6 +98,11 @@ export default function ObserverDashboard() {
   return (
     <ObserverLayout>
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        {/* Sélecteur de campagne */}
+        <div className="mb-4">
+          <CampaignSelector />
+        </div>
+
         {/* Basculement entre les vues */}
         <DashboardToggle 
           currentView={dashboardView} 
@@ -116,84 +126,113 @@ export default function ObserverDashboard() {
           </div>
         ) : (
           <>
-            {/* Stats Cards - Harmonisation de l'affichage */}
+            {/* Stats Cards - Campagne 2025 (à partir du 27/09/2025) */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Badge variant="outline" className="text-xs">
+                  Nouvelle Campagne
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  Données à partir du 27/09/2025
+                </span>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {/* Offres */}
+              {/* Offres de la campagne */}
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300">
-                      Offres
+                      Offres Campagne
                     </CardTitle>
                     <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    {stats.totalJobs}
+                    {isLoadingCampaignStats ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      campaignStats?.total_jobs || 0
+                    )}
                   </div>
                   <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    Actives
+                    Postes ciblés
                   </p>
                 </CardContent>
               </Card>
 
-              {/* Total des candidats uniques */}
+              {/* Candidats de la campagne */}
               <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
-                      Total des candidats
+                      Candidats Campagne
                     </CardTitle>
                     <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-green-900 dark:text-green-100">
-                    {stats.totalCandidates}
+                    {isLoadingCampaignStats ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      campaignStats?.total_candidates || 0
+                    )}
                   </div>
                   <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                    Candidats uniques
+                    Candidats éligibles
                   </p>
                 </CardContent>
               </Card>
 
-              {/* Total des candidatures */}
+              {/* Candidatures de la campagne */}
               <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border-emerald-200 dark:border-emerald-800">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                      Total des candidatures
+                      Candidatures Campagne
                     </CardTitle>
                     <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-emerald-900 dark:text-emerald-100">
-                    {jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)}
+                    {isLoadingCampaignStats ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      campaignStats?.total_applications || 0
+                    )}
                   </div>
                   <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                    +{stats.newCandidates} ce jour
+                    Total candidatures
                   </p>
                 </CardContent>
               </Card>
 
-              {/* Nombre de candidatures par poste */}
+              {/* Taux de couverture campagne */}
               <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xs sm:text-sm font-medium text-purple-700 dark:text-purple-300">
-                      Candidatures par poste
+                      Couverture Campagne
                     </CardTitle>
                     <Target className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-100">
-                    {stats.totalJobs > 0 ? Math.round((jobCoverage.reduce((sum, job) => sum + job.current_applications, 0)) / stats.totalJobs) : 0}
+                    {isLoadingCampaignStats ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : campaignStats?.total_jobs && campaignStats?.total_jobs > 0 ? (
+                      Math.round((campaignStats.applications_per_job.filter(job => job.application_count > 0).length / campaignStats.total_jobs) * 100)
+                    ) : (
+                      0
+                    )}%
                   </div>
                   <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                    Moyenne
+                    Postes avec candidats
                   </p>
                 </CardContent>
               </Card>
@@ -413,7 +452,11 @@ export default function ObserverDashboard() {
                         <XAxis 
                           dataKey="date" 
                           tick={{ fontSize: 12 }}
-                          tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
+                          tickFormatter={(value) => {
+                            // La date est déjà au format YYYY-MM-DD, on peut l'afficher directement
+                            const [year, month, day] = value.split('-');
+                            return `${day}/${month}`;
+                          }}
                         />
                         <YAxis tick={{ fontSize: 12 }} />
                         <Tooltip 

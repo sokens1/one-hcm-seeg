@@ -18,6 +18,8 @@ import { isApplicationClosed } from "@/utils/applicationUtils";
 import { toast } from "sonner";
 import { useMaintenance } from "@/hooks/useMaintenance";
 import { supabase } from "@/integrations/supabase/client";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
 
 // Les offres sont désormais chargées dynamiquement depuis Supabase
 
@@ -46,6 +48,7 @@ const Index = () => {
   
   const { data, isLoading, error } = useJobOffers();
   const jobOffers: JobOffer[] = Array.isArray(data) ? data : [];
+  const { isEligible } = useCampaignEligibility();
 
   // Helper to normalize location which can be string | string[] from the API
   const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
@@ -190,8 +193,8 @@ const Index = () => {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold animate-fade-in delay-100 px-2 leading-tight">
             Rejoignez l'équipe dirigeante de la SEEG
             </h1>
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold opacity-90 animate-fade-in delay-150 px-4 leading-relaxed">
-              et participez au développement énergétique du Gabon
+            <h2 className="text-sm sm:text-lg md:text-xl lg:text-xl font-semibold opacity-90 animate-fade-in delay-150 px-4 leading-relaxed">
+            La SEEG recherche des profils d’excellence, porteurs d’un leadership affirmé, capables d’articuler sa vision stratégique et d’accompagner l’entreprise dans sa transformation et sa performance durable.
             </h2>
             <div className="pt-4 sm:pt-6 animate-fade-in delay-400">
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
@@ -205,20 +208,10 @@ const Index = () => {
                 </Button>
                             <Button
               size="lg"
-              className="bg-white text-blue-700 font-semibold w-full sm:w-auto opacity-50 cursor-not-allowed pointer-events-none"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (preLaunch) {
-                  preLaunchToast();
-                } else if (applicationsClosed) {
-                  toast.info("Les candidatures sont désormais closes.");
-                }
-              }}
-              disabled={true}
-              title={applicationsClosed ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
+              className="bg-white text-blue-700 font-semibold w-full sm:w-auto"
+              onClick={() => document.getElementById('job-list')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              Candidatures closes
+              Postuler
             </Button>
               </div>
             </div>
@@ -343,6 +336,13 @@ const Index = () => {
           </div>
         </div>
 
+        {/* Campaign Eligibility Alert */}
+        {user && !isEligible && (
+          <div className="max-w-7xl mx-auto mb-6 px-4">
+            <CampaignEligibilityAlert />
+          </div>
+        )}
+
         {/* Job Listings */}
         <div className="max-w-7xl mx-auto mb-8 sm:mb-12">
           {isLoading ? (
@@ -357,21 +357,23 @@ const Index = () => {
             </div>
           ) : viewMode === "cards" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {filteredJobs.map((job, index) => (
-                <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
-                  <JobCard
-                    title={job.title}
-                    location={normalizeLocation(job.location)}
-                    contractType={job.contract_type}
-                    description={job.description}
-                    isPreview={true}
-                    onClick={() => navigate(`/jobs/${job.id}`)}
-                    locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")}
-                    // candidateCount={isApplicationClosed() ? 0 : undefined} // Forcer la désactivation si les candidatures sont closes
-                  />
-                </div>
-              ))}
+              {filteredJobs.map((job, index) => {
+                return (
+                  <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${300 + index * 100}ms` }}>
+                    <JobCard
+                      title={job.title}
+                      location={normalizeLocation(job.location)}
+                      contractType={job.contract_type}
+                      description={job.description}
+                      isPreview={true}
+                      onClick={() => navigate(`/jobs/${job.id}`)}
+                      locked={false}
+                      onLockedClick={() => {}}
+                      isExpired={false}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-sm border overflow-hidden mx-4">

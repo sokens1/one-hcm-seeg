@@ -2,6 +2,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS, isInCampaignPeriod, getCampaignById, GLOBAL_VIEW } from "@/config/campaign";
+import { CAMPAIGN_CONFIG } from "@/config/campaigns";
 
 export interface RecruiterStats {
   totalJobs: number;
@@ -44,6 +46,7 @@ export interface StatusEvolutionData {
   incubation: number;
   embauche: number;
   refuse: number;
+  entretien_programme?: number;
 }
 
 export interface ApplicationsPerJobData {
@@ -53,7 +56,7 @@ export interface ApplicationsPerJobData {
   new_applications_24h: number;
 }
 
-export function useRecruiterDashboard() {
+export function useRecruiterDashboard(campaignId?: string) {
   const { user } = useAuth();
 
   const fetchDashboardData = async () => {
@@ -74,8 +77,10 @@ export function useRecruiterDashboard() {
       .eq('id', user.id)
       .single();
 
-    // Fetch ALL active job offers for recruiters and admins
-    const { data: jobsData, error: jobsError } = await supabase
+    // Fetch job offers filtered by campaign
+    const activeCampaignId = campaignId || GLOBAL_VIEW.id;
+    
+    let jobsQuery = supabase
       .from('job_offers')
       .select(`
         id,
@@ -84,13 +89,57 @@ export function useRecruiterDashboard() {
         contract_type,
         created_at,
         recruiter_id,
-        department
+        department,
+        campaign_id
       `)
       .eq('status', 'active');
+    
+    // Filtrer par campagne si ce n'est pas la vue globale
+    if (activeCampaignId !== GLOBAL_VIEW.id) {
+      // Extraire le numéro depuis "campaign-1" → 1, "campaign-2" → 2, etc.
+      const match = activeCampaignId.match(/campaign-(\d+)/);
+      if (match) {
+        const campaignIdNumber = parseInt(match[1], 10);
+        console.log(`🔍 [DASHBOARD] Filtre campagne: "${activeCampaignId}" → campaign_id=${campaignIdNumber}`);
+        jobsQuery = jobsQuery.eq('campaign_id', campaignIdNumber);
+      } else {
+        console.warn(`⚠️ [DASHBOARD] ID de campagne invalide: "${activeCampaignId}"`);
+      }
+    } else {
+      console.log(`🔍 [DASHBOARD] Vue globale - Toutes les campagnes`);
+    }
+    
+    const { data: jobsData, error: jobsError } = await jobsQuery;
 
     // Récupérer TOUTES les candidatures avec la fonction optimisée
-    const { data: combinedEntries } = await supabase.rpc('get_all_recruiter_applications');
-    const allEntries = combinedEntries || [];
+    const { data: combinedEntries, error: rpcError } = await supabase.rpc('get_all_recruiter_applications');
+    
+    if (rpcError) {
+      console.error('❌ [DASHBOARD] Erreur RPC get_all_recruiter_applications:', rpcError);
+    } else {
+      console.log(`✅ [DASHBOARD] RPC réussie - ${(combinedEntries || []).length} candidatures récupérées`);
+    }
+    
+    // Filtrer les candidatures en fonction de la campagne sélectionnée
+    let allEntries = (combinedEntries || []);
+    
+    // Si on a filtré les offres par campagne, filtrer aussi les candidatures
+    if (activeCampaignId !== GLOBAL_VIEW.id) {
+      // Extraire le numéro de campagne
+      const match = activeCampaignId.match(/campaign-(\d+)/);
+      if (match) {
+        const campaignIdNumber = parseInt(match[1], 10);
+        // Filtrer les candidatures par les offres de cette campagne uniquement
+        const campaignJobIds = new Set((jobsData || []).map((j: any) => j.id));
+        allEntries = allEntries.filter((app: any) => {
+          const jobOfferId = app?.application_details?.job_offer_id;
+          return campaignJobIds.has(jobOfferId);
+        });
+        console.log(`🔍 [DASHBOARD] Candidatures filtrées pour campagne ${campaignIdNumber}: ${allEntries.length} candidatures`);
+      }
+    } else {
+      console.log(`🔍 [DASHBOARD] Vue globale - ${allEntries.length} candidatures au total`);
+    }
 
     // Extraire les détails des candidatures
     const allApplicationsData = (allEntries || []).map((app: any) => app.application_details);
@@ -98,9 +147,40 @@ export function useRecruiterDashboard() {
     if (jobsError) {
       throw jobsError;
     }
+    
+    // Offres filtrées par campagne
+    const campaignJobs = (jobsData || []);
+    
+    // Debug: Afficher les campaign_id des offres récupérées
+    const campaignDistribution = campaignJobs.reduce((acc: Record<string, number>, job: any) => {
+      const cid = job.campaign_id ?? 'NULL';
+      acc[cid] = (acc[cid] || 0) + 1;
+      return acc;
+    }, {});
+    
+    // Debug: Afficher le nombre de candidatures par offre
+    const appsPerJob = campaignJobs.reduce((acc: Record<string, number>, job: any) => {
+      const count = allApplicationsData.filter((app: any) => app.job_offer_id === job.id).length;
+      if (count > 0) {
+        acc[job.title] = count;
+      }
+      return acc;
+    }, {});
+    
+    if (activeCampaignId === GLOBAL_VIEW.id) {
+      console.log(`📊 [DASHBOARD] Vue globale - ${campaignJobs.length} offres affichées (toutes campagnes)`);
+      console.log(`📊 [DASHBOARD] Distribution par campagne:`, campaignDistribution);
+      console.log(`📊 [DASHBOARD] Total des candidatures: ${allApplicationsData.length}`);
+      console.log(`📊 [DASHBOARD] Candidatures par offre:`, appsPerJob);
+    } else {
+      console.log(`📊 [DASHBOARD] Campagne ${activeCampaignId} - ${campaignJobs.length} offres affichées`);
+      console.log(`📊 [DASHBOARD] Distribution par campagne:`, campaignDistribution);
+      console.log(`📊 [DASHBOARD] Total des candidatures: ${allApplicationsData.length}`);
+      console.log(`📊 [DASHBOARD] Candidatures par offre:`, appsPerJob);
+    }
 
-    // Process jobs data with ALL applications
-    const processedJobs: RecruiterJobOffer[] = (jobsData || []).map(job => {
+    // Process jobs data with filtered applications
+    const processedJobs: RecruiterJobOffer[] = (campaignJobs || []).map(job => {
       // Find all applications for this job from the separate query
       const jobApplications = (allApplicationsData || []).filter(app => app.job_offer_id === job.id);
       
@@ -311,47 +391,87 @@ export function useRecruiterDashboard() {
     // Debug: Log final department stats
     // console.log('[DASHBOARD DEBUG] Final department stats:', departmentStats);
 
-    // Calculate status evolution over the last 7 days
+    // Calculate status evolution day by day
     const statusEvolution: StatusEvolutionData[] = [];
     
-    // Date limite de candidature : 01 septembre 2025
-    const applicationDeadline = new Date('2025-09-01T23:59:59');
-    const now = new Date();
+    // Déterminer la plage de dates en fonction de la campagne
+    let startDate: Date;
+    let endDate: Date;
     
-    // Si on est après la date limite, on s'arrête au 31 août
-    const endDate = now > applicationDeadline ? applicationDeadline : now;
+    if (activeCampaignId === GLOBAL_VIEW.id) {
+      // Vue globale : depuis la première campagne
+      startDate = new Date('2025-08-23');
+      endDate = new Date();
+    } else {
+      // Campagne spécifique : période exacte de la campagne
+      const campaign = getCampaignById(activeCampaignId);
+      if (campaign) {
+        startDate = new Date(campaign.startDate);
+        endDate = new Date(campaign.endDate);
+        // Si la campagne n'est pas encore terminée, utiliser aujourd'hui
+        const now = new Date();
+        if (now < endDate) {
+          endDate = now;
+        }
+      } else {
+        // Fallback
+        startDate = new Date('2025-08-23');
+        endDate = new Date();
+      }
+    }
     
-    // Générer les 7 derniers jours en respectant le fuseau horaire local
-    // mais en s'arrêtant à la date limite de candidature
-    const last7Days = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(endDate);
-      date.setDate(date.getDate() - i);
-      // Utiliser toLocaleDateString pour éviter les problèmes de fuseau horaire
+    // Calculer tous les jours de la période
+    const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Générer tous les jours de la période
+    const allDays = Array.from({ length: daysDiff + 1 }, (_, i) => {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
       return date.toLocaleDateString('fr-CA'); // Format YYYY-MM-DD
-    }).reverse();
+    });
 
-    last7Days.forEach(date => {
+    // Pour chaque jour de la période, calculer l'évolution des statuts
+    allDays.forEach(date => {
+      // Candidatures créées ce jour-là (pas cumulatif)
       const dayApplications = (allApplicationsData || []).filter(app => {
-        // Créer une date locale à partir de la date de création
         const appDate = new Date(app.created_at);
-        // Comparer avec la date locale du jour (00h00 à 23h59)
         const appDateLocal = appDate.toLocaleDateString('fr-CA');
-        return appDateLocal === date;
+        return appDateLocal === date; // Exactement ce jour
       });
 
+      // Compter par statut ACTUEL pour les candidatures de ce jour
       const candidature = dayApplications.filter(app => app.status === 'candidature').length;
       const incubation = dayApplications.filter(app => app.status === 'incubation').length;
       const embauche = dayApplications.filter(app => app.status === 'embauche').length;
       const refuse = dayApplications.filter(app => app.status === 'refuse').length;
+      const entretien_programme = dayApplications.filter(app => app.status === 'entretien_programme').length;
 
-      statusEvolution.push({
-        date,
-        candidature,
-        incubation,
-        embauche,
-        refuse
-      });
+      // Ne pas ajouter de jour vide (0 candidatures)
+      const totalApplications = candidature + incubation + embauche + refuse + entretien_programme;
+      
+      if (totalApplications > 0) {
+        statusEvolution.push({
+          date,
+          candidature,
+          incubation,
+          embauche,
+          refuse,
+          entretien_programme
+        });
+      }
     });
+
+    // Si aucune donnée, ajouter au moins une entrée vide pour éviter les erreurs
+    if (statusEvolution.length === 0) {
+      statusEvolution.push({
+        date: new Date().toLocaleDateString('fr-CA'),
+        candidature: 0,
+        incubation: 0,
+        embauche: 0,
+        refuse: 0,
+        entretien_programme: 0
+      });
+    }
 
     return { 
       stats, 
@@ -364,7 +484,7 @@ export function useRecruiterDashboard() {
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['recruiterDashboard', user?.id],
+    queryKey: ['recruiterDashboard', user?.id, campaignId || GLOBAL_VIEW.id],
     queryFn: fetchDashboardData,
     enabled: !!user,
     refetchInterval: 30000, // Refresh every 30 seconds for real-time data
@@ -411,7 +531,14 @@ export function useCreateJobOffer() {
     job_grade?: string | null;
     salary_note?: string | null;
     start_date?: string | null;
+    status_offerts?: string | null;
     responsibilities?: string[] | null;
+    // MTP Questions
+    mtp_questions_metier?: string[] | null;
+    mtp_questions_talent?: string[] | null;
+    mtp_questions_paradigme?: string[] | null;
+    // Campaign
+    campaign_id?: number | null;
   };
   type JobOffersUpdate = Partial<Omit<JobOffersInsert, 'recruiter_id' | 'status'>> & {
     status?: 'active' | 'draft' | string;
@@ -427,6 +554,9 @@ export function useCreateJobOffer() {
       // console.log('[CreateJobOffer] Input data:', { jobData, status });
       // console.log('[CreateJobOffer] User ID:', user.id);
 
+      // Déterminer la campagne active
+      const activeCampaignId = CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID;
+      
       // Build payload with proper field mapping
       const basePayload: JobOffersInsert = { 
         recruiter_id: user.id, 
@@ -440,10 +570,17 @@ export function useCreateJobOffer() {
         date_limite: jobData.date_limite,
         reporting_line: jobData.reporting_line,
         salary_note: jobData.salary_note,
+        status_offerts: jobData.status_offerts,
         start_date: jobData.start_date,
         responsibilities: jobData.responsibilities,
-        requirements: jobData.requirements
+        requirements: jobData.requirements,
+        mtp_questions_metier: jobData.mtp_questions_metier,
+        mtp_questions_talent: jobData.mtp_questions_talent,
+        mtp_questions_paradigme: jobData.mtp_questions_paradigme,
+        campaign_id: activeCampaignId
       };
+      
+      console.log(`📊 [CreateJobOffer] Création d'offre avec campaign_id: ${activeCampaignId}`);
 
       // Remove undefined/null/empty values
       Object.keys(basePayload).forEach(key => {

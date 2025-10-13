@@ -9,6 +9,7 @@ import { Plus, Eye, Edit, Loader2, Search, LayoutGrid, List } from "lucide-react
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useJobOffers } from "@/hooks/useJobOffers";
+import { CAMPAIGN_CONFIG } from "@/config/campaigns";
 
 export default function RecruiterJobs() {
   const navigate = useNavigate();
@@ -16,16 +17,28 @@ export default function RecruiterJobs() {
   const { data: jobs = [], isLoading, error } = useJobOffers();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [statusFilter, setStatusFilter] = useState<"all" | "interne" | "externe">("all");
+  const [campaignFilter, setCampaignFilter] = useState<"all" | number>("all");
 
   const handleEditJob = (jobId: string | number) => {
     navigate(`/recruiter/jobs/${jobId}/edit`);
   };
 
   const filteredJobs = jobs
-    .filter(job => job.status === 'active' || job.status === 'draft')
+    .filter(job => job.status === 'active' || job.status === 'draft' || job.status === 'inactive')
     .filter(job => 
       job.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    )
+    .filter(job => {
+      // Filtre par statut interne/externe
+      if (statusFilter === "all") return true;
+      return (job.status_offerts || 'externe') === statusFilter;
+    })
+    .filter(job => {
+      // Filtre par campagne
+      if (campaignFilter === "all") return true;
+      return job.campaign_id === campaignFilter;
+    });
 
   return (
     <RecruiterLayout>
@@ -73,6 +86,69 @@ export default function RecruiterJobs() {
           </div>
         </div>
 
+        {/* Filtres par statut */}
+        <div className="space-y-4">
+          {/* <div>
+            <p className="text-sm font-medium text-muted-foreground mb-2">Statut de l'offre :</p>
+            <div className="flex justify-center gap-2 flex-wrap">
+              <Button
+                variant={statusFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("all")}
+              >
+                Toutes
+              </Button>
+              <Button
+                variant={statusFilter === "interne" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("interne")}
+                className="gap-2"
+              >
+                 Internes
+              </Button>
+              <Button
+                variant={statusFilter === "externe" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("externe")}
+                className="gap-2"
+              >
+                 Externes
+              </Button>
+            </div>
+          </div> */}
+
+          {/* Filtres par campagne */}
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-2">Campagne :</p>
+            <div className="flex justify-center gap-2 flex-wrap">
+              <Button
+                variant={campaignFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCampaignFilter("all")}
+              >
+                Toutes les campagnes
+              </Button>
+              {CAMPAIGN_CONFIG.ALL_CAMPAIGNS.map(campaignId => {
+                const isActiveCampaign = campaignId === CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID;
+                return (
+                  <Button
+                    key={campaignId}
+                    variant={campaignFilter === campaignId ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCampaignFilter(campaignId)}
+                    className="gap-2"
+                  >
+                    Campagne {campaignId}
+                    {isActiveCampaign && (
+                      <Badge variant="secondary" className="ml-1 text-xs bg-green-100 text-green-700">Active</Badge>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         {isLoading ? (
           <div className="flex items-center gap-2 py-12 justify-center">
             <Loader2 className="w-6 h-6 animate-spin" />
@@ -84,14 +160,23 @@ export default function RecruiterJobs() {
           </div>
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-            {filteredJobs.map((job, index) => (
+            {filteredJobs.map((job, index) => {
+              const isInactive = job.status === 'inactive';
+              return (
               <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                <Card className="hover:shadow-medium transition-all cursor-pointer group h-full">
+                <Card className={`hover:shadow-medium transition-all cursor-pointer group h-full ${isInactive ? 'opacity-60 bg-gray-50 border-dashed' : ''}`}>
                   <CardContent className="p-4 sm:p-6 flex flex-col h-full">
                     <div className="flex-1 space-y-3">
-                      <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary-dark transition-colors">
-                        {job.title}
-                      </h3>
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary-dark transition-colors">
+                          {job.title}
+                        </h3>
+                        {isInactive && (
+                          <Badge variant="outline" className="bg-gray-200 text-gray-600 border-gray-300 flex-shrink-0">
+                            Inactive
+                          </Badge>
+                        )}
+                      </div>
                       
                       <div className="flex items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                         <span>{job.location}</span>
@@ -106,6 +191,18 @@ export default function RecruiterJobs() {
                         {job.new_candidates > 0 && (
                           <Badge variant="default" className="bg-warning text-warning-foreground animate-bounce-soft">
                             {job.new_candidates} {job.new_candidates === 1 ? 'nouveau' : 'nouveaux'}
+                          </Badge>
+                        )}
+                        {job.campaign_id && (
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs ${
+                              job.campaign_id === CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID 
+                                ? 'bg-blue-50 text-blue-700 border-blue-300' 
+                                : 'bg-gray-50 text-gray-600 border-gray-300'
+                            }`}
+                          >
+                            Campagne {job.campaign_id}
                           </Badge>
                         )}
                       </div>
@@ -135,7 +232,8 @@ export default function RecruiterJobs() {
                   </CardContent>
                 </Card>
               </div>
-            ))}
+            );
+            })}
           </div>
         ) : (
           <Card>
@@ -148,11 +246,22 @@ export default function RecruiterJobs() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredJobs.map(job => (
-                  <TableRow key={job.id}>
+                {filteredJobs.map(job => {
+                  const isInactive = job.status === 'inactive';
+                  return (
+                  <TableRow key={job.id} className={isInactive ? 'opacity-60 bg-gray-50' : ''}>
                     <TableCell>
-                      <div className="font-medium">{job.title}</div>
-                      <div className="text-sm text-muted-foreground">{job.location} • {job.contract_type}</div>
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <div className="font-medium">{job.title}</div>
+                          <div className="text-sm text-muted-foreground">{job.location} • {job.contract_type}</div>
+                        </div>
+                        {isInactive && (
+                          <Badge variant="outline" className="bg-gray-200 text-gray-600 border-gray-300 ml-2">
+                            Inactive
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>{job.candidate_count}</TableCell>
                     <TableCell className="text-right">
@@ -166,7 +275,8 @@ export default function RecruiterJobs() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </Card>

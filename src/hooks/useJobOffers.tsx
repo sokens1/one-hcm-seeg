@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
+import { getVisibleCampaignsForCandidates } from "@/config/campaigns";
+import { useAuth } from "./useAuth";
 
 export interface JobOffer {
   id: string;
@@ -26,30 +29,123 @@ export interface JobOffer {
   job_grade?: string | null;
   salary_note?: string | null;
   start_date?: string | null;
+  status_offerts?: string | null;
   responsibilities?: string | string[] | null;
+  // MTP Questions
+  mtp_questions_metier?: string[] | null;
+  mtp_questions_talent?: string[] | null;
+  mtp_questions_paradigme?: string[] | null;
+  // Campaign
+  campaign_id?: number | null;
   candidate_count: number;
   new_candidates: number;
 }
 
 const fetchJobOffers = async () => {
   try {
-    // 1. Fetch all active job offers
-    const { data: offers, error } = await supabase
-      .from('job_offers')
-      .select('id,title,description,location,contract_type,requirements,status,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities')
-      .eq('status', 'active')
-      .order('created_at', { ascending: false });
+    // Récupérer les informations de l'utilisateur connecté
+    let candidateStatus: string | null = null;
+    let isCandidate = false;
+    let isRecruiter = false;
+    let isAuthenticated = false;
+    
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const uid = authData?.user?.id;
+      if (uid) {
+        isAuthenticated = true;
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role, candidate_status')
+          .eq('id', uid)
+          .maybeSingle();
+        
+        if (userData) {
+          const role = userData.role;
+          isCandidate = role === 'candidat' || role === 'candidate';
+          isRecruiter = role === 'recruteur' || role === 'recruiter' || role === 'admin' || role === 'observateur' || role === 'observer';
+          candidateStatus = isCandidate ? (userData.candidate_status || null) : null;
+          
+          console.log('🔍 [fetchJobOffers] User info:', {
+            isCandidate,
+            isRecruiter,
+            isAuthenticated,
+            candidateStatus,
+            userId: uid
+          });
+        }
+      }
+    } catch (e) {
+      // Fail soft if we cannot determine user info
+      console.warn('[fetchJobOffers] Could not determine user info:', e);
+      candidateStatus = null;
+      isCandidate = false;
+      isRecruiter = false;
+      isAuthenticated = false;
+    }
 
-    if (error) {
-      console.error('[useJobOffers] Error fetching job offers:', error);
+    // 1. Fetch job offers based on user role
+    // Candidats : seulement les offres actives
+    // Recruteurs/Admins : toutes les offres (actives et inactives)
+    let offers: any[] | null = null;
+    let queryError: any = null;
+    try {
+      let query = supabase
+        .from('job_offers')
+        .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme,campaign_id')
+        .order('created_at', { ascending: false });
+
+      // Filtrer par status='active' uniquement pour les candidats
+      if (isCandidate) {
+        query = query.eq('status', 'active');
+        console.log('🔒 [fetchJobOffers] Mode candidat : filtrage status=active');
+      } else {
+        console.log('👔 [fetchJobOffers] Mode recruteur : toutes les offres (actives et inactives)');
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      offers = data;
+    } catch (err: any) {
+      queryError = err;
+      // If the error is due to unknown column (e.g., migration not applied yet), retry
+      const isUnknownColumn = typeof err?.message === 'string' && (
+        err.message.includes('column') && err.message.includes('status_offerts') ||
+        err.message.includes('42703')
+      );
+      if (isUnknownColumn) {
+        try {
+          let fallbackQuery = supabase
+            .from('job_offers')
+            .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme')
+            .order('created_at', { ascending: false });
+          
+          // Filtrer par status='active' uniquement pour les candidats
+          if (isCandidate) {
+            fallbackQuery = fallbackQuery.eq('status', 'active');
+          }
+          
+          const { data, error } = await fallbackQuery;
+          if (error) throw error;
+          offers = data || [];
+          queryError = null;
+        } catch (e) {
+          queryError = e;
+        }
+      }
+    }
+
+    if (queryError) {
+      console.error('[useJobOffers] Error fetching job offers:', queryError);
       
       // If it's a 500 error (RLS issue), return fallback data
-      if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
+      if (String(queryError.message || '').includes('500') || String(queryError.message || '').includes('Internal Server Error')) {
         console.warn('[useJobOffers] Server error detected, returning fallback data');
         return getFallbackJobOffers();
       }
       
-      throw error;
+      // Otherwise, return empty list to avoid showing fallback jobs to candidates
+      return [] as JobOffer[];
     }
     
     if (!offers || offers.length === 0) return [];
@@ -77,6 +173,9 @@ const fetchJobOffers = async () => {
     }
 
     // 3. Count total and new applications for each offer
+    // MODE CAMPAGNE COMPLÈTEMENT DÉSACTIVÉ - Compter toutes les candidatures
+    console.log(`✅ [NO CAMPAIGN] Toutes les candidatures comptées: ${(applications || []).length} candidatures`);
+
     const applicationStats = (applications || []).reduce((acc, app) => {
       if (!acc[app.job_offer_id]) {
         acc[app.job_offer_id] = { total: 0, new: 0 };
@@ -89,26 +188,103 @@ const fetchJobOffers = async () => {
     }, {} as Record<string, { total: number; new: number }>);
 
     // 4. Combine offers with their application counts
-    return offers.map(offer => ({
+    const offersWithStats = offers.map(offer => ({
       ...offer,
       candidate_count: applicationStats[offer.id]?.total || 0,
       new_candidates: applicationStats[offer.id]?.new || 0,
     }));
+
+    // 4.5. Filter offers based on candidate status (internal/external)
+    // IMPORTANT : Ce filtrage ne s'applique QUE aux candidats
+    // Les recruteurs/admins/observateurs voient TOUTES les offres
+    const offersFilteredByStatus = offersWithStats.filter(offer => {
+      // Si l'utilisateur n'est PAS un candidat (recruteur, admin, observateur)
+      // Montrer TOUTES les offres sans filtrage
+      if (isCandidate === false) {
+        return true;
+      }
+      
+      // À partir d'ici, on sait que c'est un CANDIDAT
+      
+      // Définir le statut de l'offre (externe par défaut si NULL)
+      const offerStatus = offer.status_offerts || 'externe';
+      
+      // Définir le statut du candidat (externe par défaut si NULL)
+      const userStatus = candidateStatus || 'externe';
+      
+      // RÈGLE SIMPLE : Le candidat ne voit QUE les offres de son statut
+      if (offerStatus === userStatus) {
+        console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat ${userStatus})`);
+        return true;
+      } else {
+        console.log(`🚫 [FILTER] "${offer.title}" (${offerStatus}) - Masquée (candidat ${userStatus} ne voit que ${userStatus})`);
+        return false;
+      }
+    });
+
+    if (isCandidate) {
+      console.log(`📊 [FILTER CANDIDAT] Offres visibles: ${offersFilteredByStatus.length}/${offersWithStats.length} (Statut: ${candidateStatus || 'non défini'})`);
+    } else {
+      console.log(`📊 [FILTER NON-CANDIDAT] Toutes les offres visibles: ${offersFilteredByStatus.length} offres`);
+    }
+
+    // 5. FILTRAGE PAR CAMPAGNE
+    // - Visiteurs NON CONNECTÉS (vue publique) : Voient uniquement la campagne active (Campagne 3)
+    // - Candidats connectés : Voient uniquement la campagne active (Campagne 3)
+    // - Recruteurs/Admins : Voient TOUTES les campagnes (1, 2, 3)
+    const offersFilteredByCampaign = offersFilteredByStatus.filter(offer => {
+      // Si l'utilisateur est un RECRUTEUR, montrer TOUTES les campagnes
+      if (isRecruiter) {
+        return true;
+      }
+      
+      // À partir d'ici : Candidat OU Visiteur non connecté
+      // Ils voient uniquement la campagne active
+      const offerCampaignId = offer.campaign_id;
+      const visibleCampaigns = getVisibleCampaignsForCandidates();
+      
+      // Si l'offre n'a pas de campaign_id, on la montre par défaut (nouvelle offre)
+      if (!offerCampaignId) {
+        console.log(`⚠️ [CAMPAIGN FILTER] "${offer.title}" - Pas de campaign_id, visible par défaut`);
+        return true;
+      }
+      
+      // Vérifier si la campagne est visible pour les candidats/visiteurs
+      if (visibleCampaigns.includes(offerCampaignId)) {
+        console.log(`✅ [CAMPAIGN FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Visible`);
+        return true;
+      } else {
+        console.log(`🚫 [CAMPAIGN FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Masquée (Campagne historique)`);
+        return false;
+      }
+    });
+
+    if (isCandidate) {
+      console.log(`📊 [FILTER CAMPAGNE] Offres visibles après filtrage campagne: ${offersFilteredByCampaign.length}/${offersFilteredByStatus.length}`);
+    }
+
+    console.log(`✅ [FINAL] Offres affichées: ${offersFilteredByCampaign.length} offres`);
+    
+    return offersFilteredByCampaign;
   } catch (error) {
     console.error('[useJobOffers] Unexpected error:', error);
-    // Return fallback data in case of any error
+    const msg = String((error as any)?.message || '');
+    if (msg.includes('500') || msg.includes('Internal Server Error')) {
     return getFallbackJobOffers();
+    }
+    // Otherwise, return empty to avoid showing fallback in candidate view
+    return [] as JobOffer[];
   }
 };
 
 // Fonction de fallback pour retourner des données de test en cas d'erreur
 const getFallbackJobOffers = (): JobOffer[] => {
-  // console.log('[useJobOffers] Using fallback data');
+  console.log('⚠️ [useJobOffers] Using fallback data - this might explain why only 2 jobs are visible');
   return [
     {
       id: 'fallback-1',
-      title: 'Directeur des Ressources Humaines',
-      description: 'Poste de direction RH pour la SEEG',
+      title: 'Directeur Juridique, Communication & RSE',
+      description: 'Poste de direction Juridique, Communication et RSE pour la SEEG',
       location: 'Libreville',
       contract_type: 'CDI',
       status: 'active',
@@ -122,6 +298,19 @@ const getFallbackJobOffers = (): JobOffer[] => {
       id: 'fallback-2',
       title: 'Directeur des Systèmes d\'Information',
       description: 'Poste de direction SI pour la SEEG',
+      location: 'Libreville',
+      contract_type: 'CDI',
+      status: 'active',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      recruiter_id: 'fallback-recruiter',
+      candidate_count: 0,
+      new_candidates: 0,
+    },
+    {
+      id: 'fallback-3',
+      title: 'Directeur Audit & Contrôle interne',
+      description: 'Poste de direction Audit et Contrôle interne pour la SEEG',
       location: 'Libreville',
       contract_type: 'CDI',
       status: 'active',
@@ -168,12 +357,15 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
       console.warn('RPC get_all_recruiter_applications failed for job offer:', rpcError.message);
       applications = [];
     } else {
+      // MODE CAMPAGNE COMPLÈTEMENT DÉSACTIVÉ - Récupérer toutes les candidatures
       applications = (rpcData || [])
         .filter((app: any) => app.application_details?.job_offer_id === id)
         .map((app: any) => ({
           created_at: app.application_details?.created_at
         }))
         .filter(app => app.created_at);
+      
+      console.log(`✅ [NO CAMPAIGN] Toutes les candidatures pour l'offre ${id}: ${applications.length} candidatures`);
     }
   } catch (e) {
     console.warn('Error calling RPC get_all_recruiter_applications for job offer:', e);

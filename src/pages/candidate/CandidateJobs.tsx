@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { JobCard } from "@/components/ui/job-card";
 import { Button } from "@/components/ui/button";
@@ -11,25 +11,49 @@ import { isPreLaunch } from "@/utils/launchGate";
 import { toast } from "sonner";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { isApplicationClosed } from "@/utils/applicationUtils";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
 
 export default function CandidateJobs() {
   useJobOfferNotifications();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
+  const [statusFilter, setStatusFilter] = useState<"all" | "interne" | "externe">("all");
   const { data, isLoading, error } = useJobOffers();
   const jobOffers = data ?? [];
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
+  const { isEligible } = useCampaignEligibility();
+
+  // Handle jobId parameter to open specific job application
+  useEffect(() => {
+    const jobId = searchParams.get('jobId');
+    if (jobId && jobOffers.length > 0) {
+      const job = jobOffers.find(j => j.id === jobId);
+      if (job) {
+        // Navigate to the specific job detail page
+        navigate(`/jobs/${jobId}`);
+      }
+    }
+  }, [searchParams, jobOffers, navigate]);
 
   // Helper to normalize location which can be string | string[] from the API
   const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
 
-  const filteredJobs = jobOffers.filter(job => 
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    normalizeLocation(job.location).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobOffers.filter(job => {
+    // Filtre par recherche texte
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      normalizeLocation(job.location).toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Filtre par statut interne/externe
+    const matchesStatus = statusFilter === "all" || 
+      (job.status_offerts || 'externe') === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   if (error) {
     return (
@@ -65,7 +89,7 @@ export default function CandidateJobs() {
               Société d'Énergie et d'Eau du Gabon
             </div>
             <h1 className="text-5xl md:text-6xl font-bold animate-fade-in delay-100">
-              Nos {jobOffers.length} poste{jobOffers.length > 1 ? 's' : ''} à pourvoir
+              Nos {filteredJobs.length} poste{filteredJobs.length > 1 ? 's' : ''} à pourvoir
             </h1>
             <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold opacity-90 animate-fade-in delay-150">
               au sein du comité de direction
@@ -88,22 +112,10 @@ export default function CandidateJobs() {
                             <Button
                 variant="secondary"
                 size="lg"
-                className="bg-white/20 text-white border-white/30 opacity-50 cursor-not-allowed pointer-events-none"
-                disabled={true}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (preLaunch) {
-                    preLaunchToast();
-                  } else if (applicationsClosed) {
-                    toast.info("Les candidatures sont désormais closes.");
-                  } else if (isApplicationClosed()) {
-                    toast.info("Les candidatures sont désormais closes.");
-                  }
-                }}
-                title={applicationsClosed || isApplicationClosed() ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
+                className="bg-white/20 text-white border-white/30"
+                onClick={() => navigate('/auth')}
               >
-                Candidatures closes
+                Postuler
               </Button>
             </div>
           </div>
@@ -136,7 +148,7 @@ export default function CandidateJobs() {
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-200">
+        <div className="max-w-2xl mx-auto mb-6 animate-fade-in delay-200">
           <div className="relative flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-2.5 sm:top-3 w-4 h-4 text-muted-foreground" />
@@ -147,11 +159,45 @@ export default function CandidateJobs() {
                 className="pl-10 h-11 sm:h-12"
               />
             </div>
-            <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12">
-              <Filter className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Filtres par statut */}
+        <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-250">
+          <div className="flex justify-center gap-2 flex-wrap">
+            <Button
+              variant={statusFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("all")}
+              className="gap-2"
+            >
+              Toutes les offres
+            </Button>
+            <Button
+              variant={statusFilter === "interne" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("interne")}
+              className="gap-2"
+            >
+              🏢 Offres internes
+            </Button>
+            <Button
+              variant={statusFilter === "externe" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("externe")}
+              className="gap-2"
+            >
+              🌍 Offres externes
             </Button>
           </div>
         </div>
+
+        {/* Campaign Eligibility Alert */}
+        {!isEligible && (
+          <div className="max-w-7xl mx-auto mb-6 px-4">
+            <CampaignEligibilityAlert />
+          </div>
+        )}
 
         {/* Stats Bar */}
         <div className="flex justify-center mb-8">
@@ -178,7 +224,11 @@ export default function CandidateJobs() {
                     isPreview={true}
                     onClick={() => navigate(`/jobs/${job.id}`)}
                     locked={preLaunch}
-                    onLockedClick={() => toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.")}
+                    onLockedClick={() => {
+                      if (preLaunch) {
+                        toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.");
+                      }
+                    }}
                   />
                 </div>
               ))}

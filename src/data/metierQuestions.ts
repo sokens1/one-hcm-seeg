@@ -31,6 +31,48 @@ export const defaultMTPQuestions: MTPQuestions = {
   ],
 };
 
+// Questions par défaut pour les offres internes (3 questions Métier, 3 Talent, 3 Paradigme)
+export const defaultMTPQuestionsInternes: MTPQuestions = {
+  metier: [
+    "1. Quelles sont vos principales compétences techniques dans ce domaine ?",
+    "2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?",
+    "3. Quels défis techniques de ce métier vous motivent le plus ?",
+  ],
+  talent: [
+    "1. Quelle est votre plus grande force en tant que professionnel ?",
+    "2. Décrivez une situation où vous avez dû apprendre une nouvelle compétence rapidement.",
+    "3. Comment gérez-vous la pression et les délais serrés ?",
+  ],
+  paradigme: [
+    "1. Qu'est-ce qui vous motive le plus dans votre carrière ?",
+    "2. Comment vous tenez-vous au courant des évolutions de votre secteur ?",
+    "3. Quelle est votre vision du travail en équipe ?",
+  ],
+};
+
+// Questions par défaut pour les offres externes (7 questions Métier, 3 Talent, 3 Paradigme)
+export const defaultMTPQuestionsExternes: MTPQuestions = {
+  metier: [
+    "1. Quelles sont vos principales compétences techniques dans ce domaine ?",
+    "2. Comment votre expérience professionnelle vous prépare-t-elle à ce poste ?",
+    "3. Quels défis techniques de ce métier vous motivent le plus ?",
+    "4. Décrivez une réalisation professionnelle dont vous êtes fier dans ce domaine.",
+    "5. Quelles sont les technologies ou outils que vous maîtrisez dans ce métier ?",
+    "6. Comment abordez-vous l'apprentissage de nouvelles compétences techniques ?",
+    "7. Quelle est votre vision de l'évolution de ce métier dans les années à venir ?",
+  ],
+  talent: [
+    "1. Quelle est votre plus grande force en tant que professionnel ?",
+    "2. Décrivez une situation où vous avez dû apprendre une nouvelle compétence rapidement.",
+    "3. Comment gérez-vous la pression et les délais serrés ?",
+  ],
+  paradigme: [
+    "1. Qu'est-ce qui vous motive le plus dans votre carrière ?",
+    "2. Comment vous tenez-vous au courant des évolutions de votre secteur ?",
+    "3. Quelle est votre vision du travail en équipe ?",
+  ],
+};
+
 // Helper to normalize titles for safer lookups
 const normalize = (s: string) => s
   .toLowerCase()
@@ -399,4 +441,39 @@ export const getMetierQuestionsForTitle = (title: string): MTPQuestions => {
   // Fallback to default if a specific set of MTP questions isn't found
   const questions = mtpQuestionsByOfferNormalized[key] ?? defaultMTPQuestions;
   return questions;
+}
+
+// New function to get MTP questions from job offer data or fallback to default
+export const getMTPQuestionsFromJobOffer = (jobOffer: {
+  mtp_questions_metier?: string[] | null;
+  mtp_questions_talent?: string[] | null;
+  mtp_questions_paradigme?: string[] | null;
+  title?: string;
+  status_offerts?: string | null;
+}): MTPQuestions => {
+  // If job offer has custom MTP questions and they are not empty, use them
+  const hasMetier = jobOffer.mtp_questions_metier && jobOffer.mtp_questions_metier.length > 0;
+  const hasTalent = jobOffer.mtp_questions_talent && jobOffer.mtp_questions_talent.length > 0;
+  const hasParadigme = jobOffer.mtp_questions_paradigme && jobOffer.mtp_questions_paradigme.length > 0;
+
+  if (hasMetier || hasTalent || hasParadigme) {
+    return {
+      metier: jobOffer.mtp_questions_metier || [],
+      talent: jobOffer.mtp_questions_talent || [],
+      paradigme: jobOffer.mtp_questions_paradigme || []
+    };
+  }
+
+  // Si l'offre est externe, utiliser les questions externes (7 Métier, 3 Talent, 3 Paradigme)
+  if (jobOffer.status_offerts === 'externe') {
+    return defaultMTPQuestionsExternes;
+  }
+
+  // Si l'offre est interne, utiliser les questions internes (3 Métier, 3 Talent, 3 Paradigme)
+  if (jobOffer.status_offerts === 'interne') {
+    return defaultMTPQuestionsInternes;
+  }
+
+  // Fallback to hardcoded questions based on title
+  return getMetierQuestionsForTitle(jobOffer.title || '');
 }

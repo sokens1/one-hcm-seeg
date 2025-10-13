@@ -8,6 +8,8 @@ import { isPreLaunch } from "@/utils/launchGate";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+// import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 
 interface JobDetailProps {
   jobId: string;
@@ -17,6 +19,7 @@ interface JobDetailProps {
 
 export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   const { data: jobOffer, isLoading, error } = useJobOffer(jobId);
+  const { isEligible } = useCampaignEligibility();
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
@@ -201,50 +204,40 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4">
                 <div className="space-y-2 sm:space-y-3">
-                  {jobOffer.start_date && (
+                  {/* Date d'embauche mise en commentaire */}
+                  {/* {jobOffer.start_date && (
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                       <span>Date d'embauche : {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</span>
                     </div>
-                  )}
+                  )} */}
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span>
-                      {jobOffer.date_limite 
-                        ? `Date limite : ${new Date(jobOffer.date_limite).toLocaleDateString('fr-FR')}`
-                        : "Candidatures ouvertes"
-                      }
-                    </span>
+                    <span>Date limite : 05/10/2025</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span>Publié le {new Date(jobOffer.created_at).toLocaleDateString('fr-FR')}</span>
+                    <span>Publié le 27/09/2025</span>
                   </div>
                 </div>
                 
                                 <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (preLaunch) {
-                      preLaunchToast();
-                    } else if (applicationsClosed) {
-                      toast.info("Les candidatures sont désormais closes.");
-                    } else if (isApplicationClosed()) {
-                      toast.info("Les candidatures sont désormais closes.");
-                    }
+                  onClick={() => {
+                    onApply();
                   }}
-                  className="w-full text-sm sm:text-base opacity-50 cursor-not-allowed pointer-events-none"
+                  className="w-full text-sm sm:text-base"
                   size="lg"
-                  disabled={true}
-                  title={applicationsClosed || isApplicationClosed() ? "Les candidatures sont closes" : preLaunch ? "Candidatures indisponibles jusqu'au 25 août 2025" : ""}
+                  disabled={false}
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  Candidatures closes
+                  Postuler
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                  Processus de candidature en ligne sécurisé
+                  {!isEligible 
+                    ? ""
+                    : "Processus de candidature en ligne sécurisé"
+                  }
                 </p>
               </CardContent>
             </Card>

@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useApplication, useRecruiterApplications, Application } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
 import { getMetierQuestionsForTitle } from "@/data/metierQuestions";
+import { cleanCorruptedText } from "@/utils/textCleaner";
 import { supabase } from "@/integrations/supabase/client";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
 import { Button } from "@/components/ui/button";
@@ -77,13 +78,28 @@ const InfoRow = ({ icon: Icon, label, value, isLink = false }: { icon: any, labe
 
 const ProfileTab = ({ application }: { application: Application }) => {
   const user = application?.users;
-  // Utiliser le profil inclus via la RPC pour éviter les problèmes RLS
-  const profile = (application?.users as any)?.candidate_profiles || null;
-  return (
-    <Card>
-      <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="flex items-center gap-2 text-base sm:text-lg"><User className="w-4 h-4 sm:w-5 sm:h-5" /> Informations Personnelles</CardTitle>
-      </CardHeader>
+    // Utiliser le profil inclus via la RPC pour éviter les problèmes RLS
+    const profile = (application?.users as any)?.candidate_profiles || null;
+    
+    // Récupérer le statut du candidat
+    const candidateStatus = (user as any)?.candidate_status;
+    console.log('🔍 [ProfileTab] Statut du candidat:', { candidateStatus, user });
+    const statusLabel = candidateStatus === 'interne' ? 'Interne' : candidateStatus === 'externe' ? 'Externe' : 'Non défini';
+    const statusColor = candidateStatus === 'interne' ? 'bg-blue-100 text-blue-700' : candidateStatus === 'externe' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700';
+    
+    return (
+      <Card>
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <User className="w-4 h-4 sm:w-5 sm:h-5" /> 
+            Informations Personnelles
+            {candidateStatus && (
+              <Badge className={`${statusColor} ml-2 text-xs`}>
+                {statusLabel}
+              </Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
       <CardContent className="p-4 sm:p-6">
         {/* Layout horizontal avec grid responsive */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -110,22 +126,88 @@ const ProfileTab = ({ application }: { application: Application }) => {
 };
 
 const ReferencesTab = ({ application }: { application: Application }) => {
+  // Déterminer le type d'offre
+  const offerStatus = application.job_offers?.status_offerts;
+  const isExternalOffer = offerStatus === 'externe';
+  const isInternalOffer = offerStatus === 'interne';
+  
+  // Déterminer le titre et l'icône selon le type d'offre
+  const getTitleAndIcon = () => {
+    if (isExternalOffer) {
+      return {
+        title: "Références de Recommandation",
+        shortTitle: "Références",
+        icon: <Users className="w-4 h-4 sm:w-5 sm:h-5" />
+      };
+    } else if (isInternalOffer) {
+      return {
+        title: "Expérience Professionnelle",
+        shortTitle: "Expérience",
+        icon: <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
+      };
+    } else {
+      return {
+        title: "Informations Complémentaires",
+        shortTitle: "Informations",
+        icon: <Info className="w-4 h-4 sm:w-5 sm:h-5" />
+      };
+    }
+  };
+  
+  const { title, shortTitle, icon } = getTitleAndIcon();
+  
   return (
     <Card>
-      <CardHeader className="p-4 sm:p-6">
+      <CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 sm:pb-3">
         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-          <Users className="w-4 h-4 sm:w-5 sm:h-5" /> 
-          <span className="hidden sm:inline">Références de Recommandation</span>
-          <span className="sm:hidden">Références</span>
+          {icon}
+          <span className="hidden sm:inline">{title}</span>
+          <span className="sm:hidden">{shortTitle}</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 sm:p-6">
-        {application.reference_contacts || application.ref_contacts ? (
-          <div className="whitespace-pre-wrap text-xs sm:text-sm">
-            {application.reference_contacts || application.ref_contacts}
+      <CardContent className="px-4 sm:px-6 pt-2 sm:pt-3 pb-4 sm:pb-6">
+        {isExternalOffer ? (
+          // Section Références pour les offres externes
+          (application.reference_full_name || application.reference_email || application.reference_contact || application.reference_company) ? (
+            <div className="text-xs sm:text-sm space-y-1">
+              {application.reference_full_name && (<div><span className="font-medium">Nom et prénom:</span> {cleanCorruptedText(application.reference_full_name)}</div>)}
+              {application.reference_company && (<div><span className="font-medium">Administration / Entreprise / Organisation:</span> {cleanCorruptedText(application.reference_company)}</div>)}
+              {application.reference_email && (<div><span className="font-medium">Email:</span> {cleanCorruptedText(application.reference_email)}</div>)}
+              {application.reference_contact && (<div><span className="font-medium">Contact:</span> {cleanCorruptedText(application.reference_contact)}</div>)}
+            </div>
+          ) : application.reference_contacts || application.ref_contacts ? (
+            <div className="whitespace-pre-wrap text-xs sm:text-sm">
+              {cleanCorruptedText(application.reference_contacts || application.ref_contacts)}
+            </div>
+          ) : (
+            <p className="text-xs sm:text-sm text-muted-foreground">Aucune référence fournie.</p>
+          )
+        ) : isInternalOffer ? (
+          // Section Expérience Professionnelle pour les offres internes
+          <div className="text-xs sm:text-sm space-y-3">
+            <div>
+              <p className="font-medium mb-2">Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :</p>
+              <ul className="space-y-1 ml-4 text-muted-foreground">
+                <li>• Chef de service ;</li>
+                <li>• Chef de département ;</li>
+                <li>• Directeur ;</li>
+                <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
+              </ul>
+            </div>
+            <div className="pt-2 border-t">
+              <span className="font-medium">Réponse: </span>
+              {application.has_been_manager === true ? (
+                <span className="text-green-600 font-medium">Oui</span>
+              ) : application.has_been_manager === false ? (
+                <span className="text-red-600 font-medium">Non</span>
+              ) : (
+                <span className="text-muted-foreground">Non renseigné</span>
+              )}
+            </div>
           </div>
         ) : (
-          <p className="text-xs sm:text-sm text-muted-foreground">Aucune référence fournie.</p>
+          // Fallback pour les offres sans statut défini
+          <p className="text-xs sm:text-sm text-muted-foreground">Statut d'offre non défini.</p>
         )}
       </CardContent>
     </Card>
@@ -137,6 +219,20 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
   const questions = getMetierQuestionsForTitle(jobTitle);
 
   if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
+
+  // Si mtp_answers est une string JSON, la parser
+  let parsedAnswers = mtpAnswers;
+  if (typeof mtpAnswers === 'string') {
+    try {
+      parsedAnswers = JSON.parse(mtpAnswers);
+    } catch (error) {
+      console.error('❌ [MtpAnswersDisplay] Erreur de parsing JSON:', error);
+      return <p className="text-xs sm:text-sm text-red-500">Erreur de format des réponses MTP.</p>;
+    }
+  }
+
+  // Utiliser parsedAnswers au lieu de mtpAnswers
+  mtpAnswers = parsedAnswers;
 
   const renderSection = (title, section, color, answers, badgeColor) => {
     const validAnswers = (answers || []).filter(answer => answer && answer.trim() !== '');
@@ -158,7 +254,7 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
                   </span>
                 </p>
                 <div className="text-xs sm:text-sm text-foreground whitespace-pre-wrap break-words">
-                  {answer}
+                  {cleanCorruptedText(answer)}
                 </div>
               </div>
             ))}

@@ -29,6 +29,8 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useCampaign } from "@/contexts/CampaignContext";
+import { CampaignSelector } from "@/components/ui/CampaignSelector";
 
 // Types dérivés des applications
 type ApplicationStatus = 'candidature' | 'incubation' | 'embauche' | 'refuse';
@@ -220,8 +222,9 @@ export default function ObserverCandidatesPage() {
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">("all");
   const [selectedCandidate, setSelectedCandidate] = useState<UICandidate | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { selectedCampaignId } = useCampaign();
 
-  const { applications, isLoading, error } = useRecruiterApplications();
+  const { applications, isLoading, error } = useRecruiterApplications(undefined, selectedCampaignId);
 
   // Transformer les applications en candidats pour l'interface
   const candidates: UICandidate[] = useMemo(() => {
@@ -298,6 +301,11 @@ export default function ObserverCandidatesPage() {
   return (
     <ObserverLayout>
       <div className="container mx-auto px-4 py-8">
+        {/* Sélecteur de campagne */}
+        <div className="mb-4">
+          <CampaignSelector />
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Candidats - Mode Observateur</h1>

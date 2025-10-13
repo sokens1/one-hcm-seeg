@@ -105,7 +105,7 @@ export function Header() {
       setShowClosedBanner(false);
     } else {
       setShowMaintenanceBanner(false);
-      setShowClosedBanner(true);
+      setShowClosedBanner(false); // Désactivé le banner de clôture
     }
   }, []);
 
@@ -137,9 +137,7 @@ export function Header() {
         )}
         <div className="container mx-auto px-2 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-white flex items-center justify-center">
-              <img src="/LOGO HCM4.png" alt="Logo" className="w-full h-full object-contain" />
-            </div>
+            <img src="/LOGO HCM4.png" alt="Logo" className="w-16 h-16 sm:w-20 sm:h-20 object-contain" />
           </Link>
 
           <nav className="flex items-center gap-1 sm:gap-2 md:gap-4">
@@ -250,30 +248,17 @@ export function Header() {
                     <span className="sm:hidden">Connexion</span>
                   </Button>
                 </Link>
-                <div
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (preLaunch) {
-                      preLaunchToast();
-                    } else if (applicationsClosed) {
-                      toast.info("Les inscriptions sont désormais closes.");
-                    }
-                  }}
-                  className="pointer-events-auto"
-                  title={applicationsClosed ? "Les inscriptions sont closes" : preLaunch ? "Inscriptions indisponibles jusqu'au 25 août 2025" : undefined}
-                >
+                <Link to="/auth">
                   <Button
                     variant="default"
                     size="sm"
-                    className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 opacity-50 cursor-not-allowed pointer-events-none"
-                    disabled={true}
+                    className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">S'inscrire</span>
                     <span className="sm:hidden">Inscription</span>
                   </Button>
-                </div>
+                </Link>
               </>
             )}
           </nav>

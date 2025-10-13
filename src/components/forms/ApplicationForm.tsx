@@ -22,9 +22,12 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { isPreLaunch } from "@/utils/launchGate";
-import { getMetierQuestionsForTitle, MTPQuestions } from '@/data/metierQuestions';
+import { getMTPQuestionsFromJobOffer, MTPQuestions } from '@/data/metierQuestions';
+import { useJobOffer } from '@/hooks/useJobOffers';
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo } from 'react';
+import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 // Import supprimé car l'envoi d'email est désactivé
 // import { EMAIL_CONFIG } from "@/config/email";
 // import { getCandidateEmail, isValidEmail, getEmailErrorMessage } from "@/utils/emailValidation";
@@ -37,6 +40,7 @@ interface ApplicationFormProps {
   applicationId?: string; // used in edit mode
   mode?: 'create' | 'edit';
   initialStep?: number;
+  offerStatus?: string | null; // interne | externe - pour conditionner l'affichage des références
 }
 
 interface FormData {
@@ -54,7 +58,11 @@ interface FormData {
   yearsOfExperience: string;
   certificates: UploadedFile[];
   additionalCertificates: UploadedFile[];
-  references: string;
+  referenceFullName: string;
+  referenceEmail: string;
+  referenceContact: string;
+  referenceCompany: string;
+  hasBeenManager: boolean | null; // Pour les candidatures internes uniquement
   // Partie Métier
   metier1: string;
   metier2: string;
@@ -82,11 +90,17 @@ interface FormData {
   consent: boolean;
 }
 
-export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep }: ApplicationFormProps) {
+export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, applicationId, mode = 'create', initialStep, offerStatus }: ApplicationFormProps) {
   const navigate = useNavigate();
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
+  const { isEligible } = useCampaignEligibility();
+  
+  // Déterminer si l'offre est externe (références de recommandation uniquement pour les offres externes)
+  const isExternalOffer = offerStatus === 'externe';
+  // Déterminer si l'offre est interne (question sur l'expérience de manager uniquement pour les offres internes)
+  const isInternalOffer = offerStatus === 'interne';
   
   // Hook pour gérer les brouillons (seulement en mode création)
   const {
@@ -174,7 +188,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     yearsOfExperience: "",
     certificates: [],
     additionalCertificates: [],
-    references: "",
+    referenceFullName: "",
+    referenceEmail: "",
+    referenceContact: "",
+    referenceCompany: "",
+    hasBeenManager: null,
     // Partie Métier
     metier1: "",
     metier2: "",
@@ -259,11 +277,30 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   // Gérer la restauration des brouillons
   useEffect(() => {
     if (mode === 'create' && isDraftLoaded && draftData && Object.keys(draftData.form_data).length > 0) {
+      // Liste des champs pré-remplis automatiquement (à exclure de la vérification)
+      const prefilledFields = ['firstName', 'lastName', 'email', 'phone', 'gender', 'currentPosition', 'matricule'];
+      
       // Vérifier s'il y a des données significatives dans le brouillon
+      // (c'est-à-dire des champs remplis manuellement par l'utilisateur)
       const hasSignificantData = Object.entries(draftData.form_data).some(([key, value]) => {
-        if (key === 'firstName' || key === 'lastName' || key === 'email') return false; // Données pré-remplies
-        return value && value !== '';
+        // Ignorer les champs pré-remplis
+        if (prefilledFields.includes(key)) return false;
+        
+        // Ignorer les valeurs vides, null, undefined, false, ou tableaux vides
+        if (!value) return false;
+        if (value === '') return false;
+        if (Array.isArray(value) && value.length === 0) return false;
+        
+        // Si c'est un objet (comme les fichiers), vérifier s'il est vide
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          return Object.keys(value).length > 0;
+        }
+        
+        return true;
       });
+      
+      console.log('🔍 [Draft Check] Données significatives trouvées:', hasSignificantData);
+      console.log('🔍 [Draft Check] Données du brouillon:', draftData.form_data);
       
       if (hasSignificantData) {
         setShowDraftRestore(true);
@@ -295,7 +332,71 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
   const ignoreDraft = () => {
     setShowDraftRestore(false);
-    clearDraft(); // Supprimer le brouillon de la base de données
+    
+    // Supprimer le brouillon de la base de données
+    clearDraft();
+    
+    // Supprimer également du localStorage
+    try {
+      localStorage.removeItem(storageKey);
+      localStorage.removeItem(sharedKey);
+      const uiKey = `application_form_shared_${jobId}_ui`;
+      localStorage.removeItem(uiKey);
+    } catch (e) {
+      console.warn('Error clearing localStorage:', e);
+    }
+    
+    // Réinitialiser le formulaire avec les données de base (nom, prénom, email)
+    setFormData(prevData => ({
+      firstName: prevData.firstName,
+      lastName: prevData.lastName,
+      email: prevData.email,
+      matricule: prevData.matricule || "",
+      phone: prevData.phone || "",
+      gender: prevData.gender || "",
+      dateOfBirth: null,
+      currentPosition: prevData.currentPosition || "",
+      address: "",
+      cv: null,
+      coverLetter: null,
+      yearsOfExperience: "",
+      certificates: [],
+      additionalCertificates: [],
+      referenceFullName: "",
+      referenceEmail: "",
+      referenceContact: "",
+      referenceCompany: "",
+      hasBeenManager: null,
+      metier1: "",
+      metier2: "",
+      metier3: "",
+      metier4: "",
+      metier5: "",
+      metier6: "",
+      metier7: "",
+      talent1: "",
+      talent2: "",
+      talent3: "",
+      talent4: "",
+      talent5: "",
+      talent6: "",
+      talent7: "",
+      paradigme1: "",
+      paradigme2: "",
+      paradigme3: "",
+      paradigme4: "",
+      paradigme5: "",
+      paradigme6: "",
+      paradigme7: "",
+      consent: false
+    }));
+    
+    // Réinitialiser l'étape à 1
+    setCurrentStep(1);
+    setActiveTab('metier');
+    
+    console.log('🗑️ [Draft] Brouillon supprimé et formulaire réinitialisé');
+    toast.success('Formulaire réinitialisé');
   };
 
   // Auto-save des brouillons
@@ -338,13 +439,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         
         // Pré-remplissage MTP et références indépendamment des données profil/utilisateur
         const mtp = (data as any).mtp_answers as { metier?: string[]; talent?: string[]; paradigme?: string[] } | null;
-        const refContacts = (data as any).reference_contacts ?? (data as any).ref_contacts;
+        const refFullName = (data as any).reference_full_name ?? "";
+        const refEmail = (data as any).reference_email ?? "";
+        const refContact = (data as any).reference_contact ?? "";
+        const refCompany = (data as any).reference_company ?? "";
 
         setFormData(prev => {
           const next = {
           ...prev,
           // Références et MTP
-          references: refContacts ?? prev.references,
+          referenceFullName: refFullName || prev.referenceFullName,
+          referenceEmail: refEmail || prev.referenceEmail,
+          referenceContact: refContact || prev.referenceContact,
+          referenceCompany: refCompany || prev.referenceCompany,
           metier1: mtp?.metier?.[0] ?? prev.metier1,
           metier2: mtp?.metier?.[1] ?? prev.metier2,
           metier3: mtp?.metier?.[2] ?? prev.metier3,
@@ -456,7 +563,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
-  const mtpQuestions = useMemo(() => getMetierQuestionsForTitle(jobTitle), [jobTitle]);
+  
+  // Récupérer l'offre complète pour obtenir les questions MTP dynamiques
+  const { data: jobOfferData } = useJobOffer(jobId);
+  const mtpQuestions = useMemo(() => {
+    if (jobOfferData) {
+      // Utiliser les questions MTP de l'offre (ou fallback vers les questions par défaut)
+      return getMTPQuestionsFromJobOffer(jobOfferData);
+    }
+    // Fallback si l'offre n'est pas encore chargée (utilise le titre)
+    return getMTPQuestionsFromJobOffer({ title: jobTitle });
+  }, [jobOfferData, jobTitle]);
 
   // Migrate guest data to user-specific key after login (one-time per job)
   useEffect(() => {
@@ -617,11 +734,27 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const validateStep2 = () => {
-    return (
+    const basicDocsValid = (
       formData.cv !== null &&
       formData.coverLetter !== null &&
       formData.certificates.length > 0  // At least one diploma is required
     );
+    
+    // Les références sont requises uniquement pour les offres externes
+    if (isExternalOffer) {
+      return basicDocsValid && 
+        formData.referenceFullName.trim() !== '' &&
+        formData.referenceEmail.trim() !== '' &&
+        formData.referenceContact.trim() !== '' &&
+        formData.referenceCompany.trim() !== '';
+    }
+    
+    // Le champ hasBeenManager est requis uniquement pour les offres internes
+    if (isInternalOffer) {
+      return basicDocsValid && formData.hasBeenManager !== null;
+    }
+    
+    return basicDocsValid;
   };
 
   const validateStep3 = () => {
@@ -680,6 +813,17 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
           if (!formData.cv) missing.push("CV");
           if (!formData.coverLetter) missing.push("Lettre de motivation");
           if (formData.certificates.length === 0) missing.push("Au moins un diplôme");
+          // Vérifier les références uniquement pour les offres externes
+          if (isExternalOffer) {
+            if (!formData.referenceFullName.trim()) missing.push("Nom et prénom de la référence");
+            if (!formData.referenceEmail.trim()) missing.push("Email de la référence");
+            if (!formData.referenceContact.trim()) missing.push("Contact de la référence");
+            if (!formData.referenceCompany.trim()) missing.push("Entreprise de la référence");
+          }
+          // Vérifier la question manager uniquement pour les offres internes
+          if (isInternalOffer && formData.hasBeenManager === null) {
+            missing.push("Expérience en tant que chef/manager");
+          }
           return missing.length > 0 ? `Documents requis: ${missing.join(', ')}` : '';
         }
         return '';
@@ -711,15 +855,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const handleSubmit = async () => {
-    if (preLaunch) {
-      preLaunchToast();
-      return;
-    } else if (applicationsClosed) {
-      toast.info("Les candidatures sont désormais closes.");
-      return;
-    }
-    // Candidatures désactivées - aucune soumission possible
-    return;
     setIsSubmitting(true);
     try {
       const isCreateMode = mode === 'create';
@@ -729,7 +864,11 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         const { error: updError } = await supabase
           .from('applications')
           .update({
-            reference_contacts: formData.references,
+            reference_full_name: formData.referenceFullName || null,
+            reference_email: formData.referenceEmail || null,
+            reference_contact: formData.referenceContact || null,
+            reference_company: formData.referenceCompany || null,
+            has_been_manager: formData.hasBeenManager,
             mtp_answers: {
               metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
               talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -764,7 +903,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
         if (!jobId) throw new Error('Job ID manquant.');
         const application = await submitApplication({
           job_offer_id: jobId as string,
-          ref_contacts: formData.references,
+          ref_contacts: undefined, // legacy removed
+          reference_full_name: formData.referenceFullName || null,
+          reference_email: formData.referenceEmail || null,
+          reference_contact: formData.referenceContact || null,
+          reference_company: formData.referenceCompany || null,
+          has_been_manager: formData.hasBeenManager,
           mtp_answers: {
             metier: mtpQuestions.metier.map((_, i) => formData[`metier${i + 1}`]),
             talent: mtpQuestions.talent.map((_, i) => formData[`talent${i + 1}`]),
@@ -1030,6 +1174,25 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
     );
   }
 
+  // Si l'utilisateur n'est pas éligible, afficher l'alerte et empêcher la candidature
+  if (!isEligible) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 lg:py-12">
+          <div className="max-w-2xl mx-auto">
+            <CampaignEligibilityAlert className="mb-6" />
+            <div className="text-center">
+              <Button onClick={onBack} variant="outline">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Retour à l'offre
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Header with gradient background */}
@@ -1197,15 +1360,13 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       onChange={(e) => {
                         const email = e.target.value;
                         setFormData({ ...formData, email });
-                        // Validation email en temps réel avec nos utilitaires - DÉSACTIVÉ
-                        // if (email) {
-                        //   const errorMessage = getEmailErrorMessage(email);
-                        //   e.target.setCustomValidity(errorMessage || '');
-                        // } else {
-                        //   e.target.setCustomValidity('');
-                        // }
-                        // Validation désactivée
+                        // Validation du format email
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (email && !emailRegex.test(email)) {
+                          e.target.setCustomValidity('Veuillez entrer une adresse email valide');
+                        } else {
                         e.target.setCustomValidity('');
+                        }
                       }}
                       onBlur={(e) => {
                         // Validation supplémentaire lors de la perte de focus - DÉSACTIVÉ
@@ -1292,10 +1453,10 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
 
               {/* Step 2: Experience & Documents */}
               {currentStep === 2 && (
-                <div className="space-y-6 animate-fade-in">
+                <div className="space-y-6 animate-fade-in pt-4">
                   <div>
                     <Label htmlFor="coverLetter">Lettre de motivation *</Label>
-                    <div className="mt-2">
+                    <div className="mt-4">
                       <div className="border-2 border-dashed border-border rounded-lg p-4 sm:p-6 text-center hover:border-primary transition-colors" aria-busy={isUploading} aria-live="polite">
                         {isUploading ? (
                           <Spinner size="lg" text="Upload en cours..." />
@@ -1501,16 +1662,129 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     </div>
                   </div>
 
+                  {/* Section Expérience de manager - uniquement pour les offres internes */}
+                  {isInternalOffer && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-medium mb-3">Expérience professionnelle</h4>
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium leading-relaxed">
+                          Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :
+                        </Label>
+                        <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                          <li>• Chef de service ;</li>
+                          <li>• Chef de département ;</li>
+                          <li>• Directeur ;</li>
+                          <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
+                        </ul>
+                        
+                        <div className="flex gap-4">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="hasBeenManager"
+                              value="true"
+                              checked={formData.hasBeenManager === true}
+                              onChange={(e) => setFormData({ ...formData, hasBeenManager: e.target.value === 'true' ? true : null })}
+                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm font-medium">Oui</span>
+                          </label>
+                          
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="hasBeenManager"
+                              value="false"
+                              checked={formData.hasBeenManager === false}
+                              onChange={(e) => setFormData({ ...formData, hasBeenManager: e.target.value === 'false' ? false : null })}
+                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm font-medium">Non</span>
+                          </label>
+                        </div>
+                      </div>
+                      {formData.hasBeenManager === null && (
+                        <p className="text-xs text-orange-600 mt-2">
+                          ⚠️ Veuillez répondre à cette question pour continuer
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Section Référence de recommandation - uniquement pour les offres externes */}
+                  {isExternalOffer && (
+                    <>
                   <div>
-                    <Label htmlFor="references">Références de recommandation (facultatif)</Label>
-                    <Textarea
-                      id="references"
-                      value={formData.references}
-                      onChange={(e) => setFormData({ ...formData, references: e.target.value })}
-                      placeholder="Nom, poste, entreprise, téléphone/email de vos références..."
-                      className="min-h-[80px]"
-                    />
+                    <h4 className="font-medium mb-2">Référence de recommandation</h4>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          Cette section est requise pour les candidatures externes.
+                        </p>
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="referenceFullName">Nom et prénom *</Label>
+                      <Input
+                        id="referenceFullName"
+                        value={formData.referenceFullName}
+                        onChange={(e) => setFormData({ ...formData, referenceFullName: e.target.value })}
+                        placeholder="Ex: Jean Dupont"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceCompany" className="whitespace-nowrap">Administration / Entreprise / Organisation *</Label>
+                      <Input
+                        id="referenceCompany"
+                        value={formData.referenceCompany}
+                        onChange={(e) => setFormData({ ...formData, referenceCompany: e.target.value })}
+                        placeholder="Ex: SEEG"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceEmail">Email *</Label>
+                      <Input
+                        id="referenceEmail"
+                        type="email"
+                        value={formData.referenceEmail}
+                        onChange={(e) => {
+                          const email = e.target.value;
+                          setFormData({ ...formData, referenceEmail: email });
+                          // Validation du format email
+                          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                          if (email && !emailRegex.test(email)) {
+                            e.target.setCustomValidity('Veuillez entrer une adresse email valide');
+                          } else {
+                            e.target.setCustomValidity('');
+                          }
+                        }}
+                        placeholder="exemple@domaine.com"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="referenceContact">Contact *</Label>
+                      <Input
+                        id="referenceContact"
+                        value={formData.referenceContact}
+                        onChange={(e) => {
+                          const contact = e.target.value;
+                          setFormData({ ...formData, referenceContact: contact });
+                          // Validation du format téléphone (Gabon: +241 ou 241 suivi de 8 chiffres)
+                          const phoneRegex = /^(\+241|241)?\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}\s?[0-9]{2}$/;
+                          if (contact && !phoneRegex.test(contact.replace(/\s+/g, ' ').trim())) {
+                            e.target.setCustomValidity('Format attendu: +241 01 23 45 67 ou 241 01 23 45 67');
+                          } else {
+                            e.target.setCustomValidity('');
+                          }
+                        }}
+                        placeholder="+241 01 23 45 67"
+                        required
+                      />
+                    </div>
+                  </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -1742,6 +2016,52 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                       {/* Sections cachées non affichées: lettres de recommandation */}
                     </div>
 
+                    {/* Expérience de manager - uniquement pour les offres internes */}
+                    {isInternalOffer && (
+                      <div className="bg-muted rounded-lg p-4 mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-medium">Expérience professionnelle</h5>
+                          <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                        </div>
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Avez-vous déjà été chef/manager ?</span>
+                          <p className="font-medium mt-1">
+                            {formData.hasBeenManager === true && "✅ Oui"}
+                            {formData.hasBeenManager === false && "❌ Non"}
+                            {formData.hasBeenManager === null && "Non renseigné"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Référence de recommandation - uniquement pour les offres externes */}
+                    {isExternalOffer && (
+                    <div className="bg-muted rounded-lg p-4 mt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Référence de recommandation</h5>
+                        <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>Modifier</Button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Nom et prénom:</span>
+                          <p>{formData.referenceFullName || "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Entreprise:</span>
+                          <p>{formData.referenceCompany || "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Email:</span>
+                          <p>{formData.referenceEmail || "Non renseigné"}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Contact:</span>
+                          <p>{formData.referenceContact || "Non renseigné"}</p>
+                        </div>
+                      </div>
+                    </div>
+                    )}
+
                     <div className="bg-muted rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="font-medium">Adhérence MTP au poste</h5>
@@ -1819,3 +2139,6 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   </div>
   );
 }
+
+
+

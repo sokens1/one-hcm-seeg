@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { useState, useEffect, useCallback } from "react"; // Keep for useRecruiterApplications
+import { isInCampaignPeriod, GLOBAL_VIEW } from "@/config/campaign";
+import { getVisibleCampaignsForCandidates } from "@/config/campaigns";
 
 export interface Experience {
   id: string;
@@ -50,8 +52,12 @@ export interface Application {
   status: 'candidature' | 'incubation' | 'embauche' | 'refuse' | 'entretien_programme' | 'simulation_programmee';
   motivation: string | null;
   availability_start: string | null;
-  reference_contacts?: string | null; // Database column name
-  ref_contacts?: string | null; // API compatibility alias used by UI
+  reference_contacts?: string | null; // Deprecated
+  ref_contacts?: string | null; // Deprecated
+  reference_full_name?: string | null;
+  reference_email?: string | null;
+  reference_contact?: string | null;
+  reference_company?: string | null;
   interview_date?: string | null; // Date et heure de l'entretien programmé
   simulation_date?: string | null; // Date et heure de la simulation programmée
   mtp_answers?: {
@@ -67,6 +73,7 @@ export interface Application {
     location: string;
     contract_type: string;
     recruiter_id?: string;
+    campaign_id?: number | null;
   } | null;
   users: {
     first_name: string;
@@ -75,6 +82,7 @@ export interface Application {
     phone?: string;
     date_of_birth?: string;
     candidate_profiles?: CandidateProfile;
+    candidate_status?: string;
   } | null;
 }
 
@@ -127,11 +135,26 @@ export function useApplications() {
         job_offers: app.job_offer_details,
         users: {
           ...app.candidate_details,
-          candidate_profiles: app.candidate_details?.candidate_profiles
+          candidate_profiles: app.candidate_details?.candidate_profiles,
+          candidate_status: app.candidate_details?.candidate_status
         }
       }));
 
-      return applications as Application[];
+      // Filtrer les candidatures par campagne visible
+      const visibleCampaigns = getVisibleCampaignsForCandidates();
+      const filteredApplications = applications.filter((app: any) => {
+        const campaignId = app.job_offers?.campaign_id;
+        
+        // Si pas de campaign_id, on montre la candidature
+        if (!campaignId) return true;
+        
+        // Vérifier si la campagne est visible
+        return visibleCampaigns.includes(campaignId);
+      });
+
+      console.log(`📊 [useApplications] Candidatures filtrées par campagne: ${filteredApplications.length}/${applications.length}`);
+
+      return filteredApplications as Application[];
     }
 
     // Pour les recruteurs/admins, utiliser l'ancienne méthode directe
@@ -162,7 +185,12 @@ export function useApplications() {
   const submitApplicationMutation = useMutation({
     mutationFn: async (applicationData: {
       job_offer_id: string;
-      ref_contacts?: string;
+      ref_contacts?: string; // deprecated
+      reference_full_name?: string;
+      reference_email?: string;
+      reference_contact?: string;
+      reference_company?: string;
+      has_been_manager?: boolean | null; // Pour les candidatures internes
       mtp_answers: {
         metier: string[];
         talent: string[];
@@ -184,6 +212,19 @@ export function useApplications() {
     }) => {
       if (!user) throw new Error("User not authenticated");
 
+      // RESTRICTION DE CAMPAGNE DÉSACTIVÉE
+      // Tous les utilisateurs peuvent maintenant postuler sans restriction de date
+      // const campaignStartDate = new Date('2025-09-27T00:00:00.000Z');
+      // const userCreatedAt = new Date(user.created_at);
+      // const now = new Date();
+      // 
+      // if (userCreatedAt < campaignStartDate) {
+      //   throw new Error("Votre compte a été créé avant le 27/09/2025. Les candidatures ne sont ouvertes qu'aux utilisateurs créés à partir de cette date.");
+      // }
+      // 
+      // if (now < campaignStartDate) {
+      //   throw new Error("Les candidatures ne sont pas encore ouvertes. Elles seront disponibles à partir du 27/09/2025.");
+      // }
 
       // Vérifier si une candidature existe déjà
       const { data: existingApplication } = await supabase
@@ -197,13 +238,49 @@ export function useApplications() {
         throw new Error("Vous avez déjà postulé pour cette offre d'emploi");
       }
 
+      // Determine candidate audience and offer audience (canonical columns)
+      let candidateAudience: string | null = null;
+      let offerAudience: string | null = null;
+      try {
+        const [{ data: userRow }, { data: offerRow }] = await Promise.all([
+          supabase
+            .from('users')
+            .select('candidate_status')
+            .eq('id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('job_offers')
+            .select('status_offerts')
+            .eq('id', applicationData.job_offer_id)
+            .maybeSingle(),
+        ]);
+        const u = userRow as { candidate_status?: string | null } | null;
+        const o = offerRow as { status_offerts?: string | null } | null;
+        candidateAudience = u?.candidate_status ?? null;
+        offerAudience = o?.status_offerts ?? null;
+      } catch {
+        // ignore, handled below
+      }
+
+      // If both are set and don't match, block the application
+      if (candidateAudience && offerAudience && candidateAudience !== offerAudience) {
+        throw new Error("Cette offre n'est pas accessible à votre type de candidature (interne/externe).");
+      }
+
       // Build payload and map API field to DB column
       const payload: Record<string, unknown> = {
         candidate_id: user.id,
         job_offer_id: applicationData.job_offer_id,
         mtp_answers: applicationData.mtp_answers,
+        // Persist candidature audience (interne/externe)
+        candidature_status: candidateAudience || offerAudience || null,
       };
-      if (applicationData.ref_contacts !== undefined) payload.reference_contacts = applicationData.ref_contacts;
+
+      if (applicationData.reference_full_name) payload.reference_full_name = applicationData.reference_full_name;
+      if (applicationData.reference_email) payload.reference_email = applicationData.reference_email;
+      if (applicationData.reference_contact) payload.reference_contact = applicationData.reference_contact;
+      if (applicationData.reference_company) payload.reference_company = applicationData.reference_company;
+      if (applicationData.has_been_manager !== undefined) payload.has_been_manager = applicationData.has_been_manager;
 
       const { data, error } = await supabase
         .from('applications')
@@ -320,7 +397,8 @@ export function useApplication(id: string | undefined) {
           job_offers: rpcResult.job_offer_details,
           users: {
             ...rpcResult.candidate_details,
-            candidate_profiles: rpcResult.candidate_details?.candidate_profiles
+            candidate_profiles: rpcResult.candidate_details?.candidate_profiles,
+            candidate_status: rpcResult.candidate_details?.candidate_status
           }
         };
         return application as Application;
@@ -359,7 +437,8 @@ export function useApplication(id: string | undefined) {
           job_offers: rpcResult.job_offer_details,
           users: {
             ...rpcResult.candidate_details,
-            candidate_profiles: rpcResult.candidate_details?.candidate_profiles
+            candidate_profiles: rpcResult.candidate_details?.candidate_profiles,
+            candidate_status: rpcResult.candidate_details?.candidate_status
           }
         };
         return application as Application;
@@ -443,11 +522,11 @@ export function useCandidateSkills(profileId: string | undefined) {
   });
 }
 
-export function useRecruiterApplications(jobOfferId?: string) {
+export function useRecruiterApplications(jobOfferId?: string, campaignId?: string) {
   const { user, isRecruiter, isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
-  const queryKey = ['recruiterApplications', user?.id, jobOfferId];
+  const queryKey = ['recruiterApplications', user?.id, jobOfferId, campaignId];
 
   const fetchRecruiterApplications = async () => {
     if (!user) {
@@ -461,7 +540,50 @@ export function useRecruiterApplications(jobOfferId?: string) {
       throw new Error(`Erreur lors de la récupération des candidatures: ${rpcError.message}`);
     }
     
-    let entries: any[] = rpcData || [];
+    console.log(`✅ [useRecruiterApplications] RPC réussie - ${(rpcData || []).length} candidatures récupérées`);
+    
+    // Debug: Afficher les campaign_id des candidatures
+    if ((rpcData || []).length > 0) {
+      const sampleApp = rpcData[0];
+      console.log(`🔍 [useRecruiterApplications] Exemple de candidature:`, {
+        job_title: sampleApp?.job_offer_details?.title,
+        campaign_id: sampleApp?.job_offer_details?.campaign_id,
+        created_at: sampleApp?.application_details?.created_at
+      });
+    }
+    
+    // Filtrer les candidatures en fonction de la campagne sélectionnée
+    const activeCampaignId = campaignId || GLOBAL_VIEW.id;
+    let entries: any[] = (rpcData || []);
+    
+    // Filtrer par campaign_id des offres au lieu de par date
+    if (activeCampaignId !== GLOBAL_VIEW.id) {
+      // Extraire le numéro depuis "campaign-1" → 1
+      const match = activeCampaignId.match(/campaign-(\d+)/);
+      if (match) {
+        const campaignIdNumber = parseInt(match[1], 10);
+        
+        // Debug avant filtrage
+        const beforeCount = entries.length;
+        
+        entries = entries.filter((app: any) => {
+          const jobOfferCampaignId = app?.job_offer_details?.campaign_id;
+          return jobOfferCampaignId === campaignIdNumber;
+        });
+        
+        console.log(`🔍 [useRecruiterApplications] Filtré par campagne ${campaignIdNumber}: ${entries.length}/${beforeCount} candidatures`);
+        
+        // Debug: Distribution des campaign_id dans les candidatures
+        const distribution = (rpcData || []).reduce((acc: Record<string, number>, app: any) => {
+          const cid = app?.job_offer_details?.campaign_id ?? 'NULL';
+          acc[cid] = (acc[cid] || 0) + 1;
+          return acc;
+        }, {});
+        console.log(`📊 [useRecruiterApplications] Distribution des candidatures par campagne:`, distribution);
+      }
+    } else {
+      console.log(`🔍 [useRecruiterApplications] Vue globale - ${entries.length} candidatures`);
+    }
     
     // Si un jobOfferId est spécifié, filtrer côté client
     if (jobOfferId) {
