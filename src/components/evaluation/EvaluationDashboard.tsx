@@ -19,6 +19,7 @@ import { useOptimizedProtocol1Evaluation } from "@/hooks/useOptimizedProtocol1Ev
 import { useInterviewScheduling } from "@/hooks/useInterviewScheduling";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useCampaign } from "@/contexts/CampaignContext";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { InterviewCalendarModal } from './InterviewCalendarModal';
@@ -116,6 +117,10 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { selectedCampaignId } = useCampaign();
+  
+  // Activer uniquement pour la campagne 1
+  const isCampaign1 = selectedCampaignId === 'campaign-1';
   
   // Fonction pour mapper les noms de postes vers les départements dans Traitement IA
   const mapJobTitleToDepartment = (jobTitle: string): string => {
@@ -654,8 +659,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 <Button 
                   size="lg"
                   onClick={handleAITreatment}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
-                  disabled={isReadOnly}
+                  className={`bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base ${!isCampaign1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={!isCampaign1 || isReadOnly}
                 >
                   <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                   Traitement IA

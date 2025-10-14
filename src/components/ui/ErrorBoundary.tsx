@@ -80,12 +80,14 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       // Déterminer le type d'erreur basé sur l'erreur capturée
-      let errorType: 'connection' | 'refresh' | 'browser' | 'generic' = 'generic';
+      let errorType: 'connection' | 'refresh' | 'browser' | 'dom' | 'generic' = 'generic';
       
       if (this.state.error) {
         const message = this.state.error.message.toLowerCase();
         
-        if (message.includes('chunk') || message.includes('loading') || message.includes('module')) {
+        if (message.includes('removechild') || message.includes('notfounderror') || message.includes('dom')) {
+          errorType = 'dom';
+        } else if (message.includes('chunk') || message.includes('loading') || message.includes('module')) {
           errorType = 'refresh';
         } else if (message.includes('syntax') || message.includes('parse') || message.includes('script')) {
           errorType = 'browser';
@@ -94,11 +96,44 @@ export class ErrorBoundary extends Component<Props, State> {
         }
       }
 
+      // Messages personnalisés selon le type d'erreur
+      const getErrorMessage = () => {
+        switch (errorType) {
+          case 'dom':
+            return {
+              title: "Erreur d'affichage",
+              message: "Un problème d'affichage s'est produit. Cette erreur est généralement temporaire et se résout en rechargeant la page."
+            };
+          case 'refresh':
+            return {
+              title: "Erreur de chargement",
+              message: "Un problème de chargement s'est produit. Veuillez recharger la page pour continuer."
+            };
+          case 'browser':
+            return {
+              title: "Erreur de script",
+              message: "Une erreur de script s'est produite. Veuillez recharger la page."
+            };
+          case 'connection':
+            return {
+              title: "Erreur de connexion",
+              message: "Un problème de connexion s'est produite. Vérifiez votre connexion internet et réessayez."
+            };
+          default:
+            return {
+              title: "Erreur d'Application",
+              message: "Une erreur inattendue s'est produite dans l'application. Notre équipe a été notifiée."
+            };
+        }
+      };
+
+      const errorInfo = getErrorMessage();
+
       return (
         <ErrorPage
           type={errorType}
-          title="Erreur d'Application"
-          message="Une erreur inattendue s'est produite dans l'application. Notre équipe a été notifiée."
+          title={errorInfo.title}
+          message={errorInfo.message}
           onRetry={this.handleRetry}
           onGoHome={this.handleGoHome}
           onGoBack={this.handleGoBack}

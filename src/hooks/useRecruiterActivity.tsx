@@ -42,8 +42,9 @@ export function useRecruiterActivity() {
     queryKey: ["recruiterActivity", user?.id],
     queryFn: () => fetchRecruiterActivity(user!.id),
     enabled: !!user,
-    staleTime: 30 * 1000, // 30 seconds - refresh more frequently
-    refetchInterval: 60 * 1000, // Auto-refresh every minute
-    refetchIntervalInBackground: true, // Continue refreshing in background
+    staleTime: 3 * 60 * 1000, // Les données restent fraîches pendant 3 minutes
+    refetchInterval: 3 * 60 * 1000, // Auto-refresh toutes les 3 minutes au lieu de 1 minute
+    refetchIntervalInBackground: false, // Ne pas rafraîchir en arrière-plan pour économiser des ressources
+    refetchOnWindowFocus: true, // Rafraîchir quand l'utilisateur revient sur la page
   });
 }

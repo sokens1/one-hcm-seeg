@@ -11,6 +11,7 @@ import { useJobOffer } from "@/hooks/useJobOffers";
 import { useAuth } from "@/hooks/useAuth";
 import { useApplicationStatus } from "@/hooks/useApplications";
 import { ContentSpinner } from "@/components/ui/spinner";
+import { safeInnerHTML, escapeHTML } from "@/utils/domErrorPrevention";
 
 export default function JobDetail() {
   const { id } = useParams<{ id: string }>();
@@ -103,10 +104,13 @@ export default function JobDetail() {
     return "Salaire à négocier";
   };
   
-  // Convert legacy string[] fields to an HTML unordered list for display
+  // Convert legacy string[] fields to an HTML unordered list for display - VERSION SÉCURISÉE
   const arrayToHtmlList = (arr?: string[] | null) => {
     if (!arr || arr.length === 0) return "";
-    const items = arr.map((item) => `<li>${(item || "").toString()}</li>`).join("");
+    const items = arr.map((item) => {
+      const cleanItem = escapeHTML((item || "").toString());
+      return `<li>${cleanItem}</li>`;
+    }).join("");
     return `<ul>${items}</ul>`;
   };
 
@@ -182,11 +186,11 @@ export default function JobDetail() {
                   <CardContent>
                     <div
                       className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
-                      dangerouslySetInnerHTML={{
-                        __html: jobOffer.description && jobOffer.description.trim().length > 0
+                      dangerouslySetInnerHTML={safeInnerHTML(
+                        jobOffer.description && jobOffer.description.trim().length > 0
                           ? jobOffer.description
-                          : arrayToHtmlList(jobOffer.responsibilities as unknown as string[]),
-                      }}
+                          : arrayToHtmlList(jobOffer.responsibilities as unknown as string[])
+                      )}
                     />
                   </CardContent>
                 </Card>
@@ -201,11 +205,11 @@ export default function JobDetail() {
                   <CardContent>
                     <div
                       className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
-                      dangerouslySetInnerHTML={{
-                        __html: jobOffer.profile && jobOffer.profile.trim().length > 0
+                      dangerouslySetInnerHTML={safeInnerHTML(
+                        jobOffer.profile && jobOffer.profile.trim().length > 0
                           ? jobOffer.profile
-                          : arrayToHtmlList(jobOffer.requirements as unknown as string[]),
-                      }}
+                          : arrayToHtmlList(jobOffer.requirements as unknown as string[])
+                      )}
                     />
                   </CardContent>
                 </Card>
