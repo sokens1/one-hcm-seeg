@@ -142,8 +142,9 @@ export default function RecruiterDashboard() {
               
               <Button 
                 variant="hero" 
-                className="gap-2 w-full sm:w-auto"
+                className={`gap-2 w-full sm:w-auto ${selectedCampaignId !== 'campaign-1' ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={() => setShowPotentialAnalysis(true)}
+                disabled={selectedCampaignId !== 'campaign-1'}
               >
                 <BarChart3 className="w-4 h-4" />
                 Analyse des Potentiels
