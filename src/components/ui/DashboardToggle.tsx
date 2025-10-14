@@ -4,6 +4,7 @@ import { Card, CardContent } from './card';
 import { BarChart3, LayoutDashboard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useCampaign } from '@/contexts/CampaignContext';
 
 interface DashboardToggleProps {
   currentView: 'classic' | 'advanced';
@@ -13,6 +14,10 @@ interface DashboardToggleProps {
 export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { selectedCampaignId } = useCampaign();
+  
+  // Activer uniquement pour la campagne 1
+  const isCampaign1 = selectedCampaignId === 'campaign-1';
 
   const handleAdvancedClick = () => {
     // Rediriger vers la page Traitement IA
@@ -51,7 +56,8 @@ export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps)
               variant={currentView === 'advanced' ? 'default' : 'outline'}
               size="sm"
               onClick={handleAdvancedClick}
-              className="gap-2"
+              className={`gap-2 ${!isCampaign1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={!isCampaign1}
             >
               <BarChart3 className="w-3 h-3" />
               Avancé (IA)
