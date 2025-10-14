@@ -23,6 +23,7 @@ import './index.css';
 import { ErrorBoundary } from 'react-error-boundary';
 import type { FallbackProps } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/ui/ErrorFallback';
+import { useAccessRequestsRealtime } from '@/hooks/useAccessRequestsRealtime';
 
 //Maintenance page
 const Maintenance = lazy(() => import("./pages/maintenance"));
@@ -190,6 +191,32 @@ const withMaintenanceCheck = (element: React.ReactNode) => {
   return element;
 };
 
+// Composant interne qui utilise les hooks nécessitant QueryClient
+function AppContent() {
+  // Initialiser les subscriptions en temps réel centralisées pour access_requests
+  useAccessRequestsRealtime();
+
+  return (
+    <AuthProvider>
+      <CampaignProvider>
+        {/* <AzureAuthProvider> Azure API - Commenté temporairement */}
+          <TooltipProvider>
+            <Suspense fallback={<LoadingFallback />}>
+              {withMaintenanceCheck(
+                <>
+                  <RouterProvider router={router} />
+                  <Toaster />
+                  <Sonner />
+                </>
+              )}
+            </Suspense>
+          </TooltipProvider>
+        {/* </AzureAuthProvider> */}
+      </CampaignProvider>
+    </AuthProvider>
+  );
+}
+
 function App() {
   // Composant de secours personnalisé pour ErrorBoundary
   const CustomErrorFallback = (props: FallbackProps) => {
@@ -199,23 +226,7 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={CustomErrorFallback}>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <CampaignProvider>
-            {/* <AzureAuthProvider> Azure API - Commenté temporairement */}
-              <TooltipProvider>
-                <Suspense fallback={<LoadingFallback />}>
-                  {withMaintenanceCheck(
-                    <>
-                      <RouterProvider router={router} />
-                      <Toaster />
-                      <Sonner />
-                    </>
-                  )}
-                </Suspense>
-              </TooltipProvider>
-            {/* </AzureAuthProvider> */}
-          </CampaignProvider>
-        </AuthProvider>
+        <AppContent />
       </QueryClientProvider>
     </ErrorBoundary>
   );

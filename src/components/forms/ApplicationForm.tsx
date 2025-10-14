@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X, Users, Edit, AlertCircle, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, CheckCircle, User, FileText, Send, X, Users, Edit, AlertCircle, Plus, Mail, Phone, Building2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -652,6 +652,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
       yearsOfExperience: "",
       certificates: [],
       additionalCertificates: [],
+      references: [],
       referenceFullName: "",
       referenceEmail: "",
       referenceContact: "",
@@ -2397,10 +2398,19 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                             {formData.references.map((ref) => (
                               <div key={ref.id} className="p-3 bg-white rounded border space-y-1">
                                 <div className="font-medium text-base">{ref.fullName}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  <div>📧 {ref.email}</div>
-                                  <div>📞 {ref.contact}</div>
-                                  <div>🏢 {ref.company}</div>
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <Mail className="w-4 h-4" />
+                                    {ref.email}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Phone className="w-4 h-4" />
+                                    {ref.contact}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Building2 className="w-4 h-4" />
+                                    {ref.company}
+                                  </div>
                                 </div>
                               </div>
                             ))}

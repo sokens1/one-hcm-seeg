@@ -100,21 +100,8 @@ export default function AccessRequests() {
 
     markAsViewed();
 
-    // S'abonner aux changements en temps réel
-    const channel = supabase
-      .channel('access_requests_realtime')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'access_requests',
-      }, () => {
-        fetchRequests();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // Note: Les subscriptions en temps réel sont maintenant gérées 
+    // de manière centralisée via useAccessRequestsRealtime dans App.tsx
   }, []);
 
   useEffect(() => {
