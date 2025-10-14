@@ -8,6 +8,8 @@ import { formatDistanceToNow, format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from 'react-router-dom';
+import { safeDOMOperation } from "@/utils/domErrorPrevention";
+import { SafeModalWrapper } from "./SafeModalWrapper";
 
 interface Activity {
   id: string;
@@ -33,6 +35,21 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+
+  // Fonction sécurisée pour fermer le modal
+  const handleClose = useCallback(() => {
+    safeDOMOperation(() => {
+      onClose();
+    });
+  }, [onClose]);
+
+  // Fonction sécurisée pour la navigation
+  const handleNavigate = useCallback(() => {
+    safeDOMOperation(() => {
+      onClose();
+      navigate('/recruiter/dashboard');
+    });
+  }, [onClose, navigate]);
 
   const ITEMS_PER_PAGE = 20;
 
@@ -68,14 +85,16 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
 
       const newActivities = data || [];
       
-      if (reset || pageNum === 1) {
-        setActivities(newActivities);
-      } else {
-        setActivities(prev => [...prev, ...newActivities]);
-      }
-
-      setHasMore(newActivities.length === ITEMS_PER_PAGE);
-      setPage(pageNum);
+      // Utiliser safeDOMOperation pour les mises à jour d'état
+      safeDOMOperation(() => {
+        if (reset || pageNum === 1) {
+          setActivities(newActivities);
+        } else {
+          setActivities(prev => [...prev, ...newActivities]);
+        }
+        setHasMore(newActivities.length === ITEMS_PER_PAGE);
+        setPage(pageNum);
+      });
     } catch (err) {
       console.error('Error loading activities:', err);
       setError('Erreur lors du chargement de l\'historique');
@@ -119,8 +138,12 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl h-[80vh] flex flex-col sm:fixed sm:right-4 sm:top-1/2 sm:-translate-y-1/2 sm:translate-x-full sm:data-[state=open]:translate-x-0 sm:data-[state=closed]:translate-x-full sm:transition-transform sm:duration-300 sm:ease-in-out w-full h-full sm:w-auto sm:h-[80vh]">
+    <SafeModalWrapper onError={(error) => {
+      console.warn('[ActivityHistoryModal] Erreur capturée:', error);
+      // Optionnel: envoyer l'erreur à un service de monitoring
+    }}>
+      <Dialog open={isOpen} onOpenChange={handleClose}>
+        <DialogContent className="max-w-2xl h-[80vh] flex flex-col sm:fixed sm:right-4 sm:top-1/2 sm:-translate-y-1/2 sm:translate-x-full sm:data-[state=open]:translate-x-0 sm:data-[state=closed]:translate-x-full sm:transition-transform sm:duration-300 sm:ease-in-out w-full h-full sm:w-auto sm:h-[80vh]">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-xl font-semibold">
             Historique complet des activités
@@ -156,10 +179,7 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
                       <div
                         key={activity.id}
                         className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
-                        onClick={() => {
-                          onClose();
-                          navigate('/recruiter/dashboard');
-                        }}
+                        onClick={handleNavigate}
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-2">
@@ -247,5 +267,6 @@ export const ActivityHistoryModal: React.FC<ActivityHistoryModalProps> = ({
         </div>
       </DialogContent>
     </Dialog>
+    </SafeModalWrapper>
   );
 };
