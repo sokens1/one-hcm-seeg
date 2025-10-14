@@ -487,7 +487,9 @@ export function useRecruiterDashboard(campaignId?: string) {
     queryKey: ['recruiterDashboard', user?.id, campaignId || GLOBAL_VIEW.id],
     queryFn: fetchDashboardData,
     enabled: !!user,
-    refetchInterval: 30000, // Refresh every 30 seconds for real-time data
+    staleTime: 5 * 60 * 1000, // Les données restent fraîches pendant 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refresh toutes les 5 minutes au lieu de 30 secondes
+    refetchOnWindowFocus: true, // Rafraîchir quand l'utilisateur revient sur la page
   });
 
   return {

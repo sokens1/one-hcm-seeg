@@ -41,7 +41,9 @@ export function useCampaignStats() {
         applications_per_job: stats.applications_per_job || []
       };
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    staleTime: 5 * 60 * 1000, // Les données restent fraîches pendant 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refresh toutes les 5 minutes au lieu de 30 secondes
+    refetchOnWindowFocus: true, // Rafraîchir quand l'utilisateur revient sur la page
   });
 }
 
@@ -58,6 +60,8 @@ export function useCampaignApplications() {
 
       return data || [];
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    staleTime: 5 * 60 * 1000, // Les données restent fraîches pendant 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refresh toutes les 5 minutes au lieu de 30 secondes
+    refetchOnWindowFocus: true, // Rafraîchir quand l'utilisateur revient sur la page
   });
 }

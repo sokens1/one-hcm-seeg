@@ -87,21 +87,8 @@ export function RecruiterSidebar() {
 
     fetchPendingRequests();
 
-    // S'abonner aux changements en temps réel
-    const channel = supabase
-      .channel('access_requests_changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'access_requests',
-      }, () => {
-        fetchPendingRequests();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // Note: Les subscriptions en temps réel sont maintenant gérées 
+    // de manière centralisée via useAccessRequestsRealtime dans App.tsx
   }, []);
 
   const isActive = (path: string) => {
