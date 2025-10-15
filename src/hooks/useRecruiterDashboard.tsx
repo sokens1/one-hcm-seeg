@@ -556,8 +556,8 @@ export function useCreateJobOffer() {
       // console.log('[CreateJobOffer] Input data:', { jobData, status });
       // console.log('[CreateJobOffer] User ID:', user.id);
 
-      // Déterminer la campagne active
-      const activeCampaignId = CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID;
+      // Utiliser le campaign_id passé manuellement, ou fallback sur la campagne active
+      const campaignId = jobData.campaign_id ?? CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID;
       
       // Build payload with proper field mapping
       const basePayload: JobOffersInsert = { 
@@ -579,10 +579,10 @@ export function useCreateJobOffer() {
         mtp_questions_metier: jobData.mtp_questions_metier,
         mtp_questions_talent: jobData.mtp_questions_talent,
         mtp_questions_paradigme: jobData.mtp_questions_paradigme,
-        campaign_id: activeCampaignId
+        campaign_id: campaignId
       };
       
-      console.log(`📊 [CreateJobOffer] Création d'offre avec campaign_id: ${activeCampaignId}`);
+      console.log(`📊 [CreateJobOffer] Création d'offre avec campaign_id: ${campaignId} (manuel: ${jobData.campaign_id !== undefined})`);
 
       // Remove undefined/null/empty values
       Object.keys(basePayload).forEach(key => {

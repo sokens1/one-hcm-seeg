@@ -422,6 +422,7 @@ export function JobCatalog() {
                   isPreview={true}
                   candidateCount={job.candidate_count}
                   onClick={() => handleJobClick(job.id)}
+                  statusOfferts={(job as any).status_offerts || null}
                 />
               </div>
             ))}

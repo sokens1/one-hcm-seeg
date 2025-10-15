@@ -2,13 +2,13 @@
  * Configuration des campagnes de recrutement
  * 
  * Le système détermine automatiquement la campagne active en fonction de la date actuelle
- * - Campagne 1 : Avant le 11/09/2025 (Historique)
- * - Campagne 2 : Du 11/09/2025 au 21/10/2025 (Active jusqu'au 21/10)
- * - Campagne 3 : Après le 21/10/2025 (Future/Active après le 21/10)
+ * - Campagne 1 : Avant le 11/09/2025 (Historique - MASQUÉE)
+ * - Campagne 2 : Du 11/09/2025 au 17/10/2025 (VISIBLE pour le public)
+ * - Campagne 3 : À partir du 17/10/2025 (VISIBLE pour le public)
  * 
  * Les recruteurs voient toutes les campagnes
- * Les candidats et visiteurs publics voient uniquement la campagne active
- * Les offres expirées sont grisées dans la vue publique
+ * Les candidats et visiteurs publics voient les campagnes 2 ET 3
+ * Les offres expirées sont automatiquement masquées selon leur date_limite
  */
 
 // Définition des périodes des campagnes
@@ -26,7 +26,7 @@ const CAMPAIGN_PERIODS = {
     id: 2,
     name: 'Campagne 2',
     startDate: new Date('2025-09-11T00:00:00'),
-    endDate: new Date('2025-10-21T23:59:59'),
+    endDate: new Date('2025-10-17T23:59:59'),
     get isActive() {
       return getActiveCampaignIdDynamic() === 2;
     },
@@ -34,7 +34,7 @@ const CAMPAIGN_PERIODS = {
   3: {
     id: 3,
     name: 'Campagne 3',
-    startDate: new Date('2025-10-21T00:00:00'),
+    startDate: new Date('2025-10-17T00:00:00'),
     endDate: null, // Pas de date de fin (campagne ouverte)
     get isActive() {
       return getActiveCampaignIdDynamic() === 3;
@@ -48,12 +48,12 @@ const CAMPAIGN_PERIODS = {
 function getActiveCampaignIdDynamic(): number {
   const now = new Date();
   
-  // Campagne 2 : Du 11/09/2025 au 21/10/2025
+  // Campagne 2 : Du 11/09/2025 au 17/10/2025
   if (now >= CAMPAIGN_PERIODS[2].startDate && now <= CAMPAIGN_PERIODS[2].endDate) {
     return 2;
   }
   
-  // Campagne 3 : Après le 21/10/2025
+  // Campagne 3 : À partir du 17/10/2025
   if (now > CAMPAIGN_PERIODS[2].endDate) {
     return 3;
   }
@@ -66,11 +66,9 @@ function getActiveCampaignIdDynamic(): number {
  * Détermine les campagnes masquées en fonction de la campagne active
  */
 function getHiddenCampaignsDynamic(): number[] {
-  const activeCampaign = getActiveCampaignIdDynamic();
-  const allCampaigns = [1, 2, 3];
-  
-  // Masquer toutes les campagnes sauf l'active
-  return allCampaigns.filter(id => id !== activeCampaign);
+  // NOUVELLE LOGIQUE : Masquer uniquement la campagne 1 (historique)
+  // Les campagnes 2 et 3 sont toujours visibles pour le public
+  return [1]; // Seule la campagne 1 est masquée
 }
 
 export const CAMPAIGN_CONFIG = {
@@ -116,11 +114,11 @@ export function getActiveCampaignId(): number {
 
 /**
  * Retourne les IDs des campagnes visibles pour les candidats
+ * NOUVELLE LOGIQUE : Les campagnes 2 et 3 sont toujours visibles
  */
 export function getVisibleCampaignsForCandidates(): number[] {
-  return CAMPAIGN_CONFIG.ALL_CAMPAIGNS.filter(
-    (id) => !CAMPAIGN_CONFIG.HIDDEN_CAMPAIGNS.includes(id)
-  );
+  // Retourner les campagnes 2 et 3 (masquer uniquement la campagne 1)
+  return [2, 3];
 }
 
 /**
