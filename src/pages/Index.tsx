@@ -51,7 +51,10 @@ const Index = () => {
   const { isEligible } = useCampaignEligibility();
 
   // Helper to normalize location which can be string | string[] from the API
-  const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
+  const normalizeLocation = (loc: string | string[] | null | undefined): string => {
+    if (Array.isArray(loc)) return loc.filter(Boolean).join(", ");
+    return loc || "";
+  };
 
   // Create unique location and contract options for filters
   const uniqueLocations = [
@@ -105,7 +108,7 @@ const Index = () => {
 
   const filteredJobs = jobOffers.filter(job => {
     const hayTitle = (job.title || "").toLowerCase();
-    const hayLoc = normalizeLocation(job.location).toLowerCase();
+    const hayLoc = (normalizeLocation(job.location) || "").toLowerCase();
     const needle = (searchTerm || "").toLowerCase();
     const matchesSearch = hayTitle.includes(needle) || hayLoc.includes(needle);
     
@@ -370,6 +373,7 @@ const Index = () => {
                       locked={false}
                       onLockedClick={() => {}}
                       isExpired={false}
+                      statusOfferts={(job as any).status_offerts || null}
                     />
                   </div>
                 );

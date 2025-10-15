@@ -41,12 +41,17 @@ export default function CandidateJobs() {
   }, [searchParams, jobOffers, navigate]);
 
   // Helper to normalize location which can be string | string[] from the API
-  const normalizeLocation = (loc: string | string[]) => Array.isArray(loc) ? loc.join(", ") : loc;
+  const normalizeLocation = (loc: string | string[] | null | undefined): string => {
+    if (Array.isArray(loc)) return loc.filter(Boolean).join(", ");
+    return loc || "";
+  };
 
   const filteredJobs = jobOffers.filter(job => {
     // Filtre par recherche texte
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      normalizeLocation(job.location).toLowerCase().includes(searchTerm.toLowerCase());
+    const hayTitle = (job.title || "").toLowerCase();
+    const hayLoc = (normalizeLocation(job.location) || "").toLowerCase();
+    const needle = (searchTerm || "").toLowerCase();
+    const matchesSearch = hayTitle.includes(needle) || hayLoc.includes(needle);
     
     // Filtre par statut interne/externe
     const matchesStatus = statusFilter === "all" || 
@@ -229,6 +234,7 @@ export default function CandidateJobs() {
                         toast.info("Les appels à candidature seront disponibles à partir du lundi 25 août 2025.");
                       }
                     }}
+                    statusOfferts={(job as any).status_offerts || null}
                   />
                 </div>
               ))}

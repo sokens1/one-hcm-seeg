@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Wrench, Shield, Coins, Handshake, Leaf } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getActiveCampaignId } from "@/config/campaigns";
 
 export default function CompanyContext() {
   const navigate = useNavigate();
@@ -13,16 +12,41 @@ export default function CompanyContext() {
 
   useEffect(() => {
     const fetchJobCount = async () => {
-      const activeCampaignId = getActiveCampaignId();
-      
-      const { count, error } = await supabase
+      // VUE PUBLIQUE : Compter uniquement les offres des campagnes NON TERMINÉES
+      // ET dont la date limite n'est pas dépassée
+      const { data, error } = await supabase
         .from('job_offers')
-        .select('*', { count: 'exact', head: true })
+        .select('date_limite, campaign_id')
         .eq('status', 'active')
-        .eq('campaign_id', activeCampaignId);
+        .in('campaign_id', [2, 3]); // Campagnes 2 et 3 potentiellement visibles
 
-      if (!error && count !== null) {
-        setJobCount(count);
+      if (!error && data) {
+        const now = new Date();
+        
+        // Dates de fin des campagnes (hardcodées pour éviter import)
+        const campaignEndDates: Record<number, Date | null> = {
+          2: new Date('2025-10-17T23:59:59'),
+          3: null, // Pas de date de fin
+        };
+        
+        // Filtrer les offres
+        const validOffers = data.filter(offer => {
+          // Vérifier si la campagne est terminée (pour vue publique)
+          const campaignId = offer.campaign_id;
+          if (campaignId && campaignEndDates[campaignId]) {
+            const campaignEnd = campaignEndDates[campaignId];
+            if (campaignEnd && now > campaignEnd) {
+              return false; // Campagne terminée = masquer pour public
+            }
+          }
+          
+          // Vérifier si la date limite de l'offre est dépassée
+          if (!offer.date_limite) return true; // Pas de date limite = toujours valide
+          const deadline = new Date(offer.date_limite);
+          return now <= deadline; // Offre encore valide
+        });
+        
+        setJobCount(validOffers.length);
       }
     };
 

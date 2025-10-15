@@ -9,6 +9,7 @@ import { useJobOffer } from "@/hooks/useJobOffers";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
+import { safeInnerHTML, escapeHTML } from "@/utils/domErrorPrevention";
 // import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 
 interface JobDetailProps {
@@ -70,10 +71,13 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
     return "Salaire à négocier";
   };
 
-  // Convert legacy arrays to HTML lists for display
+  // Convert legacy arrays to HTML lists for display - VERSION SÉCURISÉE
   const arrayToHtmlList = (arr?: string[] | null) => {
     if (!arr || arr.length === 0) return "";
-    const items = arr.map((item) => `<li>${(item || "").toString()}</li>`).join("");
+    const items = arr.map((item) => {
+      const cleanItem = escapeHTML((item || "").toString());
+      return `<li>${cleanItem}</li>`;
+    }).join("");
     return `<ul>${items}</ul>`;
   };
 
@@ -147,11 +151,11 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 <CardContent>
                   <div
                     className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
-                    dangerouslySetInnerHTML={{
-                      __html: jobOffer.description && jobOffer.description.trim().length > 0
+                    dangerouslySetInnerHTML={safeInnerHTML(
+                      jobOffer.description && jobOffer.description.trim().length > 0
                         ? jobOffer.description
-                        : arrayToHtmlList(jobOffer.responsibilities as unknown as string[]),
-                    }}
+                        : arrayToHtmlList(jobOffer.responsibilities as unknown as string[])
+                    )}
                   />
                 </CardContent>
               </Card>
@@ -166,11 +170,11 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 <CardContent>
                   <div
                     className="prose prose-sm sm:prose-base max-w-none text-foreground dark:prose-invert"
-                    dangerouslySetInnerHTML={{
-                      __html: jobOffer.profile && jobOffer.profile.trim().length > 0
+                    dangerouslySetInnerHTML={safeInnerHTML(
+                      jobOffer.profile && jobOffer.profile.trim().length > 0
                         ? jobOffer.profile
-                        : arrayToHtmlList(jobOffer.requirements as unknown as string[]),
-                    }}
+                        : arrayToHtmlList(jobOffer.requirements as unknown as string[])
+                    )}
                   />
                 </CardContent>
               </Card>
@@ -217,7 +221,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                   </div>
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span>Publié le 13/09/2025</span>
+                    <span>Publié le 13/10/2025</span>
                   </div>
                 </div>
                 

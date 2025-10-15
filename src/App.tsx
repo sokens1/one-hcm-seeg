@@ -24,6 +24,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import type { FallbackProps } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/ui/ErrorFallback';
 import { useAccessRequestsRealtime } from '@/hooks/useAccessRequestsRealtime';
+import { DOMErrorMonitor } from '@/components/dev/DOMErrorMonitor';
 
 //Maintenance page
 const Maintenance = lazy(() => import("./pages/maintenance"));
@@ -227,6 +228,7 @@ function App() {
     <ErrorBoundary FallbackComponent={CustomErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <AppContent />
+        {/* <DOMErrorMonitor /> */}
       </QueryClientProvider>
     </ErrorBoundary>
   );
