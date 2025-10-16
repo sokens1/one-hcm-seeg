@@ -6,6 +6,22 @@ import { ArrowLeft } from "lucide-react";
 
 export default function PrivacyPolicy() {
   const navigate = useNavigate();
+  
+  const handleBack = () => {
+    // Si l'utilisateur a un historique de navigation, on fait un retour
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      // Sinon, on ferme l'onglet (si ouvert depuis target="_blank")
+      // ou on redirige vers l'accueil
+      if (window.opener) {
+        window.close();
+      } else {
+        navigate('/');
+      }
+    }
+  };
+
   return (
     <Layout showFooter={true}>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -14,7 +30,7 @@ export default function PrivacyPolicy() {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative container mx-auto px-4 py-16 md:py-20">
             <div className="flex justify-start mb-4">
-              <Button variant="ghost" onClick={() => navigate(-1)} className="text-white hover:bg-white/10">
+              <Button variant="ghost" onClick={handleBack} className="text-white hover:bg-white/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour
               </Button>

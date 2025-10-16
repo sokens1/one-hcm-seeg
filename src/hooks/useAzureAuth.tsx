@@ -16,6 +16,7 @@ export interface AzureSignUpData {
   adresse: string;
   candidateStatus: "interne" | "externe";
   noSeegEmail: boolean;
+  politiqueConfidentialite: boolean;
 }
 
 interface AuthContextType {
@@ -72,6 +73,7 @@ export function AzureAuthProvider({ children }: { children: React.ReactNode }) {
         sexe: data.sexe as 'M' | 'F',
         matricule: data.candidateStatus === "interne" && data.matricule ? parseInt(data.matricule) : undefined,
         adresse: data.adresse || undefined,
+        politique_confidentialite: data.politiqueConfidentialite,
       };
 
       const response = await azureApiClient.signup(signupData);

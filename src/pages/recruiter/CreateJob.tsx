@@ -343,7 +343,7 @@ export default function CreateJob() {
                       <SelectValue placeholder="Choisir une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Cadre">Cadre</SelectItem>
+                      <SelectItem value="Cadre">Cadre Supérieur </SelectItem>
                       <SelectItem value="Cadre directeur">Cadre de Direction </SelectItem>
                     </SelectContent>
                   </Select>
