@@ -463,7 +463,7 @@ export default function EditJob() {
                   <Select value={formData.categorieMetier} onValueChange={(value) => handleInputChange("categorieMetier", value)} required>
                     <SelectTrigger><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Cadre">Cadre</SelectItem>
+                      <SelectItem value="Cadre">Cadre Supérieur </SelectItem>
                       <SelectItem value="Cadre directeur">Cadre de Direction </SelectItem>
                     </SelectContent>
                   </Select>

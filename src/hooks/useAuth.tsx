@@ -22,6 +22,7 @@ export interface SignUpMetadata {
   poste_actuel?: string;
   annees_experience?: number;
   statut?: string;
+  politique_confidentialite?: boolean;
 }
 
 interface AuthContextType {

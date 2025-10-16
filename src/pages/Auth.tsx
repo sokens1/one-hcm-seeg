@@ -83,7 +83,8 @@ export default function Auth() {
     sexe: "",
     adresse: "",
     candidateStatus: "", // "interne" ou "externe" - vide par défaut
-    noSeegEmail: false // Checkbox pour les internes sans email SEEG
+    noSeegEmail: false, // Checkbox pour les internes sans email SEEG
+    politiqueConfidentialite: false // Checkbox obligatoire pour la politique de confidentialité
   });
 
   const [matriculeError, setMatriculeError] = useState<string>("");
@@ -217,7 +218,8 @@ export default function Auth() {
       signUpData.sexe !== "" &&
       signUpData.adresse.trim() !== "" &&
       signUpData.password.trim() !== "" &&
-      signUpData.confirmPassword.trim() !== "";
+      signUpData.confirmPassword.trim() !== "" &&
+      signUpData.politiqueConfidentialite === true; // Politique de confidentialité obligatoire
 
     if (!commonFieldsFilled) return false;
 
@@ -377,6 +379,7 @@ export default function Auth() {
         adresse: signUpData.adresse,
         candidate_status: signUpData.candidateStatus,
         no_seeg_email: signUpData.noSeegEmail,
+        politique_confidentialite: signUpData.politiqueConfidentialite,
       });
       
       if (error) {
@@ -936,6 +939,38 @@ export default function Auth() {
                       </div>
                     </div>
 
+                    {/* Politique de confidentialité */}
+                    <div className="space-y-3 border-t pt-4 mt-2">
+                      <div className="flex items-start space-x-3">
+                        <input
+                          type="checkbox"
+                          id="politiqueConfidentialite"
+                          checked={signUpData.politiqueConfidentialite}
+                          onChange={(e) => setSignUpData({ ...signUpData, politiqueConfidentialite: e.target.checked })}
+                          className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 mt-0.5 flex-shrink-0"
+                          required
+                        />
+                        <Label htmlFor="politiqueConfidentialite" className="text-xs text-muted-foreground font-normal cursor-pointer leading-relaxed">
+                          J'accepte la{" "}
+                          <a 
+                            href="/privacy-policy" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline font-medium"
+                          >
+                            politique de confidentialité
+                          </a>
+                          {" "}et je consens au traitement de mes données personnelles conformément à celle-ci. *
+                        </Label>
+                      </div>
+                      {!signUpData.politiqueConfidentialite && signUpData.candidateStatus && (
+                        <p className="text-xs text-orange-600 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          Vous devez accepter la politique de confidentialité pour continuer
+                        </p>
+                      )}
+                    </div>
+
                     {!isSignUpFormValid() && signUpData.candidateStatus && (
                       <p className="text-xs text-center text-muted-foreground">
                         {signUpData.candidateStatus === "interne" && !isMatriculeValid 
@@ -944,7 +979,9 @@ export default function Auth() {
                             ? "Veuillez corriger l'adresse email"
                             : signUpData.password !== signUpData.confirmPassword
                               ? "Les mots de passe ne correspondent pas"
-                              : "Veuillez remplir tous les champs obligatoires"}
+                              : !signUpData.politiqueConfidentialite
+                                ? "Veuillez accepter la politique de confidentialité"
+                                : "Veuillez remplir tous les champs obligatoires"}
                       </p>
                     )}
 
