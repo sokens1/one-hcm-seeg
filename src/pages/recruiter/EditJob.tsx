@@ -551,7 +551,7 @@ export default function EditJob() {
 
               {/* Connaissance savoir et requis */}
               <div className="space-y-2">
-                <Label htmlFor="requirements">Connaissance savoir et requis *</Label>
+                <Label htmlFor="requirements">Connaissances savoir-faire et requis *</Label>
                 <ReactQuill theme="snow" value={formData.requirements} onChange={(value) => handleQuillChange("requirements", value)} className="bg-white quill-editor-container" />
               </div>
 
