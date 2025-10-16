@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { PreviousApplicationAlert } from "@/components/recruiter/PreviousApplicationAlert";
 import { downloadCandidateDocumentsAsZip } from "../../utils/downloadUtils";
 
 const getBadgeVariant = (status: Application['status']) => {
@@ -240,7 +241,7 @@ const ReferencesTab = ({ application }: { application: Application }) => {
               <p className="font-medium mb-2">Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :</p>
               <ul className="space-y-1 ml-4 text-muted-foreground">
                 <li>• Chef de service ;</li>
-                <li>• Chef de département ;</li>
+                <li>• Chef de division ou équivalent ;</li>
                 <li>• Directeur ;</li>
                 <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
               </ul>
@@ -760,6 +761,16 @@ export default function ObserverCandidateAnalysis() {
             </div>
           </div>
         </div>
+
+        {/* Alerte si candidat a déjà postulé */}
+        {application?.candidate_id && (
+          <div className="mb-4">
+            <PreviousApplicationAlert 
+              candidateId={application.candidate_id} 
+              currentApplicationId={application.id}
+            />
+          </div>
+        )}
 
         {/* Informations rapides */}
         <Card className="mb-6">

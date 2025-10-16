@@ -13,6 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { downloadCandidateDocumentsAsZip } from "@/utils/downloadUtils";
 import { useToast } from "@/hooks/use-toast";
+import { PreviousApplicationAlert } from "./PreviousApplicationAlert";
 
 interface CandidateDetailModalProps {
   applicationId: string;
@@ -176,6 +177,12 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
           </div>
         ) : application && candidate ? (
           <>
+          {/* Alerte si candidat a déjà postulé */}
+          <PreviousApplicationAlert 
+            candidateId={application.candidate_id} 
+            currentApplicationId={application.id}
+          />
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Infos candidat */}
              <Card>
@@ -425,7 +432,7 @@ export function CandidateDetailModal({ applicationId, isOpen, onClose }: Candida
                           <p className="font-medium mb-1">Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :</p>
                           <ul className="space-y-1 ml-4 text-muted-foreground">
                             <li>• Chef de service ;</li>
-                            <li>• Chef de département ;</li>
+                            <li>• Chef de division ou équivalent ;</li>
                             <li>• Directeur ;</li>
                             <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
                           </ul>
