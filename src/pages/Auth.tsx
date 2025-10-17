@@ -145,12 +145,12 @@ export default function Auth() {
       setIsVerifyingMatricule(true);
       console.log('🔍 Vérification du matricule:', matricule);
       
-      // Utiliser la fonction RPC de Supabase pour vérifier dans seeg_agents
-      const { data: isValid, error } = await supabase.rpc('verify_matricule', {
+      // Utiliser la fonction RPC de Supabase pour vérifier dans seeg_agents ET users
+      const { data, error } = await supabase.rpc('verify_matricule', {
         p_matricule: matricule,
       });
 
-      console.log('✅ Réponse vérification:', { isValid, error });
+      console.log('✅ Réponse vérification:', { data, error });
 
       if (error) {
         console.error('❌ Erreur vérification matricule:', error);
@@ -164,9 +164,12 @@ export default function Auth() {
         return false;
       }
 
-      if (!isValid) {
-        console.log('❌ Matricule invalide');
-        setMatriculeError("Ce matricule n'est pas autorisé. Vérifiez qu'il correspond à un agent SEEG actif.");
+      // La fonction retourne maintenant un objet JSON avec plus d'informations
+      const result = data as { exists_in_agents: boolean; already_used: boolean; is_valid: boolean; message: string };
+
+      if (!result.is_valid) {
+        console.log('❌ Matricule invalide:', result.message);
+        setMatriculeError(result.message);
         setIsMatriculeValid(false);
         return false;
       }
