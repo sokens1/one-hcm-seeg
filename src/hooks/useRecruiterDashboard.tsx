@@ -549,7 +549,7 @@ export function useCreateJobOffer() {
   const createJobOfferMutation = useMutation({
     mutationFn: async ({ jobData, status }: {
       jobData: any;
-      status: 'active' | 'draft';
+      status: 'active' | 'draft' | 'inactive' | 'closed';
     }) => {
       if (!user) throw new Error("User not authenticated");
 

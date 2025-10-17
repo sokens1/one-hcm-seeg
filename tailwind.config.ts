@@ -138,6 +138,22 @@ export default {
 						transform: 'translateY(-5px)',
 						'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)'
 					}
+				},
+				'marquee': {
+					'0%': {
+						transform: 'translateX(0%)'
+					},
+					'100%': {
+						transform: 'translateX(-100%)'
+					}
+				},
+				'marquee2': {
+					'0%': {
+						transform: 'translateX(100%)'
+					},
+					'100%': {
+						transform: 'translateX(0%)'
+					}
 				}
 			},
 			animation: {
@@ -145,7 +161,9 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.5s ease-out',
 				'slide-in': 'slide-in 0.6s ease-out',
-				'bounce-soft': 'bounce-soft 2s infinite'
+				'bounce-soft': 'bounce-soft 2s infinite',
+				'marquee': 'marquee 40s linear infinite',
+				'marquee2': 'marquee2 40s linear infinite'
 			},
 			boxShadow: {
 				'soft': 'var(--shadow-soft)',
