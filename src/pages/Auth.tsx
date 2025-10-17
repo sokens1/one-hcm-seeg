@@ -667,23 +667,15 @@ export default function Auth() {
                       <div className="grid grid-cols-2 gap-3">
                         <button
                           type="button"
-                          onClick={() => setSignUpData({ ...signUpData, candidateStatus: "interne", matricule: "" })}
-                          className={`p-4 rounded-lg border-2 transition-all ${
-                            signUpData.candidateStatus === "interne"
-                              ? "border-primary bg-primary/5 shadow-sm"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}
+                          disabled
+                          className="p-4 rounded-lg border-2 transition-all border-gray-200 bg-gray-50 cursor-not-allowed opacity-50"
                         >
-                          <Building2 className={`w-5 h-5 mx-auto mb-2 ${
-                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-400"
-                          }`} />
-                          <div className={`text-sm font-medium ${
-                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-700"
-                          }`}>
+                          <Building2 className="w-5 h-5 mx-auto mb-2 text-gray-300" />
+                          <div className="text-sm font-medium text-gray-400">
                             Candidat Interne
                           </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Employé SEEG
+                          <div className="text-xs text-gray-400 mt-1">
+                            Temporairement désactivé
                           </div>
                         </button>
                         <button
