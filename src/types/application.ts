@@ -13,6 +13,8 @@ export interface Application {
   reference_email?: string | null;
   reference_contact?: string | null;
   reference_company?: string | null;
+  has_been_manager?: boolean | null; // Pour les candidatures internes uniquement
+  candidature_status?: 'interne' | 'externe' | null; // Statut de la candidature
   interview_date?: string | null; // Date et heure de l'entretien programmé
   simulation_date?: string | null; // Date et heure de la simulation programmée
   mtp_answers?: {
@@ -28,6 +30,8 @@ export interface Application {
     location: string;
     contract_type: string;
     recruiter_id?: string;
+    status_offerts?: 'interne' | 'externe' | null;
+    campaign_id?: number | null;
   } | null;
   users?: {
     first_name: string;

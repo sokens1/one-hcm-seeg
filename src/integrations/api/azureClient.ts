@@ -12,6 +12,7 @@ export interface SignupData {
   date_of_birth: string;
   sexe: 'M' | 'F';
   adresse?: string;
+  politique_confidentialite?: boolean;
 }
 
 export interface LoginData {

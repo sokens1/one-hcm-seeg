@@ -162,20 +162,28 @@ export default function RecruiterJobs() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {filteredJobs.map((job, index) => {
               const isInactive = job.status === 'inactive';
+              const isDraft = job.status === 'draft';
               return (
               <div key={job.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                <Card className={`hover:shadow-medium transition-all cursor-pointer group h-full ${isInactive ? 'opacity-60 bg-gray-50 border-dashed' : ''}`}>
+                <Card className={`hover:shadow-medium transition-all cursor-pointer group h-full ${isInactive || isDraft ? 'opacity-60 bg-gray-50 border-dashed' : ''}`}>
                   <CardContent className="p-4 sm:p-6 flex flex-col h-full">
                     <div className="flex-1 space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary-dark transition-colors">
                           {job.title}
                         </h3>
-                        {isInactive && (
-                          <Badge variant="outline" className="bg-gray-200 text-gray-600 border-gray-300 flex-shrink-0">
-                            Inactive
-                          </Badge>
-                        )}
+                        <div className="flex flex-col gap-1 flex-shrink-0">
+                          {isDraft && (
+                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300">
+                              Brouillon
+                            </Badge>
+                          )}
+                          {isInactive && !isDraft && (
+                            <Badge variant="outline" className="bg-gray-200 text-gray-600 border-gray-300">
+                              Inactive
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                       
                       <div className="flex items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
@@ -248,15 +256,21 @@ export default function RecruiterJobs() {
               <TableBody>
                 {filteredJobs.map(job => {
                   const isInactive = job.status === 'inactive';
+                  const isDraft = job.status === 'draft';
                   return (
-                  <TableRow key={job.id} className={isInactive ? 'opacity-60 bg-gray-50' : ''}>
+                  <TableRow key={job.id} className={isInactive || isDraft ? 'opacity-60 bg-gray-50' : ''}>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div>
                           <div className="font-medium">{job.title}</div>
                           <div className="text-sm text-muted-foreground">{job.location} • {job.contract_type}</div>
                         </div>
-                        {isInactive && (
+                        {isDraft && (
+                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 ml-2">
+                            Brouillon
+                          </Badge>
+                        )}
+                        {isInactive && !isDraft && (
                           <Badge variant="outline" className="bg-gray-200 text-gray-600 border-gray-300 ml-2">
                             Inactive
                           </Badge>

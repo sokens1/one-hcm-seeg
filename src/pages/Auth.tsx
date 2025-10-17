@@ -83,7 +83,8 @@ export default function Auth() {
     sexe: "",
     adresse: "",
     candidateStatus: "", // "interne" ou "externe" - vide par défaut
-    noSeegEmail: false // Checkbox pour les internes sans email SEEG
+    noSeegEmail: false, // Checkbox pour les internes sans email SEEG
+    politiqueConfidentialite: false // Checkbox obligatoire pour la politique de confidentialité
   });
 
   const [matriculeError, setMatriculeError] = useState<string>("");
@@ -217,7 +218,8 @@ export default function Auth() {
       signUpData.sexe !== "" &&
       signUpData.adresse.trim() !== "" &&
       signUpData.password.trim() !== "" &&
-      signUpData.confirmPassword.trim() !== "";
+      signUpData.confirmPassword.trim() !== "" &&
+      signUpData.politiqueConfidentialite === true; // Politique de confidentialité obligatoire
 
     if (!commonFieldsFilled) return false;
 
@@ -377,6 +379,7 @@ export default function Auth() {
         adresse: signUpData.adresse,
         candidate_status: signUpData.candidateStatus,
         no_seeg_email: signUpData.noSeegEmail,
+        politique_confidentialite: signUpData.politiqueConfidentialite,
       });
       
       if (error) {
@@ -662,32 +665,27 @@ export default function Auth() {
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Type de candidature</Label>
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="relative group">
-                          <button
-                            type="button"
-                            disabled
-                            className="w-full p-4 rounded-lg border-2 border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
-                          >
-                            <Building2 className="w-5 h-5 mx-auto mb-2 text-gray-400" />
-                            <div className="text-sm font-medium text-gray-500">
-                              Candidat Interne
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              Employé SEEG
-                            </div>
-                          </button>
-                          
-                          {/* Tooltip */}
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                            Les candidatures internes seront disponibles ultérieurement
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                        <button
+                          type="button"
+                          onClick={() => setSignUpData({ ...signUpData, candidateStatus: "interne", matricule: "" })}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            signUpData.candidateStatus === "interne"
+                              ? "border-primary bg-primary/5 shadow-sm"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <Building2 className={`w-5 h-5 mx-auto mb-2 ${
+                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-400"
+                          }`} />
+                          <div className={`text-sm font-medium ${
+                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-700"
+                          }`}>
+                            Candidat Interne
                           </div>
-                          
-                          {/* Texte "Disponible ultérieurement" */}
-                          <div className="text-center mt-2">
-                            <span className="text-xs text-gray-500 italic">Disponible ultérieurement</span>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Employé SEEG
                           </div>
-                        </div>
+                        </button>
                         <button
                           type="button"
                           onClick={() => setSignUpData({ ...signUpData, candidateStatus: "externe", matricule: "" })}
@@ -941,6 +939,38 @@ export default function Auth() {
                       </div>
                     </div>
 
+                    {/* Politique de confidentialité */}
+                    <div className="space-y-3 border-t pt-4 mt-2">
+                      <div className="flex items-start space-x-3">
+                        <input
+                          type="checkbox"
+                          id="politiqueConfidentialite"
+                          checked={signUpData.politiqueConfidentialite}
+                          onChange={(e) => setSignUpData({ ...signUpData, politiqueConfidentialite: e.target.checked })}
+                          className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 mt-0.5 flex-shrink-0"
+                          required
+                        />
+                        <Label htmlFor="politiqueConfidentialite" className="text-xs text-muted-foreground font-normal cursor-pointer leading-relaxed">
+                          J'accepte la{" "}
+                          <a 
+                            href="/privacy-policy" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline font-medium"
+                          >
+                            politique de confidentialité
+                          </a>
+                          {" "}et je consens au traitement de mes données personnelles conformément à celle-ci. *
+                        </Label>
+                      </div>
+                      {!signUpData.politiqueConfidentialite && signUpData.candidateStatus && (
+                        <p className="text-xs text-orange-600 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          Vous devez accepter la politique de confidentialité pour continuer
+                        </p>
+                      )}
+                    </div>
+
                     {!isSignUpFormValid() && signUpData.candidateStatus && (
                       <p className="text-xs text-center text-muted-foreground">
                         {signUpData.candidateStatus === "interne" && !isMatriculeValid 
@@ -949,7 +979,9 @@ export default function Auth() {
                             ? "Veuillez corriger l'adresse email"
                             : signUpData.password !== signUpData.confirmPassword
                               ? "Les mots de passe ne correspondent pas"
-                              : "Veuillez remplir tous les champs obligatoires"}
+                              : !signUpData.politiqueConfidentialite
+                                ? "Veuillez accepter la politique de confidentialité"
+                                : "Veuillez remplir tous les champs obligatoires"}
                       </p>
                     )}
 

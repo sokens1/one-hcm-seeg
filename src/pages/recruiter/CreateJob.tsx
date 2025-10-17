@@ -26,6 +26,7 @@ interface JobFormData {
   location: string;
   dateLimite: string;
   statusOfferts: string;
+  campaignId: string; // ID de la campagne choisie
   responsibilities: string;
   requirements: string;
 }
@@ -34,6 +35,8 @@ export default function CreateJob() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { createJobOffer, isCreating } = useCreateJobOffer();
+
+  const STORAGE_KEY = 'createJobDraft';
 
   const [formData, setFormData] = useState<JobFormData>({
     title: "",
@@ -45,6 +48,7 @@ export default function CreateJob() {
     location: "",
     dateLimite: "",
     statusOfferts: "",
+    campaignId: "2", // Campagne 2 par défaut
     responsibilities: "",
     requirements: ""
   });
@@ -57,6 +61,50 @@ export default function CreateJob() {
   const [mtpQuestionsTalent, setMtpQuestionsTalent] = useState<string[]>([]);
   const [mtpQuestionsParadigme, setMtpQuestionsParadigme] = useState<string[]>([]);
 
+  // Restaurer depuis localStorage au chargement
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setFormData(parsed.formData || formData);
+        setIsActive(parsed.isActive ?? true);
+        setMtpQuestionsMetier(parsed.mtpQuestionsMetier || []);
+        setMtpQuestionsTalent(parsed.mtpQuestionsTalent || []);
+        setMtpQuestionsParadigme(parsed.mtpQuestionsParadigme || []);
+        // console.log('📂 [CreateJob] Brouillon restauré depuis localStorage');
+        toast({
+          title: "Brouillon restauré",
+          description: "Vos modifications précédentes ont été récupérées.",
+        });
+      }
+    } catch (e) {
+      console.warn('Erreur lors de la restauration du brouillon:', e);
+    }
+  }, []);
+
+  // Sauvegarde automatique dans localStorage
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      try {
+        const dataToSave = {
+          formData,
+          isActive,
+          mtpQuestionsMetier,
+          mtpQuestionsTalent,
+          mtpQuestionsParadigme,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+        // console.log('💾 [CreateJob] Brouillon auto-sauvegardé');
+      } catch (e) {
+        console.warn('Erreur lors de la sauvegarde auto:', e);
+      }
+    }, 2000); // Sauvegarde après 2 secondes d'inactivité
+
+    return () => clearTimeout(timeoutId);
+  }, [formData, isActive, mtpQuestionsMetier, mtpQuestionsTalent, mtpQuestionsParadigme]);
+
   // Charger automatiquement les questions par défaut au changement du statut ou titre
   useEffect(() => {
     // Ne charger que si les questions sont vides (pas encore modifiées par l'utilisateur)
@@ -66,15 +114,15 @@ export default function CreateJob() {
       if (formData.statusOfferts === 'externe') {
         // Offre externe : 7 questions Métier, 3 Talent, 3 Paradigme
         defaultQuestions = defaultMTPQuestionsExternes;
-        console.log('[CreateJob] Chargement questions externes (7 Métier, 3 Talent, 3 Paradigme)');
+        // console.log('[CreateJob] Chargement questions externes (7 Métier, 3 Talent, 3 Paradigme)');
       } else if (formData.statusOfferts === 'interne') {
         // Offre interne : 3 questions Métier, 3 Talent, 3 Paradigme
         defaultQuestions = defaultMTPQuestionsInternes;
-        console.log('[CreateJob] Chargement questions internes (3 Métier, 3 Talent, 3 Paradigme)');
+        // console.log('[CreateJob] Chargement questions internes (3 Métier, 3 Talent, 3 Paradigme)');
       } else if (formData.title) {
         // Fallback : questions basées sur le titre
         defaultQuestions = getMetierQuestionsForTitle(formData.title);
-        console.log('[CreateJob] Chargement questions pour:', formData.title);
+        // console.log('[CreateJob] Chargement questions pour:', formData.title);
       } else {
         // Pas encore de titre ou statut, ne rien faire
         return;
@@ -84,11 +132,11 @@ export default function CreateJob() {
       setMtpQuestionsTalent(defaultQuestions.talent);
       setMtpQuestionsParadigme(defaultQuestions.paradigme);
       
-      console.log('[CreateJob] Questions pré-remplies:', {
-        metier: defaultQuestions.metier.length,
-        talent: defaultQuestions.talent.length,
-        paradigme: defaultQuestions.paradigme.length
-      });
+      // console.log('[CreateJob] Questions pré-remplies:', {
+      //   metier: defaultQuestions.metier.length,
+      //   talent: defaultQuestions.talent.length,
+      //   paradigme: defaultQuestions.paradigme.length
+      // });
     }
   }, [formData.statusOfferts, formData.title, mtpQuestionsMetier.length, mtpQuestionsTalent.length, mtpQuestionsParadigme.length]);
 
@@ -99,6 +147,16 @@ export default function CreateJob() {
   };
 
   const handleSave = async () => {
+    // Validation minimale pour sauvegarder un brouillon (seulement le titre)
+    if (!formData.title || formData.title.trim() === '') {
+      toast({
+        title: "Titre requis",
+        description: "Veuillez au moins saisir le titre du poste pour sauvegarder un brouillon.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     await handleSubmit('draft');
   };
 
@@ -110,29 +168,46 @@ export default function CreateJob() {
     // console.log('[CreateJob] Starting submission with status:', status);
     // console.log('[CreateJob] Form data:', formData);
 
-    // Validate required fields for DB NOT NULL constraints
-    if (!formData.title || !formData.location || !formData.contractType || !formData.statusOfferts || !formData.responsibilities || !formData.requirements) {
-      toast({
-        title: "Champs requis",
-        description: "Veuillez remplir tous les champs obligatoires avant de continuer.",
-        variant: "destructive",
-      });
-      return;
+    // Validation différente selon le statut
+    if (status === 'published') {
+      // Pour publier : tous les champs requis
+      if (!formData.title || !formData.location || !formData.contractType || !formData.statusOfferts || !formData.responsibilities || !formData.requirements) {
+        toast({
+          title: "Champs requis pour publication",
+          description: "Veuillez remplir tous les champs obligatoires avant de publier.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else {
+      // Pour brouillon : seulement le titre requis
+      if (!formData.title || formData.title.trim() === '') {
+        toast({
+          title: "Titre requis",
+          description: "Veuillez au moins saisir le titre du poste.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
-    // Validate contract type against DB CHECK constraint
-    const allowedContracts = ['CDI avec période d\'essai', 'CDI', 'CDD', 'Stage', 'Freelance'];
-    if (!allowedContracts.includes(formData.contractType)) {
-      toast({
-        title: "Type de contrat invalide",
-        description: "Le type de contrat doit être CDI avec période d'essai, CDI, CDD, Stage ou Freelance.",
-        variant: "destructive",
-      });
-      return;
+    // Validate contract type against DB CHECK constraint (seulement si défini)
+    if (formData.contractType) {
+      const allowedContracts = ['CDI avec période d\'essai', 'CDI', 'CDD', 'Stage', 'Freelance'];
+      if (!allowedContracts.includes(formData.contractType)) {
+        toast({
+          title: "Type de contrat invalide",
+          description: "Le type de contrat doit être CDI avec période d'essai, CDI, CDD, Stage ou Freelance.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
-    // Le status dépend maintenant du switch isActive
-    const mappedStatus = isActive ? 'active' : 'inactive';
+    // Le status dépend du type de sauvegarde
+    // - Brouillon : toujours 'draft' (non visible public)
+    // - Publication : dépend du switch isActive ('active' ou 'inactive')
+    const mappedStatus = status === 'draft' ? 'draft' : (isActive ? 'active' : 'inactive');
 
     const jobData = {
       title: formData.title,
@@ -146,6 +221,7 @@ export default function CreateJob() {
       salary_note: formData.salaryNote || null,
       status_offerts: formData.statusOfferts || null,
       start_date: formData.startDate || null,
+      campaign_id: formData.campaignId ? parseInt(formData.campaignId) : null, // Campagne choisie manuellement
       // Questions MTP
       mtp_questions_metier: mtpQuestionsMetier.filter(q => q.trim() !== ''),
       mtp_questions_talent: mtpQuestionsTalent.filter(q => q.trim() !== ''),
@@ -160,6 +236,14 @@ export default function CreateJob() {
     try {
       const result = await createJobOffer({ jobData, status: mappedStatus });
       // console.log('[CreateJob] Creation successful:', result);
+      
+      // Supprimer le brouillon du localStorage après sauvegarde réussie
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        // console.log('🗑️ [CreateJob] Brouillon localStorage supprimé après sauvegarde');
+      } catch (e) {
+        console.warn('Erreur lors de la suppression du brouillon:', e);
+      }
       
       toast({
         title: "Offre d'emploi sauvegardée",
@@ -259,7 +343,7 @@ export default function CreateJob() {
                       <SelectValue placeholder="Choisir une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Cadre">Cadre</SelectItem>
+                      <SelectItem value="Cadre">Cadre Supérieur </SelectItem>
                       <SelectItem value="Cadre directeur">Cadre de Direction </SelectItem>
                     </SelectContent>
                   </Select>
@@ -276,7 +360,7 @@ export default function CreateJob() {
                 </div>
               </div>
 
-              {/* Ligne Statut - Interne/Externe et Activation */}
+              {/* Ligne Statut - Interne/Externe et Campagne */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="statusOfferts" className="text-sm sm:text-base font-medium">Statut de l'offre *</Label>
@@ -290,6 +374,23 @@ export default function CreateJob() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="campaignId" className="text-sm sm:text-base font-medium">Campagne de recrutement *</Label>
+                  <Select value={formData.campaignId} onValueChange={(value) => handleInputChange("campaignId", value)} required>
+                    <SelectTrigger className="text-sm sm:text-base">
+                      <SelectValue placeholder="Choisir une campagne" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Campagne 1</SelectItem>
+                      <SelectItem value="2">Campagne 2</SelectItem>
+                      <SelectItem value="3">Campagne 3</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Ligne Activation */}
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="isActive" className="text-sm sm:text-base font-medium">Activer l'offre</Label>
                   <div className="flex items-center gap-3 h-10">
@@ -387,8 +488,9 @@ export default function CreateJob() {
                 <Button 
                   variant="outline" 
                   onClick={handleSave}
-                  disabled={isCreating || !formData.title || !formData.location || !formData.contractType || !formData.statusOfferts || !formData.responsibilities || !formData.requirements}
+                  disabled={isCreating || !formData.title || formData.title.trim() === ''}
                   className="w-full sm:w-auto text-xs sm:text-sm"
+                  title="Sauvegarder un brouillon (seul le titre est requis)"
                 >
                   {isCreating ? (
                     <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2 animate-spin" />

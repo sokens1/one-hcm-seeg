@@ -165,7 +165,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
             {(jobOffer.profile || (jobOffer.requirements && jobOffer.requirements.length > 0)) && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl">CONNAISSANCE SAVOIR ET REQUIS</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl">CONNAISSANCES SAVOIR-FAIRE ET REQUIS</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div

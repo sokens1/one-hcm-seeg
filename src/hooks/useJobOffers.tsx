@@ -2,8 +2,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
-import { getVisibleCampaignsForCandidates } from "@/config/campaigns";
+import { getVisibleCampaignsForCandidates, CAMPAIGN_CONFIG } from "@/config/campaigns";
 import { useAuth } from "./useAuth";
+
+// Import des périodes de campagne pour vérifier si terminées
+const CAMPAIGN_PERIODS = CAMPAIGN_CONFIG.CAMPAIGNS;
 
 export interface JobOffer {
   id: string;
@@ -66,13 +69,13 @@ const fetchJobOffers = async () => {
           isRecruiter = role === 'recruteur' || role === 'recruiter' || role === 'admin' || role === 'observateur' || role === 'observer';
           candidateStatus = isCandidate ? (userData.candidate_status || null) : null;
           
-          console.log('🔍 [fetchJobOffers] User info:', {
-            isCandidate,
-            isRecruiter,
-            isAuthenticated,
-            candidateStatus,
-            userId: uid
-          });
+          // console.log('🔍 [fetchJobOffers] User info:', {
+          //   isCandidate,
+          //   isRecruiter,
+          //   isAuthenticated,
+          //   candidateStatus,
+          //   userId: uid
+          // });
         }
       }
     } catch (e) {
@@ -95,12 +98,18 @@ const fetchJobOffers = async () => {
         .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme,campaign_id')
         .order('created_at', { ascending: false });
 
-      // Filtrer par status='active' uniquement pour les candidats
-      if (isCandidate) {
+      // Filtrer par status selon le type d'utilisateur
+      if (isCandidate || !isAuthenticated) {
+        // Candidats et visiteurs publics : seulement les offres actives (pas de brouillons)
         query = query.eq('status', 'active');
-        console.log('🔒 [fetchJobOffers] Mode candidat : filtrage status=active');
+        // console.log('🔒 [fetchJobOffers] Mode candidat/public : filtrage status=active (pas de brouillons)');
+      } else if (isRecruiter) {
+        // Recruteurs : toutes les offres (actives, brouillons, inactives)
+        // console.log('👔 [fetchJobOffers] Mode recruteur : toutes les offres (y compris brouillons)');
       } else {
-        console.log('👔 [fetchJobOffers] Mode recruteur : toutes les offres (actives et inactives)');
+        // Par défaut : seulement actives
+        query = query.eq('status', 'active');
+        // console.log('🔒 [fetchJobOffers] Mode par défaut : filtrage status=active');
       }
 
       const { data, error } = await query;
@@ -120,8 +129,10 @@ const fetchJobOffers = async () => {
             .select('id,title,description,location,contract_type,requirements,status,status_offerts,created_at,updated_at,recruiter_id,categorie_metier,date_limite,reporting_line,job_grade,salary_note,start_date,responsibilities,mtp_questions_metier,mtp_questions_talent,mtp_questions_paradigme')
             .order('created_at', { ascending: false });
           
-          // Filtrer par status='active' uniquement pour les candidats
-          if (isCandidate) {
+          // Filtrer par status selon le type d'utilisateur
+          if (isCandidate || !isAuthenticated) {
+            fallbackQuery = fallbackQuery.eq('status', 'active');
+          } else if (!isRecruiter) {
             fallbackQuery = fallbackQuery.eq('status', 'active');
           }
           
@@ -174,7 +185,7 @@ const fetchJobOffers = async () => {
 
     // 3. Count total and new applications for each offer
     // MODE CAMPAGNE COMPLÈTEMENT DÉSACTIVÉ - Compter toutes les candidatures
-    console.log(`✅ [NO CAMPAIGN] Toutes les candidatures comptées: ${(applications || []).length} candidatures`);
+    // console.log(`✅ [NO CAMPAIGN] Toutes les candidatures comptées: ${(applications || []).length} candidatures`);
 
     const applicationStats = (applications || []).reduce((acc, app) => {
       if (!acc[app.job_offer_id]) {
@@ -214,23 +225,23 @@ const fetchJobOffers = async () => {
       
       // RÈGLE SIMPLE : Le candidat ne voit QUE les offres de son statut
       if (offerStatus === userStatus) {
-        console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat ${userStatus})`);
+        // console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat ${userStatus})`);
         return true;
       } else {
-        console.log(`🚫 [FILTER] "${offer.title}" (${offerStatus}) - Masquée (candidat ${userStatus} ne voit que ${userStatus})`);
+        // console.log(`🚫 [FILTER] "${offer.title}" (${offerStatus}) - Masquée (candidat ${userStatus} ne voit que ${userStatus})`);
         return false;
       }
     });
 
     if (isCandidate) {
-      console.log(`📊 [FILTER CANDIDAT] Offres visibles: ${offersFilteredByStatus.length}/${offersWithStats.length} (Statut: ${candidateStatus || 'non défini'})`);
+      // console.log(`📊 [FILTER CANDIDAT] Offres visibles: ${offersFilteredByStatus.length}/${offersWithStats.length} (Statut: ${candidateStatus || 'non défini'})`);
     } else {
-      console.log(`📊 [FILTER NON-CANDIDAT] Toutes les offres visibles: ${offersFilteredByStatus.length} offres`);
+      // console.log(`📊 [FILTER NON-CANDIDAT] Toutes les offres visibles: ${offersFilteredByStatus.length} offres`);
     }
 
     // 5. FILTRAGE PAR CAMPAGNE
-    // - Visiteurs NON CONNECTÉS (vue publique) : Voient uniquement la campagne active (Campagne 3)
-    // - Candidats connectés : Voient uniquement la campagne active (Campagne 3)
+    // - Visiteurs NON CONNECTÉS (vue publique) : Ne voient PAS les campagnes terminées (endDate passée)
+    // - Candidats connectés : Voient les campagnes 2 et 3 (même si terminées, filtrage par date_limite)
     // - Recruteurs/Admins : Voient TOUTES les campagnes (1, 2, 3)
     const offersFilteredByCampaign = offersFilteredByStatus.filter(offer => {
       // Si l'utilisateur est un RECRUTEUR, montrer TOUTES les campagnes
@@ -238,34 +249,86 @@ const fetchJobOffers = async () => {
         return true;
       }
       
-      // À partir d'ici : Candidat OU Visiteur non connecté
-      // Ils voient uniquement la campagne active
       const offerCampaignId = offer.campaign_id;
-      const visibleCampaigns = getVisibleCampaignsForCandidates();
       
-      // Si l'offre n'a pas de campaign_id, on la montre par défaut (nouvelle offre)
+      // Si l'offre n'a pas de campaign_id, on la montre par défaut
       if (!offerCampaignId) {
-        console.log(`⚠️ [CAMPAIGN FILTER] "${offer.title}" - Pas de campaign_id, visible par défaut`);
+        // console.log(`⚠️ [CAMPAIGN FILTER] "${offer.title}" - Pas de campaign_id, visible par défaut`);
         return true;
       }
       
-      // Vérifier si la campagne est visible pour les candidats/visiteurs
-      if (visibleCampaigns.includes(offerCampaignId)) {
-        console.log(`✅ [CAMPAIGN FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Visible`);
+      // Masquer toujours la campagne 1 (historique)
+      if (offerCampaignId === 1) {
+        // console.log(`🚫 [CAMPAIGN FILTER] "${offer.title}" (Campagne 1) - Masquée (historique)`);
+        return false;
+      }
+      
+      // NOUVELLE LOGIQUE POUR VUE PUBLIQUE vs VUE CANDIDAT
+      if (!isAuthenticated) {
+        // VUE PUBLIQUE : Masquer les campagnes terminées
+        const campaign = CAMPAIGN_PERIODS[offerCampaignId as keyof typeof CAMPAIGN_PERIODS];
+        if (campaign && campaign.endDate) {
+          const now = new Date();
+          if (now > campaign.endDate) {
+            // console.log(`🚫 [PUBLIC FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Campagne terminée - Masquée`);
+            return false; // Campagne terminée = masquer pour le public
+          }
+        }
+        // console.log(`✅ [PUBLIC FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Campagne en cours - Visible`);
         return true;
       } else {
-        console.log(`🚫 [CAMPAIGN FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Masquée (Campagne historique)`);
-        return false;
+        // VUE CANDIDAT : Montrer campagnes 2 et 3 (même si terminées)
+        // Le filtrage par date_limite se fera après
+        const visibleCampaigns = [2, 3];
+        if (visibleCampaigns.includes(offerCampaignId)) {
+          // console.log(`✅ [CANDIDAT FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Visible`);
+          return true;
+        } else {
+          // console.log(`🚫 [CANDIDAT FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Masquée`);
+          return false;
+        }
       }
     });
 
     if (isCandidate) {
-      console.log(`📊 [FILTER CAMPAGNE] Offres visibles après filtrage campagne: ${offersFilteredByCampaign.length}/${offersFilteredByStatus.length}`);
+      // console.log(`📊 [FILTER CAMPAGNE] Offres visibles après filtrage campagne: ${offersFilteredByCampaign.length}/${offersFilteredByStatus.length}`);
     }
 
-    console.log(`✅ [FINAL] Offres affichées: ${offersFilteredByCampaign.length} offres`);
+    // 6. FILTRAGE PAR DATE LIMITE EXPIRÉE
+    // - Recruteurs : Voient TOUTES les offres (même expirées)
+    // - Candidats/Public : Ne voient PAS les offres dont la date_limite est passée
+    const now = new Date();
+    const offersFilteredByDate = offersFilteredByCampaign.filter(offer => {
+      // Si l'utilisateur est un RECRUTEUR, montrer TOUTES les offres (même expirées)
+      if (isRecruiter) {
+        return true;
+      }
+      
+      // À partir d'ici : Candidat OU Visiteur non connecté
+      const dateLimite = offer.date_limite;
+      
+      // Si pas de date limite, l'offre est toujours visible
+      if (!dateLimite) {
+        return true;
+      }
+      
+      // Vérifier si la date limite est dépassée
+      const deadline = new Date(dateLimite);
+      if (now > deadline) {
+        // console.log(`⏰ [DATE FILTER] "${offer.title}" - Date limite dépassée (${dateLimite}) - Masquée`);
+        return false; // Masquer l'offre expirée
+      }
+      
+      return true; // Offre encore valide
+    });
+
+    if (isCandidate || !isAuthenticated) {
+      // console.log(`📊 [FILTER DATE] Offres visibles après filtrage date: ${offersFilteredByDate.length}/${offersFilteredByCampaign.length}`);
+    }
+
+    // console.log(`✅ [FINAL] Offres affichées: ${offersFilteredByDate.length} offres`);
     
-    return offersFilteredByCampaign;
+    return offersFilteredByDate;
   } catch (error) {
     console.error('[useJobOffers] Unexpected error:', error);
     const msg = String((error as any)?.message || '');
@@ -279,7 +342,7 @@ const fetchJobOffers = async () => {
 
 // Fonction de fallback pour retourner des données de test en cas d'erreur
 const getFallbackJobOffers = (): JobOffer[] => {
-  console.log('⚠️ [useJobOffers] Using fallback data - this might explain why only 2 jobs are visible');
+  // console.log('⚠️ [useJobOffers] Using fallback data - this might explain why only 2 jobs are visible');
   return [
     {
       id: 'fallback-1',
@@ -365,7 +428,7 @@ const fetchJobOffer = async (id: string): Promise<JobOffer | null> => {
         }))
         .filter(app => app.created_at);
       
-      console.log(`✅ [NO CAMPAIGN] Toutes les candidatures pour l'offre ${id}: ${applications.length} candidatures`);
+      // console.log(`✅ [NO CAMPAIGN] Toutes les candidatures pour l'offre ${id}: ${applications.length} candidatures`);
     }
   } catch (e) {
     console.warn('Error calling RPC get_all_recruiter_applications for job offer:', e);

@@ -16,6 +16,7 @@ interface JobCardProps {
   locked?: boolean;
   onLockedClick?: () => void;
   isExpired?: boolean; // Nouvelle prop pour les campagnes expirées
+  statusOfferts?: string | null; // Statut interne/externe de l'offre
 }
 
 export function JobCard({ 
@@ -29,6 +30,7 @@ export function JobCard({
   locked = false,
   onLockedClick,
   isExpired = false,
+  statusOfferts,
 }: JobCardProps) {
   const toPlainText = (input?: string) => {
     if (!input) return "";
@@ -53,11 +55,25 @@ export function JobCard({
               <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 flex-1">
                 {title}
               </h3>
-              {isExpired && (
-                <Badge variant="outline" className="bg-red-50 text-red-600 border-red-300 text-xs flex-shrink-0">
-                  Expirée
-                </Badge>
-              )}
+              <div className="flex flex-col gap-1 flex-shrink-0">
+                {isExpired && (
+                  <Badge variant="outline" className="bg-red-50 text-red-600 border-red-300 text-xs">
+                    Expirée
+                  </Badge>
+                )}
+                {statusOfferts && (
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${
+                      statusOfferts === 'interne' 
+                        ? 'bg-blue-50 text-blue-700 border-blue-300' 
+                        : 'bg-green-50 text-green-700 border-green-300'
+                    }`}
+                  >
+                    {statusOfferts === 'interne' ? 'Interne' : 'Externe'}
+                  </Badge>
+                )}
+              </div>
             </div>
             
             {!locked && (

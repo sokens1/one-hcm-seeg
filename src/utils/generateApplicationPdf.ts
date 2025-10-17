@@ -453,7 +453,7 @@ export const generateApplicationPdf = (data: ApplicationData) => {
         isSubItem: true
       },
       {
-        label: '• Chef de département ;',
+        label: '• Chef de division ou équivalent ;',
         value: '',
         isFilled: false,
         isRequired: false,

@@ -23,6 +23,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Link as RouterLink } from "react-router-dom";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { PreviousApplicationAlert } from "@/components/recruiter/PreviousApplicationAlert";
 
 // Fonction helper pour formater les dates de manière sécurisée
 const formatDate = (dateValue: any, formatString: string = 'PPP'): string => {
@@ -229,7 +230,7 @@ const ReferencesTab = ({ application }: { application: Application }) => {
               <p className="font-medium mb-2">Avez vous déjà eu, pour ce métier, l'une des expériences suivantes :</p>
               <ul className="space-y-1 ml-4 text-muted-foreground">
                 <li>• Chef de service ;</li>
-                <li>• Chef de département ;</li>
+                <li>• Chef de division ou équivalent ;</li>
                 <li>• Directeur ;</li>
                 <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
               </ul>
@@ -798,6 +799,16 @@ export default function CandidateAnalysis() {
             <Badge variant={getBadgeVariant(application.status)} className="text-xs sm:text-sm">{application.status}</Badge>
           </div>
         </header>
+
+        {/* Alerte si candidat a déjà postulé */}
+        {application?.candidate_id && (
+          <div className="mb-4">
+            <PreviousApplicationAlert 
+              candidateId={application.candidate_id} 
+              currentApplicationId={application.id}
+            />
+          </div>
+        )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4 text-xs sm:text-sm h-10 sm:h-11">

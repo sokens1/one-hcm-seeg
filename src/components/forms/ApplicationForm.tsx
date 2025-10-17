@@ -2071,7 +2071,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                         </Label>
                         <ul className="text-sm text-muted-foreground space-y-1 ml-4">
                           <li>• Chef de service ;</li>
-                          <li>• Chef de département ;</li>
+                          <li>• Chef de division ou équivalent ;</li>
                           <li>• Directeur ;</li>
                           <li>• Senior/Expert avec au moins 5 ans d'expérience ?</li>
                         </ul>
