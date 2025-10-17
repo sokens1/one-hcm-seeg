@@ -265,20 +265,28 @@ const fetchJobOffers = async () => {
       
       // NOUVELLE LOGIQUE POUR VUE PUBLIQUE vs VUE CANDIDAT
       if (!isAuthenticated) {
-        // VUE PUBLIQUE : Masquer les campagnes terminées
-        const campaign = CAMPAIGN_PERIODS[offerCampaignId as keyof typeof CAMPAIGN_PERIODS];
-        if (campaign && campaign.endDate) {
+        // VUE PUBLIQUE : Masquer campagne 2 après le 21/10/2025
+        if (offerCampaignId === 2) {
           const now = new Date();
-          if (now > campaign.endDate) {
-            // console.log(`🚫 [PUBLIC FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Campagne terminée - Masquée`);
-            return false; // Campagne terminée = masquer pour le public
+          const campaign2EndDate = new Date('2025-10-21T23:59:59');
+          if (now > campaign2EndDate) {
+            // console.log(`🚫 [PUBLIC FILTER] "${offer.title}" (Campagne 2) - Après le 21/10 - Masquée pour le public`);
+            return false;
           }
         }
-        // console.log(`✅ [PUBLIC FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Campagne en cours - Visible`);
-        return true;
+        
+        // Campagnes 2 et 3 visibles pour le public (sauf campagne 2 après le 21/10)
+        const visibleCampaigns = [2, 3];
+        if (visibleCampaigns.includes(offerCampaignId)) {
+          // console.log(`✅ [PUBLIC FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Visible`);
+          return true;
+        } else {
+          // console.log(`🚫 [PUBLIC FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Masquée`);
+          return false;
+        }
       } else {
-        // VUE CANDIDAT : Montrer campagnes 2 et 3 (même si terminées)
-        // Le filtrage par date_limite se fera après
+        // VUE CANDIDAT : Montrer campagnes 2 et 3 (même après le 21/10)
+        // Le filtrage par date_limite se fera après pour masquer les offres expirées
         const visibleCampaigns = [2, 3];
         if (visibleCampaigns.includes(offerCampaignId)) {
           // console.log(`✅ [CANDIDAT FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Visible`);
