@@ -4,65 +4,70 @@ import { JobOffer } from '@/hooks/useJobOffers';
 import { Button } from '@/components/ui/button';
 
 export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[] }) {
-  const [timeLeft, setTimeLeft] = useState<string>('');
-  // Nouvelle période: 13/10/2025 au 21/10/2025 inclus (Candidatures EXTERNES uniquement)
-  const [startDate] = useState<Date>(new Date('2025-10-13T00:00:00'));
-  const [endDate] = useState<Date>(new Date('2025-10-21T23:59:59'));
+  // Périodes pour EXTERNES et INTERNES
+  const [startDateExterne] = useState<Date>(new Date('2025-10-13T00:00:00'));
+  const [endDateExterne] = useState<Date>(new Date('2025-10-21T23:59:59'));
+  const [startDateInterne] = useState<Date>(new Date('2025-10-18T00:00:00'));
+  const [endDateInterne] = useState<Date>(new Date('2025-10-26T23:59:59'));
 
-  // Compte à rebours actif uniquement durant la période définie
+  const [timeLeftExterne, setTimeLeftExterne] = useState<string>('');
+  const [timeLeftInterne, setTimeLeftInterne] = useState<string>('');
 
   useEffect(() => {
-    const updateTimer = () => {
+    const updateTimers = () => {
       const now = new Date();
-      // Avant le début: afficher le temps restant avant ouverture
-      if (now < startDate) {
-        const diff = startDate.getTime() - now.getTime();
+      
+      // Calcul pour EXTERNES
+      if (now < startDateExterne) {
+        const diff = startDateExterne.getTime() - now.getTime();
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
-        setCountdownText('Ouverture des candidatures dans :');
-        return;
-      }
-
-      // Pendant la période: compte à rebours jusqu'à la fin
-      if (now >= startDate && now <= endDate) {
-        const diff = endDate.getTime() - now.getTime();
+        setTimeLeftExterne(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+      } else if (now >= startDateExterne && now <= endDateExterne) {
+        const diff = endDateExterne.getTime() - now.getTime();
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
-        setCountdownText('Clôture des candidatures dans :');
-        return;
+        setTimeLeftExterne(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+      } else {
+        setTimeLeftExterne("0j 00h 00m 00s");
       }
 
-      // Après la période
-      setTimeLeft("0j 00h 00m 00s");
-      setCountdownText('Clôture des candidatures dans :');
+      // Calcul pour INTERNES
+      if (now < startDateInterne) {
+        const diff = startDateInterne.getTime() - now.getTime();
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeLeftInterne(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+      } else if (now >= startDateInterne && now <= endDateInterne) {
+        const diff = endDateInterne.getTime() - now.getTime();
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeLeftInterne(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+      } else {
+        setTimeLeftInterne("0j 00h 00m 00s");
+      }
     };
 
     // Mettre à jour immédiatement
-    updateTimer();
+    updateTimers();
 
     // Mettre à jour toutes les secondes
-    const timer = setInterval(updateTimer, 1000);
+    const timer = setInterval(updateTimers, 1000);
 
     return () => clearInterval(timer);
-  }, [endDate]);
+  }, [startDateExterne, endDateExterne, startDateInterne, endDateInterne]);
 
   const [isVisible, setIsVisible] = useState(true);
-  const [showClosedMessage, setShowClosedMessage] = useState(false);
-  const [countdownText, setCountdownText] = useState('');
 
-  useEffect(() => {
-    const now = new Date();
-    // Message de clôture si la date actuelle est postérieure à la fin de période
-    setShowClosedMessage(now > endDate);
-  }, [endDate]);
-
-  if (!timeLeft || !isVisible) return null;
+  if (!timeLeftExterne || !isVisible) return null;
 
   const getStatusColor = () => {
     return 'border-[#631120]/50';
@@ -101,35 +106,64 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
         
         <div className="space-y-3">
           {/* Période de candidatures */}
-          <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-xs text-white/80 mb-2 font-medium">CANDIDATURES EXTERNES</div>
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1.5 text-white/70" />
-                <span className="font-mono">13/10/2025</span>
+          <div className="bg-white/10 rounded-lg p-2.5 backdrop-blur-sm space-y-2">
+            {/* Candidatures EXTERNES */}
+            <div>
+              <div className="text-[11px] text-white/80 mb-1 font-medium">CANDIDATURES EXTERNES</div>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center">
+                  <Calendar className="w-3.5 h-3.5 mr-1 text-white/70" />
+                  <span className="font-mono">13/10/2025</span>
+                </div>
+                <div className="text-white/60 mx-1.5">→</div>
+                <div className="flex items-center">
+                  <CalendarDays className="w-3.5 h-3.5 mr-1 text-white/70" />
+                  <span className="font-mono">21/10/2025</span>
+                </div>
               </div>
-              <div className="text-white/60 mx-2">→</div>
-              <div className="flex items-center">
-                <CalendarDays className="w-4 h-4 mr-1.5 text-white/70" />
-                <span className="font-mono">21/10/2025</span>
+            </div>
+
+            {/* Candidatures INTERNES */}
+            <div>
+              <div className="text-[11px] text-white/80 mb-1 font-medium">CANDIDATURES INTERNES</div>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center">
+                  <Calendar className="w-3.5 h-3.5 mr-1 text-white/70" />
+                  <span className="font-mono">18/10/2025</span>
+                </div>
+                <div className="text-white/60 mx-1.5">→</div>
+                <div className="flex items-center">
+                  <CalendarDays className="w-3.5 h-3.5 mr-1 text-white/70" />
+                  <span className="font-mono">26/10/2025</span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Compte à rebours */}
-          <div className="bg-white/15 rounded-lg p-3 backdrop-blur-sm">
+          <div className="bg-white/15 rounded-lg p-3 backdrop-blur-sm space-y-2">
             <div className="text-xs text-white/80 mb-2 font-medium">COMPTE À REBOURS</div>
-            <div className="text-xs text-white/90 mb-1 font-medium">
-              {countdownText}
-            </div>
-            <div className="font-mono text-base sm:text-lg font-bold tracking-wider text-yellow-400 break-words">
-              {timeLeft.split(': ')[1] || timeLeft}
-            </div>
-            {showClosedMessage && (
-              <div className="mt-2 text-left text-yellow-400 font-semibold text-xs sm:text-sm pl-0 pr-2">
-                L'appel à candidature est clôturé
+            <div className="text-xs text-white/90 mb-2">Clôture des candidatures dans :</div>
+            
+            {/* Compte à rebours EXTERNES */}
+            <div className="flex items-baseline gap-2">
+              <div className="text-xs text-white/90 font-medium whitespace-nowrap">
+                EXTERNE :
               </div>
-            )}
+              <div className="font-mono text-sm sm:text-base font-bold tracking-wider text-yellow-400">
+                {timeLeftExterne}
+              </div>
+            </div>
+
+            {/* Compte à rebours INTERNES */}
+            <div className="flex items-baseline gap-2">
+              <div className="text-xs text-white/90 font-medium whitespace-nowrap">
+                INTERNE :
+              </div>
+              <div className="font-mono text-sm sm:text-base font-bold tracking-wider text-yellow-400">
+                {timeLeftInterne}
+              </div>
+            </div>
           </div>
         </div>
       </div>

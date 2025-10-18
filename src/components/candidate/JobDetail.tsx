@@ -215,14 +215,18 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                       <span>Date d'embauche : {new Date(jobOffer.start_date).toLocaleDateString('fr-FR')}</span>
                     </div>
                   )} */}
-                  <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span>Date limite : 21/10/2025</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span>Publié le 13/10/2025</span>
-                  </div>
+                  {deadline && (
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                      <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                      <span>Date limite : {deadline}</span>
+                    </div>
+                  )}
+                  {publishedAt && (
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                      <span>Publié le {publishedAt}</span>
+                    </div>
+                  )}
                 </div>
                 
                                 <Button
