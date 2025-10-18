@@ -37,7 +37,7 @@ BEGIN
         v_message := 'Ce matricule n''existe pas dans la base SEEG';
     ELSIF v_already_used THEN
         v_is_valid := false;
-        v_message := 'Ce matricule est déjà utilisé par un autre compte';
+        v_message := 'Le titulaire de ce matricule a déjà postulé lors de la campagne 1';
     ELSE
         v_is_valid := true;
         v_message := 'Matricule valide';
