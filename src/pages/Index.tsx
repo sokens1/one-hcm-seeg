@@ -33,6 +33,7 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [locationFilter, setLocationFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "interne" | "externe">("all");
   const [showFilters, setShowFilters] = useState(false);
   
   // États pour le test d'email
@@ -120,7 +121,11 @@ const Index = () => {
         
     const matchesContract = contractFilter === "all" || job.contract_type === contractFilter;
     
-    return matchesSearch && matchesLocation && matchesContract;
+    const matchesStatus = 
+      statusFilter === "all" || 
+      (job as any).status_offerts === statusFilter;
+    
+    return matchesSearch && matchesLocation && matchesContract && matchesStatus;
   });
 
   // Fonction de test d'email
@@ -252,7 +257,7 @@ const Index = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-6 sm:mb-8 px-4 animate-fade-in delay-200">
+        <div className="max-w-2xl mx-auto mb-4 px-4 animate-fade-in delay-200">
           <div className="relative flex gap-2" role="search" aria-label="Recherche d'offres">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
@@ -327,6 +332,36 @@ const Index = () => {
                 </div>
               </PopoverContent>
             </Popover>
+          </div>
+        </div>
+
+        {/* Filtre Type d'offres (Interne/Externe) */}
+        <div className="max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
+          <div className="flex justify-center gap-2">
+            <Button
+              variant={statusFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("all")}
+              className="text-xs sm:text-sm"
+            >
+              Toutes les offres
+            </Button>
+            <Button
+              variant={statusFilter === "interne" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("interne")}
+              className="text-xs sm:text-sm"
+            >
+              Offres Internes
+            </Button>
+            <Button
+              variant={statusFilter === "externe" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("externe")}
+              className="text-xs sm:text-sm"
+            >
+              Offres Externes
+            </Button>
           </div>
         </div>
 
