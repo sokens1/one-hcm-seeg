@@ -68,7 +68,6 @@ export function CampaignSelector() {
             {/* Campagnes individuelles */}
             {allCampaigns.map((campaign, index) => {
               const isSelected = selectedCampaignId === campaign.id;
-              const isDisabled = campaign.id === 'campaign-3'; // Désactiver la campagne 3
               const colors = [
                 'from-green-500 to-emerald-600',
                 'from-orange-500 to-amber-600',
@@ -79,14 +78,11 @@ export function CampaignSelector() {
               return (
                 <button
                   key={campaign.id}
-                  onClick={() => !isDisabled && setSelectedCampaignId(campaign.id)}
-                  disabled={isDisabled}
+                  onClick={() => setSelectedCampaignId(campaign.id)}
                   className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border-2 transition-all duration-200 w-full sm:w-auto ${
-                    isDisabled 
-                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border-gray-300 dark:border-gray-700 cursor-not-allowed opacity-50'
-                      : isSelected
-                        ? `bg-gradient-to-r ${colorClass} text-white border-transparent shadow-md hover:shadow-lg`
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:shadow-md'
+                    isSelected
+                      ? `bg-gradient-to-r ${colorClass} text-white border-transparent shadow-md hover:shadow-lg`
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:shadow-md'
                   }`}
                 >
                   <div className={`flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-md flex-shrink-0 ${
@@ -99,18 +95,11 @@ export function CampaignSelector() {
                   <div className="text-left min-w-0 flex-1">
                     <div className="font-semibold text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
                       <span className="truncate">{campaign.name}</span>
-                      {isDisabled && (
-                        <Badge variant="secondary" className="text-xs flex-shrink-0">
-                          Bientôt
-                        </Badge>
-                      )}
                     </div>
                     <div className={`text-xs truncate ${
-                      isDisabled
-                        ? 'text-gray-400 dark:text-gray-600'
-                        : isSelected 
-                          ? 'text-white/80' 
-                          : 'text-gray-500 dark:text-gray-400'
+                      isSelected 
+                        ? 'text-white/80' 
+                        : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {formatDateRange(campaign.startDate, campaign.endDate)}
                     </div>

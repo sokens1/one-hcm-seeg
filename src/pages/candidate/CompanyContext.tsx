@@ -23,9 +23,10 @@ export default function CompanyContext() {
       if (!error && data) {
         const now = new Date();
         
-        // Dates de fin des campagnes (hardcodées pour éviter import)
+        // Dates de fin des campagnes pour la VUE PUBLIQUE (hardcodées pour éviter import)
+        // La campagne 2 est masquée après le 21/10/2025 pour le public
         const campaignEndDates: Record<number, Date | null> = {
-          2: new Date('2025-10-17T23:59:59'),
+          2: new Date('2025-10-21T23:59:59'), // Masquer après le 21/10
           3: null, // Pas de date de fin
         };
         
@@ -33,10 +34,10 @@ export default function CompanyContext() {
         const validOffers = data.filter(offer => {
           // Vérifier si la campagne est terminée (pour vue publique)
           const campaignId = offer.campaign_id;
-          if (campaignId && campaignEndDates[campaignId]) {
-            const campaignEnd = campaignEndDates[campaignId];
-            if (campaignEnd && now > campaignEnd) {
-              return false; // Campagne terminée = masquer pour public
+          if (campaignId === 2) {
+            // Campagne 2 : masquer après le 21/10 pour le public
+            if (now > campaignEndDates[2]!) {
+              return false;
             }
           }
           
