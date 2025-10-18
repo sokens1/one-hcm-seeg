@@ -106,18 +106,18 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
         
         <div className="space-y-3">
           {/* Période de candidatures */}
-          <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm space-y-3">
+          <div className="bg-white/10 rounded-lg p-2.5 backdrop-blur-sm space-y-2">
             {/* Candidatures EXTERNES */}
             <div>
-              <div className="text-xs text-white/80 mb-2 font-medium">CANDIDATURES EXTERNES</div>
-              <div className="flex items-center justify-between text-sm">
+              <div className="text-[11px] text-white/80 mb-1 font-medium">CANDIDATURES EXTERNES</div>
+              <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-1.5 text-white/70" />
+                  <Calendar className="w-3.5 h-3.5 mr-1 text-white/70" />
                   <span className="font-mono">13/10/2025</span>
                 </div>
-                <div className="text-white/60 mx-2">→</div>
+                <div className="text-white/60 mx-1.5">→</div>
                 <div className="flex items-center">
-                  <CalendarDays className="w-4 h-4 mr-1.5 text-white/70" />
+                  <CalendarDays className="w-3.5 h-3.5 mr-1 text-white/70" />
                   <span className="font-mono">21/10/2025</span>
                 </div>
               </div>
@@ -125,15 +125,15 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
 
             {/* Candidatures INTERNES */}
             <div>
-              <div className="text-xs text-white/80 mb-2 font-medium">CANDIDATURES INTERNES</div>
-              <div className="flex items-center justify-between text-sm">
+              <div className="text-[11px] text-white/80 mb-1 font-medium">CANDIDATURES INTERNES</div>
+              <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-1.5 text-white/70" />
+                  <Calendar className="w-3.5 h-3.5 mr-1 text-white/70" />
                   <span className="font-mono">18/10/2025</span>
                 </div>
-                <div className="text-white/60 mx-2">→</div>
+                <div className="text-white/60 mx-1.5">→</div>
                 <div className="flex items-center">
-                  <CalendarDays className="w-4 h-4 mr-1.5 text-white/70" />
+                  <CalendarDays className="w-3.5 h-3.5 mr-1 text-white/70" />
                   <span className="font-mono">26/10/2025</span>
                 </div>
               </div>
@@ -143,6 +143,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
           {/* Compte à rebours */}
           <div className="bg-white/15 rounded-lg p-3 backdrop-blur-sm space-y-2">
             <div className="text-xs text-white/80 mb-2 font-medium">COMPTE À REBOURS</div>
+            <div className="text-xs text-white/90 mb-2">Clôture des candidatures dans :</div>
             
             {/* Compte à rebours EXTERNES */}
             <div className="flex items-baseline gap-2">
