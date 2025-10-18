@@ -211,7 +211,10 @@ export function useRecruiterDashboard(campaignId?: string) {
     const candidateIds = Array.from(new Set((allApplicationsData || []).map(a => a.candidate_id).filter(Boolean)));
 
     // Calculate stats
-    const totalJobs = processedJobs.length;
+    // Pour la vue globale, soustraire 3 du nombre total d'offres
+    const totalJobs = activeCampaignId === GLOBAL_VIEW.id 
+      ? Math.max(0, processedJobs.length - 3) 
+      : processedJobs.length;
     const totalCandidates = candidateIds.length; // uniques
     const newCandidates = processedJobs.reduce((sum, job) => sum + job.new_candidates, 0);
 
@@ -367,7 +370,12 @@ export function useRecruiterDashboard(campaignId?: string) {
     
     departments.forEach(dept => {
       const deptJobs = (jobsData || []).filter(job => job.department === dept);
-      const deptJobCount = deptJobs.length;
+      let deptJobCount = deptJobs.length;
+      
+      // Pour la vue globale, soustraire 3 du nombre de postes de type Support
+      if (activeCampaignId === GLOBAL_VIEW.id && dept === 'Support') {
+        deptJobCount = Math.max(0, deptJobCount - 3);
+      }
       
       // Debug: Log department filtering
       // console.log(`[DASHBOARD DEBUG] Department "${dept}":`, { deptJobCount, jobs: deptJobs.map(j => j.title) });

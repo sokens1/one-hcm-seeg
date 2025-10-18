@@ -153,10 +153,10 @@ export default function ObserverDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    {isLoadingCampaignStats ? (
+                    {isLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
-                      campaignStats?.total_jobs || 0
+                      stats.totalJobs
                     )}
                   </div>
                   <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
@@ -225,10 +225,10 @@ export default function ObserverDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-100">
-                    {isLoadingCampaignStats ? (
+                    {isLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : campaignStats?.total_jobs && campaignStats?.total_jobs > 0 ? (
-                      Math.round((campaignStats.applications_per_job.filter(job => job.application_count > 0).length / campaignStats.total_jobs) * 100)
+                    ) : stats.totalJobs > 0 ? (
+                      Math.round((jobCoverage.filter(job => job.current_applications > 0).length / stats.totalJobs) * 100)
                     ) : (
                       0
                     )}%

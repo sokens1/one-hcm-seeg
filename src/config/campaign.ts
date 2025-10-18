@@ -27,9 +27,9 @@ export const CAMPAIGNS: Campaign[] = [
   {
     id: "campaign-3",
     name: "Campagne 3",
-    startDate: new Date("2025-10-21T00:00:00"),
-    endDate: new Date("2025-11-03T23:59:59"),
-    description: "Troisième campagne de recrutement - 21/10/2025 au 03/11/2025"
+    startDate: new Date("2025-10-18T00:00:00"),
+    endDate: new Date("2025-12-01T23:59:59"),
+    description: "Troisième campagne de recrutement - 18/10/2025 au 01/12/2025"
   }
 ];
 
