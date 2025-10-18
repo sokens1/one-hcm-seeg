@@ -309,7 +309,8 @@ export default function ObserverDashboard() {
 
             {/* Charts Section - Affichage deux par deux */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
-              {/* Coverage Rate Chart */}
+              {/* Coverage Rate Chart - Masqué en vue globale */}
+              {selectedCampaignId !== 'global' && (
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
@@ -402,8 +403,10 @@ export default function ObserverDashboard() {
                   </div>
                 </CardContent>
               </Card>
+              )}
 
-              {/* Applications per Job Chart */}
+              {/* Applications per Job Chart - Masqué en vue globale */}
+              {selectedCampaignId !== 'global' && (
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
@@ -442,6 +445,7 @@ export default function ObserverDashboard() {
                   </div>
                 </CardContent>
               </Card>
+              )}
 
               {/* Status Evolution Chart */}
               <Card>
