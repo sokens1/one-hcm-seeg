@@ -386,7 +386,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = async (email: string) => {
     // Base URL selon l'environnement (dev/prod)
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://onehcm.vercel.app';
+    const siteBaseUrl = isDevelopment ? 'http://localhost:8080' : 'https://www.seeg-talentsource.com';
     const redirectUrl = `${siteBaseUrl}/reset-password`;
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
