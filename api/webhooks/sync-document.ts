@@ -2,7 +2,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 /**
  * Webhook pour synchroniser les documents Supabase → Azure
- * Utilise l'endpoint admin générique POST /api/v1/admin/sync
+ * 
+ * UTILISE LES VRAIES ROUTES AZURE avec header X-Admin-Token
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const webhookSecret = process.env.SUPABASE_WEBHOOK_SECRET;
@@ -34,20 +35,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Configuration error' });
     }
 
-    // ===== ENDPOINT ADMIN GÉNÉRIQUE =====
-    const syncResponse = await fetch(`${azureApiUrl}/admin/sync`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${azureAdminToken}`,
-      },
-      body: JSON.stringify({
-        table: 'application_documents',
-        operation: type,
-        data: record || old_record,
-        old_data: old_record,
-      }),
-    });
+    let syncResponse: Response;
+
+    switch (type) {
+      case 'INSERT':
+        // Documents déjà créés via POST /applications/ (avec documents inclus)
+        console.log('ℹ️ [sync-document] INSERT - Documents déjà créés avec la candidature');
+        return res.status(200).json({ 
+          success: true, 
+          message: 'Document already created with application',
+          recordId: record.id,
+        });
+
+      case 'DELETE':
+        // DELETE /applications/{app_id}/documents/{doc_id} avec X-Admin-Token
+        syncResponse = await fetch(`${azureApiUrl}/applications/${old_record.application_id}/documents/${old_record.id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-Admin-Token': azureAdminToken,
+          },
+        });
+        break;
+
+      default:
+        console.warn('⚠️ [sync-document] Type événement non géré:', type);
+        return res.status(400).json({ error: 'Unknown event type' });
+    }
 
     if (!syncResponse.ok) {
       const errorData = await syncResponse.json().catch(() => ({ message: 'Erreur inconnue' }));

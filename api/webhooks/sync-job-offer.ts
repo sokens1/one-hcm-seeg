@@ -2,7 +2,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 /**
  * Webhook pour synchroniser les offres d'emploi Supabase → Azure
- * Utilise l'endpoint admin générique POST /api/v1/admin/sync
+ * 
+ * UTILISE LES VRAIES ROUTES AZURE avec header X-Admin-Token
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const webhookSecret = process.env.SUPABASE_WEBHOOK_SECRET;
@@ -34,20 +35,58 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Configuration error' });
     }
 
-    // ===== ENDPOINT ADMIN GÉNÉRIQUE =====
-    const syncResponse = await fetch(`${azureApiUrl}/admin/sync`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${azureAdminToken}`,
-      },
-      body: JSON.stringify({
-        table: 'job_offers',
-        operation: type,
-        data: record || old_record,
-        old_data: old_record,
-      }),
-    });
+    let syncResponse: Response;
+
+    switch (type) {
+      case 'INSERT':
+        // Offre déjà créée via POST /jobs/
+        console.log('ℹ️ [sync-job-offer] INSERT - Offre déjà créée via frontend');
+        return res.status(200).json({ 
+          success: true, 
+          message: 'Job offer already created',
+          recordId: record.id,
+        });
+
+      case 'UPDATE':
+        // PUT /jobs/{id} avec X-Admin-Token
+        syncResponse = await fetch(`${azureApiUrl}/jobs/${record.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': azureAdminToken,
+          },
+          body: JSON.stringify({
+            title: record.title,
+            description: record.description,
+            location: record.location,
+            contract_type: record.contract_type,
+            department: record.department,
+            salary_min: record.salary_min,
+            salary_max: record.salary_max,
+            offer_status: record.status_offerts || record.offer_status,
+            questions_mtp: {
+              questions_metier: record.mtp_questions_metier || [],
+              questions_talent: record.mtp_questions_talent || [],
+              questions_paradigme: record.mtp_questions_paradigme || [],
+            },
+          }),
+        });
+        break;
+
+      case 'DELETE':
+        // DELETE /jobs/{id} avec X-Admin-Token
+        syncResponse = await fetch(`${azureApiUrl}/jobs/${old_record.id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-Admin-Token': azureAdminToken,
+          },
+        });
+        break;
+
+      default:
+        console.warn('⚠️ [sync-job-offer] Type événement inconnu:', type);
+        return res.status(400).json({ error: 'Unknown event type' });
+    }
 
     if (!syncResponse.ok) {
       const errorData = await syncResponse.json().catch(() => ({ message: 'Erreur inconnue' }));
