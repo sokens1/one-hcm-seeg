@@ -138,7 +138,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Adresse :</strong></td>
-                        <td style="padding:5px 0;">${data.adresse}</td>
+                        <td style="padding:5px 0;">${adresse}</td>
                       </tr>
                     </table>
                   </div>
@@ -179,7 +179,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
                   <h2 style="color:#1e3a8a; margin:20px 0 10px 0; font-size:20px;">Demande d'Accès en Attente de Validation</h2>
                   
                   <p style="color:#333; line-height:1.6; margin:10px 0;">
-                    Bonjour <strong>${data.firstName} ${data.lastName}</strong>,
+                    Bonjour <strong>${firstName} ${lastName}</strong>,
                   </p>
 
                   <p style="color:#333; line-height:1.6; margin:10px 0;">
