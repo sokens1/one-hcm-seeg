@@ -40,14 +40,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     switch (type) {
       case 'INSERT':
-        // L'utilisateur est normalement déjà créé via POST /auth/signup
-        // On vérifie juste qu'il existe
-        console.log('ℹ️ [sync-user] INSERT - Utilisateur déjà créé via /auth/signup');
-        return res.status(200).json({ 
-          success: true, 
-          message: 'User already created via signup',
-          recordId: record.id,
+        // ===== CRÉER L'UTILISATEUR SUR AZURE =====
+        console.log('📝 [sync-user] INSERT - Création utilisateur sur Azure:', record.id);
+        
+        // Utiliser POST /auth/signup avec X-Admin-Token pour créer l'user
+        syncResponse = await fetch(`${azureApiUrl}/auth/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': azureAdminToken,
+          },
+          body: JSON.stringify({
+            email: record.email,
+            password: 'TempPassword123!@#', // Mot de passe temporaire (l'user devra le reset)
+            first_name: record.first_name,
+            last_name: record.last_name,
+            phone: record.phone || '+241 00 00 00 00',
+            date_of_birth: record.date_of_birth || '1990-01-01',
+            sexe: record.sexe || 'M',
+            candidate_status: record.candidate_status || 'externe',
+            matricule: record.matricule ? parseInt(record.matricule) : undefined,
+            adresse: record.adresse,
+            poste_actuel: record.poste_actuel,
+            annees_experience: record.annees_experience,
+            no_seeg_email: record.no_seeg_email || false,
+          }),
         });
+        break;
 
       case 'UPDATE':
         // PUT /users/{user_id} avec X-Admin-Token

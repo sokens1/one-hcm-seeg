@@ -39,13 +39,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     switch (type) {
       case 'INSERT':
-        // Candidature déjà créée via POST /applications/
-        console.log('ℹ️ [sync-application] INSERT - Candidature déjà créée via frontend');
-        return res.status(200).json({ 
-          success: true, 
-          message: 'Application already created',
-          recordId: record.id,
+        // ===== CRÉER LA CANDIDATURE SUR AZURE =====
+        console.log('📝 [sync-application] INSERT - Création candidature sur Azure:', record.id);
+        
+        // Parser mtp_answers si c'est une string JSON
+        let mtpAnswers = record.mtp_answers;
+        if (typeof mtpAnswers === 'string') {
+          try {
+            mtpAnswers = JSON.parse(mtpAnswers);
+          } catch (e) {
+            mtpAnswers = null;
+          }
+        }
+        
+        syncResponse = await fetch(`${azureApiUrl}/applications/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': azureAdminToken,
+          },
+          body: JSON.stringify({
+            candidate_id: record.candidate_id,
+            job_offer_id: record.job_offer_id,
+            reference_full_name: record.reference_full_name,
+            reference_email: record.reference_email,
+            reference_contact: record.reference_contact,
+            reference_company: record.reference_company,
+            has_been_manager: record.has_been_manager,
+            reponses_metier: mtpAnswers?.metier || [],
+            reponses_talent: mtpAnswers?.talent || [],
+            reponses_paradigme: mtpAnswers?.paradigme || [],
+            documents: [], // Les documents seront synchronisés séparément
+          }),
         });
+        break;
 
       case 'UPDATE':
         // PUT /applications/{id} avec X-Admin-Token
