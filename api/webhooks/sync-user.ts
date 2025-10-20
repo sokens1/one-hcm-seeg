@@ -3,16 +3,9 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 /**
  * Webhook pour synchroniser les utilisateurs Supabase → Azure
  * 
- * SIMPLIFIÉ : On utilise un endpoint admin générique pour la sync
- * Azure doit exposer : POST /api/v1/admin/sync
- * 
- * Ce endpoint reçoit :
- * - table: "users" | "applications" | "job_offers" | "documents"
- * - operation: "INSERT" | "UPDATE" | "DELETE"
- * - data: { ... }
+ * UTILISE LES VRAIES ROUTES AZURE avec header X-Admin-Token
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Sécurité : Vérifier le secret webhook
   const webhookSecret = process.env.SUPABASE_WEBHOOK_SECRET;
   const receivedSecret = req.headers['x-webhook-secret'] as string;
 
@@ -42,20 +35,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Configuration error' });
     }
 
-    // ===== ENDPOINT ADMIN GÉNÉRIQUE POUR SYNC =====
-    const syncResponse = await fetch(`${azureApiUrl}/admin/sync`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${azureAdminToken}`,
-      },
-      body: JSON.stringify({
-        table: 'users',
-        operation: type, // INSERT | UPDATE | DELETE
-        data: record || old_record,
-        old_data: old_record,
-      }),
-    });
+    // ===== UTILISER LES VRAIES ROUTES AZURE =====
+    let syncResponse: Response;
+
+    switch (type) {
+      case 'INSERT':
+        // L'utilisateur est normalement déjà créé via POST /auth/signup
+        // On vérifie juste qu'il existe
+        console.log('ℹ️ [sync-user] INSERT - Utilisateur déjà créé via /auth/signup');
+        return res.status(200).json({ 
+          success: true, 
+          message: 'User already created via signup',
+          recordId: record.id,
+        });
+
+      case 'UPDATE':
+        // PUT /users/{user_id} avec X-Admin-Token
+        syncResponse = await fetch(`${azureApiUrl}/users/${record.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': azureAdminToken,
+          },
+          body: JSON.stringify({
+            first_name: record.first_name,
+            last_name: record.last_name,
+            phone: record.phone,
+            date_of_birth: record.date_of_birth,
+            sexe: record.sexe,
+            adresse: record.adresse,
+            poste_actuel: record.poste_actuel,
+            annees_experience: record.annees_experience,
+          }),
+        });
+        break;
+
+      case 'DELETE':
+        // Soft delete via PUT avec statut = 'supprime'
+        syncResponse = await fetch(`${azureApiUrl}/users/${old_record.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': azureAdminToken,
+          },
+          body: JSON.stringify({
+            statut: 'supprime',
+          }),
+        });
+        break;
+
+      default:
+        console.warn('⚠️ [sync-user] Type événement inconnu:', type);
+        return res.status(400).json({ error: 'Unknown event type' });
+    }
 
     if (!syncResponse.ok) {
       const errorData = await syncResponse.json().catch(() => ({ message: 'Erreur inconnue' }));
