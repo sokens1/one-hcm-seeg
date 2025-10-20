@@ -129,7 +129,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center">
                   <Calendar className="w-3.5 h-3.5 mr-1 text-white/70" />
-                  <span className="font-mono">18/10/2025</span>
+                  <span className="font-mono">20/10/2025</span>
                 </div>
                 <div className="text-white/60 mx-1.5">→</div>
                 <div className="flex items-center">
@@ -148,7 +148,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
             {/* Compte à rebours EXTERNES */}
             <div className="flex items-baseline gap-2">
               <div className="text-xs text-white/90 font-medium whitespace-nowrap">
-                EXTERNE :
+                EXTERNES :
               </div>
               <div className="font-mono text-sm sm:text-base font-bold tracking-wider text-yellow-400">
                 {timeLeftExterne}
@@ -158,7 +158,7 @@ export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[
             {/* Compte à rebours INTERNES */}
             <div className="flex items-baseline gap-2">
               <div className="text-xs text-white/90 font-medium whitespace-nowrap">
-                INTERNE :
+                INTERNES :
               </div>
               <div className="font-mono text-sm sm:text-base font-bold tracking-wider text-yellow-400">
                 {timeLeftInterne}

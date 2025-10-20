@@ -177,7 +177,16 @@ export default function RecruiterDashboard() {
                     {stats.totalJobs}
                   </div>
                   <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    Actives
+                    {selectedCampaignId === 'global' 
+                      ? 'Publiées' 
+                      : selectedCampaignId === 'campaign-1' 
+                      ? (
+                        <>
+                          Clôturées<br />
+                          <span className="text-blue-900 dark:text-blue-100">Dont 3 relancées à la campagne 2</span>
+                        </>
+                      )
+                      : 'Actives'}
                   </p>
                 </CardContent>
               </Card>
@@ -364,8 +373,12 @@ export default function RecruiterDashboard() {
               </Card>
             </div>
 
-            {/* Charts Section - Affichage deux par deux */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
+            {/* Charts Section - Affichage deux par deux (sauf campagne 3 : une colonne) */}
+            <div className={`grid gap-4 sm:gap-6 mt-6 sm:mt-8 ${
+              selectedCampaignId === 'campaign-3' 
+                ? 'grid-cols-1' 
+                : 'grid-cols-1 md:grid-cols-2'
+            }`}>
               {/* Coverage Rate Chart - Masqué en vue globale */}
               {selectedCampaignId !== 'global' && (
               <Card>
