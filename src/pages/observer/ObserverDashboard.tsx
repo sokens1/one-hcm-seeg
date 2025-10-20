@@ -160,7 +160,16 @@ export default function ObserverDashboard() {
                     )}
                   </div>
                   <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    Postes ciblés
+                    {selectedCampaignId === 'global' 
+                      ? 'Publiées' 
+                      : selectedCampaignId === 'campaign-1' 
+                      ? (
+                        <>
+                          Clôturées<br />
+                          <span className="text-blue-900 dark:text-blue-100">Dont 3 relancées à la campagne 2</span>
+                        </>
+                      )
+                      : 'Actives'}
                   </p>
                 </CardContent>
               </Card>
@@ -307,9 +316,14 @@ export default function ObserverDashboard() {
               </Card>
             </div>
 
-            {/* Charts Section - Affichage deux par deux */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
-              {/* Coverage Rate Chart */}
+            {/* Charts Section - Affichage deux par deux (sauf campagne 3 : une colonne) */}
+            <div className={`grid gap-4 sm:gap-6 mt-6 sm:mt-8 ${
+              selectedCampaignId === 'campaign-3' 
+                ? 'grid-cols-1' 
+                : 'grid-cols-1 md:grid-cols-2'
+            }`}>
+              {/* Coverage Rate Chart - Masqué en vue globale */}
+              {selectedCampaignId !== 'global' && (
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
@@ -402,8 +416,10 @@ export default function ObserverDashboard() {
                   </div>
                 </CardContent>
               </Card>
+              )}
 
-              {/* Applications per Job Chart */}
+              {/* Applications per Job Chart - Masqué en vue globale */}
+              {selectedCampaignId !== 'global' && (
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
@@ -442,6 +458,7 @@ export default function ObserverDashboard() {
                   </div>
                 </CardContent>
               </Card>
+              )}
 
               {/* Status Evolution Chart */}
               <Card>
