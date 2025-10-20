@@ -26,3 +26,4 @@ SELECT COUNT(*) as total_offres FROM public.job_offers WHERE campaign_id = 3;
 SELECT status, COUNT(*) FROM public.job_offers WHERE campaign_id = 3 GROUP BY status;
 SELECT status_offerts, COUNT(*) FROM public.job_offers WHERE campaign_id = 3 GROUP BY status_offerts;
 
+

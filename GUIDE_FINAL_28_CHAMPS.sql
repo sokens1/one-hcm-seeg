@@ -108,3 +108,4 @@ WHERE campaign_id = 3
 -- ✅ mtp_questions_metier, talent, paradigme remplis
 -- ============================================================================
 
+

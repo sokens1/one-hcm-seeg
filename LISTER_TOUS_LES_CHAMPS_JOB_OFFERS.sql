@@ -18,3 +18,4 @@ ORDER BY ordinal_position;
 -- Cette requête vous donnera la liste COMPLÈTE de toutes les colonnes
 -- Copiez le résultat et envoyez-le moi pour que je génère les UPDATE corrects
 
+

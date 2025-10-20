@@ -29,3 +29,4 @@ FROM public.job_offers
 WHERE campaign_id = 3
 LIMIT 1;
 
+

@@ -22,3 +22,4 @@ WHERE campaign_id = 3
   AND title = 'Chef de Délégation Nord'
 LIMIT 1;
 
+

@@ -28,3 +28,4 @@ WHERE table_schema = 'public'
   AND table_name = 'job_offers'
 ORDER BY ordinal_position;
 
+

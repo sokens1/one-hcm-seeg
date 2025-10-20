@@ -28,3 +28,4 @@ SELECT status, COUNT(*) FROM public.job_offers WHERE campaign_id = 3 GROUP BY st
 SELECT status_offerts, COUNT(*) FROM public.job_offers WHERE campaign_id = 3 GROUP BY status_offerts;
 -- Résultat attendu: interne: ~45, NULL: ~1
 
+

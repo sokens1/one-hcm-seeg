@@ -68,3 +68,4 @@ SELECT status, COUNT(*) FROM public.job_offers WHERE campaign_id = 3 GROUP BY st
 -- 3. VERIFIER_CHAMPS_MANQUANTS.sql               -> Pour vérifier les champs
 -- 4. Ce fichier (GUIDE_CORRECTION_COMPLETE.sql)  -> Ce guide
 
+

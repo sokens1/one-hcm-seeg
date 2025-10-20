@@ -42,3 +42,4 @@ ORDER BY title;
 -- NOTE: Cette requête génère les UPDATE pour TOUTES les offres de campagne 3
 -- avec ABSOLUMENT TOUS les champs de la table job_offers
 
+

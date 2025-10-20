@@ -39,3 +39,4 @@ SELECT title FROM public.job_offers WHERE campaign_id = 3 ORDER BY title;
 
 SELECT * FROM public.job_offers WHERE id = 'VOTRE_ID_ICI'::uuid;
 
+

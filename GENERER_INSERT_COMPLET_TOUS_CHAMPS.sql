@@ -32,3 +32,4 @@ FROM public.job_offers
 WHERE campaign_id = 3
 ORDER BY title;
 
+

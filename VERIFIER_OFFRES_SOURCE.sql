@@ -41,3 +41,4 @@ FROM public.job_offers
 WHERE campaign_id = 3
 ORDER BY recruiter_id, title;
 
+

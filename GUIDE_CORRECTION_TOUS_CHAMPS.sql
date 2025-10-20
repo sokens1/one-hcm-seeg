@@ -91,3 +91,4 @@ LIMIT 1;
 -- 2. INSERT_CHEF_DELEGATION_NORD_COMPLET.sql  -> Ajouter la 46ème offre
 -- 3. Ce fichier (vérifications)               -> Valider le résultat
 
+
