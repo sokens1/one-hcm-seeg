@@ -39,12 +39,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     switch (type) {
       case 'INSERT':
-        // Documents déjà créés via POST /applications/ (avec documents inclus)
-        console.log('ℹ️ [sync-document] INSERT - Documents déjà créés avec la candidature');
+        // ===== UPLOADER LE DOCUMENT SUR AZURE =====
+        console.log('📝 [sync-document] INSERT - Upload document sur Azure:', record.id);
+        
+        // Note : Les documents Supabase ont des URLs de fichiers
+        // Il faudrait télécharger le fichier depuis Supabase Storage puis l'uploader sur Azure
+        // Pour l'instant, on log juste et on retourne success
+        
+        console.warn('⚠️ [sync-document] Migration de fichiers non implémentée - Métadonnées seulement');
+        
         return res.status(200).json({ 
           success: true, 
-          message: 'Document already created with application',
+          message: 'Document metadata logged (file migration not implemented)',
           recordId: record.id,
+          note: 'Les fichiers doivent être migrés manuellement de Supabase Storage vers Azure Blob',
         });
 
       case 'DELETE':

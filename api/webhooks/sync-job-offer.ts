@@ -39,13 +39,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     switch (type) {
       case 'INSERT':
-        // Offre déjà créée via POST /jobs/
-        console.log('ℹ️ [sync-job-offer] INSERT - Offre déjà créée via frontend');
-        return res.status(200).json({ 
-          success: true, 
-          message: 'Job offer already created',
-          recordId: record.id,
+        // ===== CRÉER L'OFFRE SUR AZURE =====
+        console.log('📝 [sync-job-offer] INSERT - Création offre sur Azure:', record.id);
+        
+        syncResponse = await fetch(`${azureApiUrl}/jobs/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': azureAdminToken,
+          },
+          body: JSON.stringify({
+            title: record.title,
+            description: record.description,
+            location: record.location,
+            contract_type: record.contract_type,
+            department: record.department,
+            salary_min: record.salary_min,
+            salary_max: record.salary_max,
+            salary_note: record.salary_note,
+            requirements: record.requirements,
+            benefits: record.benefits,
+            responsibilities: record.responsibilities,
+            offer_status: record.status_offerts || record.offer_status || 'externe',
+            application_deadline: record.application_deadline || record.date_limite,
+            profile: record.profile,
+            categorie_metier: record.categorie_metier,
+            reporting_line: record.reporting_line,
+            job_grade: record.job_grade,
+            start_date: record.start_date,
+            questions_mtp: {
+              questions_metier: record.mtp_questions_metier || [],
+              questions_talent: record.mtp_questions_talent || [],
+              questions_paradigme: record.mtp_questions_paradigme || [],
+            },
+            campaign_id: record.campaign_id,
+          }),
         });
+        break;
 
       case 'UPDATE':
         // PUT /jobs/{id} avec X-Admin-Token
