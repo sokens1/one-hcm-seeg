@@ -90,3 +90,4 @@ LEFT JOIN public.applications a ON a.job_offer_id = jo.id
 WHERE jo.campaign_id = 2;
 
 
+

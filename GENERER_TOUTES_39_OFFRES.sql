@@ -60,3 +60,4 @@ SELECT
     'SELECT COUNT(*) as total FROM public.job_offers WHERE campaign_id = 3;' || chr(10) ||
     'SELECT status, COUNT(*) FROM public.job_offers WHERE campaign_id = 3 GROUP BY status;' as verifications;
 
+

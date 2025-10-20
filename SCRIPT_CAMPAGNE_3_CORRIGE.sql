@@ -43,3 +43,4 @@ ORDER BY title;
 
 -- Puis collez les résultats ici après "INSERT INTO public.job_offers (...) VALUES"
 
+

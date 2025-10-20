@@ -488,8 +488,9 @@ export function useRecruiterDashboard(campaignId?: string) {
     queryFn: fetchDashboardData,
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // Les données restent fraîches pendant 5 minutes
-    refetchInterval: 5 * 60 * 1000, // Refresh toutes les 5 minutes au lieu de 30 secondes
-    refetchOnWindowFocus: true, // Rafraîchir quand l'utilisateur revient sur la page
+    gcTime: 10 * 60 * 1000, // Cache maintenu 10 minutes
+    refetchInterval: false, // Désactiver le polling automatique pour réduire le Disk IO
+    refetchOnWindowFocus: false, // Ne pas recharger au focus pour économiser le Disk IO
   });
 
   return {

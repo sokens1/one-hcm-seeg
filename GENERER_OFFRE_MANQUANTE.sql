@@ -62,3 +62,4 @@ SELECT title FROM public.job_offers WHERE campaign_id = 3 AND id = '1b0d2513-f2d
 
 -- Si l'une d'elles ne retourne RIEN, c'est celle qui manque !
 
+

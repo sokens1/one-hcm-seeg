@@ -23,3 +23,4 @@ WHERE campaign_id = 3
   AND recruiter_id = 'ff967d0b-e250-40dc-8cb6-fc16429dceed'
 ORDER BY title;
 
+

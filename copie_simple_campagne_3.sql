@@ -143,3 +143,4 @@ WHERE jo.campaign_id = 3;
 
 -- Si le recruteur n'existe pas, vous devez d'abord l'insérer!
 
+

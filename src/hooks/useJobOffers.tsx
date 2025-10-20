@@ -398,6 +398,10 @@ export function useJobOffers() {
   return useQuery<JobOffer[], Error>({
     queryKey: ['jobOffers'],
     queryFn: fetchJobOffers,
+    staleTime: 5 * 60 * 1000,        // 5 minutes - Données considérées fraîches pendant 5 min
+    gcTime: 10 * 60 * 1000,          // 10 minutes - Cache maintenu 10 min
+    refetchOnWindowFocus: false,     // Ne pas recharger au focus de la fenêtre
+    refetchOnMount: false,           // Ne pas recharger au montage si cache valide
   });
 }
 

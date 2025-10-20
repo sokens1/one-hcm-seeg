@@ -114,3 +114,4 @@ COPY public.job_offers (
 FROM '/tmp/offres_campagne_3.csv' WITH CSV HEADER DELIMITER ',' ENCODING 'UTF8';
 */
 
+

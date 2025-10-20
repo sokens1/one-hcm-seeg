@@ -71,3 +71,4 @@ SELECT 'SELECT status, COUNT(*) FROM public.job_offers WHERE campaign_id = 3 GRO
 UNION ALL
 SELECT 'SELECT status_offerts, COUNT(*) FROM public.job_offers WHERE campaign_id = 3 GROUP BY status_offerts;';
 
+

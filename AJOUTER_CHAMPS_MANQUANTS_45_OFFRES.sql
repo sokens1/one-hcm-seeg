@@ -28,3 +28,4 @@ ORDER BY title;
 -- NOTE: Cette requête génère 39 lignes UPDATE (ou 46 selon votre base source)
 -- Vous devez TOUTES les copier et les exécuter dans la base DESTINATION
 
+
