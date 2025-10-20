@@ -114,27 +114,27 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
                     <table style="width:100%; color:#333;">
                       <tr>
                         <td style="padding:5px 0;"><strong>Nom complet :</strong></td>
-                        <td style="padding:5px 0;">${data.firstName} ${data.lastName}</td>
+                        <td style="padding:5px 0;">${firstName} ${lastName}</td>
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Email :</strong></td>
-                        <td style="padding:5px 0;">${data.userEmail}</td>
+                        <td style="padding:5px 0;">${userEmail}</td>
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Téléphone :</strong></td>
-                        <td style="padding:5px 0;">${data.phone}</td>
+                        <td style="padding:5px 0;">${phone}</td>
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Matricule :</strong></td>
-                        <td style="padding:5px 0;">${data.matricule}</td>
+                        <td style="padding:5px 0;">${matricule}</td>
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Date de naissance :</strong></td>
-                        <td style="padding:5px 0;">${new Date(data.dateOfBirth).toLocaleDateString('fr-FR')}</td>
+                        <td style="padding:5px 0;">${new Date(dateOfBirth).toLocaleDateString('fr-FR')}</td>
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Sexe :</strong></td>
-                        <td style="padding:5px 0;">${data.sexe === 'M' ? 'Homme' : 'Femme'}</td>
+                        <td style="padding:5px 0;">${sexe === 'M' ? 'Homme' : 'Femme'}</td>
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Adresse :</strong></td>
@@ -191,15 +191,15 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
                     <table style="width:100%; color:#333;">
                       <tr>
                         <td style="padding:5px 0;"><strong>Email :</strong></td>
-                        <td style="padding:5px 0;">${data.userEmail}</td>
+                        <td style="padding:5px 0;">${userEmail}</td>
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Téléphone :</strong></td>
-                        <td style="padding:5px 0;">${data.phone}</td>
+                        <td style="padding:5px 0;">${phone}</td>
                       </tr>
                       <tr>
                         <td style="padding:5px 0;"><strong>Matricule :</strong></td>
-                        <td style="padding:5px 0;">${data.matricule}</td>
+                        <td style="padding:5px 0;">${matricule}</td>
                       </tr>
                     </table>
                   </div>
