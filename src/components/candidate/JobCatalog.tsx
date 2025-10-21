@@ -13,6 +13,7 @@ import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { isPreLaunch } from "@/utils/launchGate";
 import { isApplicationClosed } from "@/utils/applicationUtils";
+import { isExternalApplicationDisabled, getDisabledMessage } from "@/utils/midnightGate";
 import { toast } from "sonner";
 // import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
@@ -39,6 +40,7 @@ export function JobCatalog() {
 
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
+  const externalApplicationDisabled = isExternalApplicationDisabled();
   const { isEligible } = useCampaignEligibility();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
 
@@ -158,6 +160,14 @@ export function JobCatalog() {
       toast.info("Les candidatures sont désormais closes.");
       return;
     }
+    
+    // Vérifier si c'est une offre externe et si les candidatures externes sont désactivées
+    const job = jobs?.find(j => j.id === jobId);
+    if (job?.status_offerts === 'externe' && externalApplicationDisabled) {
+      toast.error(getDisabledMessage());
+      return;
+    }
+    
     // Ouvrir le formulaire de candidature
     setShowApplicationForm(true);
     // Mettre à jour l'URL pour permettre le rafraîchissement sans perdre l'état

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send, Building2, Banknote, Clock } from "lucide-react";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { isPreLaunch } from "@/utils/launchGate";
+import { isExternalApplicationDisabled, getDisabledMessage } from "@/utils/midnightGate";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
@@ -23,6 +24,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   const { isEligible } = useCampaignEligibility();
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
+  const externalApplicationDisabled = isExternalApplicationDisabled();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
 
   if (isLoading) {
@@ -231,14 +233,24 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                 
                                 <Button
                   onClick={() => {
+                    // Vérifier si c'est une offre externe et si les candidatures externes sont désactivées
+                    if (jobOffer?.status_offerts === 'externe' && externalApplicationDisabled) {
+                      toast.error(getDisabledMessage());
+                      return;
+                    }
                     onApply();
                   }}
-                  className="w-full text-sm sm:text-base"
+                  className={`w-full text-sm sm:text-base ${
+                    jobOffer?.status_offerts === 'externe' && externalApplicationDisabled
+                      ? "opacity-60 cursor-not-allowed bg-gray-400 hover:bg-gray-400"
+                      : ""
+                  }`}
                   size="lg"
-                  disabled={false}
+                  disabled={jobOffer?.status_offerts === 'externe' && externalApplicationDisabled}
+                  title={jobOffer?.status_offerts === 'externe' && externalApplicationDisabled ? getDisabledMessage() : ""}
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  Postuler
+                  {jobOffer?.status_offerts === 'externe' && externalApplicationDisabled ? "Candidature fermée" : "Postuler"}
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">

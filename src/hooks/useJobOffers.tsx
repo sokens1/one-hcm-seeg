@@ -273,17 +273,8 @@ const fetchJobOffers = async () => {
       
       // NOUVELLE LOGIQUE POUR VUE PUBLIQUE vs VUE CANDIDAT
       if (!isAuthenticated) {
-        // VUE PUBLIQUE : Masquer campagne 2 après le 22/10/2025 00:00
-        if (offerCampaignId === 2) {
-          const now = new Date();
-          const campaign2EndDate = new Date('2025-10-22T00:00:00');
-          if (now >= campaign2EndDate) {
-            // console.log(`🚫 [PUBLIC FILTER] "${offer.title}" (Campagne 2) - Après le 22/10 00:00 - Masquée pour le public`);
-            return false;
-          }
-        }
-        
-        // Campagnes 2 et 3 visibles pour le public (sauf campagne 2 après le 22/10 00:00)
+        // VUE PUBLIQUE : Toujours afficher les campagnes 2 et 3 (même après le 22/10)
+        // Les offres externes seront grisées par le composant JobCard après le 22/10
         const visibleCampaigns = [2, 3];
         if (visibleCampaigns.includes(offerCampaignId)) {
           // console.log(`✅ [PUBLIC FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Visible`);

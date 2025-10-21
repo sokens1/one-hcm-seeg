@@ -78,6 +78,9 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 // AI Analysis page
 const AIAnalysisPage = lazy(() => import("./pages/ai-analysis/AIAnalysisPage"));
 
+// Test pages
+const SEEGAITestPage = lazy(() => import("./pages/test/SEEGAITestPage"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -136,6 +139,9 @@ const router = createBrowserRouter(
       
       {/* AI Analysis Route */}
       <Route path="ai-analysis" element={<ProtectedRecruiterReadRoute><AIAnalysisPage /></ProtectedRecruiterReadRoute>} />
+      
+      {/* Test Routes */}
+      <Route path="test/seeg-ai" element={<ProtectedRecruiterReadRoute><SEEGAITestPage /></ProtectedRecruiterReadRoute>} />
       
       {/* Fallback routes */}
       {/* Error handling routes */}
