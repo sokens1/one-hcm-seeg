@@ -62,8 +62,8 @@ export default function ObserverDashboard() {
   const { data: campaignStats, isLoading: isLoadingCampaignStats } = useCampaignStats();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
-  const [attractiviteFilter, setAttractiviteFilter] = useState<string>('all');
-  const [dynamiqueFilter, setDynamiqueFilter] = useState<string>('all');
+  const [attractiviteFilter, setAttractiviteFilter] = useState<string>('direction-exploitation-electricite');
+  const [dynamiqueFilter, setDynamiqueFilter] = useState<string>('direction-exploitation-electricite');
 
   // Si la vue avancée est sélectionnée, afficher le dashboard avancé
   if (dashboardView === 'advanced') {
@@ -335,7 +335,6 @@ export default function ObserverDashboard() {
                          onChange={(e) => setAttractiviteFilter(e.target.value)}
                          className="text-xs border rounded px-2 py-1 bg-background"
                        >
-                         <option value="all">Toutes les directions</option>
                          <option value="coordination-regions">Coordination Régions</option>
                          <option value="departement-support">Département Support</option>
                          <option value="direction-commerciale">Direction Commerciale & Recouvrement</option>
@@ -364,7 +363,7 @@ export default function ObserverDashboard() {
                         // Filtrer par direction si on est en campagne 3
                         let filteredJobs = [...jobCoverage];
                         
-                        if (selectedCampaignId === 'campaign-3' && attractiviteFilter !== 'all') {
+                        if (selectedCampaignId === 'campaign-3') {
                           filteredJobs = jobCoverage.filter(job => {
                             const title = job.title.toLowerCase();
                             switch (attractiviteFilter) {
@@ -497,7 +496,6 @@ export default function ObserverDashboard() {
                          onChange={(e) => setDynamiqueFilter(e.target.value)}
                          className="text-xs border rounded px-2 py-1 bg-background"
                        >
-                         <option value="all">Toutes les directions</option>
                          <option value="coordination-regions">Coordination Régions</option>
                          <option value="departement-support">Département Support</option>
                          <option value="direction-commerciale">Direction Commerciale & Recouvrement</option>
@@ -523,7 +521,7 @@ export default function ObserverDashboard() {
                         // Filtrer par direction si on est en campagne 3
                         let filteredJobs = [...applicationsPerJob];
                         
-                        if (selectedCampaignId === 'campaign-3' && dynamiqueFilter !== 'all') {
+                        if (selectedCampaignId === 'campaign-3') {
                           filteredJobs = applicationsPerJob.filter(job => {
                             const title = job.title.toLowerCase();
                             switch (dynamiqueFilter) {
