@@ -50,6 +50,10 @@ interface ApplicationData {
   paradigme1?: string;
   paradigme2?: string;
   paradigme3?: string;
+  // Questions MTP de l'offre
+  metierQuestions?: string[];
+  talentQuestions?: string[];
+  paradigmeQuestions?: string[];
   jobTitle?: string;
   applicationDate?: string;
   // Statut de l'offre pour déterminer si les références sont requises
@@ -604,8 +608,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('4. Adhérence MTP', margin, yPos);
   yPos += 10;
 
-  // Récupérer les questions spécifiques au poste
-  const mtpQuestions = getMetierQuestionsForTitle(data.jobTitle || '');
+  // Utiliser les vraies questions MTP de l'offre ou fallback vers les questions par défaut
+  const mtpQuestions = (data.metierQuestions && data.talentQuestions && data.paradigmeQuestions) ? {
+    metier: data.metierQuestions,
+    talent: data.talentQuestions,
+    paradigme: data.paradigmeQuestions
+  } : getMetierQuestionsForTitle(data.jobTitle || '');
 
   // Métier
   doc.setFont('helvetica', 'bold');
@@ -614,16 +622,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('Métier', margin, yPos);
   yPos += 7;
 
-  // Créer le tableau des questions métier avec les réponses
-  const metierQuestions = [
-    { label: mtpQuestions.metier[0] || '1. Question métier 1', value: data.metier1 },
-    { label: mtpQuestions.metier[1] || '2. Question métier 2', value: data.metier2 },
-    { label: mtpQuestions.metier[2] || '3. Question métier 3', value: data.metier3 },
-    { label: mtpQuestions.metier[3] || '4. Question métier 4', value: data.metier4 },
-    { label: mtpQuestions.metier[4] || '5. Question métier 5', value: data.metier5 },
-    { label: mtpQuestions.metier[5] || '6. Question métier 6', value: data.metier6 },
-    { label: mtpQuestions.metier[6] || '7. Question métier 7', value: data.metier7 }
-  ];
+  // Créer le tableau des questions métier avec les réponses (seulement le nombre de questions de l'offre)
+  const metierAnswers = [data.metier1, data.metier2, data.metier3, data.metier4, data.metier5, data.metier6, data.metier7];
+  const metierQuestions = mtpQuestions.metier.map((question, index) => ({
+    label: question || `${index + 1}. Question métier ${index + 1}`,
+    value: metierAnswers[index] || ''
+  }));
 
   // Fonction pour ajouter un texte avec gestion de la pagination
   const addWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight = 5) => {
@@ -720,12 +724,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('Talent', margin, yPos);
   yPos += 7;
 
-  // Créer le tableau des questions talent avec les réponses
-  const talentQuestions = [
-    { label: mtpQuestions.talent[0] || '1. Question talent 1', value: data.talent1 },
-    { label: mtpQuestions.talent[1] || '2. Question talent 2', value: data.talent2 },
-    { label: mtpQuestions.talent[2] || '3. Question talent 3', value: data.talent3 }
-  ];
+  // Créer le tableau des questions talent avec les réponses (seulement le nombre de questions de l'offre)
+  const talentAnswers = [data.talent1, data.talent2, data.talent3];
+  const talentQuestions = mtpQuestions.talent.map((question, index) => ({
+    label: question || `${index + 1}. Question talent ${index + 1}`,
+    value: talentAnswers[index] || ''
+  }));
 
   talentQuestions.forEach((q) => {
     // Vérifier l'espace disponible avant d'ajouter une nouvelle question
@@ -799,12 +803,12 @@ export const generateApplicationPdf = (data: ApplicationData) => {
   doc.text('Paradigme', margin, yPos);
   yPos += 7;
 
-  // Créer le tableau des questions paradigme avec les réponses
-  const paradigmeQuestions = [
-    { label: mtpQuestions.paradigme[0] || '1. Question paradigme 1', value: data.paradigme1 },
-    { label: mtpQuestions.paradigme[1] || '2. Question paradigme 2', value: data.paradigme2 },
-    { label: mtpQuestions.paradigme[2] || '3. Question paradigme 3', value: data.paradigme3 }
-  ];
+  // Créer le tableau des questions paradigme avec les réponses (seulement le nombre de questions de l'offre)
+  const paradigmeAnswers = [data.paradigme1, data.paradigme2, data.paradigme3];
+  const paradigmeQuestions = mtpQuestions.paradigme.map((question, index) => ({
+    label: question || `${index + 1}. Question paradigme ${index + 1}`,
+    value: paradigmeAnswers[index] || ''
+  }));
 
   paradigmeQuestions.forEach((q) => {
     // Vérifier l'espace disponible avant d'ajouter une nouvelle question
