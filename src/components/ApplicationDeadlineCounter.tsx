@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 export function ApplicationDeadlineCounter({ jobOffers }: { jobOffers: JobOffer[] }) {
   // Périodes pour EXTERNES et INTERNES
   const [startDateExterne] = useState<Date>(new Date('2025-10-13T00:00:00'));
-  const [endDateExterne] = useState<Date>(new Date('2025-10-21T23:59:59'));
+  const [endDateExterne] = useState<Date>(new Date('2025-11-21T23:59:59'));
   const [startDateInterne] = useState<Date>(new Date('2025-10-18T00:00:00'));
   const [endDateInterne] = useState<Date>(new Date('2025-10-26T23:59:59'));
 

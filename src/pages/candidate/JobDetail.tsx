@@ -116,8 +116,16 @@ export default function JobDetail() {
 
   // Format dates dynamically from database
   const publishedAt = jobOffer.created_at ? new Date(jobOffer.created_at).toLocaleDateString('fr-FR') : undefined;
-  const deadline = jobOffer.date_limite ? new Date(jobOffer.date_limite).toLocaleDateString('fr-FR') : 
-                   jobOffer.application_deadline ? new Date(jobOffer.application_deadline).toLocaleDateString('fr-FR') : undefined;
+  
+  // Pour les offres externes, utiliser la date fixe du 21/11/2025
+  const isExternalOffer = jobOffer.status_offerts === 'externe' || !jobOffer.status_offerts;
+  const deadline = isExternalOffer 
+    ? '21/11/2025'
+    : jobOffer.date_limite 
+      ? new Date(jobOffer.date_limite).toLocaleDateString('fr-FR') 
+      : jobOffer.application_deadline 
+        ? new Date(jobOffer.application_deadline).toLocaleDateString('fr-FR') 
+        : undefined;
 
   return (
     <Layout>
