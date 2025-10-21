@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { FileText, MapPin, Calendar, Eye, MoreVertical } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useApplications } from "@/hooks/useApplications";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { format } from 'date-fns';
@@ -14,15 +14,59 @@ import { fr } from 'date-fns/locale';
 import { ContentSpinner } from "@/components/ui/spinner";
 import type { Application } from '@/types/application';
 import { exportApplicationPdf } from '@/utils/exportPdfUtils';
+import { supabase } from "@/integrations/supabase/client";
 
 export function DashboardMain() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: applications, isLoading: isLoadingApps, error: errorApps } = useApplications();
   const { data: jobOffers, isLoading: isLoadingJobs, error: errorJobs } = useJobOffers();
+  const [candidateAudience, setCandidateAudience] = useState<string | null>(null);
 
-  // Debug: Log job offers count
-  console.log('🔍 [DashboardMain] Nombre d\'offres reçues:', jobOffers?.length, jobOffers);
+  // Fetch user's candidate_status (interne/externe) - même logique que JobCatalog
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: auth } = await supabase.auth.getUser();
+        const uid = user?.id || auth?.user?.id;
+        if (!uid) {
+          setCandidateAudience(null);
+          return;
+        }
+        const { data } = await supabase
+          .from('users')
+          .select('candidate_status, matricule')
+          .eq('id', uid)
+          .maybeSingle();
+        if (!cancelled) {
+          const row = data as { candidate_status?: string | null; matricule?: string | null } | null;
+          const inferred = row?.candidate_status ?? (row?.matricule ? 'interne' : 'externe');
+          setCandidateAudience(inferred ?? null);
+        }
+      } catch {
+        if (!cancelled) setCandidateAudience(null);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
+  // Harmoniser le comptage avec le catalogue: exclure les offres de démonstration/fallback
+  const baseJobs = (jobOffers || []).filter(j => !String(j.id).startsWith('fallback-') && j.recruiter_id !== 'fallback-recruiter');
+  
+  // Appliquer le même filtre d'audience que le catalogue
+  const visibleJobOffers = baseJobs.filter(job => {
+    // Audience must match when known (même logique que JobCatalog)
+    const offerAudience = (job as any).status_offerts ?? null;
+    const matchesAudience = !candidateAudience || offerAudience === candidateAudience;
+    return matchesAudience;
+  });
+  
+  // Debug: Log job offers count (après filtration identique au catalogue)
+  console.log('🔍 [DashboardMain] Offres visibles (après filtre audience):', visibleJobOffers.length, 'candidateAudience:', candidateAudience);
 
   const [locationFilter, setLocationFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -84,9 +128,9 @@ export function DashboardMain() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl sm:text-3xl font-bold text-primary">{jobOffers?.length || 0}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-primary">{visibleJobOffers.length}</div>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              {jobOffers?.length === 1 ? 'poste disponible' : 'postes disponibles'}
+              {visibleJobOffers.length === 1 ? 'poste disponible' : 'postes disponibles'}
             </p>
           </CardContent>
         </Card>
