@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
@@ -6,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Search, 
@@ -28,19 +28,20 @@ import {
   Target,
   Award,
   BarChart3,
-  ChevronLeft,
-  ChevronRight,
   ArrowLeft
 } from "lucide-react";
 import { useSEEGAIData } from "@/hooks/useSEEGAIData";
 import { AICandidateData } from "@/hooks/useAIData";
 import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { DataTable } from "@/components/ui/data-table";
+import { createColumns, CandidateAIData } from "@/components/ai/columns";
 
 interface CandidateApplication {
   id: string;
   firstName: string;
   lastName: string;
+  fullName: string; // Nom complet pour la recherche optimisée
   poste: string;
   department: string;
   aiData: AICandidateData;
@@ -66,7 +67,9 @@ interface CandidateApplication {
   };
 }
 
-const getVerdictIcon = (verdict: string) => {
+const getVerdictIcon = (verdict: string | undefined) => {
+  if (!verdict) return <Clock className="h-4 w-4 text-gray-500" />;
+  
   switch (verdict.toLowerCase()) {
     case 'retenu':
     case 'favorable':
@@ -82,7 +85,9 @@ const getVerdictIcon = (verdict: string) => {
   }
 };
 
-const getVerdictLabel = (verdict: string) => {
+const getVerdictLabel = (verdict: string | undefined) => {
+  if (!verdict) return 'En attente';
+  
   const verdictLower = verdict.toLowerCase();
   
   // Vérifier d'abord les verdicts courts exacts
@@ -142,7 +147,9 @@ const getVerdictLabel = (verdict: string) => {
   return verdict;
 };
 
-const getVerdictVariant = (verdict: string) => {
+const getVerdictVariant = (verdict: string | undefined) => {
+  if (!verdict) return 'default';
+  
   const verdictLower = verdict.toLowerCase();
   
   // Vérifier d'abord les verdicts courts exacts
@@ -222,8 +229,6 @@ export default function Traitements_IA() {
   const [sortBy, setSortBy] = useState<string>("rang");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
   const [searchResults, setSearchResults] = useState<CandidateApplication[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   
@@ -271,7 +276,7 @@ export default function Traitements_IA() {
     const timeoutId = setTimeout(performSearch, 500); // Debounce de 500ms
     return () => clearTimeout(timeoutId);
   }, [searchTerm, searchCandidates]);
-  const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | CandidateAIData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
@@ -283,17 +288,27 @@ export default function Traitements_IA() {
     }
 
     // Sinon, utiliser les données statiques
-    if (!aiData) return [];
+    if (!aiData) {
+      console.log('Traitements_IA: aiData is not available');
+      return [];
+    }
 
+    console.log('Traitements_IA: Processing aiData', Object.keys(aiData));
     const allCandidates: CandidateApplication[] = [];
 
     // Parcourir dynamiquement tous les départements
     Object.entries(aiData).forEach(([departmentKey, candidates]) => {
       candidates.forEach((candidate, index) => {
+        // Créer le nom complet pour une recherche optimisée
+        const firstName = candidate.prenom || '';
+        const lastName = candidate.nom || '';
+        const fullName = `${firstName} ${lastName}`.trim();
+        
         allCandidates.push({
-          id: `${departmentKey}-${index}`,
-          firstName: candidate.prenom,
-          lastName: candidate.nom,
+          id: `${departmentKey}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+          firstName: firstName,
+          lastName: lastName,
+          fullName: fullName, // Nom complet pour la recherche
           poste: candidate.poste,
           department: departmentKey, // Utiliser le nom exact du département
           aiData: candidate,
@@ -317,6 +332,21 @@ export default function Traitements_IA() {
     return allCandidates;
   }, [aiData, searchResults]);
 
+  // Effet pour gérer la recherche locale et optimiser les performances
+  useEffect(() => {
+    // Réinitialiser les résultats de recherche quand le terme change
+    if (searchTerm.trim() === '') {
+      setSearchResults([]);
+      setIsSearching(false);
+    } else {
+      // Démarrer la recherche locale si on a un terme
+      setIsSearching(true);
+      // La recherche locale se fait via useMemo, pas besoin d'action supplémentaire ici
+    }
+  }, [searchTerm]);
+
+  // Le DataTable gère automatiquement la réinitialisation de la pagination
+
   // Départements autorisés (uniquement ceux contenant des postes de la nouvelle campagne)
   const allowedDepartments = useMemo(() => {
     if (!aiData) return [] as string[];
@@ -335,18 +365,58 @@ export default function Traitements_IA() {
 
   // Filtrer et trier les candidats
   const filteredCandidates = useMemo(() => {
+    console.log('Traitements_IA: Filtering candidates', {
+      searchTerm,
+      candidatesDataLength: candidatesData.length,
+      searchResultsLength: searchResults.length
+    });
+
+    // Si on a des résultats de recherche, les utiliser directement
+    if (searchResults.length > 0 && searchTerm) {
+      console.log('Traitements_IA: Using search results', searchResults.length);
+      return searchResults;
+    }
+
     let filtered = candidatesData;
 
+    // Si pas de données, retourner un tableau vide
+    if (!filtered || filtered.length === 0) {
+      console.log('Traitements_IA: No candidates data available');
+      return [];
+    }
+
     // Filtrer par terme de recherche (recherche avancée)
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (searchTerm && searchTerm.trim() !== '') {
+      const searchLower = searchTerm.toLowerCase().trim();
+      console.log('Traitements_IA: Filtering by search term', searchLower, 'from', filtered.length, 'candidates');
+      
       filtered = filtered.filter(candidate => {
-        // Recherche dans les informations de base
+        if (!candidate) return false;
+        
+        // Debug: Afficher les données du candidat pour le premier candidat
+        if (filtered.indexOf(candidate) === 0) {
+          console.log('Traitements_IA: Sample candidate data:', {
+            fullName: candidate.fullName,
+            firstName: candidate.firstName,
+            lastName: candidate.lastName,
+            prenom: candidate.prenom,
+            nom: candidate.nom,
+            department: candidate.department,
+            poste: candidate.poste,
+            aiData: candidate.aiData ? 'Present' : 'Missing',
+            rawCandidate: candidate
+          });
+        }
+        
+        // Recherche dans les informations de base (optimisée avec fullName)
         const basicMatch = 
-          (candidate.firstName || candidate.prenom || '').toLowerCase().includes(searchLower) ||
-          (candidate.lastName || candidate.nom || '').toLowerCase().includes(searchLower) ||
-          candidate.department.toLowerCase().includes(searchLower) ||
-          candidate.poste.toLowerCase().includes(searchLower);
+          (candidate.fullName || '').toLowerCase().includes(searchLower) ||
+          (candidate.firstName || '').toLowerCase().includes(searchLower) ||
+          (candidate.lastName || '').toLowerCase().includes(searchLower) ||
+          (candidate.prenom || '').toLowerCase().includes(searchLower) ||
+          (candidate.nom || '').toLowerCase().includes(searchLower) ||
+          (candidate.department || '').toLowerCase().includes(searchLower) ||
+          (candidate.poste || '').toLowerCase().includes(searchLower);
         
         // Recherche dans les données IA
         const aiMatch = 
@@ -355,8 +425,27 @@ export default function Traitements_IA() {
           (candidate.aiData?.similarite_offre?.commentaire_score && candidate.aiData.similarite_offre.commentaire_score.toLowerCase().includes(searchLower)) ||
           (candidate.aiData?.conformite?.commentaire && candidate.aiData.conformite.commentaire.toLowerCase().includes(searchLower));
         
-        return basicMatch || aiMatch;
+        const match = basicMatch || aiMatch;
+        
+        // Debug: Afficher les résultats de recherche pour le premier candidat
+        if (filtered.indexOf(candidate) === 0) {
+          console.log('Traitements_IA: Search match for sample candidate:', {
+            searchTerm: searchLower,
+            basicMatch,
+            aiMatch,
+            finalMatch: match,
+            fullName: candidate.fullName,
+            firstName: candidate.firstName,
+            lastName: candidate.lastName,
+            prenom: candidate.prenom,
+            nom: candidate.nom
+          });
+        }
+        
+        return match;
       });
+      
+      console.log('Traitements_IA: After filtering', filtered.length, 'candidates remain');
     }
 
     // Filtrer par département
@@ -393,8 +482,8 @@ export default function Traitements_IA() {
       
       switch (sortBy) {
         case "nom":
-          aValue = `${a.firstName || a.prenom || 'N/A'} ${a.lastName || a.nom || 'N/A'}`;
-          bValue = `${b.firstName || b.prenom || 'N/A'} ${b.lastName || b.nom || 'N/A'}`;
+          aValue = a.fullName || `${a.firstName || a.prenom || 'N/A'} ${a.lastName || a.nom || 'N/A'}`.trim();
+          bValue = b.fullName || `${b.firstName || b.prenom || 'N/A'} ${b.lastName || b.nom || 'N/A'}`.trim();
           break;
         case "score":
           aValue = a.aiData?.resume_global?.score_global || 0;
@@ -427,22 +516,16 @@ export default function Traitements_IA() {
     });
 
     return filtered;
-  }, [candidatesData, searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange, sortBy, sortOrder]);
+  }, [candidatesData, searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange, sortBy, sortOrder, searchResults]);
 
-  // Calculer la pagination
-  const totalPages = Math.ceil(filteredCandidates.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedCandidates = filteredCandidates.slice(startIndex, endIndex);
+  // DataTable gère automatiquement la pagination et les filtres
 
-  // Réinitialiser la page quand les filtres changent
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange]);
-
-  const handleViewResults = (candidate: CandidateApplication) => {
+  const handleViewResults = (candidate: CandidateApplication | CandidateAIData) => {
+    // Cast pour éviter les problèmes de types entre CandidateApplication et CandidateAIData
+    const cand = candidate as any;
+    
     // Préparer les données au format momo.com
-    const rawCandidate = candidate.rawData || candidate;
+    const rawCandidate = cand.rawData || cand;
     
     // Récupérer le CV et la lettre de motivation depuis l'API
     let cvContent = 'CV non disponible';
@@ -455,17 +538,17 @@ export default function Traitements_IA() {
       } else if (rawCandidate.documents.cv.url) {
         cvContent = `CV disponible: ${rawCandidate.documents.cv.name} (${rawCandidate.documents.cv.url})`;
       }
-    } else if (candidate.documents?.cv) {
-      if (typeof candidate.documents.cv === 'string') {
-        cvContent = candidate.documents.cv;
-      } else if (candidate.documents.cv.url) {
-        cvContent = `CV disponible: ${candidate.documents.cv.name} (${candidate.documents.cv.url})`;
+    } else if (cand.documents?.cv) {
+      if (typeof cand.documents.cv === 'string') {
+        cvContent = cand.documents.cv;
+      } else if (cand.documents.cv.url) {
+        cvContent = `CV disponible: ${cand.documents.cv.name} (${cand.documents.cv.url})`;
       }
-    } else if (candidate.cv) {
-      if (typeof candidate.cv === 'string') {
-        cvContent = candidate.cv;
-      } else if (candidate.cv.url) {
-        cvContent = `CV disponible: ${candidate.cv.name} (${candidate.cv.url})`;
+    } else if (cand.cv) {
+      if (typeof cand.cv === 'string') {
+        cvContent = cand.cv;
+      } else if (cand.cv.url) {
+        cvContent = `CV disponible: ${cand.cv.name} (${cand.cv.url})`;
       }
     } else if (rawCandidate.cv) {
       if (typeof rawCandidate.cv === 'string') {
@@ -482,17 +565,17 @@ export default function Traitements_IA() {
       } else if (rawCandidate.documents.cover_letter.url) {
         coverLetterContent = `Lettre de motivation disponible: ${rawCandidate.documents.cover_letter.name} (${rawCandidate.documents.cover_letter.url})`;
       }
-    } else if (candidate.documents?.cover_letter) {
-      if (typeof candidate.documents.cover_letter === 'string') {
-        coverLetterContent = candidate.documents.cover_letter;
-      } else if (candidate.documents.cover_letter.url) {
-        coverLetterContent = `Lettre de motivation disponible: ${candidate.documents.cover_letter.name} (${candidate.documents.cover_letter.url})`;
+    } else if (cand.documents?.cover_letter) {
+      if (typeof cand.documents.cover_letter === 'string') {
+        coverLetterContent = cand.documents.cover_letter;
+      } else if (cand.documents.cover_letter.url) {
+        coverLetterContent = `Lettre de motivation disponible: ${cand.documents.cover_letter.name} (${cand.documents.cover_letter.url})`;
       }
-    } else if (candidate.cover_letter) {
-      if (typeof candidate.cover_letter === 'string') {
-        coverLetterContent = candidate.cover_letter;
-      } else if (candidate.cover_letter.url) {
-        coverLetterContent = `Lettre de motivation disponible: ${candidate.cover_letter.name} (${candidate.cover_letter.url})`;
+    } else if (cand.cover_letter) {
+      if (typeof cand.cover_letter === 'string') {
+        coverLetterContent = cand.cover_letter;
+      } else if (cand.cover_letter.url) {
+        coverLetterContent = `Lettre de motivation disponible: ${cand.cover_letter.name} (${cand.cover_letter.url})`;
       }
     } else if (rawCandidate.cover_letter) {
       if (typeof rawCandidate.cover_letter === 'string') {
@@ -503,20 +586,20 @@ export default function Traitements_IA() {
     }
     
     const momoData = {
-      id: candidate.id,
-      Nom: candidate.nom || candidate.lastName || rawCandidate.nom || 'N/A',
-      Prénom: candidate.prenom || candidate.firstName || rawCandidate.prenom || 'N/A',
+      id: cand.id,
+      Nom: cand.nom || cand.lastName || rawCandidate.nom || 'N/A',
+      Prénom: cand.prenom || cand.firstName || rawCandidate.prenom || 'N/A',
       cv: cvContent,
       lettre_motivation: coverLetterContent,
       MTP: {
-        M: candidate.reponses_mtp?.metier ? candidate.reponses_mtp.metier.join(' | ') :
+        M: cand.reponses_mtp?.metier ? cand.reponses_mtp.metier.join(' | ') :
            rawCandidate.reponses_mtp?.metier ? rawCandidate.reponses_mtp.metier.join(' | ') : 'Réponses métier non disponibles',
-        T: candidate.reponses_mtp?.talent ? candidate.reponses_mtp.talent.join(' | ') :
+        T: cand.reponses_mtp?.talent ? cand.reponses_mtp.talent.join(' | ') :
            rawCandidate.reponses_mtp?.talent ? rawCandidate.reponses_mtp.talent.join(' | ') : 'Réponses talent non disponibles',
-        P: candidate.reponses_mtp?.paradigme ? candidate.reponses_mtp.paradigme.join(' | ') :
+        P: cand.reponses_mtp?.paradigme ? cand.reponses_mtp.paradigme.join(' | ') :
            rawCandidate.reponses_mtp?.paradigme ? rawCandidate.reponses_mtp.paradigme.join(' | ') : 'Réponses paradigme non disponibles'
       },
-      post: candidate.poste || candidate.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié'
+      post: cand.poste || cand.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié'
     };
     
     console.log('📤 DONNÉES QUI SERAIENT ENVOYÉES:');
@@ -537,21 +620,7 @@ export default function Traitements_IA() {
     setIsModalOpen(true);
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  // La pagination est maintenant gérée par le DataTable
 
   if (isLoading) {
     return (
@@ -840,188 +909,19 @@ export default function Traitements_IA() {
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
               Évaluations IA des Candidats
-              {filteredCandidates.length > itemsPerPage && (
-                <span className="text-sm font-normal text-muted-foreground">
-                  - Page {currentPage} sur {totalPages}
-                </span>
-              )}
+              <span className="text-sm font-normal text-muted-foreground">
+                - {filteredCandidates.length} candidat{filteredCandidates.length > 1 ? 's' : ''}
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Version desktop - Tableau */}
-            <div className="hidden md:block overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Candidat</TableHead>
-                    <TableHead>Poste</TableHead>
-                    <TableHead>Rang</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedCandidates.map((candidate) => (
-                    <TableRow key={candidate.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                            {(candidate.firstName || candidate.prenom || 'N')[0]}{(candidate.lastName || candidate.nom || 'A')[0]}
-                          </div>
-                          <div>
-                            <p className="font-medium break-words whitespace-normal">{candidate.firstName || candidate.prenom || 'N/A'} {candidate.lastName || candidate.nom || 'N/A'}</p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Briefcase className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{candidate.poste}</span>
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Award className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium inline-flex whitespace-nowrap">#{candidate.aiData?.resume_global?.rang_global || 'N/A'}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewResults(candidate)}
-                          className="gap-2"
-                        >
-                          <Eye className="h-4 w-4" />
-                          Voir Résultats
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Version mobile - Cartes */}
-            <div className="md:hidden space-y-4">
-              {paginatedCandidates.map((candidate) => (
-                <Card key={candidate.id} className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                        {(candidate.firstName || candidate.prenom || 'N')[0]}{(candidate.lastName || candidate.nom || 'A')[0]}
-                      </div>
-                      <div>
-                        <div className="font-medium break-words whitespace-normal">{candidate.firstName || candidate.prenom || 'N/A'} {candidate.lastName || candidate.nom || 'N/A'}</div>
-                        <div className="text-sm text-muted-foreground inline-flex whitespace-nowrap">#{candidate.aiData?.resume_global?.rang_global || 'N/A'}</div>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewResults(candidate)}
-                      className="gap-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span className="hidden xs:inline">Voir</span>
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{candidate.poste}</span>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-            
-            {filteredCandidates.length === 0 && (
-              <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Aucun candidat trouvé</h3>
-                <p className="text-muted-foreground">
-                  {searchTerm ? "Essayez de modifier vos critères de recherche." : "Aucune candidature disponible pour le moment."}
-                </p>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {filteredCandidates.length > itemsPerPage && (
-              <div className="px-4 sm:px-6 py-4 border-t">
-                {/* Informations sur mobile */}
-                <div className="text-sm text-muted-foreground mb-4 sm:hidden text-center">
-                  {startIndex + 1}-{Math.min(endIndex, filteredCandidates.length)} sur {filteredCandidates.length}
-                </div>
-                
-                {/* Pagination responsive */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  {/* Informations sur desktop */}
-                  <div className="hidden sm:block text-sm text-muted-foreground">
-                    Page {currentPage} sur {totalPages}
-                  </div>
-                  
-                  {/* Contrôles de pagination */}
-                  <div className="flex items-center justify-center sm:justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                      className="flex items-center gap-1"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                      <span className="hidden xs:inline">Précédent</span>
-                  </Button>
-                  
-                    <div className="flex items-center gap-1 overflow-x-auto">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                      // Afficher seulement quelques pages autour de la page actuelle
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={currentPage === page ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handlePageChange(page)}
-                              className="w-8 h-8 p-0 min-w-[32px] flex-shrink-0"
-                          >
-                            {page}
-                          </Button>
-                        );
-                      } else if (
-                        page === currentPage - 2 ||
-                        page === currentPage + 2
-                      ) {
-                        return (
-                            <span key={page} className="text-muted-foreground px-1 flex-shrink-0">
-                            ...
-                          </span>
-                        );
-                      }
-                      return null;
-                    })}
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                      className="flex items-center gap-1"
-                  >
-                      <span className="hidden xs:inline">Suivant</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* DataTable moderne avec toutes les fonctionnalités intégrées */}
+            <DataTable 
+              columns={createColumns(handleViewResults)} 
+              data={filteredCandidates as CandidateAIData[]} 
+              searchKey="fullName"
+              searchPlaceholder="Rechercher par nom..."
+            />
           </CardContent>
         </Card>
 
@@ -1069,9 +969,9 @@ export default function Traitements_IA() {
                       <div className="text-center">
                         <div className="text-3xl font-bold text-primary">
                           {selectedCandidate.aiData?.resume_global?.score_global > 0 
-                            ? selectedCandidate.aiData.resume_global.score_global > 1
-                              ? `${selectedCandidate.aiData.resume_global.score_global.toFixed(1)}%`
-                              : `${(selectedCandidate.aiData.resume_global.score_global * 100).toFixed(1)}%`
+                            ? (selectedCandidate.aiData?.resume_global?.score_global || 0) > 1
+                              ? `${(selectedCandidate.aiData?.resume_global?.score_global || 0).toFixed(1)}%`
+                              : `${((selectedCandidate.aiData?.resume_global?.score_global || 0) * 100).toFixed(1)}%`
                             : 'N/A'
                           }
                         </div>
@@ -1106,7 +1006,7 @@ export default function Traitements_IA() {
                 </Card>
 
                 {/* Conformité documentaire */}
-                {selectedCandidate.aiData.conformite ? (
+                {selectedCandidate.aiData?.conformite ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -1117,11 +1017,11 @@ export default function Traitements_IA() {
                     <CardContent>
                       <div className="text-center">
                         <div className="text-3xl font-bold text-green-500">
-                          {selectedCandidate.aiData.conformite.score_conformité}%
+                          {selectedCandidate.aiData.conformite.score_conformité || 'N/A'}%
                         </div>
                         <p className="text-sm text-muted-foreground">Score de conformité</p>
                         <p className="text-sm bg-muted p-2 rounded mt-2">
-                          {selectedCandidate.aiData.conformite.commentaire}
+                          {selectedCandidate.aiData.conformite.commentaire || 'Aucun commentaire disponible'}
                         </p>
                       </div>
                     </CardContent>
@@ -1144,7 +1044,7 @@ export default function Traitements_IA() {
                 )}
 
                 {/* Complétude */}
-                {selectedCandidate.aiData.similarite_offre ? (
+                {selectedCandidate.aiData?.similarite_offre ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -1187,7 +1087,7 @@ export default function Traitements_IA() {
                             <ul className="text-sm space-y-1">
                               {Array.isArray(selectedCandidate.aiData.similarite_offre.forces) 
                                 ? selectedCandidate.aiData.similarite_offre.forces.map((force, index) => (
-                                <li key={index} className="flex items-start gap-2">
+                                <li key={`force-${index}-${force}`} className="flex items-start gap-2">
                                   <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                                   {force}
                                 </li>
@@ -1201,7 +1101,7 @@ export default function Traitements_IA() {
                             <ul className="text-sm space-y-1">
                               {Array.isArray(selectedCandidate.aiData.similarite_offre.faiblesses) 
                                 ? selectedCandidate.aiData.similarite_offre.faiblesses.map((faiblesse, index) => (
-                                <li key={index} className="flex items-start gap-2">
+                                <li key={`faiblesse-${index}-${faiblesse}`} className="flex items-start gap-2">
                                   <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
                                   {faiblesse}
                                 </li>
@@ -1232,7 +1132,7 @@ export default function Traitements_IA() {
                 )}
 
                 {/* Scores MTP */}
-                {selectedCandidate.aiData.mtp ? (
+                {selectedCandidate.aiData?.mtp ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -1242,16 +1142,16 @@ export default function Traitements_IA() {
                     </CardHeader>
                     <CardContent>
                       <div className={`grid gap-4 mb-4 ${
-                        (selectedCandidate.aiData.mtp.scores?.Moyen || 0) > 0 
+                        (selectedCandidate.aiData?.mtp?.scores?.Moyen || 0) > 0 
                           ? 'grid-cols-2 md:grid-cols-4' 
                           : 'grid-cols-1 md:grid-cols-3'
                       }`}>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-blue-500">
-                            {(selectedCandidate.aiData.mtp.scores?.Métier || 0) > 0 
-                              ? (selectedCandidate.aiData.mtp.scores.Métier || 0) > 1
-                                ? `${(selectedCandidate.aiData.mtp.scores.Métier || 0).toFixed(1)}%`
-                                : `${((selectedCandidate.aiData.mtp.scores.Métier || 0) * 100).toFixed(1)}%`
+                            {(selectedCandidate.aiData?.mtp?.scores?.Métier || 0) > 0 
+                              ? (selectedCandidate.aiData?.mtp?.scores?.Métier || 0) > 1
+                                ? `${(selectedCandidate.aiData?.mtp?.scores?.Métier || 0).toFixed(1)}%`
+                                : `${((selectedCandidate.aiData?.mtp?.scores?.Métier || 0) * 100).toFixed(1)}%`
                               : 'N/A'
                             }
                           </div>
@@ -1259,10 +1159,10 @@ export default function Traitements_IA() {
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-green-500">
-                            {(selectedCandidate.aiData.mtp.scores?.Talent || 0) > 0 
-                              ? (selectedCandidate.aiData.mtp.scores.Talent || 0) > 1
-                                ? `${(selectedCandidate.aiData.mtp.scores.Talent || 0).toFixed(1)}%`
-                                : `${((selectedCandidate.aiData.mtp.scores.Talent || 0) * 100).toFixed(1)}%`
+                            {(selectedCandidate.aiData?.mtp?.scores?.Talent || 0) > 0 
+                              ? (selectedCandidate.aiData?.mtp?.scores?.Talent || 0) > 1
+                                ? `${(selectedCandidate.aiData?.mtp?.scores?.Talent || 0).toFixed(1)}%`
+                                : `${((selectedCandidate.aiData?.mtp?.scores?.Talent || 0) * 100).toFixed(1)}%`
                               : 'N/A'
                             }
                           </div>
@@ -1270,33 +1170,33 @@ export default function Traitements_IA() {
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-purple-500">
-                            {(selectedCandidate.aiData.mtp.scores?.Paradigme || 0) > 0 
-                              ? (selectedCandidate.aiData.mtp.scores.Paradigme || 0) > 1
-                                ? `${(selectedCandidate.aiData.mtp.scores.Paradigme || 0).toFixed(1)}%`
-                                : `${((selectedCandidate.aiData.mtp.scores.Paradigme || 0) * 100).toFixed(1)}%`
+                            {(selectedCandidate.aiData?.mtp?.scores?.Paradigme || 0) > 0 
+                              ? (selectedCandidate.aiData?.mtp?.scores?.Paradigme || 0) > 1
+                                ? `${(selectedCandidate.aiData?.mtp?.scores?.Paradigme || 0).toFixed(1)}%`
+                                : `${((selectedCandidate.aiData?.mtp?.scores?.Paradigme || 0) * 100).toFixed(1)}%`
                               : 'N/A'
                             }
                           </div>
                           <p className="text-sm text-muted-foreground">Paradigme</p>
                         </div>
-                        {(selectedCandidate.aiData.mtp.scores?.Moyen || 0) > 0 && (
+                        {(selectedCandidate.aiData?.mtp?.scores?.Moyen || 0) > 0 && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-orange-500">
-                              {(selectedCandidate.aiData.mtp.scores.Moyen || 0) > 1
-                                ? `${(selectedCandidate.aiData.mtp.scores.Moyen || 0).toFixed(1)}%`
-                                : `${((selectedCandidate.aiData.mtp.scores.Moyen || 0) * 100).toFixed(1)}%`
+                              {(selectedCandidate.aiData?.mtp?.scores?.Moyen || 0) > 1
+                                ? `${(selectedCandidate.aiData?.mtp?.scores?.Moyen || 0).toFixed(1)}%`
+                                : `${((selectedCandidate.aiData?.mtp?.scores?.Moyen || 0) * 100).toFixed(1)}%`
                               }
                           </div>
                           <p className="text-sm text-muted-foreground">Moyen</p>
                         </div>
                         )}
                       </div>
-                      {selectedCandidate.aiData.mtp.score_moyen && (
+                      {selectedCandidate.aiData?.mtp?.score_moyen && (
                         <div className="text-center mb-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl shadow-sm">
                           <div className="text-3xl font-extrabold text-indigo-600 mb-1">
-                            {(selectedCandidate.aiData.mtp.score_moyen || 0) > 1
-                              ? `${(selectedCandidate.aiData.mtp.score_moyen || 0).toFixed(1)}%`
-                              : `${((selectedCandidate.aiData.mtp.score_moyen || 0) * 100).toFixed(1)}%`
+                            {(selectedCandidate.aiData?.mtp?.score_moyen || 0) > 1
+                              ? `${(selectedCandidate.aiData?.mtp?.score_moyen || 0).toFixed(1)}%`
+                              : `${((selectedCandidate.aiData?.mtp?.score_moyen || 0) * 100).toFixed(1)}%`
                             }
                           </div>
                           <p className="text-sm font-medium text-indigo-700">Score Moyen MTP</p>
@@ -1305,15 +1205,15 @@ export default function Traitements_IA() {
                       <div className="space-y-3">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground mb-1">Niveau :</p>
-                          <p className="text-sm bg-muted p-2 rounded">{selectedCandidate.aiData.mtp.niveau || 'Non spécifié'}</p>
+                          <p className="text-sm bg-muted p-2 rounded">{selectedCandidate.aiData?.mtp?.niveau || 'Non spécifié'}</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points forts :</p>
                             <ul className="text-sm space-y-1">
-                              {Array.isArray(selectedCandidate.aiData.mtp.points_forts) && selectedCandidate.aiData.mtp.points_forts.length > 0
-                                ? selectedCandidate.aiData.mtp.points_forts.map((point, index) => (
-                                <li key={index} className="flex items-start gap-2">
+                              {Array.isArray(selectedCandidate.aiData?.mtp?.points_forts) && selectedCandidate.aiData?.mtp?.points_forts.length > 0
+                                ? selectedCandidate.aiData?.mtp?.points_forts.map((point, index) => (
+                                <li key={`mtp-fort-${index}-${point}`} className="flex items-start gap-2">
                                   <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                                   {point}
                                 </li>
@@ -1325,9 +1225,9 @@ export default function Traitements_IA() {
                           <div>
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points à travailler :</p>
                             <ul className="text-sm space-y-1">
-                              {Array.isArray(selectedCandidate.aiData.mtp.points_a_travailler) && selectedCandidate.aiData.mtp.points_a_travailler.length > 0
-                                ? selectedCandidate.aiData.mtp.points_a_travailler.map((point, index) => (
-                                <li key={index} className="flex items-start gap-2">
+                              {Array.isArray(selectedCandidate.aiData?.mtp?.points_a_travailler) && selectedCandidate.aiData?.mtp?.points_a_travailler.length > 0
+                                ? selectedCandidate.aiData?.mtp?.points_a_travailler.map((point, index) => (
+                                <li key={`mtp-travailler-${index}-${point}`} className="flex items-start gap-2">
                                   <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                                   {point}
                                 </li>
@@ -1382,7 +1282,7 @@ export default function Traitements_IA() {
                         <div>
                           <p className="text-sm font-medium text-muted-foreground mb-2">Raisons :</p>
                           <p className="text-sm bg-muted p-2 rounded">
-                            {selectedCandidate.aiData.feedback?.raisons || 'Aucune raison spécifiée'}
+                            {(selectedCandidate.aiData.feedback as any)?.raisons || 'Aucune raison spécifiée'}
                           </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1390,7 +1290,7 @@ export default function Traitements_IA() {
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points forts :</p>
                             <ul className="text-sm space-y-1">
                               {Array.isArray(selectedCandidate.aiData.feedback?.points_forts) && selectedCandidate.aiData.feedback.points_forts.length > 0 ? selectedCandidate.aiData.feedback.points_forts.map((point, index) => (
-                                <li key={index} className="flex items-start gap-2">
+                                <li key={`feedback-fort-${index}-${point}`} className="flex items-start gap-2">
                                   <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                                   {point}
                                 </li>
@@ -1401,7 +1301,7 @@ export default function Traitements_IA() {
                             <p className="text-sm font-medium text-muted-foreground mb-2">Points à travailler :</p>
                             <ul className="text-sm space-y-1">
                               {Array.isArray(selectedCandidate.aiData.feedback?.points_a_travailler) && selectedCandidate.aiData.feedback.points_a_travailler.length > 0 ? selectedCandidate.aiData.feedback.points_a_travailler.map((point, index) => (
-                                <li key={index} className="flex items-start gap-2">
+                                <li key={`feedback-travailler-${index}-${point}`} className="flex items-start gap-2">
                                   <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                                   {point}
                                 </li>
