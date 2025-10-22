@@ -2,7 +2,7 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useApplication, useRecruiterApplications, Application } from "@/hooks/useApplications";
 import { useApplicationDocuments, getDocumentTypeLabel, formatFileSize } from "@/hooks/useDocuments";
-import { getMetierQuestionsForTitle } from "@/data/metierQuestions";
+import { getMetierQuestionsForTitle, getMTPQuestionsFromJobOffer } from "@/data/metierQuestions";
 import { cleanCorruptedText } from "@/utils/textCleaner";
 import { supabase } from "@/integrations/supabase/client";
 import { RecruiterLayout } from "@/components/layout/RecruiterLayout";
@@ -255,9 +255,9 @@ const ReferencesTab = ({ application }: { application: Application }) => {
   );
 };
 
-const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
-  // Récupérer les questions MTP spécifiques pour ce poste
-  const questions = getMetierQuestionsForTitle(jobTitle);
+const MtpAnswersDisplay = ({ mtpAnswers, jobTitle, jobOffer }) => {
+  // Récupérer les questions MTP spécifiques pour ce poste depuis l'offre ou fallback
+  const questions = jobOffer ? getMTPQuestionsFromJobOffer(jobOffer) : getMetierQuestionsForTitle(jobTitle);
 
   if (!mtpAnswers) return <p className="text-xs sm:text-sm">Aucune réponse au questionnaire MTP.</p>;
 
@@ -278,13 +278,17 @@ const MtpAnswersDisplay = ({ mtpAnswers, jobTitle }) => {
   const renderSection = (title, section, color, answers, badgeColor) => {
     const validAnswers = (answers || []).filter(answer => answer && answer.trim() !== '');
     const sectionQuestions = questions[section] || [];
+    
+    // Limiter l'affichage au nombre de questions de l'offre
+    const maxQuestions = sectionQuestions.length;
+    const answersToShow = validAnswers.slice(0, maxQuestions);
 
     return (
       <div className="mb-6">
-        <h4 className="font-semibold text-sm sm:text-base mb-3">{title} ({validAnswers.length}/{sectionQuestions.length} réponses)</h4>
-        {validAnswers.length > 0 ? (
+        <h4 className="font-semibold text-sm sm:text-base mb-3">{title} ({answersToShow.length}/{sectionQuestions.length} réponses)</h4>
+        {answersToShow.length > 0 ? (
           <div className="space-y-3">
-            {validAnswers.map((answer, index) => (
+            {answersToShow.map((answer, index) => (
               <div key={index} className={`border-l-2 ${color} pl-3`}>
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">
                   <span className="inline-flex items-center gap-2">
@@ -840,7 +844,7 @@ export default function CandidateAnalysis() {
                 isObserver={isObserver}
               />
               <ReferencesTab application={application} />
-              <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} />
+              <MtpAnswersDisplay mtpAnswers={application.mtp_answers} jobTitle={jobTitle} jobOffer={application.job_offers} />
             </div>
           </TabsContent>
           <TabsContent value="protocol1" className="mt-3 sm:mt-4 lg:mt-6">

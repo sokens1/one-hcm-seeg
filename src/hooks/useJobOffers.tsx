@@ -59,7 +59,7 @@ const fetchJobOffers = async () => {
         isAuthenticated = true;
         const { data: userData } = await supabase
           .from('users')
-          .select('role, candidate_status')
+          .select('role, candidate_status, matricule')
           .eq('id', uid)
           .maybeSingle();
         
@@ -67,7 +67,10 @@ const fetchJobOffers = async () => {
           const role = userData.role;
           isCandidate = role === 'candidat' || role === 'candidate';
           isRecruiter = role === 'recruteur' || role === 'recruiter' || role === 'admin' || role === 'observateur' || role === 'observer';
-          candidateStatus = isCandidate ? (userData.candidate_status || null) : null;
+          // Déterminer le statut même si le rôle n'est pas explicitement "candidat"
+          // Priorité: candidate_status > matricule (présence => interne)
+          candidateStatus = (userData as any)?.candidate_status
+            || ((userData as any)?.matricule ? 'interne' : null);
           
           // console.log('🔍 [fetchJobOffers] User info:', {
           //   isCandidate,
@@ -206,16 +209,16 @@ const fetchJobOffers = async () => {
     }));
 
     // 4.5. Filter offers based on candidate status (internal/external)
-    // IMPORTANT : Ce filtrage ne s'applique QUE aux candidats
+    // IMPORTANT : Ce filtrage s'applique à tout UTILISATEUR AUTHENTIFIÉ NON-RECRUTEUR
     // Les recruteurs/admins/observateurs voient TOUTES les offres
     const offersFilteredByStatus = offersWithStats.filter(offer => {
-      // Si l'utilisateur n'est PAS un candidat (recruteur, admin, observateur)
-      // Montrer TOUTES les offres sans filtrage
-      if (isCandidate === false) {
+      // Appliquer le filtre d'audience aux utilisateurs connectés non-recruteurs
+      const shouldApplyAudienceFilter = isAuthenticated && !isRecruiter;
+      if (!shouldApplyAudienceFilter) {
         return true;
       }
       
-      // À partir d'ici, on sait que c'est un CANDIDAT
+      // À partir d'ici, on sait que c'est un utilisateur connecté non-recruteur
       
       // Définir le statut de l'offre (externe par défaut si NULL)
       const offerStatus = offer.status_offerts || 'externe';
@@ -223,12 +226,17 @@ const fetchJobOffers = async () => {
       // Définir le statut du candidat (externe par défaut si NULL)
       const userStatus = candidateStatus || 'externe';
       
-      // RÈGLE SIMPLE : Le candidat ne voit QUE les offres de son statut
-      if (offerStatus === userStatus) {
-        // console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat ${userStatus})`);
-        return true;
+      // RÈGLE D'AUDIENCE :
+      // - Candidat EXTERNE : voit SEULEMENT les offres externes
+      // - Candidat INTERNE : voit TOUTES les offres (internes + externes)
+      if (userStatus === 'interne') {
+        // console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat interne voit tout)`);
+        return true; // Les internes voient tout
+      } else if (userStatus === 'externe' && offerStatus === 'externe') {
+        // console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat externe voit externe)`);
+        return true; // Les externes voient seulement les offres externes
       } else {
-        // console.log(`🚫 [FILTER] "${offer.title}" (${offerStatus}) - Masquée (candidat ${userStatus} ne voit que ${userStatus})`);
+        // console.log(`🚫 [FILTER] "${offer.title}" (${offerStatus}) - Masquée (candidat ${userStatus} ne peut pas voir ${offerStatus})`);
         return false;
       }
     });
@@ -265,17 +273,8 @@ const fetchJobOffers = async () => {
       
       // NOUVELLE LOGIQUE POUR VUE PUBLIQUE vs VUE CANDIDAT
       if (!isAuthenticated) {
-        // VUE PUBLIQUE : Masquer campagne 2 après le 21/10/2025
-        if (offerCampaignId === 2) {
-          const now = new Date();
-          const campaign2EndDate = new Date('2025-10-21T23:59:59');
-          if (now > campaign2EndDate) {
-            // console.log(`🚫 [PUBLIC FILTER] "${offer.title}" (Campagne 2) - Après le 21/10 - Masquée pour le public`);
-            return false;
-          }
-        }
-        
-        // Campagnes 2 et 3 visibles pour le public (sauf campagne 2 après le 21/10)
+        // VUE PUBLIQUE : Toujours afficher les campagnes 2 et 3 (même après le 22/10)
+        // Les offres externes seront grisées par le composant JobCard après le 22/10
         const visibleCampaigns = [2, 3];
         if (visibleCampaigns.includes(offerCampaignId)) {
           // console.log(`✅ [PUBLIC FILTER] "${offer.title}" (Campagne ${offerCampaignId}) - Visible`);
@@ -398,6 +397,10 @@ export function useJobOffers() {
   return useQuery<JobOffer[], Error>({
     queryKey: ['jobOffers'],
     queryFn: fetchJobOffers,
+    staleTime: 5 * 60 * 1000,        // 5 minutes - Données considérées fraîches pendant 5 min
+    gcTime: 10 * 60 * 1000,          // 10 minutes - Cache maintenu 10 min
+    refetchOnWindowFocus: false,     // Ne pas recharger au focus de la fenêtre
+    refetchOnMount: false,           // Ne pas recharger au montage si cache valide
   });
 }
 

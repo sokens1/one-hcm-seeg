@@ -2,6 +2,7 @@
 import { Application } from '@/types/application';
 import { generateApplicationPdf } from './generateApplicationPdf';
 import { supabase } from '@/integrations/supabase/client';
+import { getMTPQuestionsFromJobOffer } from '@/data/metierQuestions';
 
 // Fonction ULTRA-AGRESSIVE pour nettoyer le texte corrompu et forcer la compatibilité PDF
 const cleanText = (text: string | null | undefined): string => {
@@ -161,6 +162,10 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       ...Array(Math.max(0, 3 - paradigmeArray.length)).fill('')
     ];
     
+    // Récupérer les vraies questions MTP de l'offre
+    const jobOffer = application.job_offers;
+    const mtpQuestions = jobOffer ? getMTPQuestionsFromJobOffer(jobOffer) : null;
+    
     // Convert Application to ApplicationData
     const applicationData = {
       // From Application
@@ -180,6 +185,11 @@ export const exportApplicationPdf = async (application: Application, jobTitle: s
       paradigme1: paradigme1 || '',
       paradigme2: paradigme2 || '',
       paradigme3: paradigme3 || '',
+      
+      // Questions MTP de l'offre
+      metierQuestions: mtpQuestions?.metier || [],
+      talentQuestions: mtpQuestions?.talent || [],
+      paradigmeQuestions: mtpQuestions?.paradigme || [],
       
       // Additional/transformed fields
       firstName: cleanText(user?.first_name) || '',

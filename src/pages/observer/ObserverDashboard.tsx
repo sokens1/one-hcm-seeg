@@ -62,6 +62,8 @@ export default function ObserverDashboard() {
   const { data: campaignStats, isLoading: isLoadingCampaignStats } = useCampaignStats();
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState<'classic' | 'advanced'>('classic');
+  const [attractiviteFilter, setAttractiviteFilter] = useState<string>('direction-exploitation-electricite');
+  const [dynamiqueFilter, setDynamiqueFilter] = useState<string>('direction-exploitation-electricite');
 
   // Si la vue avancée est sélectionnée, afficher le dashboard avancé
   if (dashboardView === 'advanced') {
@@ -316,33 +318,94 @@ export default function ObserverDashboard() {
               </Card>
             </div>
 
-            {/* Charts Section - Affichage deux par deux (sauf campagne 3 : une colonne) */}
-            <div className={`grid gap-4 sm:gap-6 mt-6 sm:mt-8 ${
-              selectedCampaignId === 'campaign-3' 
-                ? 'grid-cols-1' 
-                : 'grid-cols-1 md:grid-cols-2'
-            }`}>
+            {/* Charts Section - Affichage deux par deux */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
               {/* Coverage Rate Chart - Masqué en vue globale */}
               {selectedCampaignId !== 'global' && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Basé sur le nombre de candidatures reçues - 2 offres par catégorie
-                  </p>
-                </CardHeader>
+               <Card>
+                 <CardHeader className="pb-3">
+                   <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-2">
+                       <Target className="h-5 w-5 text-primary" />
+                       <CardTitle className="text-base sm:text-lg">Attractivité des candidatures</CardTitle>
+                     </div>
+                     {selectedCampaignId === 'campaign-3' && (
+                       <select
+                         value={attractiviteFilter}
+                         onChange={(e) => setAttractiviteFilter(e.target.value)}
+                         className="text-xs border rounded px-2 py-1 bg-background"
+                       >
+                         <option value="coordination-regions">Coordination Régions</option>
+                         <option value="departement-support">Département Support</option>
+                         <option value="direction-commerciale">Direction Commerciale & Recouvrement</option>
+                         <option value="direction-audit">Direction de l'Audit & Contrôle Interne</option>
+                         <option value="direction-moyens-generaux">Direction des Moyens Généraux</option>
+                         <option value="direction-dsi">Direction des Systèmes d'Information</option>
+                         <option value="direction-capital-humain">Direction du Capital Humain</option>
+                         <option value="direction-exploitation-eau">Direction Exploitation Eau</option>
+                         <option value="direction-exploitation-electricite">Direction Exploitation Électricité</option>
+                         <option value="direction-finances">Direction Finances & Comptabilité</option>
+                         <option value="direction-juridique">Direction Juridique, Communication & RSE</option>
+                         <option value="direction-qualite">Direction Qualité Hygiène Sécurité et Environnement</option>
+                         <option value="direction-technique-eau">Direction Technique Eau</option>
+                         <option value="direction-technique-electricite">Direction Technique Électricité</option>
+                       </select>
+                     )}
+                   </div>
+                   <p className="text-sm text-muted-foreground">
+                     Basé sur le nombre de candidatures reçues - 2 offres par catégorie
+                   </p>
+                 </CardHeader>
                 <CardContent>
                   <div className="h-64 sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={(() => {
+                        // Filtrer par direction si on est en campagne 3
+                        let filteredJobs = [...jobCoverage];
+                        
+                        if (selectedCampaignId === 'campaign-3') {
+                          filteredJobs = jobCoverage.filter(job => {
+                            const title = job.title.toLowerCase();
+                            switch (attractiviteFilter) {
+                              case 'coordination-regions':
+                                return title.includes('délégation') || title.includes('coordination') || title.includes('région');
+                              case 'departement-support':
+                                return title.includes('support') || title.includes('département support');
+                              case 'direction-commerciale':
+                                return title.includes('commercial') || title.includes('recouvrement') || title.includes('facturation') || title.includes('clientèle');
+                              case 'direction-audit':
+                                return title.includes('audit') || title.includes('contrôle interne');
+                              case 'direction-moyens-generaux':
+                                return title.includes('moyens généraux') || title.includes('logistique') || title.includes('transport') || title.includes('achats') || title.includes('patrimoine');
+                              case 'direction-dsi':
+                                return title.includes('systèmes d\'information') || title.includes('dsi') || title.includes('cybersécurité') || title.includes('infrastructure') || title.includes('applications');
+                              case 'direction-capital-humain':
+                                return title.includes('capital humain') || title.includes('rh') || title.includes('carrière') || title.includes('paie') || title.includes('recrutement') || title.includes('métiers');
+                              case 'direction-exploitation-eau':
+                                return (title.includes('exploitation') || title.includes('production') || title.includes('distribution') || title.includes('maintenance')) && title.includes('eau');
+                              case 'direction-exploitation-electricite':
+                                return (title.includes('exploitation') || title.includes('production') || title.includes('distribution') || title.includes('maintenance')) && (title.includes('électricité') || title.includes('thermique') || title.includes('hydraulique'));
+                              case 'direction-finances':
+                                return title.includes('finances') || title.includes('comptabilité') || title.includes('trésorerie') || title.includes('budget') || title.includes('contrôle de gestion');
+                              case 'direction-juridique':
+                                return title.includes('juridique') || title.includes('communication') || title.includes('rse') || title.includes('responsabilité sociétale');
+                              case 'direction-qualite':
+                                return title.includes('qualité') || title.includes('hygiène') || title.includes('sécurité') || title.includes('environnement') || title.includes('risques');
+                              case 'direction-technique-eau':
+                                return (title.includes('technique') || title.includes('études') || title.includes('travaux')) && title.includes('eau');
+                              case 'direction-technique-electricite':
+                                return (title.includes('technique') || title.includes('études') || title.includes('travaux')) && (title.includes('électricité') || title.includes('transport') || title.includes('production'));
+                              default:
+                                return true;
+                            }
+                          });
+                        }
+                        
                         // Filtrer et organiser les données pour avoir 2 offres par catégorie
-                        const excellent = jobCoverage.filter(job => job.coverage_status === 'excellent').slice(0, 2);
-                        const good = jobCoverage.filter(job => job.coverage_status === 'good').slice(0, 2);
-                        const moderate = jobCoverage.filter(job => job.coverage_status === 'moderate').slice(0, 2);
-                        const low = jobCoverage.filter(job => job.coverage_status === 'low').slice(0, 2);
+                        const excellent = filteredJobs.filter(job => job.coverage_status === 'excellent').slice(0, 2);
+                        const good = filteredJobs.filter(job => job.coverage_status === 'good').slice(0, 2);
+                        const moderate = filteredJobs.filter(job => job.coverage_status === 'moderate').slice(0, 2);
+                        const low = filteredJobs.filter(job => job.coverage_status === 'low').slice(0, 2);
                         
                         // Combiner toutes les catégories
                         return [...excellent, ...good, ...moderate, ...low];
@@ -420,17 +483,84 @@ export default function ObserverDashboard() {
 
               {/* Applications per Job Chart - Masqué en vue globale */}
               {selectedCampaignId !== 'global' && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
-                  </div>
-                </CardHeader>
+               <Card>
+                 <CardHeader className="pb-3">
+                   <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-2">
+                       <BarChart3 className="h-5 w-5 text-primary" />
+                       <CardTitle className="text-base sm:text-lg">Dynamique des candidatures par offre</CardTitle>
+                     </div>
+                     {selectedCampaignId === 'campaign-3' && (
+                       <select
+                         value={dynamiqueFilter}
+                         onChange={(e) => setDynamiqueFilter(e.target.value)}
+                         className="text-xs border rounded px-2 py-1 bg-background"
+                       >
+                         <option value="coordination-regions">Coordination Régions</option>
+                         <option value="departement-support">Département Support</option>
+                         <option value="direction-commerciale">Direction Commerciale & Recouvrement</option>
+                         <option value="direction-audit">Direction de l'Audit & Contrôle Interne</option>
+                         <option value="direction-moyens-generaux">Direction des Moyens Généraux</option>
+                         <option value="direction-dsi">Direction des Systèmes d'Information</option>
+                         <option value="direction-capital-humain">Direction du Capital Humain</option>
+                         <option value="direction-exploitation-eau">Direction Exploitation Eau</option>
+                         <option value="direction-exploitation-electricite">Direction Exploitation Électricité</option>
+                         <option value="direction-finances">Direction Finances & Comptabilité</option>
+                         <option value="direction-juridique">Direction Juridique, Communication & RSE</option>
+                         <option value="direction-qualite">Direction Qualité Hygiène Sécurité et Environnement</option>
+                         <option value="direction-technique-eau">Direction Technique Eau</option>
+                         <option value="direction-technique-electricite">Direction Technique Électricité</option>
+                       </select>
+                     )}
+                   </div>
+                 </CardHeader>
                 <CardContent>
                   <div className="h-64 sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={applicationsPerJob.slice(0, 8)} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <BarChart data={(() => {
+                        // Filtrer par direction si on est en campagne 3
+                        let filteredJobs = [...applicationsPerJob];
+                        
+                        if (selectedCampaignId === 'campaign-3') {
+                          filteredJobs = applicationsPerJob.filter(job => {
+                            const title = job.title.toLowerCase();
+                            switch (dynamiqueFilter) {
+                              case 'coordination-regions':
+                                return title.includes('délégation') || title.includes('coordination') || title.includes('région');
+                              case 'departement-support':
+                                return title.includes('support') || title.includes('département support');
+                              case 'direction-commerciale':
+                                return title.includes('commercial') || title.includes('recouvrement') || title.includes('facturation') || title.includes('clientèle');
+                              case 'direction-audit':
+                                return title.includes('audit') || title.includes('contrôle interne');
+                              case 'direction-moyens-generaux':
+                                return title.includes('moyens généraux') || title.includes('logistique') || title.includes('transport') || title.includes('achats') || title.includes('patrimoine');
+                              case 'direction-dsi':
+                                return title.includes('systèmes d\'information') || title.includes('dsi') || title.includes('cybersécurité') || title.includes('infrastructure') || title.includes('applications');
+                              case 'direction-capital-humain':
+                                return title.includes('capital humain') || title.includes('rh') || title.includes('carrière') || title.includes('paie') || title.includes('recrutement') || title.includes('métiers');
+                              case 'direction-exploitation-eau':
+                                return (title.includes('exploitation') || title.includes('production') || title.includes('distribution') || title.includes('maintenance')) && title.includes('eau');
+                              case 'direction-exploitation-electricite':
+                                return (title.includes('exploitation') || title.includes('production') || title.includes('distribution') || title.includes('maintenance')) && (title.includes('électricité') || title.includes('thermique') || title.includes('hydraulique'));
+                              case 'direction-finances':
+                                return title.includes('finances') || title.includes('comptabilité') || title.includes('trésorerie') || title.includes('budget') || title.includes('contrôle de gestion');
+                              case 'direction-juridique':
+                                return title.includes('juridique') || title.includes('communication') || title.includes('rse') || title.includes('responsabilité sociétale');
+                              case 'direction-qualite':
+                                return title.includes('qualité') || title.includes('hygiène') || title.includes('sécurité') || title.includes('environnement') || title.includes('risques');
+                              case 'direction-technique-eau':
+                                return (title.includes('technique') || title.includes('études') || title.includes('travaux')) && title.includes('eau');
+                              case 'direction-technique-electricite':
+                                return (title.includes('technique') || title.includes('études') || title.includes('travaux')) && (title.includes('électricité') || title.includes('transport') || title.includes('production'));
+                              default:
+                                return true;
+                            }
+                          });
+                        }
+                        
+                        return filteredJobs.slice(0, 8);
+                      })()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <XAxis 
                           dataKey="title" 
                           tick={{ fontSize: 10 }}

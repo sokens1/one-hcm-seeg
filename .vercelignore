@@ -1,0 +1,31 @@
+# Fichiers de documentation
+*.md
+!README.md
+
+# Fichiers SQL
+*.sql
+
+# Fichiers CSV
+*.csv
+
+# Fichiers JSON de rapport
+rapport_*.json
+rapport_*.txt
+import-results-*.json
+
+# Répertoires de sortie
+outputs/
+documents/
+MIGRATION_AZURE_PACKAGE/
+
+# Fichiers de configuration locale
+.env.local
+.env.*.local
+
+# Scripts de déploiement
+deploy-*.sh
+diagnostic-*.sh
+
+# Node modules (déjà ignoré par défaut mais on le garde)
+node_modules/
+

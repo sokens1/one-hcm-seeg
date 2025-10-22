@@ -1,48 +1,42 @@
--- Migration pour améliorer la vérification du matricule
--- Vérifier si le matricule existe dans seeg_agents ET s'il n'a pas déjà postulé en campagne 1
-
--- Supprimer l'ancienne fonction
 DROP FUNCTION IF EXISTS verify_matricule(text);
 
--- Créer la nouvelle fonction
 CREATE FUNCTION verify_matricule(p_matricule text)
 RETURNS json
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-    v_exists_in_agents boolean := false;
-    v_already_used_campaign1 boolean := false;
-    v_is_cdd boolean := false;
+    v_exists_in_agents boolean;
+    v_is_cdd boolean;
+    v_already_used_campaign1 boolean;
     v_message text;
     v_is_valid boolean;
 BEGIN
-    -- Vérifier existence dans seeg_agents (matricule est bigint, on le convertit en text)
+    v_exists_in_agents := false;
+    v_is_cdd := false;
+    v_already_used_campaign1 := false;
+
     SELECT EXISTS (
-        SELECT 1 
-        FROM seeg_agents 
-        WHERE CAST(matricule AS text) = p_matricule
+        SELECT 1 FROM seeg_agents WHERE CAST(matricule AS text) = p_matricule
     ) INTO v_exists_in_agents;
 
-    -- Vérifier si le matricule est en CDD (table cdd_matricules)
     SELECT EXISTS (
-        SELECT 1 
-        FROM cdd_matricules 
-        WHERE CAST("MLE" AS text) = p_matricule
+        SELECT 1 FROM cdd_matricules WHERE CAST("MLE" AS text) = p_matricule
     ) INTO v_is_cdd;
 
-    -- Vérifier si le matricule a déjà postulé lors de la campagne 1
-    -- En rejoignant users -> applications -> job_offers
     SELECT EXISTS (
         SELECT 1 
         FROM users u
-        INNER JOIN applications a ON a.candidate_id = u.id
-        INNER JOIN job_offers jo ON a.job_offer_id = jo.id
         WHERE u.matricule = p_matricule
-        AND jo.campaign_id = 1
+        AND u.id IN (
+            SELECT a.candidate_id 
+            FROM applications a
+            WHERE a.job_offer_id IN (
+                SELECT jo.id FROM job_offers jo WHERE jo.campaign_id = 1
+            )
+        )
     ) INTO v_already_used_campaign1;
 
-    -- Déterminer validité et message (ordre de priorité)
     IF v_exists_in_agents = false THEN
         v_is_valid := false;
         v_message := 'Ce matricule n existe pas dans la base SEEG';
@@ -57,7 +51,6 @@ BEGIN
         v_message := 'Matricule valide';
     END IF;
 
-    -- Retourner le résultat
     RETURN json_build_object(
         'exists_in_agents', v_exists_in_agents,
         'is_cdd', v_is_cdd,
@@ -68,7 +61,6 @@ BEGIN
 END;
 $$;
 
--- Donner les permissions
 GRANT EXECUTE ON FUNCTION verify_matricule(text) TO authenticated;
 GRANT EXECUTE ON FUNCTION verify_matricule(text) TO anon;
 
