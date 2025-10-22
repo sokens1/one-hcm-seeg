@@ -119,3 +119,4 @@ node scripts/test-seeg-ai-api.js
 - `src/App.tsx`
 
 L'implémentation est complète et prête pour les tests avec l'API réelle ! 🎉
+

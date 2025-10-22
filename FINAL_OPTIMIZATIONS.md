@@ -81,3 +81,4 @@ Quand l'API sera implémentée, il suffira de :
 - **Développement facilité** : Messages informatifs pour les devs
 
 L'application est maintenant optimisée pour la phase de développement avec une expérience utilisateur claire et des logs propres ! 🎉
+
