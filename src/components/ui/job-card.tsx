@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Briefcase } from "lucide-react";
 import { isApplicationClosed } from "@/utils/applicationUtils";
+import { isExternalApplicationDisabled, getDisabledMessage } from "@/utils/midnightGate";
 import { toast } from "sonner";
 
 interface JobCardProps {
@@ -32,6 +33,8 @@ export function JobCard({
   isExpired = false,
   statusOfferts,
 }: JobCardProps) {
+  const externalApplicationDisabled = isExternalApplicationDisabled();
+  const isExternalOffer = statusOfferts === 'externe';
   const toPlainText = (input?: string) => {
     if (!input) return "";
     // If string contains HTML tags, convert to text using a temporary element
@@ -45,7 +48,15 @@ export function JobCard({
 
   return (
     <Card
-      className={`hover:shadow-medium transition-all duration-300 ${locked || isExpired ? "cursor-default" : "cursor-pointer"} ${isExpired ? "opacity-60 bg-gray-50 border-dashed grayscale" : ""} group h-full flex flex-col`}
+      className={`hover:shadow-medium transition-all duration-300 ${
+        locked || isExpired ? "cursor-default" : "cursor-pointer"
+      } ${
+        isExpired 
+          ? "opacity-60 bg-gray-50 border-dashed grayscale" 
+          : (isExternalOffer && externalApplicationDisabled)
+            ? "opacity-70 bg-gray-50/50"
+            : ""
+      } group h-full flex flex-col`}
       onClick={locked || isExpired ? undefined : onClick}
     >
       <CardContent className="p-3 sm:p-4 md:p-5 lg:p-6 flex-1 flex flex-col">
@@ -109,8 +120,16 @@ export function JobCard({
               <Button
                 variant={isExpired ? "outline" : "hero"}
                 size="sm"
-                className={`w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 ${locked || isExpired ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                onClick={locked || isExpired ? (isExpired ? () => toast.error("Cette offre n'est plus disponible (campagne expirée)") : onLockedClick) : onClick}
+                className={`w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 ${
+                  locked || isExpired 
+                    ? "opacity-60 cursor-not-allowed" 
+                    : "cursor-pointer"
+                }`}
+                onClick={
+                  locked || isExpired 
+                    ? (isExpired ? () => toast.error("Cette offre n'est plus disponible (campagne expirée)") : onLockedClick)
+                    : onClick
+                }
                 aria-disabled={locked || isExpired}
                 disabled={isExpired}
               >
@@ -130,10 +149,25 @@ export function JobCard({
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="group-hover:border-primary group-hover:text-primary w-full md:w-auto text-xs sm:text-sm h-8 md:h-9"
-                disabled={candidateCount === undefined}
+                className={`group-hover:border-primary group-hover:text-primary w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 ${
+                  isExternalOffer && externalApplicationDisabled && candidateCount === undefined
+                    ? "opacity-60 cursor-not-allowed bg-gray-400 hover:bg-gray-400"
+                    : ""
+                }`}
+                disabled={candidateCount === undefined || (isExternalOffer && externalApplicationDisabled)}
+                title={isExternalOffer && externalApplicationDisabled && candidateCount === undefined ? getDisabledMessage() : ""}
+                onClick={
+                  isExternalOffer && externalApplicationDisabled && candidateCount === undefined
+                    ? () => toast.error(getDisabledMessage())
+                    : undefined
+                }
               >
-                {candidateCount !== undefined ? 'Gérer' : 'Postuler'}
+                {candidateCount !== undefined 
+                  ? 'Gérer' 
+                  : (isExternalOffer && externalApplicationDisabled) 
+                    ? 'Candidature fermée' 
+                    : 'Postuler'
+                }
               </Button>
             )}
           </div>

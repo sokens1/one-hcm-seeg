@@ -24,6 +24,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { isPreLaunch } from "@/utils/launchGate";
+import { isExternalApplicationDisabled, getDisabledMessage } from "@/utils/midnightGate";
 import { getMTPQuestionsFromJobOffer, MTPQuestions } from '@/data/metierQuestions';
 import { useJobOffer } from '@/hooks/useJobOffers';
 import { Spinner } from "@/components/ui/spinner";
@@ -380,6 +381,7 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   const navigate = useNavigate();
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
+  const externalApplicationDisabled = isExternalApplicationDisabled();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
   const { isEligible } = useCampaignEligibility();
   
@@ -1222,6 +1224,12 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
   };
 
   const handleSubmit = async () => {
+    // Vérifier si c'est une offre externe et si les candidatures externes sont désactivées
+    if (isExternalOffer && externalApplicationDisabled) {
+      toast.error(getDisabledMessage());
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
       const isCreateMode = mode === 'create';
@@ -2469,12 +2477,24 @@ export function ApplicationForm({ jobTitle, jobId, onBack, onSubmit, application
                     <Button
                       variant="success"
                       onClick={handleSubmit}
-                      className="w-full sm:w-auto"
-                      disabled={!formData.consent || isApplicationClosed()}
-                      title={isApplicationClosed() ? "Les candidatures sont closes" : ""}
+                      className={`w-full sm:w-auto ${
+                        isExternalOffer && externalApplicationDisabled
+                          ? "opacity-60 cursor-not-allowed bg-gray-400 hover:bg-gray-400"
+                          : ""
+                      }`}
+                      disabled={!formData.consent || isApplicationClosed() || (isExternalOffer && externalApplicationDisabled)}
+                      title={
+                        isApplicationClosed() 
+                          ? "Les candidatures sont closes" 
+                          : (isExternalOffer && externalApplicationDisabled) 
+                            ? getDisabledMessage() 
+                            : ""
+                      }
                     >
                       {isApplicationClosed() ? (
                         <span className="hidden sm:inline">Candidatures closes</span>
+                      ) : (isExternalOffer && externalApplicationDisabled) ? (
+                        <span className="hidden sm:inline">Candidature fermée</span>
                       ) : (
                         <>
                           <span className="hidden sm:inline">Envoyer ma candidature</span>

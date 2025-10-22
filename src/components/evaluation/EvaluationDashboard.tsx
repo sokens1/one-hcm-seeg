@@ -659,8 +659,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                 <Button 
                   size="lg"
                   onClick={handleAITreatment}
-                  className={`bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base ${!isCampaign1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  disabled={!isCampaign1 || isReadOnly}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto text-sm sm:text-base"
+                  disabled={isReadOnly}
                 >
                   <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                   Traitement IA

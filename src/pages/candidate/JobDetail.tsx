@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useApplicationStatus } from "@/hooks/useApplications";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { safeInnerHTML, escapeHTML } from "@/utils/domErrorPrevention";
+import { isExternalApplicationDisabled, getDisabledMessage } from "@/utils/midnightGate";
 
 export default function JobDetail() {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +21,7 @@ export default function JobDetail() {
   const { data: jobOffer, isLoading, error } = useJobOffer(id || "");
   const { user } = useAuth();
   const { data: applicationStatus, isLoading: isLoadingApplication } = useApplicationStatus(id || "");
+  const externalApplicationDisabled = isExternalApplicationDisabled();
 
   const handleBackToJobs = () => {
     // Navigate directly to home page to avoid double-click issues
@@ -27,6 +29,15 @@ export default function JobDetail() {
   };
 
   const handleApply = () => {
+    // Vérifier si c'est une offre externe et si les candidatures externes sont désactivées
+    if (jobOffer?.status_offerts === 'externe' && externalApplicationDisabled) {
+      // Import toast dynamically to avoid issues
+      import('sonner').then(({ toast }) => {
+        toast.error(getDisabledMessage());
+      });
+      return;
+    }
+    
     if (!user) {
       // Redirect to auth with signup tab and then to candidate dashboard with jobs view and specific job
       const redirect = encodeURIComponent(`/candidate/dashboard?view=jobs&jobId=${id}`);
@@ -305,12 +316,17 @@ export default function JobDetail() {
                     <div className="space-y-2">
                       <Button 
                         onClick={handleApply}
-                        className="w-full text-sm sm:text-base"
+                        className={`w-full text-sm sm:text-base ${
+                          jobOffer?.status_offerts === 'externe' && externalApplicationDisabled
+                            ? "opacity-60 cursor-not-allowed bg-gray-400 hover:bg-gray-400"
+                            : ""
+                        }`}
                         size="lg"
-                        disabled={false}
+                        disabled={jobOffer?.status_offerts === 'externe' && externalApplicationDisabled}
+                        title={jobOffer?.status_offerts === 'externe' && externalApplicationDisabled ? getDisabledMessage() : ""}
                       >
                         <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                        Postuler maintenant
+                        {jobOffer?.status_offerts === 'externe' && externalApplicationDisabled ? "Candidature fermée" : "Postuler maintenant"}
                       </Button>
                       
                       <p className="text-xs text-muted-foreground text-center leading-relaxed">

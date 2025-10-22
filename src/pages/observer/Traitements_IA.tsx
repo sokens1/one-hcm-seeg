@@ -32,7 +32,8 @@ import {
   ChevronRight,
   ArrowLeft
 } from "lucide-react";
-import { useAIData, AICandidateData } from "@/hooks/useAIData";
+import { useSEEGAIData } from "@/hooks/useSEEGAIData";
+import { AICandidateData } from "@/hooks/useAIData";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface CandidateApplication {
@@ -181,7 +182,15 @@ const getVerdictVariant = (verdict: string) => {
 };
 
 export default function Traitements_IA() {
-  const { data: aiData, isLoading, error } = useAIData();
+  const { 
+    data: aiData, 
+    isLoading, 
+    error, 
+    isConnected,
+    searchCandidates,
+    loadAIData,
+    forceReload
+  } = useSEEGAIData();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
@@ -193,6 +202,8 @@ export default function Traitements_IA() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [searchResults, setSearchResults] = useState<CandidateApplication[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   
   // Défère les mises à jour du Select pour éviter les conflits DOM (Chrome)
   const handleDepartmentChange = (value: string) => {
@@ -215,12 +226,41 @@ export default function Traitements_IA() {
       setSearchTerm(decodeURIComponent(candidateParam));
     }
   }, [searchParams]);
+
+  // Recherche en temps réel
+  useEffect(() => {
+    const performSearch = async () => {
+      if (searchTerm.trim()) {
+        setIsSearching(true);
+        try {
+          const results = await searchCandidates(searchTerm);
+          setSearchResults(results);
+        } catch (error) {
+          console.error('Erreur lors de la recherche:', error);
+          setSearchResults([]);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    };
+
+    const timeoutId = setTimeout(performSearch, 500); // Debounce de 500ms
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, searchCandidates]);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
   // Transformer les données IA pour l'affichage
   const candidatesData = useMemo(() => {
+    // Si on a des résultats de recherche, les utiliser
+    if (searchResults.length > 0) {
+      return searchResults;
+    }
+
+    // Sinon, utiliser les données statiques
     if (!aiData) return [];
 
     const allCandidates: CandidateApplication[] = [];
@@ -234,13 +274,15 @@ export default function Traitements_IA() {
           lastName: candidate.nom,
           poste: candidate.poste,
           department: departmentKey, // Utiliser le nom exact du département
-          aiData: candidate
+          aiData: candidate,
+          // Inclure toutes les propriétés du candidat mappé pour l'accès aux documents
+          ...candidate
         });
       });
     });
 
     return allCandidates;
-  }, [aiData]);
+  }, [aiData, searchResults]);
 
   // Filtrer et trier les candidats
   const filteredCandidates = useMemo(() => {
@@ -252,17 +294,17 @@ export default function Traitements_IA() {
       filtered = filtered.filter(candidate => {
         // Recherche dans les informations de base
         const basicMatch = 
-          candidate.firstName.toLowerCase().includes(searchLower) ||
-          candidate.lastName.toLowerCase().includes(searchLower) ||
+          (candidate.firstName || candidate.first_name || '').toLowerCase().includes(searchLower) ||
+          (candidate.lastName || candidate.last_name || '').toLowerCase().includes(searchLower) ||
           candidate.department.toLowerCase().includes(searchLower) ||
           candidate.poste.toLowerCase().includes(searchLower);
         
         // Recherche dans les données IA
         const aiMatch = 
-          candidate.aiData.resume_global.commentaire_global.toLowerCase().includes(searchLower) ||
-          (candidate.aiData.mtp?.niveau && candidate.aiData.mtp.niveau.toLowerCase().includes(searchLower)) ||
-          (candidate.aiData.similarite_offre?.commentaire_score && candidate.aiData.similarite_offre.commentaire_score.toLowerCase().includes(searchLower)) ||
-          (candidate.aiData.conformite?.commentaire && candidate.aiData.conformite.commentaire.toLowerCase().includes(searchLower));
+          (candidate.aiData?.resume_global?.commentaire_global && candidate.aiData.resume_global.commentaire_global.toLowerCase().includes(searchLower)) ||
+          (candidate.aiData?.mtp?.niveau && candidate.aiData.mtp.niveau.toLowerCase().includes(searchLower)) ||
+          (candidate.aiData?.similarite_offre?.commentaire_score && candidate.aiData.similarite_offre.commentaire_score.toLowerCase().includes(searchLower)) ||
+          (candidate.aiData?.conformite?.commentaire && candidate.aiData.conformite.commentaire.toLowerCase().includes(searchLower));
         
         return basicMatch || aiMatch;
       });
@@ -302,28 +344,28 @@ export default function Traitements_IA() {
       
       switch (sortBy) {
         case "nom":
-          aValue = `${a.firstName} ${a.lastName}`;
-          bValue = `${b.firstName} ${b.lastName}`;
+          aValue = `${a.firstName || a.first_name || 'N/A'} ${a.lastName || a.last_name || 'N/A'}`;
+          bValue = `${b.firstName || b.first_name || 'N/A'} ${b.lastName || b.last_name || 'N/A'}`;
           break;
         case "score":
-          aValue = a.aiData.resume_global.score_global;
-          bValue = b.aiData.resume_global.score_global;
+          aValue = a.aiData?.resume_global?.score_global || 0;
+          bValue = b.aiData?.resume_global?.score_global || 0;
           break;
         case "rang":
-          aValue = a.aiData.resume_global.rang_global;
-          bValue = b.aiData.resume_global.rang_global;
+          aValue = a.aiData?.resume_global?.rang_global || 999;
+          bValue = b.aiData?.resume_global?.rang_global || 999;
           break;
         case "verdict":
-          aValue = getVerdictLabel(a.aiData.resume_global.verdict);
-          bValue = getVerdictLabel(b.aiData.resume_global.verdict);
+          aValue = getVerdictLabel(a.aiData?.resume_global?.verdict || '');
+          bValue = getVerdictLabel(b.aiData?.resume_global?.verdict || '');
           break;
         case "departement":
           aValue = a.department;
           bValue = b.department;
           break;
         default:
-          aValue = a.aiData.resume_global.rang_global;
-          bValue = b.aiData.resume_global.rang_global;
+          aValue = a.aiData?.resume_global?.rang_global || 999;
+          bValue = b.aiData?.resume_global?.rang_global || 999;
       }
 
       if (typeof aValue === 'string' && typeof bValue === 'string') {
@@ -350,6 +392,92 @@ export default function Traitements_IA() {
   }, [searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange]);
 
   const handleViewResults = (candidate: CandidateApplication) => {
+    // Préparer les données au format momo.com
+    const rawCandidate = candidate.rawData || candidate;
+    
+    // Récupérer le CV et la lettre de motivation depuis l'API
+    let cvContent = 'CV non disponible';
+    let coverLetterContent = 'Lettre de motivation non disponible';
+    
+    // Essayer de récupérer le CV - priorité aux données brutes de l'API
+    if (rawCandidate.documents?.cv) {
+      if (typeof rawCandidate.documents.cv === 'string') {
+        cvContent = rawCandidate.documents.cv;
+      } else if (rawCandidate.documents.cv.url) {
+        cvContent = `CV disponible: ${rawCandidate.documents.cv.name} (${rawCandidate.documents.cv.url})`;
+      }
+    } else if (candidate.documents?.cv) {
+      if (typeof candidate.documents.cv === 'string') {
+        cvContent = candidate.documents.cv;
+      } else if (candidate.documents.cv.url) {
+        cvContent = `CV disponible: ${candidate.documents.cv.name} (${candidate.documents.cv.url})`;
+      }
+    } else if (candidate.cv) {
+      if (typeof candidate.cv === 'string') {
+        cvContent = candidate.cv;
+      } else if (candidate.cv.url) {
+        cvContent = `CV disponible: ${candidate.cv.name} (${candidate.cv.url})`;
+      }
+    } else if (rawCandidate.cv) {
+      if (typeof rawCandidate.cv === 'string') {
+        cvContent = rawCandidate.cv;
+      } else if (rawCandidate.cv.url) {
+        cvContent = `CV disponible: ${rawCandidate.cv.name} (${rawCandidate.cv.url})`;
+      }
+    }
+    
+    // Essayer de récupérer la lettre de motivation - priorité aux données brutes de l'API
+    if (rawCandidate.documents?.cover_letter) {
+      if (typeof rawCandidate.documents.cover_letter === 'string') {
+        coverLetterContent = rawCandidate.documents.cover_letter;
+      } else if (rawCandidate.documents.cover_letter.url) {
+        coverLetterContent = `Lettre de motivation disponible: ${rawCandidate.documents.cover_letter.name} (${rawCandidate.documents.cover_letter.url})`;
+      }
+    } else if (candidate.documents?.cover_letter) {
+      if (typeof candidate.documents.cover_letter === 'string') {
+        coverLetterContent = candidate.documents.cover_letter;
+      } else if (candidate.documents.cover_letter.url) {
+        coverLetterContent = `Lettre de motivation disponible: ${candidate.documents.cover_letter.name} (${candidate.documents.cover_letter.url})`;
+      }
+    } else if (candidate.cover_letter) {
+      if (typeof candidate.cover_letter === 'string') {
+        coverLetterContent = candidate.cover_letter;
+      } else if (candidate.cover_letter.url) {
+        coverLetterContent = `Lettre de motivation disponible: ${candidate.cover_letter.name} (${candidate.cover_letter.url})`;
+      }
+    } else if (rawCandidate.cover_letter) {
+      if (typeof rawCandidate.cover_letter === 'string') {
+        coverLetterContent = rawCandidate.cover_letter;
+      } else if (rawCandidate.cover_letter.url) {
+        coverLetterContent = `Lettre de motivation disponible: ${rawCandidate.cover_letter.name} (${rawCandidate.cover_letter.url})`;
+      }
+    }
+    
+    const momoData = {
+      id: candidate.id,
+      Nom: candidate.nom || candidate.lastName || candidate.last_name || rawCandidate.last_name || 'N/A',
+      Prénom: candidate.prenom || candidate.firstName || candidate.first_name || rawCandidate.first_name || 'N/A',
+      cv: cvContent,
+      lettre_motivation: coverLetterContent,
+      MTP: {
+        M: candidate.reponses_mtp?.metier ? candidate.reponses_mtp.metier.join(' | ') :
+           rawCandidate.reponses_mtp?.metier ? rawCandidate.reponses_mtp.metier.join(' | ') : 
+           candidate.aiData?.mtp?.reponses_mtp?.metier ? candidate.aiData.mtp.reponses_mtp.metier.join(' | ') : 'Réponses métier non disponibles',
+        T: candidate.reponses_mtp?.talent ? candidate.reponses_mtp.talent.join(' | ') :
+           rawCandidate.reponses_mtp?.talent ? rawCandidate.reponses_mtp.talent.join(' | ') : 
+           candidate.aiData?.mtp?.reponses_mtp?.talent ? candidate.aiData.mtp.reponses_mtp.talent.join(' | ') : 'Réponses talent non disponibles',
+        P: candidate.reponses_mtp?.paradigme ? candidate.reponses_mtp.paradigme.join(' | ') :
+           rawCandidate.reponses_mtp?.paradigme ? rawCandidate.reponses_mtp.paradigme.join(' | ') : 
+           candidate.aiData?.mtp?.reponses_mtp?.paradigme ? candidate.aiData.mtp.reponses_mtp.paradigme.join(' | ') : 'Réponses paradigme non disponibles'
+      },
+      post: candidate.poste || candidate.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié'
+    };
+    
+    console.log('📤 DONNÉES QUI SERAIENT ENVOYÉES:');
+    console.log('=====================================');
+    console.log(JSON.stringify(momoData, null, 2));
+    console.log('=====================================');
+    
     setSelectedCandidate(candidate);
     setIsModalOpen(true);
   };
@@ -430,10 +558,24 @@ export default function Traitements_IA() {
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
               <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
+              {isConnected !== null && (
+                <div className="flex items-center gap-2 mt-2">
+                  <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                  <span className="text-xs text-muted-foreground">
+                    API {isConnected ? 'Connectée' : 'En développement'}
+                  </span>
+                  {!isConnected && (
+                    <span className="text-xs text-blue-600">
+                      (Utilisation des données statiques)
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           
         </div>
+
 
         {/* Barre de recherche et filtres */}
         <Card className="mb-6">
@@ -449,7 +591,13 @@ export default function Traitements_IA() {
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10 w-full"
+                      disabled={!isConnected}
                     />
+                    {isSearching && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -664,10 +812,10 @@ export default function Traitements_IA() {
                       <TableCell className="min-w-[200px]">
                         <div className="flex items-center gap-2 sm:gap-3">
                           <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs sm:text-sm flex-shrink-0">
-                            {candidate.firstName[0]}{candidate.lastName[0]}
+                            {(candidate.firstName || candidate.first_name || 'N')[0]}{(candidate.lastName || candidate.last_name || 'A')[0]}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="font-medium text-sm sm:text-base break-words whitespace-normal">{candidate.firstName} {candidate.lastName}</p>
+                            <p className="font-medium text-sm sm:text-base break-words whitespace-normal">{candidate.firstName || candidate.first_name || 'N/A'} {candidate.lastName || candidate.last_name || 'N/A'}</p>
                           </div>
                         </div>
                       </TableCell>
@@ -709,11 +857,11 @@ export default function Traitements_IA() {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                        {candidate.firstName[0]}{candidate.lastName[0]}
+                        {(candidate.firstName || candidate.first_name || 'N')[0]}{(candidate.lastName || candidate.last_name || 'A')[0]}
                       </div>
                       <div>
-                        <div className="font-medium break-words whitespace-normal">{candidate.firstName} {candidate.lastName}</div>
-                        <div className="text-sm text-muted-foreground inline-flex whitespace-nowrap">#{candidate.aiData.resume_global.rang_global}</div>
+                        <div className="font-medium break-words whitespace-normal">{candidate.firstName || candidate.first_name || 'N/A'} {candidate.lastName || candidate.last_name || 'N/A'}</div>
+                        <div className="text-sm text-muted-foreground inline-flex whitespace-nowrap">#{candidate.aiData?.resume_global?.rang_global || 'N/A'}</div>
                       </div>
                     </div>
                     <Button
@@ -872,7 +1020,7 @@ export default function Traitements_IA() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="text-center">
                         <div className="text-3xl font-bold text-primary">
-                          {selectedCandidate.aiData.resume_global.score_global >= 0 
+                          {selectedCandidate.aiData?.resume_global?.score_global >= 0 
                             ? `${(selectedCandidate.aiData.resume_global.score_global * 100).toFixed(1)}%`
                             : 'N/A'
                           }
@@ -881,19 +1029,19 @@ export default function Traitements_IA() {
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold">
-                          #{selectedCandidate.aiData.resume_global.rang_global || 'N/A'}
+                          #{selectedCandidate.aiData?.resume_global?.rang_global || 'N/A'}
                         </div>
                         <p className="text-sm text-muted-foreground">Rang</p>
                       </div>
                       <div className="text-center">
                         <div className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                          getVerdictVariant(selectedCandidate.aiData.resume_global.verdict) === 'success' 
+                          getVerdictVariant(selectedCandidate.aiData?.resume_global?.verdict || '') === 'success' 
                             ? 'bg-green-100 text-green-800' 
-                            : getVerdictVariant(selectedCandidate.aiData.resume_global.verdict) === 'secondary'
+                            : getVerdictVariant(selectedCandidate.aiData?.resume_global?.verdict || '') === 'secondary'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-red-100 text-red-800'
                         }`}>
-                          {getVerdictLabel(selectedCandidate.aiData.resume_global.verdict)}
+                          {getVerdictLabel(selectedCandidate.aiData?.resume_global?.verdict || '')}
                         </div>
                         <p className="text-sm text-muted-foreground mt-2">Verdict</p>
                       </div>
@@ -901,7 +1049,7 @@ export default function Traitements_IA() {
                     <div className="mt-4">
                       <p className="text-sm font-medium text-muted-foreground mb-2">Commentaire global :</p>
                       <p className="text-sm bg-muted p-3 rounded-lg">
-                        {selectedCandidate.aiData.resume_global.commentaire_global}
+                        {selectedCandidate.aiData?.resume_global?.commentaire_global || 'Aucun commentaire disponible'}
                       </p>
                     </div>
                   </CardContent>
