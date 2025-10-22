@@ -63,3 +63,4 @@ Les logs de la console montraient des erreurs 404 répétées de l'API SEEG AI, 
 4. **Suppression des messages de développement** en production
 
 L'application est maintenant prête pour la production avec une gestion d'erreurs propre et une interface utilisateur claire ! 🎉
+

@@ -90,3 +90,4 @@ searchResults.forEach((candidate: any) => {
 4. **Implémenter l'endpoint dédié** côté serveur (optionnel)
 
 L'application peut maintenant **afficher toutes les données disponibles** de l'API ! 🎉
+

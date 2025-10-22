@@ -54,3 +54,4 @@ console.log('Body:', JSON.stringify(candidatData));
 
 console.log('\n✅ PRÊT POUR L\'ENVOI VERS MOMO.COM !');
 console.log('Exécutez un des scripts de test pour envoyer réellement les données.');
+

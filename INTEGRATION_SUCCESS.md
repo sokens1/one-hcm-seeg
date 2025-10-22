@@ -97,3 +97,4 @@ L'application est maintenant **prête pour la production** avec :
 4. **Suppression des messages de développement** si souhaité
 
 **L'intégration est un succès complet !** 🎉
+

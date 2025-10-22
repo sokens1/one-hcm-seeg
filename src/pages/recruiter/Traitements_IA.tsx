@@ -67,6 +67,7 @@ interface CandidateApplication {
 }
 
 const getVerdictIcon = (verdict: string) => {
+  if (!verdict) return <XCircle className="h-4 w-4 text-gray-400" />;
   switch (verdict.toLowerCase()) {
     case 'retenu':
     case 'favorable':
@@ -83,6 +84,7 @@ const getVerdictIcon = (verdict: string) => {
 };
 
 const getVerdictLabel = (verdict: string) => {
+  if (!verdict) return 'Non évalué';
   const verdictLower = verdict.toLowerCase();
   
   // Vérifier d'abord les verdicts courts exacts
@@ -143,6 +145,7 @@ const getVerdictLabel = (verdict: string) => {
 };
 
 const getVerdictVariant = (verdict: string) => {
+  if (!verdict) return 'secondary';
   const verdictLower = verdict.toLowerCase();
   
   // Vérifier d'abord les verdicts courts exacts
@@ -345,8 +348,8 @@ export default function Traitements_IA() {
         const basicMatch = 
           (candidate.firstName || candidate.prenom || '').toLowerCase().includes(searchLower) ||
           (candidate.lastName || candidate.nom || '').toLowerCase().includes(searchLower) ||
-          candidate.department.toLowerCase().includes(searchLower) ||
-          candidate.poste.toLowerCase().includes(searchLower);
+          (candidate.department || '').toLowerCase().includes(searchLower) ||
+          (candidate.poste || '').toLowerCase().includes(searchLower);
         
         // Recherche dans les données IA
         const aiMatch = 
