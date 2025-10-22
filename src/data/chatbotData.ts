@@ -81,9 +81,9 @@ export const predefinedQuestions: PredefinedQuestion[] = [
   },
   {
     id: "err4",
-    question: "Puis-je candidater à plusieurs postes ?",
-    keywords: ["plusieurs", "multi", "postes", "offres", "candidater"],
-    response: "Oui, vous pouvez postuler à plusieurs offres.\n1) Ouvrez le catalogue des offres\n2) Cliquez sur 'Postuler' pour chaque offre\n3) Suivez l'état de chaque dossier dans 'Mes candidatures'"
+    question: "Problème avec le sexe dans mon profil",
+    keywords: ["sexe", "genre", "profil", "informations", "personnelles", "sélection", "choisir", "valider"],
+    response: "Si vous avez du mal à sélectionner votre sexe :\n1. Sélectionnez votre choix dans le menu déroulant\n2. Cliquez sur 'Sauvegarder' ou 'Valider'\n3. Actualisez la page (F5)\n\nSi le problème persiste :\n• Essayez un autre navigateur (Chrome/Edge/Firefox)\n• Videz le cache (Ctrl+F5)\n• En dernier recours, refaites votre profil depuis zéro\n\nContactez le support si nécessaire : 076402886"
   },
   {
     id: "err5",
@@ -108,6 +108,12 @@ export const predefinedQuestions: PredefinedQuestion[] = [
     question: "Je ne vois pas mes notifications",
     keywords: ["notifications", "alerte", "cloche", "non lu", "messages"],
     response: "Dans l'espace candidat, ouvrez la cloche de notifications en haut.\n• Actualisez la page et vérifiez que vous êtes connecté au bon compte\n• Si aucune notification n'apparaît, il se peut qu'il n'y ait pas de nouveauté sur vos dossiers\n• Vérifiez votre messagerie pour les emails\nSi le souci persiste, contactez le support"
+  },
+  {
+    id: "err9",
+    question: "Puis-je candidater à plusieurs postes ?",
+    keywords: ["plusieurs", "multi", "postes", "offres", "candidater"],
+    response: "Oui, vous pouvez postuler à plusieurs offres.\n1) Ouvrez le catalogue des offres\n2) Cliquez sur 'Postuler' pour chaque offre\n3) Suivez l'état de chaque dossier dans 'Mes candidatures'"
   }
 ];
 
@@ -164,6 +170,10 @@ export const findBestResponse = (userMessage: string): string => {
     
     if (normalizedMessage.includes('quels documents') || normalizedMessage.includes('documents requis')) {
       if (predefined.id === "2") score += 5;
+    }
+    
+    if (normalizedMessage.includes('sexe') && (normalizedMessage.includes('profil') || normalizedMessage.includes('sélection'))) {
+      if (predefined.id === "err4") score += 5;
     }
     
     // Garder la meilleure correspondance
