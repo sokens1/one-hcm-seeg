@@ -35,6 +35,7 @@ export function useSEEGAIData() {
       setIsLoading(true);
       setError(null);
       setHasTriedApi(true);
+      // Ne pas réinitialiser les données ici pour éviter les conflits
 
       const connected = await checkConnection();
       if (!connected) {
@@ -133,7 +134,8 @@ export function useSEEGAIData() {
         console.error('Erreur lors du chargement des données IA:', err);
       }
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
-      setData({}); // Réinitialiser les données en cas d'erreur
+      // Ne pas réinitialiser les données en cas d'erreur pour éviter les conflits
+      // setData({}); // Réinitialiser les données en cas d'erreur
     } finally {
       setIsLoading(false);
     }
