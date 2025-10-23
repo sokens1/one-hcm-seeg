@@ -71,3 +71,4 @@ VITE_SEEG_AI_API_KEY=your_api_key_here
 - Messages d'erreur utilisateur
 - Logs détaillés dans la console
 - Indicateurs visuels de statut
+

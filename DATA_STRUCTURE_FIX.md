@@ -103,3 +103,4 @@ bValue = b.aiData?.resume_global?.rang_global || 999;
 - ✅ **Gestion d'erreurs** robuste
 
 L'application peut maintenant **afficher et manipuler** toutes les données de l'API SEEG AI sans erreurs ! 🎉
+
