@@ -224,10 +224,10 @@ export default function RecruiterDashboard() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="text-xl sm:text-2xl font-bold text-cyan-900 dark:text-cyan-100">
-                    {jobCoverage.length > 0 ? Math.round((jobCoverage.filter(job => job.current_applications > 0).length / jobCoverage.length) * 100) : 0}%
+                    {jobCoverage.length > 0 ? Math.round((jobCoverage.filter(job => job.current_applications >= 2).length / jobCoverage.length) * 100) : 0}%
                   </div>
                   <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
-                    Postes avec candidats
+                    Postes avec au moins 2 candidats
                   </p>
                 </CardContent>
               </Card>

@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Star, Users, CheckCircle, Clock, AlertCircle, FileText, User, Calendar as CalendarLucide, CalendarDays } from 'lucide-react';
+import { CalendarIcon, Star, Users, CheckCircle, Clock, AlertCircle, FileText, User, Calendar as CalendarLucide, CalendarDays, RotateCcw } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
@@ -23,6 +23,7 @@ import { useCampaign } from "@/contexts/CampaignContext";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { InterviewCalendarModal } from './InterviewCalendarModal';
+import { ResetAnnotationsModal } from '@/components/ui/ResetAnnotationsModal';
 
 
 interface StarRatingProps {
@@ -99,7 +100,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     calculateSectionScores, 
     isLoading, 
     isSaving,
-    reload
+    reload,
+    resetEvaluation
   } = useOptimizedProtocol1Evaluation(applicationId);
   
   const {
@@ -121,6 +123,9 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   
   // Activer uniquement pour la campagne 1
   const isCampaign1 = selectedCampaignId === 'campaign-1';
+  
+  // État pour le modal de réinitialisation
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   
   // Fonction pour mapper les noms de postes vers les départements dans Traitement IA
   const mapJobTitleToDepartment = (jobTitle: string): string => {
@@ -271,6 +276,224 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
     }
   };
 
+  // Fonction pour réinitialiser les annotations
+  const handleResetAnnotations = async (resetStatus: boolean) => {
+    console.log('🔄 [RESET PROTOCOL1] Début de la réinitialisation - resetStatus:', resetStatus);
+    try {
+      // Récupérer le statut actuel avant la réinitialisation
+      const { data: currentApp, error: fetchError } = await supabase
+        .from('applications')
+        .select('status')
+        .eq('id', applicationId)
+        .single();
+
+      if (fetchError) {
+        console.error('❌ Erreur lors de la récupération du statut actuel:', fetchError);
+        toast({
+          title: "Erreur",
+          description: "Impossible de récupérer le statut actuel.",
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      const currentStatus = currentApp?.status;
+      console.log('📊 [RESET PROTOCOL1] Statut actuel récupéré:', currentStatus);
+
+      // Déterminer le statut précédent basé sur le statut actuel
+      let previousStatus: string;
+      
+      if (currentStatus === 'refuse') {
+        // Pour un candidat refusé, récupérer le statut qu'il avait avant d'être refusé
+        console.log('🔍 [RESET PROTOCOL1] Candidat refusé, récupération du statut précédent...');
+        try {
+          const { data: historyData, error: historyError } = await supabase
+            .from('application_status_history')
+            .select('previous_status')
+            .eq('application_id', applicationId)
+            .eq('new_status', 'refuse')
+            .order('changed_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (historyError) {
+            console.warn('⚠️ [RESET PROTOCOL1] Impossible de récupérer l\'historique, utilisation du statut par défaut:', historyError);
+            previousStatus = 'incubation'; // Fallback par défaut
+          } else {
+            previousStatus = historyData?.previous_status || 'incubation';
+            console.log('📊 [RESET PROTOCOL1] Statut précédent trouvé dans l\'historique:', previousStatus);
+          }
+        } catch (e) {
+          console.warn('⚠️ [RESET PROTOCOL1] Erreur lors de la récupération de l\'historique:', e);
+          previousStatus = 'incubation'; // Fallback par défaut
+        }
+      } else {
+        // Logique normale pour les autres statuts
+        switch (currentStatus) {
+          case 'embauche':
+            previousStatus = 'incubation';
+            break;
+          case 'incubation':
+            previousStatus = 'candidature';
+            break;
+          case 'candidature':
+            previousStatus = 'candidature'; // Reste en candidature
+            break;
+          default:
+            previousStatus = 'candidature';
+        }
+      }
+
+      console.log('🔄 [RESET PROTOCOL1] Statut précédent déterminé:', previousStatus);
+      
+      // Réinitialiser les données d'évaluation
+      const resetData = {
+        globalScore: 0,
+        status: "Évaluation - Protocole 1 en cours",
+        protocol1: {
+          score: 0,
+          status: 'pending',
+          documentaryEvaluation: {
+            cv: { score: 0, comments: "" },
+            lettreMotivation: { score: 0, comments: "" },
+            diplomesEtCertificats: { score: 0, comments: "" },
+          },
+          mtpAdherence: {
+            metier: { score: 0, comments: "" },
+            talent: { score: 0, comments: "" },
+            paradigme: { score: 0, comments: "" },
+          },
+          interview: {
+            physicalMtpAdherence: {
+              metier: { score: 0, comments: "" },
+              talent: { score: 0, comments: "" },
+              paradigme: { score: 0, comments: "" },
+            },
+            gapCompetence: { score: 0, comments: "" },
+            generalSummary: ""
+          },
+        },
+      };
+
+      // Si on doit aussi réinitialiser le statut, remettre le candidat au statut précédent
+      if (resetStatus) {
+        console.log(`🔄 [RESET PROTOCOL1] Tentative de réinitialisation du statut vers "${previousStatus}"`);
+        
+        // Mettre à jour le statut de la candidature en BD
+        const { data: updateData, error: statusError } = await supabase
+          .from('applications')
+          .update({
+            status: previousStatus,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', applicationId)
+          .select('id, status');
+
+        console.log('📊 [RESET PROTOCOL1] Résultat de la mise à jour du statut:', { updateData, statusError });
+
+        if (statusError) {
+          console.error('❌ Erreur BD lors de la réinitialisation du statut:', statusError);
+          toast({
+            title: "Erreur",
+            description: "Impossible de réinitialiser le statut. Réessayez.",
+            variant: 'destructive'
+          });
+          return;
+        }
+
+        if (!updateData || updateData.length === 0) {
+          console.error('❌ Aucune donnée retournée lors de la mise à jour du statut');
+          toast({
+            title: "Erreur",
+            description: "Aucune candidature trouvée pour la mise à jour.",
+            variant: 'destructive'
+          });
+          return;
+        }
+
+        console.log('✅ [RESET PROTOCOL1] Statut mis à jour avec succès:', updateData[0]);
+        
+        // Si on revient au statut "candidature", réinitialiser aussi les annotations du Protocole 2
+        if (previousStatus === 'candidature') {
+          console.log('🔄 [RESET PROTOCOL1] Retour au statut candidature - réinitialisation du Protocole 2');
+          try {
+            const protocol2ResetData = {
+              status: 'pending',
+              mise_en_situation: {
+                jeu_de_role: { score: 0, comments: '' },
+                jeu_codir: { score: 0, comments: '' }
+              },
+              validation_operationnelle: {
+                fiche_kpis: { score: 0, comments: '' },
+                fiche_kris: { score: 0, comments: '' },
+                fiche_kcis: { score: 0, comments: '' }
+              },
+              analyse_competences: {
+                gap_competences: { score: 0, comments: '', gapLevel: '' },
+                plan_formation: { score: 0, comments: '' }
+              },
+              simulation_scheduling: {
+                simulation_date: null,
+                simulation_time: null,
+                simulation_scheduled_at: null
+              }
+            };
+
+            // Réinitialiser le Protocole 2 en base
+            const { error: protocol2Error } = await supabase
+              .from('protocol2_evaluations')
+              .update(protocol2ResetData)
+              .eq('application_id', applicationId);
+
+            if (protocol2Error) {
+              console.warn('⚠️ [RESET PROTOCOL1] Erreur lors de la réinitialisation du Protocole 2:', protocol2Error);
+            } else {
+              console.log('✅ [RESET PROTOCOL1] Protocole 2 réinitialisé avec succès');
+              
+              // Forcer le rechargement du Protocole 2 en émettant un événement personnalisé
+              console.log('🔄 [RESET PROTOCOL1] Émission d\'événement pour recharger le Protocole 2');
+              window.dispatchEvent(new CustomEvent('protocol2Reset', { 
+                detail: { applicationId, resetData: protocol2ResetData } 
+              }));
+            }
+          } catch (e) {
+            console.warn('⚠️ [RESET PROTOCOL1] Erreur lors de la réinitialisation du Protocole 2:', e);
+          }
+        }
+        
+        // Propager le changement de statut au parent
+        console.log(`🔄 [RESET PROTOCOL1] Appel de onStatusChange avec "${previousStatus}"`);
+        onStatusChange(previousStatus as any);
+      }
+
+      // Utiliser la fonction resetEvaluation qui force l'écrasement
+      console.log('🔄 [RESET PROTOCOL1] Utilisation de resetEvaluation avec forceOverwrite=true');
+      console.log('📊 [RESET PROTOCOL1] Données de réinitialisation:', resetData);
+      
+      await resetEvaluation(resetData);
+      
+      console.log('✅ [RESET PROTOCOL1] Réinitialisation forcée terminée');
+
+      // Notification de succès
+      const message = resetStatus 
+        ? `Annotations et statut réinitialisés. Le candidat est de nouveau en statut "${previousStatus}".`
+        : "Annotations réinitialisées. Le statut du candidat reste inchangé.";
+      
+      toast({
+        title: "Réinitialisation réussie",
+        description: message,
+        duration: 4000
+      });
+
+    } catch (e) {
+      console.error('❌ Exception lors de la réinitialisation:', e);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la réinitialisation.",
+        variant: 'destructive'
+      });
+    }
+  };
 
   
   const [interviewDate, setInterviewDate] = useState<Date | undefined>(undefined);
@@ -305,6 +528,24 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
       }
     }
   }, [evaluationData.protocol1.interview.interviewDate]);
+
+  // Écouter les événements de réinitialisation du Protocole 2
+  useEffect(() => {
+    const handleProtocol2Reset = (event: CustomEvent) => {
+      const { applicationId: resetApplicationId, resetData } = event.detail;
+      if (resetApplicationId === applicationId) {
+        console.log('🔄 [PROTOCOL1] Réception de l\'événement protocol2Reset, rechargement des données');
+        // Forcer le rechargement des données
+        reload();
+      }
+    };
+
+    window.addEventListener('protocol2Reset', handleProtocol2Reset as EventListener);
+    
+    return () => {
+      window.removeEventListener('protocol2Reset', handleProtocol2Reset as EventListener);
+    };
+  }, [applicationId, reload]);
   
   // Fonctions pour naviguer entre les mois
   const goToPreviousMonth = () => {
@@ -1128,40 +1369,53 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             </div>
           </div>
           
-          {/* Actions Protocole 1 */}
+          {/* Actions Protocole 1 - Décision Finale */}
           {!isReadOnly && (
-            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-            <Button 
-              variant="outline" 
-                className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
-            >
-              Refuser
-            </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
-                    Confirmer le refus
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <Button 
-              onClick={handleIncubate}
-                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
-            >
-              Incuber
-            </Button>
-          </div>
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-6 border-t">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsResetModalOpen(true)}
+                  className="gap-2 text-orange-600 border-orange-200 hover:bg-orange-50"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Réinitialiser
+                </Button>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                    className="bg-red-50 hover:bg-red-100 text-red-700 border-red-200 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
+                >
+                  Refuser
+                </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirmer le refus</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir refuser ce candidat ? Cette action ne peut pas être annulée.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleRefuse} className="bg-red-600 hover:bg-red-700">
+                        Confirmer le refus
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <Button 
+                  onClick={handleIncubate}
+                    className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3"
+                >
+                  Incuber
+                </Button>
+              </div>
+            </div>
           )}
           
           {/* Message pour la vue observateur */}
@@ -1188,6 +1442,14 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         currentApplicationId={applicationId}
       />
 
+      {/* Modal de réinitialisation des annotations */}
+      <ResetAnnotationsModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={handleResetAnnotations}
+        protocolName="Protocole 1"
+        candidateName={candidateName}
+      />
 
     </div>
   );
