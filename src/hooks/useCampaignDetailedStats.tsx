@@ -190,7 +190,7 @@ export function useCampaignDetailedStats() {
           job_offer_id,
           status,
           created_at,
-          users!inner(
+          users(
             id,
             created_at,
             first_name,

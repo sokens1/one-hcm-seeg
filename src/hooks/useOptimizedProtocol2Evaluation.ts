@@ -232,7 +232,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
   }, [applicationId, toast, cache]);
 
   // Sauvegarder les données avec invalidation du cache
-  const saveEvaluation = useCallback(async (data: Protocol2EvaluationData) => {
+  const saveEvaluation = useCallback(async (data: Protocol2EvaluationData, forceOverwrite = false) => {
     if (!applicationId || !user) {
       console.warn('⚠️ [PROTOCOL2 SAVE] applicationId ou user manquant:', { applicationId, user: !!user });
       return;
@@ -327,18 +327,64 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
       console.log('📊 [PROTOCOL2 SAVE] Enregistrement existant:', !!existingRecord);
       console.log('💾 [PROTOCOL2 SAVE] Données à sauvegarder:', evaluationRecord);
 
+      // Protéger les données existantes si forceOverwrite est false
+      let finalRecord = evaluationRecord;
+      if (!forceOverwrite && existingRecord) {
+        // Récupérer les données existantes pour éviter d'écraser avec 0
+        const { data: existingFull } = await supabase
+          .from('protocol2_evaluations')
+          .select('*')
+          .eq('application_id', applicationId)
+          .maybeSingle();
+
+        if (existingFull) {
+          const preferExistingIfNewEmpty = <T>(newVal: T | null | undefined, oldVal: T | null | undefined): T | null | undefined => {
+            // Pour nombres: si newVal === 0 et oldVal > 0 -> garder old
+            if (typeof newVal === 'number') {
+              if (newVal === 0 && typeof oldVal === 'number' && oldVal > 0) return oldVal;
+              return newVal;
+            }
+            // Pour chaînes: si newVal vide et old non vide -> garder old
+            if (typeof newVal === 'string') {
+              if ((newVal || '').trim().length === 0 && (oldVal || '').toString().trim().length > 0) return oldVal;
+              return newVal;
+            }
+            return newVal;
+          };
+
+          finalRecord = {
+            ...evaluationRecord,
+            jeu_de_role_score: preferExistingIfNewEmpty(evaluationRecord.jeu_de_role_score, existingFull.jeu_de_role_score),
+            jeu_de_role_comments: preferExistingIfNewEmpty(evaluationRecord.jeu_de_role_comments, existingFull.jeu_de_role_comments),
+            jeu_codir_score: preferExistingIfNewEmpty(evaluationRecord.jeu_codir_score, existingFull.jeu_codir_score),
+            jeu_codir_comments: preferExistingIfNewEmpty(evaluationRecord.jeu_codir_comments, existingFull.jeu_codir_comments),
+            fiche_kpis_score: preferExistingIfNewEmpty(evaluationRecord.fiche_kpis_score, existingFull.fiche_kpis_score),
+            fiche_kpis_comments: preferExistingIfNewEmpty(evaluationRecord.fiche_kpis_comments, existingFull.fiche_kpis_comments),
+            fiche_kris_score: preferExistingIfNewEmpty(evaluationRecord.fiche_kris_score, existingFull.fiche_kris_score),
+            fiche_kris_comments: preferExistingIfNewEmpty(evaluationRecord.fiche_kris_comments, existingFull.fiche_kris_comments),
+            fiche_kcis_score: preferExistingIfNewEmpty(evaluationRecord.fiche_kcis_score, existingFull.fiche_kcis_score),
+            fiche_kcis_comments: preferExistingIfNewEmpty(evaluationRecord.fiche_kcis_comments, existingFull.fiche_kcis_comments),
+            gap_competences_score: preferExistingIfNewEmpty(evaluationRecord.gap_competences_score, existingFull.gap_competences_score),
+            gap_competences_comments: preferExistingIfNewEmpty(evaluationRecord.gap_competences_comments, existingFull.gap_competences_comments),
+            gap_competences_level: preferExistingIfNewEmpty(evaluationRecord.gap_competences_level, existingFull.gap_competences_level),
+            plan_formation_score: preferExistingIfNewEmpty(evaluationRecord.plan_formation_score, existingFull.plan_formation_score),
+            plan_formation_comments: preferExistingIfNewEmpty(evaluationRecord.plan_formation_comments, existingFull.plan_formation_comments),
+          };
+        }
+      }
+
       let result;
       if (existingRecord) {
         console.log('🔄 [PROTOCOL2 SAVE] Mise à jour de l\'enregistrement existant...');
         result = await supabase
           .from('protocol2_evaluations')
-          .update(evaluationRecord)
+          .update(finalRecord)
           .eq('application_id', applicationId);
       } else {
         console.log('➕ [PROTOCOL2 SAVE] Création d\'un nouvel enregistrement...');
         result = await supabase
           .from('protocol2_evaluations')
-          .insert(evaluationRecord);
+          .insert(finalRecord);
       }
 
       if (result.error) {
@@ -447,16 +493,16 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
         console.warn('Impossible d\'écrire les détails Protocol 2 en localStorage (update):', e);
       }
 
-      // Sauvegarder automatiquement après un délai court (1 seconde comme protocole 1)
+      // Sauvegarder automatiquement après un délai plus long (3 secondes pour éviter les sauvegardes multiples)
       saveTimeoutRef.current = setTimeout(() => {
         // console.log('💾 [SAVE DEBUG] Sauvegarde automatique déclenchée');
         saveEvaluation(newData);
         saveTimeoutRef.current = null;
-      }, 1000);
+      }, 3000);
       
       return newData;
     });
-  }, [calculateSectionScores, LOCAL_DIRTY_KEY, LOCAL_KEY, LOCAL_MTIME_KEY]);
+  }, [calculateSectionScores, saveEvaluation]);
 
 
   // Charger les données au montage du composant
@@ -569,6 +615,12 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     }
   }, [applicationId, user, evaluationData, saveEvaluation]);
 
+  // Fonction pour réinitialiser les données (force l'écrasement)
+  const resetEvaluation = useCallback(async (resetData: Protocol2EvaluationData) => {
+    console.log('🔄 [RESET HOOK PROTOCOL2] Réinitialisation forcée des données');
+    await saveEvaluation(resetData, true); // forceOverwrite = true
+  }, [saveEvaluation]);
+
   return {
     evaluationData,
     updateEvaluation,
@@ -576,6 +628,7 @@ export function useOptimizedProtocol2Evaluation(applicationId: string) {
     isLoading,
     isSaving,
     reload: loadEvaluation,
-    saveSimulationDate
+    saveSimulationDate,
+    resetEvaluation
   };
 }
