@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Briefcase } from "lucide-react";
 import { isApplicationClosed } from "@/utils/applicationUtils";
-import { isExternalApplicationDisabled, getDisabledMessage } from "@/utils/midnightGate";
+import { isExternalApplicationDisabled, getDisabledMessage, isInternalApplicationDisabled, getInternalDisabledMessage } from "@/utils/midnightGate";
 import { toast } from "sonner";
 
 interface JobCardProps {
@@ -34,7 +34,9 @@ export function JobCard({
   statusOfferts,
 }: JobCardProps) {
   const externalApplicationDisabled = isExternalApplicationDisabled();
+  const internalApplicationDisabled = isInternalApplicationDisabled();
   const isExternalOffer = statusOfferts === 'externe';
+  const isInternalOffer = statusOfferts === 'interne';
   const toPlainText = (input?: string) => {
     if (!input) return "";
     // If string contains HTML tags, convert to text using a temporary element
@@ -53,7 +55,7 @@ export function JobCard({
       } ${
         isExpired 
           ? "opacity-60 bg-gray-50 border-dashed grayscale" 
-          : (isExternalOffer && externalApplicationDisabled)
+          : (isExternalOffer && externalApplicationDisabled) || (isInternalOffer && internalApplicationDisabled)
             ? "opacity-70 bg-gray-50/50"
             : ""
       } group h-full flex flex-col`}
@@ -150,21 +152,26 @@ export function JobCard({
                 variant="outline" 
                 size="sm" 
                 className={`group-hover:border-primary group-hover:text-primary w-full md:w-auto text-xs sm:text-sm h-8 md:h-9 ${
-                  isExternalOffer && externalApplicationDisabled && candidateCount === undefined
+                  ((isExternalOffer && externalApplicationDisabled) || (isInternalOffer && internalApplicationDisabled)) && candidateCount === undefined
                     ? "opacity-60 cursor-not-allowed bg-gray-400 hover:bg-gray-400"
                     : ""
                 }`}
-                disabled={candidateCount === undefined || (isExternalOffer && externalApplicationDisabled)}
-                title={isExternalOffer && externalApplicationDisabled && candidateCount === undefined ? getDisabledMessage() : ""}
+                disabled={candidateCount === undefined || (isExternalOffer && externalApplicationDisabled) || (isInternalOffer && internalApplicationDisabled)}
+                title={
+                  isExternalOffer && externalApplicationDisabled && candidateCount === undefined ? getDisabledMessage() : 
+                  isInternalOffer && internalApplicationDisabled && candidateCount === undefined ? getInternalDisabledMessage() : ""
+                }
                 onClick={
                   isExternalOffer && externalApplicationDisabled && candidateCount === undefined
                     ? () => toast.error(getDisabledMessage())
+                    : isInternalOffer && internalApplicationDisabled && candidateCount === undefined
+                    ? () => toast.error(getInternalDisabledMessage())
                     : undefined
                 }
               >
                 {candidateCount !== undefined 
                   ? 'Gérer' 
-                  : (isExternalOffer && externalApplicationDisabled) 
+                  : (isExternalOffer && externalApplicationDisabled) || (isInternalOffer && internalApplicationDisabled)
                     ? 'Candidature fermée' 
                     : 'Postuler'
                 }

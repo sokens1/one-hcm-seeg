@@ -13,7 +13,7 @@ import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { useJobOffers } from "@/hooks/useJobOffers";
 import { isPreLaunch } from "@/utils/launchGate";
 import { isApplicationClosed } from "@/utils/applicationUtils";
-import { isExternalApplicationDisabled, getDisabledMessage } from "@/utils/midnightGate";
+import { isExternalApplicationDisabled, getDisabledMessage, isInternalApplicationDisabled, getInternalDisabledMessage } from "@/utils/midnightGate";
 import { toast } from "sonner";
 // import { CampaignEligibilityAlert } from "@/components/ui/CampaignEligibilityAlert";
 import { useCampaignEligibility } from "@/hooks/useCampaignEligibility";
@@ -41,6 +41,7 @@ export function JobCatalog() {
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const externalApplicationDisabled = isExternalApplicationDisabled();
+  const internalApplicationDisabled = isInternalApplicationDisabled();
   const { isEligible } = useCampaignEligibility();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
 
@@ -98,9 +99,9 @@ export function JobCatalog() {
   const baseJobs = (jobs || []).filter(j => !String(j.id).startsWith('fallback-') && j.recruiter_id !== 'fallback-recruiter');
 
   const filteredJobs = baseJobs.filter(job => {
-    // Audience must match when known
-    const offerAudience = (job as any).status_offerts ?? null;
-    const matchesAudience = !candidateAudience || offerAudience === candidateAudience;
+    // NE PLUS FILTRER par audience - toutes les offres sont visibles
+    // La désactivation des boutons se fait dans les composants (job-card, JobDetail, etc.)
+    const matchesAudience = true; // Toujours true pour afficher toutes les offres
     const locationText = toText(job.location);
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          locationText.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -165,6 +166,11 @@ export function JobCatalog() {
     const job = jobs?.find(j => j.id === jobId);
     if (job?.status_offerts === 'externe' && externalApplicationDisabled) {
       toast.error(getDisabledMessage());
+      return;
+    }
+    // Vérifier si c'est une offre interne et si les candidatures internes sont désactivées
+    if (job?.status_offerts === 'interne' && internalApplicationDisabled) {
+      toast.error(getInternalDisabledMessage());
       return;
     }
     

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Users, Briefcase, Send, Building2, Banknote, Clock } from "lucide-react";
 import { isApplicationClosed } from "@/utils/applicationUtils";
 import { isPreLaunch } from "@/utils/launchGate";
-import { isExternalApplicationDisabled, getDisabledMessage } from "@/utils/midnightGate";
+import { isExternalApplicationDisabled, getDisabledMessage, isInternalApplicationDisabled, getInternalDisabledMessage } from "@/utils/midnightGate";
 import { useJobOffer } from "@/hooks/useJobOffers";
 import { ContentSpinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const externalApplicationDisabled = isExternalApplicationDisabled();
+  const internalApplicationDisabled = isInternalApplicationDisabled();
   const preLaunchToast = () => toast.info("Les candidatures seront disponibles à partir du lundi 25 août 2025.");
 
   if (isLoading) {
@@ -238,19 +239,28 @@ export function JobDetail({ jobId, onBack, onApply }: JobDetailProps) {
                       toast.error(getDisabledMessage());
                       return;
                     }
+                    // Vérifier si c'est une offre interne et si les candidatures internes sont désactivées
+                    if (jobOffer?.status_offerts === 'interne' && internalApplicationDisabled) {
+                      toast.error(getInternalDisabledMessage());
+                      return;
+                    }
                     onApply();
                   }}
                   className={`w-full text-sm sm:text-base ${
-                    jobOffer?.status_offerts === 'externe' && externalApplicationDisabled
+                    (jobOffer?.status_offerts === 'externe' && externalApplicationDisabled) || 
+                    (jobOffer?.status_offerts === 'interne' && internalApplicationDisabled)
                       ? "opacity-60 cursor-not-allowed bg-gray-400 hover:bg-gray-400"
                       : ""
                   }`}
                   size="lg"
-                  disabled={jobOffer?.status_offerts === 'externe' && externalApplicationDisabled}
-                  title={jobOffer?.status_offerts === 'externe' && externalApplicationDisabled ? getDisabledMessage() : ""}
+                  disabled={(jobOffer?.status_offerts === 'externe' && externalApplicationDisabled) || (jobOffer?.status_offerts === 'interne' && internalApplicationDisabled)}
+                  title={
+                    jobOffer?.status_offerts === 'externe' && externalApplicationDisabled ? getDisabledMessage() : 
+                    jobOffer?.status_offerts === 'interne' && internalApplicationDisabled ? getInternalDisabledMessage() : ""
+                  }
                 >
                   <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  {jobOffer?.status_offerts === 'externe' && externalApplicationDisabled ? "Candidature fermée" : "Postuler"}
+                  {(jobOffer?.status_offerts === 'externe' && externalApplicationDisabled) || (jobOffer?.status_offerts === 'interne' && internalApplicationDisabled) ? "Candidature fermée" : "Postuler"}
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
