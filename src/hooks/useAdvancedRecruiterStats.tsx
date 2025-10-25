@@ -114,8 +114,8 @@ export function useAdvancedRecruiterStats(activeJobsCount: number) {
         const totalApplications = applications.length;
         const openPositions = activeJobsCount;
         
-        // Calculer le taux de couverture : nombre de postes avec au moins 1 candidat / nombre total de postes
-        const positionsWithCandidates = Array.from(positionStats.keys()).length;
+        // Calculer le taux de couverture : nombre de postes avec au moins 2 candidats / nombre total de postes
+        const positionsWithCandidates = Array.from(positionStats.entries()).filter(([_, data]) => data.count >= 2).length;
         const coverageRate = openPositions > 0 ? Math.round((positionsWithCandidates / openPositions) * 100) : 0;
         
         // Convertir les données pour l'affichage

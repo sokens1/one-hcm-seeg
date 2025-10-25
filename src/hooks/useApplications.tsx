@@ -646,8 +646,7 @@ export function useRecruiterApplications(jobOfferId?: string, campaignId?: strin
         .eq('id', applicationId)
         .select(`
           *,
-          job_offers!inner(*),
-          users!inner(*)
+          job_offers(*)
         `);
 
       // console.log('🔧 [updateStatusMutation] Résultat direct:', { data, error });

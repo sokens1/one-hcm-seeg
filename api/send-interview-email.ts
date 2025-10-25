@@ -167,13 +167,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
                 <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;font-family: ui-serif${serif}; color:#000; font-size:16px; line-height:1.7;">
                   <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
                   <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
-                  <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à une ${eventType} qui se tiendra le&nbsp;:</p>
+                  <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un ${eventType} qui se tiendra le&nbsp;:</p>
                   <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
                   <strong>Heure :</strong> ${formattedTime}<br/>
                   <strong>Lieu :</strong> ${location || defaultLocation}</p>
                   <p style="margin:0 0 10px; font-size:16px;">${preparationText}</p>
                   <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
-                  <p style="margin:0 0 10px; font-size:16px;"><strong>PS: Presentez-vous avec tous les documents fournis sur la plateforme, badge professionnel ainsi que votre acte de naissance</strong></p>
                   <br/>
                   <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
                   <p style="margin:0 0 6px; font-size:16px;"><strong>Équipe Support</strong></p>

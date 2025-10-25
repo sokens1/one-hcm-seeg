@@ -24,7 +24,7 @@ export default function RecruiterJobs() {
     navigate(`/recruiter/jobs/${jobId}/edit`);
   };
 
-  const filteredJobs = jobs
+  const filteredJobs = (jobs || [])
     .filter(job => job.status === 'active' || job.status === 'draft' || job.status === 'inactive')
     .filter(job => 
       job.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -128,7 +128,7 @@ export default function RecruiterJobs() {
               >
                 Toutes les campagnes
               </Button>
-              {CAMPAIGN_CONFIG.ALL_CAMPAIGNS.map(campaignId => {
+              {(CAMPAIGN_CONFIG.ALL_CAMPAIGNS || []).map(campaignId => {
                 const isActiveCampaign = campaignId === CAMPAIGN_CONFIG.ACTIVE_CAMPAIGN_ID;
                 return (
                   <Button
@@ -160,7 +160,7 @@ export default function RecruiterJobs() {
           </div>
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-            {filteredJobs.map((job, index) => {
+            {(filteredJobs || []).map((job, index) => {
               const isInactive = job.status === 'inactive';
               const isDraft = job.status === 'draft';
               return (
@@ -254,7 +254,7 @@ export default function RecruiterJobs() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredJobs.map(job => {
+                {(filteredJobs || []).map(job => {
                   const isInactive = job.status === 'inactive';
                   const isDraft = job.status === 'draft';
                   return (
