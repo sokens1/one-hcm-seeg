@@ -220,6 +220,7 @@ export default function Traitements_IA() {
   const [sendMessage, setSendMessage] = useState('');
   const [evaluationData, setEvaluationData] = useState<any>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [candidateEvaluations, setCandidateEvaluations] = useState<Record<string, any>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
   
@@ -371,6 +372,36 @@ export default function Traitements_IA() {
     }
   }, [searchParams]);
 
+  // Effet pour évaluer automatiquement tous les candidats au chargement
+  useEffect(() => {
+    const evaluateAllCandidates = async () => {
+      if (finalCandidatesData.length === 0) return;
+      
+      console.log('🔄 [AUTO-EVAL] Début de l\'évaluation automatique de tous les candidats');
+      
+      // Évaluer chaque candidat qui n'a pas encore été évalué
+      for (const candidate of finalCandidatesData) {
+        if (!candidateEvaluations[candidate.id]) {
+          console.log(`🔍 [AUTO-EVAL] Évaluation du candidat: ${candidate.fullName}`);
+          try {
+            await evaluateCandidateAutomatically(candidate, true);
+            // Petite pause entre les évaluations pour éviter la surcharge
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } catch (error) {
+            console.error(`❌ [AUTO-EVAL] Erreur pour ${candidate.fullName}:`, error);
+          }
+        }
+      }
+      
+      console.log('✅ [AUTO-EVAL] Évaluation automatique terminée');
+    };
+
+    // Délai pour laisser le temps aux données de se charger
+    const timeoutId = setTimeout(evaluateAllCandidates, 2000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [finalCandidatesData.length]); // Se déclenche quand le nombre de candidats change
+
   // Recherche en temps réel
   useEffect(() => {
     const performSearch = async () => {
@@ -421,7 +452,16 @@ export default function Traitements_IA() {
           lastName: candidate.nom,
           poste: candidate.poste,
           department: departmentKey, // Utiliser le nom exact du département
-          aiData: candidate,
+          aiData: {
+            nom: candidate.nom,
+            prenom: candidate.prenom,
+            poste: candidate.poste,
+            resume_global: candidate.resume_global,
+            mtp: candidate.mtp,
+            conformite: candidate.conformite,
+            similarite_offre: candidate.similarite_offre,
+            feedback: candidate.feedback
+          },
           // Inclure toutes les propriétés du candidat mappé pour l'accès aux documents
           ...candidate
         });
@@ -636,10 +676,13 @@ export default function Traitements_IA() {
     await evaluateCandidateAutomatically(candidate);
   };
 
-  const evaluateCandidateAutomatically = async (candidate: CandidateApplication) => {
+  const evaluateCandidateAutomatically = async (candidate: CandidateApplication, isBackground = false) => {
     try {
-      setIsEvaluating(true);
-      setEvaluationData(null);
+      // Ne pas afficher le loader si c'est une évaluation en arrière-plan
+      if (!isBackground) {
+        setIsEvaluating(true);
+        setEvaluationData(null);
+      }
 
       // Vérifier la configuration de la clé API
       if (!azureContainerAppsService.hasApiKey()) {
@@ -727,7 +770,14 @@ export default function Traitements_IA() {
       const result = await azureContainerAppsService.evaluateCandidate(evaluationData);
 
       if (result.success) {
-        setEvaluationData(result.data);
+        if (!isBackground) {
+          setEvaluationData(result.data);
+        }
+        // Stocker l'évaluation pour ce candidat
+        setCandidateEvaluations(prev => ({
+          ...prev,
+          [candidate.id]: result.data
+        }));
         console.log('✅ Évaluation automatique réussie:', result.data);
         console.log('📊 [MODAL] Données d\'évaluation pour le modal:', JSON.stringify(result.data, null, 2));
       } else {
@@ -739,7 +789,9 @@ export default function Traitements_IA() {
     } catch (error) {
       console.error('❌ Erreur inattendue lors de l\'évaluation automatique:', error);
     } finally {
-      setIsEvaluating(false);
+      if (!isBackground) {
+        setIsEvaluating(false);
+      }
     }
   };
 
