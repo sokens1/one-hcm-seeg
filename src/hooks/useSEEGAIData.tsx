@@ -100,7 +100,7 @@ export function useSEEGAIData() {
               similarite_offre: candidate.analysis?.similarite_offre || candidate.similarite_offre,
               conformite: candidate.analysis?.conformite || candidate.conformite,
               feedback: candidate.analysis?.feedback || candidate.feedback,
-              // Conserver TOUTES les données originales pour le mapping vers momo.com
+              // Conserver TOUTES les données originales pour le mapping vers l'API Azure Container Apps
               documents: candidate.documents,
               offre: candidate.offre,
               // Ajouter aussi les données brutes pour debug

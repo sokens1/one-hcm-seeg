@@ -1,7 +1,7 @@
-// Script de démonstration - Affiche exactement ce qui est envoyé vers momo.com
-console.log('🎯 === DÉMONSTRATION D\'ENVOI VERS MOMO.COM ===\n');
+// Script de démonstration - Affiche exactement ce qui est envoyé vers l'API Azure Container Apps
+console.log('🎯 === DÉMONSTRATION D\'ENVOI VERS L\'API AZURE CONTAINER APPS ===\n');
 
-const API_URL = 'https://momo.com/api/candidats';
+const API_URL = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/api/candidats';
 
 // Données exactes à envoyer
 const candidatData = {
@@ -52,6 +52,6 @@ console.log('  "Content-Type": "application/json"');
 console.log('}');
 console.log('Body:', JSON.stringify(candidatData));
 
-console.log('\n✅ PRÊT POUR L\'ENVOI VERS MOMO.COM !');
+console.log('\n✅ PRÊT POUR L\'ENVOI VERS L\'API AZURE CONTAINER APPS !');
 console.log('Exécutez un des scripts de test pour envoyer réellement les données.');
 
