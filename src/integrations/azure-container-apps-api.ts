@@ -62,12 +62,12 @@ class AzureContainerAppsService {
   private apiKey: string | null;
 
   constructor() {
-    // Configuration pour utiliser l'API réelle en production
+    // Configuration pour utiliser le proxy Vercel en production
     if (import.meta.env.DEV) {
       this.baseUrl = '/api/rh-eval';
     } else {
-      // En production, utiliser l'URL directe de l'API Azure Container Apps
-      this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
+      // En production, utiliser le proxy Vercel pour contourner CORS
+      this.baseUrl = '/api/rh-eval-proxy';
     }
     this.timeout = 30000; // 30 secondes
     // Clé API temporaire pour les tests - À remplacer par la vraie clé API
