@@ -24,7 +24,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Send,
   AlertCircle,
   TrendingUp,
   Target,
@@ -1312,21 +1311,6 @@ export default function Traitements_IA() {
                             <span className="hidden sm:inline">Voir Résultats</span>
                             <span className="sm:hidden">Voir</span>
                           </Button>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleSendToAPI(candidate)}
-                            disabled={isSending}
-                            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-                          >
-                            <Send className="h-3 w-3 sm:h-4 sm:w-4" />
-                            <span className="hidden sm:inline">
-                              {isSending ? 'Envoi...' : 'Envoyer'}
-                            </span>
-                            <span className="sm:hidden">
-                              {isSending ? '...' : 'Env'}
-                            </span>
-                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -1358,21 +1342,6 @@ export default function Traitements_IA() {
                       >
                         <Eye className="h-4 w-4" />
                         <span className="hidden xs:inline">Voir</span>
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => handleSendToAPI(candidate)}
-                        disabled={isSending}
-                        className="gap-2 flex-1"
-                      >
-                        <Send className="h-4 w-4" />
-                        <span className="hidden xs:inline">
-                          {isSending ? 'Envoi...' : 'Envoyer'}
-                        </span>
-                        <span className="xs:hidden">
-                          {isSending ? '...' : 'Env'}
-                        </span>
                       </Button>
                     </div>
                   </div>
