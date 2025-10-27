@@ -90,7 +90,8 @@ const getVerdictVariant = (verdict: string | undefined): "default" | "destructiv
 export const createColumns = (
   onViewDetails: (candidate: CandidateAIData) => void,
   onSendToAPI?: (candidate: CandidateAIData) => void,
-  isSending?: boolean
+  isSending?: boolean,
+  candidateEvaluations?: Record<string, any>
 ): ColumnDef<CandidateAIData>[] => [
   {
     accessorKey: "fullName",
@@ -136,26 +137,6 @@ export const createColumns = (
     ),
   },
   {
-    accessorKey: "department",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-8 px-2"
-        >
-          Département
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => (
-      <div className="whitespace-normal">
-        {row.getValue("department") || 'N/A'}
-      </div>
-    ),
-  },
-  {
     accessorKey: "score",
     header: ({ column }) => {
       return (
@@ -171,7 +152,11 @@ export const createColumns = (
     },
     cell: ({ row }) => {
       const candidate = row.original
-      const score = candidate.aiData?.resume_global?.score_global || 0
+      // Priorité aux données d'évaluation RH Eval, puis aux données statiques
+      const evaluation = candidateEvaluations?.[candidate.id]
+      const score = evaluation?.scores?.score_global_pct || 
+                   candidate.aiData?.resume_global?.score_global || 
+                   (candidate as any).resume_global?.score_global || 0
       const displayScore = score > 1 ? score : score * 100
       return (
         <div className="flex items-center gap-2">
@@ -183,8 +168,10 @@ export const createColumns = (
       )
     },
     sortingFn: (rowA, rowB) => {
-      const scoreA = rowA.original.aiData?.resume_global?.score_global || 0
-      const scoreB = rowB.original.aiData?.resume_global?.score_global || 0
+      const scoreA = rowA.original.aiData?.resume_global?.score_global || 
+                    (rowA.original as any).resume_global?.score_global || 0
+      const scoreB = rowB.original.aiData?.resume_global?.score_global || 
+                    (rowB.original as any).resume_global?.score_global || 0
       return scoreA - scoreB
     },
   },
@@ -203,7 +190,12 @@ export const createColumns = (
       )
     },
     cell: ({ row }) => {
-      const verdict = row.original.aiData?.resume_global?.verdict
+      const candidate = row.original
+      // Priorité aux données d'évaluation RH Eval, puis aux données statiques
+      const evaluation = candidateEvaluations?.[candidate.id]
+      const verdict = evaluation?.verdict?.verdict || 
+                     candidate.aiData?.resume_global?.verdict || 
+                     (candidate as any).resume_global?.verdict
       const { icon, color } = getVerdictIcon(verdict)
       return (
         <Badge variant={getVerdictVariant(verdict)} className="whitespace-nowrap">
@@ -213,8 +205,10 @@ export const createColumns = (
       )
     },
     sortingFn: (rowA, rowB) => {
-      const verdictA = rowA.original.aiData?.resume_global?.verdict || ''
-      const verdictB = rowB.original.aiData?.resume_global?.verdict || ''
+      const verdictA = rowA.original.aiData?.resume_global?.verdict || 
+                      (rowA.original as any).resume_global?.verdict || ''
+      const verdictB = rowB.original.aiData?.resume_global?.verdict || 
+                      (rowB.original as any).resume_global?.verdict || ''
       return verdictA.localeCompare(verdictB)
     },
   },
@@ -222,11 +216,22 @@ export const createColumns = (
     accessorKey: "mtp",
     header: "Niveau MTP",
     cell: ({ row }) => {
-      const niveau = row.original.aiData?.mtp?.niveau
+      const candidate = row.original
+      // Priorité aux données d'évaluation RH Eval, puis aux données statiques
+      const evaluation = candidateEvaluations?.[candidate.id]
+      const mtpScore = evaluation?.scores?.score_mtp_pct || 
+                      candidate.aiData?.mtp?.scores?.Moyen || 
+                      (candidate as any).mtp?.scores?.Moyen || 0
+      
+      const displayScore = mtpScore > 1 ? mtpScore : mtpScore * 100
+      
       return (
-        <Badge variant="outline" className="whitespace-nowrap">
-          {niveau || 'N/A'}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Progress value={displayScore} className="w-20 h-2" />
+          <span className="text-sm font-medium min-w-[45px]">
+            {displayScore.toFixed(1)}%
+          </span>
+        </div>
       )
     },
   },
@@ -236,29 +241,15 @@ export const createColumns = (
     cell: ({ row }) => {
       const candidate = row.original
       return (
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onViewDetails(candidate)}
-            className="h-8 px-2"
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            Détails
-          </Button>
-          {onSendToAPI && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => onSendToAPI(candidate)}
-              disabled={isSending}
-              className="h-8 px-2"
-            >
-              <Send className="h-4 w-4 mr-1" />
-              {isSending ? 'Envoi...' : 'Envoyer'}
-            </Button>
-          )}
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onViewDetails(candidate)}
+          className="h-8 px-2"
+        >
+          <Eye className="h-4 w-4 mr-1" />
+          Détails
+        </Button>
       )
     },
   },

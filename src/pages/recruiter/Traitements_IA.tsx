@@ -240,6 +240,7 @@ export default function Traitements_IA() {
   const [sendMessage, setSendMessage] = useState('');
   const [evaluationData, setEvaluationData] = useState<any>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [candidateEvaluations, setCandidateEvaluations] = useState<Record<string, any>>({});
   
   // Défère les mises à jour du Select pour éviter les conflits DOM (Chrome)
   const handleDepartmentChange = (value: string) => {
@@ -320,7 +321,16 @@ export default function Traitements_IA() {
           fullName: fullName, // Nom complet pour la recherche
           poste: candidate.poste,
           department: departmentKey, // Utiliser le nom exact du département
-          aiData: candidate,
+          aiData: {
+            nom: candidate.nom,
+            prenom: candidate.prenom,
+            poste: candidate.poste,
+            resume_global: candidate.resume_global,
+            mtp: candidate.mtp,
+            conformite: candidate.conformite,
+            similarite_offre: candidate.similarite_offre,
+            feedback: candidate.feedback
+          },
           // Inclure toutes les propriétés du candidat mappé pour l'accès aux documents
           ...candidate
         });
@@ -527,6 +537,36 @@ export default function Traitements_IA() {
     return filtered;
   }, [candidatesData, searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange, sortBy, sortOrder, searchResults]);
 
+  // Effet pour évaluer automatiquement tous les candidats au chargement
+  useEffect(() => {
+    const evaluateAllCandidates = async () => {
+      if (filteredCandidates.length === 0) return;
+      
+      console.log('🔄 [AUTO-EVAL] Début de l\'évaluation automatique de tous les candidats');
+      
+      // Évaluer chaque candidat qui n'a pas encore été évalué
+      for (const candidate of filteredCandidates) {
+        if (!candidateEvaluations[candidate.id]) {
+          console.log(`🔍 [AUTO-EVAL] Évaluation du candidat: ${candidate.fullName}`);
+          try {
+            await evaluateCandidateAutomatically(candidate, true);
+            // Petite pause entre les évaluations pour éviter la surcharge
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } catch (error) {
+            console.error(`❌ [AUTO-EVAL] Erreur pour ${candidate.fullName}:`, error);
+          }
+        }
+      }
+      
+      console.log('✅ [AUTO-EVAL] Évaluation automatique terminée');
+    };
+
+    // Délai pour laisser le temps aux données de se charger
+    const timeoutId = setTimeout(evaluateAllCandidates, 2000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [filteredCandidates.length]); // Se déclenche quand le nombre de candidats change
+
   // DataTable gère automatiquement la pagination et les filtres
 
   const handleViewResults = async (candidate: CandidateApplication | CandidateAIData) => {
@@ -636,10 +676,13 @@ export default function Traitements_IA() {
     await evaluateCandidateAutomatically(candidate);
   };
 
-  const evaluateCandidateAutomatically = async (candidate: CandidateApplication | CandidateAIData) => {
+  const evaluateCandidateAutomatically = async (candidate: CandidateApplication | CandidateAIData, isBackground = false) => {
     try {
-      setIsEvaluating(true);
-      setEvaluationData(null);
+      // Ne pas afficher le loader si c'est une évaluation en arrière-plan
+      if (!isBackground) {
+        setIsEvaluating(true);
+        setEvaluationData(null);
+      }
 
       // Vérifier la configuration de la clé API
       if (!azureContainerAppsService.hasApiKey()) {
@@ -730,7 +773,14 @@ export default function Traitements_IA() {
       const result = await azureContainerAppsService.evaluateCandidate(evaluationData);
 
       if (result.success) {
-        setEvaluationData(result.data);
+        if (!isBackground) {
+          setEvaluationData(result.data);
+        }
+        // Stocker l'évaluation pour ce candidat
+        setCandidateEvaluations(prev => ({
+          ...prev,
+          [cand.id]: result.data
+        }));
         console.log('✅ Évaluation automatique réussie:', result.data);
         console.log('📊 [MODAL] Données d\'évaluation pour le modal:', JSON.stringify(result.data, null, 2));
       } else {
@@ -742,7 +792,9 @@ export default function Traitements_IA() {
     } catch (error) {
       console.error('❌ Erreur inattendue lors de l\'évaluation automatique:', error);
     } finally {
-      setIsEvaluating(false);
+      if (!isBackground) {
+        setIsEvaluating(false);
+      }
     }
   };
 
@@ -926,19 +978,6 @@ export default function Traitements_IA() {
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
               <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
-              {isConnected !== null && (
-                <div className="flex items-center gap-2 mt-2">
-                  <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-                  <span className="text-xs text-muted-foreground">
-                    API {isConnected ? 'Connectée' : 'En développement'}
-                  </span>
-                  {!isConnected && (
-                    <span className="text-xs text-blue-600">
-                      (Utilisation des données statiques)
-                    </span>
-                  )}
-                </div>
-              )}
               {sendStatus !== 'idle' && (
                 <div className="flex items-center gap-2 mt-2">
                   <div className={`w-2 h-2 rounded-full ${sendStatus === 'success' ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -1169,7 +1208,7 @@ export default function Traitements_IA() {
           <CardContent>
             {/* DataTable moderne avec toutes les fonctionnalités intégrées */}
             <DataTable 
-              columns={createColumns(handleViewResults, handleSendToAPI, isSending)} 
+              columns={createColumns(handleViewResults, handleSendToAPI, isSending, candidateEvaluations)} 
               data={filteredCandidates as CandidateAIData[]} 
               searchKey="fullName"
               searchPlaceholder="Rechercher par nom..."
@@ -1224,9 +1263,7 @@ export default function Traitements_IA() {
                       <CardTitle className="text-lg flex items-center gap-2">
                         <Brain className="h-5 w-5 text-purple-500" />
                         Évaluation IA Complète
-                        <Badge variant="secondary" className="ml-2">
-                          API RH Eval
-                        </Badge>
+                        /
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -1426,7 +1463,7 @@ export default function Traitements_IA() {
                   </CardContent>
                 </Card> */}
 
-                {/* Conformité documentaire */}
+                {/* Conformité documentaire
                 {selectedCandidate.aiData?.conformite ? (
                   <Card>
                     <CardHeader>
@@ -1462,9 +1499,9 @@ export default function Traitements_IA() {
                       </div>
                     </CardContent>
                   </Card>
-                )}
+                )} */}
 
-                {/* Complétude */}
+                {/* Complétude
                 {selectedCandidate.aiData?.similarite_offre ? (
                   <Card>
                     <CardHeader>
@@ -1550,9 +1587,9 @@ export default function Traitements_IA() {
                       </div>
                     </CardContent>
                   </Card>
-                )}
+                )} */}
 
-                {/* Scores MTP */}
+                {/* Scores MTP
                 {selectedCandidate.aiData?.mtp ? (
                   <Card>
                     <CardHeader>
@@ -1676,10 +1713,10 @@ export default function Traitements_IA() {
                       </div>
                     </CardContent>
                   </Card>
-                )}
+                )} */}
 
                 {/* Feedback RH */}
-                {selectedCandidate.aiData.feedback ? (
+                {/* {selectedCandidate.aiData.feedback ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -1748,7 +1785,7 @@ export default function Traitements_IA() {
                       </div>
                     </CardContent>
                   </Card>
-                )}
+                )} */}
               </div>
             )}
           </DialogContent>
