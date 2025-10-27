@@ -70,8 +70,8 @@ class AzureContainerAppsService {
       this.baseUrl = '/api/rh-eval-proxy';
     }
     this.timeout = 30000; // 30 secondes
-    // Clé API temporaire pour les tests - À remplacer par la vraie clé API
-    this.apiKey = import.meta.env.VITE_AZURE_CONTAINER_APPS_API_KEY || 'test-key-12345';
+    // Clé API pour l'API SEEG AI
+    this.apiKey = import.meta.env.VITE_SEEG_AI_API_KEY || 'demo-key';
   }
 
   /**
@@ -365,6 +365,12 @@ class AzureContainerAppsService {
       };
 
       console.log('📤 [Azure Container Apps] Données envoyées à l\'API RH Eval:', rhEvalData);
+      
+      // Log détaillé des données pour debug
+      console.log('🔍 [DEBUG] Données complètes envoyées à Azure Container Apps:');
+      console.log('📍 URL de destination:', `${this.baseUrl}/evaluate`);
+      console.log('🔑 Clé API utilisée:', this.apiKey);
+      console.log('📊 Structure des données:', JSON.stringify(rhEvalData, null, 2));
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);

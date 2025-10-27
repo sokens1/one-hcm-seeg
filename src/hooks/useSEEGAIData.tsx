@@ -46,6 +46,13 @@ export function useSEEGAIData() {
       
       const searchResults = await seegAIService.getAllCandidates();
       
+      // Log détaillé des données récupérées de l'API SEEG-AI
+      console.log('🔍 [DEBUG] Données récupérées de l\'API SEEG-AI:');
+      console.log('📍 URL source:', 'https://seeg-ai-api.azurewebsites.net/candidatures');
+      console.log('📊 Nombre de candidats récupérés:', searchResults.length);
+      console.log('📋 Structure des données:', JSON.stringify(searchResults.slice(0, 2), null, 2)); // Afficher les 2 premiers pour éviter le spam
+      console.log('📄 Exemple de candidat complet:', searchResults[0]);
+      
       if (Array.isArray(searchResults) && searchResults.length > 0) {
         // Organiser les données par département comme attendu par l'interface
         const organizedData: Record<string, any[]> = {};
@@ -109,6 +116,12 @@ export function useSEEGAIData() {
           }
           organizedData[department].push(mappedCandidate);
         });
+        
+        // Log détaillé des données organisées par département
+        console.log('🔍 [DEBUG] Données organisées par département:');
+        console.log('📊 Départements trouvés:', Object.keys(organizedData));
+        console.log('📋 Répartition des candidats:', Object.entries(organizedData).map(([dept, candidates]) => `${dept}: ${candidates.length}`));
+        console.log('📄 Exemple de candidat mappé:', organizedData[Object.keys(organizedData)[0]]?.[0]);
         
         setData(organizedData);
         console.info(`🔧 [SEEG AI] ${searchResults.length} candidats récupérés via GET /candidatures`);
