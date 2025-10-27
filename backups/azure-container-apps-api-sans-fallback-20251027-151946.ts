@@ -71,7 +71,7 @@ class AzureContainerAppsService {
     }
     this.timeout = 30000; // 30 secondes
     // Clé API temporaire pour les tests - À remplacer par la vraie clé API
-    this.apiKey = import.meta.env.VITE_AZURE_CONTAINER_APPS_API_KEY || 'test-key-12345';
+    this.apiKey = import.meta.env.VITE_SEEG_AI_API_KEY || 'test-key-12345';
   }
 
   /**

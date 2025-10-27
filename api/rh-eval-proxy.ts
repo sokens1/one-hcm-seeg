@@ -31,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
     
     // Ajouter la clé API si elle existe
-    const apiKey = process.env.VITE_AZURE_CONTAINER_APPS_API_KEY;
+    const apiKey = process.env.VITE_SEEG_AI_API_KEY;
     if (apiKey) {
       apiHeaders['x-api-key'] = apiKey;
       console.log(`🔑 [Proxy CORS] Clé API ajoutée`);

@@ -57,6 +57,7 @@ export function DashboardToggle({ currentView, onToggle }: DashboardToggleProps)
               size="sm"
               onClick={handleAdvancedClick}
               className="gap-2"
+              disabled={true}
             >
               <BarChart3 className="w-3 h-3" />
               Avancé (IA)

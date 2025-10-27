@@ -366,6 +366,12 @@ class AzureContainerAppsService {
 
       console.log('📤 [Azure Container Apps] Données envoyées à l\'API RH Eval:', rhEvalData);
       
+      // Log détaillé des données pour debug
+      console.log('🔍 [DEBUG] Données complètes envoyées à Azure Container Apps:');
+      console.log('📍 URL de destination:', `${this.baseUrl}/evaluate`);
+      console.log('🔑 Clé API utilisée:', this.apiKey);
+      console.log('📊 Structure des données:', JSON.stringify(rhEvalData, null, 2));
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
