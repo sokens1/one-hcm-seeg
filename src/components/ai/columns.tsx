@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Eye } from "lucide-react"
+import { ArrowUpDown, Eye, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -88,7 +88,9 @@ const getVerdictVariant = (verdict: string | undefined): "default" | "destructiv
 }
 
 export const createColumns = (
-  onViewDetails: (candidate: CandidateAIData) => void
+  onViewDetails: (candidate: CandidateAIData) => void,
+  onSendToAPI?: (candidate: CandidateAIData) => void,
+  isSending?: boolean
 ): ColumnDef<CandidateAIData>[] => [
   {
     accessorKey: "fullName",
@@ -234,15 +236,29 @@ export const createColumns = (
     cell: ({ row }) => {
       const candidate = row.original
       return (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onViewDetails(candidate)}
-          className="h-8 px-2"
-        >
-          <Eye className="h-4 w-4 mr-1" />
-          Détails
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onViewDetails(candidate)}
+            className="h-8 px-2"
+          >
+            <Eye className="h-4 w-4 mr-1" />
+            Détails
+          </Button>
+          {onSendToAPI && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => onSendToAPI(candidate)}
+              disabled={isSending}
+              className="h-8 px-2"
+            >
+              <Send className="h-4 w-4 mr-1" />
+              {isSending ? 'Envoi...' : 'Envoyer'}
+            </Button>
+          )}
+        </div>
       )
     },
   },

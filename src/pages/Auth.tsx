@@ -15,7 +15,7 @@ import { ForgotPassword } from "@/components/auth/ForgotPassword";
 import { supabase } from "@/integrations/supabase/client";
 import { isPreLaunch } from "@/utils/launchGate";
 import { isApplicationClosed } from "@/utils/applicationUtils";
-import { isExternalRegistrationDisabled, getDisabledMessage } from "@/utils/midnightGate";
+import { isExternalRegistrationDisabled, getDisabledMessage, isInternalRegistrationDisabled, getInternalDisabledMessage } from "@/utils/midnightGate";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ export default function Auth() {
   const preLaunch = isPreLaunch();
   const applicationsClosed = isApplicationClosed();
   const externalRegistrationDisabled = isExternalRegistrationDisabled();
+  const internalRegistrationDisabled = isInternalRegistrationDisabled();
 
   // Deduplicate pre-launch toasts (shown in multiple places)
   const lastPreLaunchToastTs = useRef<number>(0);
@@ -672,23 +673,41 @@ export default function Auth() {
                       <div className="grid grid-cols-2 gap-3">
                         <button
                           type="button"
-                          onClick={() => setSignUpData({ ...signUpData, candidateStatus: "interne", noSeegEmail: false })}
+                          onClick={() => {
+                            if (internalRegistrationDisabled) {
+                              toast.error(getInternalDisabledMessage());
+                              return;
+                            }
+                            setSignUpData({ ...signUpData, candidateStatus: "interne", noSeegEmail: false });
+                          }}
                           className={`p-4 rounded-lg border-2 transition-all ${
-                            signUpData.candidateStatus === "interne"
+                            internalRegistrationDisabled
+                              ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
+                              : signUpData.candidateStatus === "interne"
                               ? "border-primary bg-primary/5 shadow-sm"
                               : "border-gray-200 hover:border-gray-300"
                           }`}
+                          disabled={internalRegistrationDisabled}
+                          title={internalRegistrationDisabled ? getInternalDisabledMessage() : ""}
                         >
                           <Building2 className={`w-5 h-5 mx-auto mb-2 ${
-                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-400"
+                            internalRegistrationDisabled
+                              ? "text-gray-300"
+                              : signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-400"
                           }`} />
                           <div className={`text-sm font-medium ${
-                            signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-700"
+                            internalRegistrationDisabled
+                              ? "text-gray-400"
+                              : signUpData.candidateStatus === "interne" ? "text-primary" : "text-gray-700"
                           }`}>
                             Candidat Interne
                           </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Agent SEEG
+                          <div className={`text-xs mt-1 ${
+                            internalRegistrationDisabled
+                              ? "text-gray-300"
+                              : "text-muted-foreground"
+                          }`}>
+                            {internalRegistrationDisabled ? <span className='text-orange-500'> Les inscriptions internes sont fermées</span> : "Agent SEEG"}
                           </div>
                         </button>
                         <button

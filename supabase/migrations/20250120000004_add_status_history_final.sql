@@ -5,7 +5,7 @@
 -- Créer la table d'historique des statuts
 CREATE TABLE IF NOT EXISTS public.application_status_history (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  application_id TEXT NOT NULL REFERENCES public.applications(id) ON DELETE CASCADE,
+  application_id UUID NOT NULL REFERENCES public.applications(id) ON DELETE CASCADE,
   previous_status TEXT,
   new_status TEXT NOT NULL,
   changed_by TEXT,

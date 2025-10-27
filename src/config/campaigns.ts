@@ -30,7 +30,7 @@ export const CAMPAIGN_CONFIG = {
   },
   // Propriétés pour la compatibilité avec RecruiterJobs
   ALL_CAMPAIGNS: [1, 2, 3],
-  ACTIVE_CAMPAIGN_ID: 1
+  ACTIVE_CAMPAIGN_ID: 3  // Campagne 3 est active (20/10 - 30/11)
 };
 
 // Fonction pour obtenir les campagnes visibles pour les candidats
