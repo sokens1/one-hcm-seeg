@@ -122,9 +122,8 @@ export default defineConfig(({ mode }) => ({
                         <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
                         <strong>Heure :</strong> ${formattedTime}<br/>
                         <strong>Lieu :</strong> ${location || "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville."}</p>
-                        <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
+                        <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle,  badge, ou de toute autre pièce d'identité en cours de validité.</p>
                         <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
-                        <p style="margin:0 0 10px; font-size:16px;"><strong>PS: Presentez-vous avec tous les documents fournis sur la plateforme, badge professionnel ainsi que votre acte de naissance</strong></p>
                         <br/>
                         <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
                         <p style="margin:0 0 6px; font-size:16px;"><strong>Équipe Support</strong></p>
@@ -287,7 +286,6 @@ export default defineConfig(({ mode }) => ({
                           <strong>Lieu :</strong> ${location || "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville."}</p>
                           <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
                           <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
-                          <p style="margin:0 0 10px; font-size:16px;"><strong>PS: Presentez-vous avec tous les documents fournis sur la plateforme, badge professionnel ainsi que votre acte de naissance</strong></p>
                           <br/>
                           <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
                           <p style="margin:0 0 6px; font-size:16px;"><strong>Équipe Support</strong></p>

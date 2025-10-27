@@ -314,7 +314,7 @@ export function useRecruiterDashboard(campaignId?: string) {
       const currentApplications = jobApplications.length;
       
       // Create a coverage score based on number of applications
-      // This replaces the target_positions calculation
+      // Une offre est considérée comme "couverte" avec au moins 2 candidatures
       let coverageScore = 0;
       let coverageStatus: JobCoverageData['coverage_status'] = 'low';
       
@@ -327,10 +327,11 @@ export function useRecruiterDashboard(campaignId?: string) {
       } else if (currentApplications >= 4) {
         coverageScore = 70;
         coverageStatus = 'moderate';
-      } else if (currentApplications >= 1) {
+      } else if (currentApplications >= 2) {
         coverageScore = 50;
         coverageStatus = 'low';
       }
+      // Si moins de 2 candidatures, coverageScore reste à 0 et status reste 'low'
 
       return {
         id: job.id,

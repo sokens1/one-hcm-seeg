@@ -665,7 +665,6 @@ export default function CandidateAnalysis() {
   // Utiliser le hook useSynthesisData pour récupérer les vraies données
   const { synthesisData, isLoading: synthesisLoading, updateRecommendations, saveSynthesisFields } = useSynthesisData(application?.id || '');
   const { data: documents, isLoading: documentsLoading, error: documentsError } = useApplicationDocuments(id);
-  const { updateApplicationStatus } = useRecruiterApplications();
 
   const jobId = searchParams.get('jobId') || application?.job_offer_id;
   const jobTitle = application?.job_offers?.title;
@@ -718,16 +717,38 @@ export default function CandidateAnalysis() {
 
   const handleStatusChange = async (newStatus: Application['status']) => {
     if (!application || isObserver) return;
-    // console.log('🔄 handleStatusChange appelé avec:', { applicationId: application.id, newStatus });
+    console.log('🔄 [CandidateAnalysis] handleStatusChange appelé avec:', { applicationId: application.id, newStatus });
+    
     try {
-      // console.log('📤 Appel de updateApplicationStatus...');
-      await updateApplicationStatus({ applicationId: application.id, status: newStatus });
-      // console.log('✅ updateApplicationStatus terminé');
+      // Utiliser une requête directe au lieu de la mutation problématique
+      console.log('📤 [CandidateAnalysis] Mise à jour directe du statut...');
+      const { data: updateData, error: statusError } = await supabase
+        .from('applications')
+        .update({
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', application.id)
+        .select('id, status');
+
+      console.log('📊 [CandidateAnalysis] Résultat de la mise à jour:', { updateData, statusError });
+
+      if (statusError) {
+        console.error('❌ [CandidateAnalysis] Erreur lors de la mise à jour:', statusError);
+        throw new Error(`Erreur lors de la mise à jour: ${statusError.message}`);
+      }
+
+      if (!updateData || updateData.length === 0) {
+        console.error('❌ [CandidateAnalysis] Aucune donnée retournée');
+        throw new Error('Aucune candidature trouvée pour la mise à jour');
+      }
+
+      console.log('✅ [CandidateAnalysis] Statut mis à jour avec succès:', updateData[0]);
 
       // Recharger les données de l'application pour refléter le nouveau statut
-      // console.log('🔄 Rechargement des données...');
+      console.log('🔄 [CandidateAnalysis] Rechargement des données...');
       await refetchApplication();
-      // console.log('✅ Données rechargées');
+      console.log('✅ [CandidateAnalysis] Données rechargées');
 
       toast({
         title: "Statut mis à jour",
@@ -746,7 +767,7 @@ export default function CandidateAnalysis() {
         }
       }
     } catch (e) {
-      console.error("Erreur lors du changement de statut", e);
+      console.error("❌ [CandidateAnalysis] Erreur lors du changement de statut", e);
       toast({
         variant: "destructive",
         title: "Erreur",

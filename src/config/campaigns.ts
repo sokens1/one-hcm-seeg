@@ -27,7 +27,10 @@ export const CAMPAIGN_CONFIG = {
     startDate: new Date('2025-10-20T00:00:00'),
     endDate: new Date('2025-11-30T23:59:59'),
     description: 'Troisième campagne de recrutement - 20/10/2025 au 30/11/2025'
-  }
+  },
+  // Propriétés pour la compatibilité avec RecruiterJobs
+  ALL_CAMPAIGNS: [1, 2, 3],
+  ACTIVE_CAMPAIGN_ID: 3  // Campagne 3 est active (20/10 - 30/11)
 };
 
 // Fonction pour obtenir les campagnes visibles pour les candidats

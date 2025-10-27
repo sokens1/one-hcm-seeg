@@ -6,7 +6,7 @@ import { getVisibleCampaignsForCandidates, CAMPAIGN_CONFIG } from "@/config/camp
 import { useAuth } from "./useAuth";
 
 // Import des périodes de campagne pour vérifier si terminées
-const CAMPAIGN_PERIODS = CAMPAIGN_CONFIG.CAMPAIGNS;
+const CAMPAIGN_PERIODS = getVisibleCampaignsForCandidates();
 
 export interface JobOffer {
   id: string;
@@ -209,9 +209,14 @@ const fetchJobOffers = async () => {
     }));
 
     // 4.5. Filter offers based on candidate status (internal/external)
-    // IMPORTANT : Ce filtrage s'applique à tout UTILISATEUR AUTHENTIFIÉ NON-RECRUTEUR
+    // DÉSACTIVÉ : Toutes les offres sont maintenant visibles, seuls les boutons sont désactivés après les dates limites
     // Les recruteurs/admins/observateurs voient TOUTES les offres
     const offersFilteredByStatus = offersWithStats.filter(offer => {
+      // NE PLUS FILTRER par audience - toutes les offres sont visibles
+      // La désactivation des boutons se fait dans les composants (job-card, JobDetail, etc.)
+      return true;
+      
+      /* ANCIEN FILTRAGE COMMENTÉ - MAINTENANT TOUTES LES OFFRES SONT VISIBLES
       // Appliquer le filtre d'audience aux utilisateurs connectés non-recruteurs
       const shouldApplyAudienceFilter = isAuthenticated && !isRecruiter;
       if (!shouldApplyAudienceFilter) {
@@ -230,15 +235,13 @@ const fetchJobOffers = async () => {
       // - Candidat EXTERNE : voit SEULEMENT les offres externes
       // - Candidat INTERNE : voit TOUTES les offres (internes + externes)
       if (userStatus === 'interne') {
-        // console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat interne voit tout)`);
         return true; // Les internes voient tout
       } else if (userStatus === 'externe' && offerStatus === 'externe') {
-        // console.log(`✅ [FILTER] "${offer.title}" (${offerStatus}) - Visible (candidat externe voit externe)`);
         return true; // Les externes voient seulement les offres externes
       } else {
-        // console.log(`🚫 [FILTER] "${offer.title}" (${offerStatus}) - Masquée (candidat ${userStatus} ne peut pas voir ${offerStatus})`);
         return false;
       }
+      */
     });
 
     if (isCandidate) {
@@ -302,8 +305,11 @@ const fetchJobOffers = async () => {
     }
 
     // 6. FILTRAGE PAR DATE LIMITE EXPIRÉE
-    // - Recruteurs : Voient TOUTES les offres (même expirées)
-    // - Candidats/Public : Ne voient PAS les offres dont la date_limite est passée
+    // DÉSACTIVÉ : Toutes les offres sont maintenant visibles, même après la date limite
+    // La désactivation des boutons se fait dans les composants (job-card, JobDetail, etc.)
+    const offersFilteredByDate = offersFilteredByCampaign; // Ne plus filtrer par date
+    
+    /* ANCIEN FILTRAGE COMMENTÉ - MAINTENANT TOUTES LES OFFRES SONT VISIBLES
     const now = new Date();
     const offersFilteredByDate = offersFilteredByCampaign.filter(offer => {
       // Si l'utilisateur est un RECRUTEUR, montrer TOUTES les offres (même expirées)
@@ -322,12 +328,12 @@ const fetchJobOffers = async () => {
       // Vérifier si la date limite est dépassée
       const deadline = new Date(dateLimite);
       if (now > deadline) {
-        // console.log(`⏰ [DATE FILTER] "${offer.title}" - Date limite dépassée (${dateLimite}) - Masquée`);
         return false; // Masquer l'offre expirée
       }
       
       return true; // Offre encore valide
     });
+    */
 
     if (isCandidate || !isAuthenticated) {
       // console.log(`📊 [FILTER DATE] Offres visibles après filtrage date: ${offersFilteredByDate.length}/${offersFilteredByCampaign.length}`);

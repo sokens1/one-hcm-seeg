@@ -143,21 +143,21 @@ export function useApplications() {
         }
       }));
 
-      // Filtrer les candidatures par campagne visible
-      const visibleCampaigns = getVisibleCampaignsForCandidates();
-      const filteredApplications = applications.filter((app: any) => {
-        const campaignId = app.job_offers?.campaign_id;
-        
-        // Si pas de campaign_id, on montre la candidature
-        if (!campaignId) return true;
-        
-        // Vérifier si la campagne est visible
-        return visibleCampaigns.includes(campaignId);
-      });
+      // TEMPORAIRE: Désactiver le filtrage de campagne pour résoudre le problème de visibilité
+      // const visibleCampaigns = getVisibleCampaignsForCandidates();
+      // const filteredApplications = applications.filter((app: any) => {
+      //   const campaignId = app.job_offers?.campaign_id;
+      //   
+      //   // Si pas de campaign_id, on montre la candidature
+      //   if (!campaignId) return true;
+      //   
+      //   // Vérifier si la campagne est visible
+      //   return visibleCampaigns.includes(campaignId);
+      // });
 
-      console.log(`📊 [useApplications] Candidatures filtrées par campagne: ${filteredApplications.length}/${applications.length}`);
+      console.log(`📊 [useApplications] Candidatures récupérées: ${applications.length}`);
 
-      return filteredApplications as Application[];
+      return applications as Application[];
     }
 
     // Pour les recruteurs/admins, utiliser l'ancienne méthode directe
@@ -646,8 +646,7 @@ export function useRecruiterApplications(jobOfferId?: string, campaignId?: strin
         .eq('id', applicationId)
         .select(`
           *,
-          job_offers!inner(*),
-          users!inner(*)
+          job_offers(*)
         `);
 
       // console.log('🔧 [updateStatusMutation] Résultat direct:', { data, error });

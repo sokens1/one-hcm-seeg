@@ -281,7 +281,7 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
   }, [applicationId, toast, calculateSectionScores]);
 
   // Sauvegarder les données avec invalidation du cache
-  const saveEvaluation = useCallback(async (data: EvaluationData) => {
+  const saveEvaluation = useCallback(async (data: EvaluationData, forceOverwrite = false) => {
     if (!applicationId) return;
     
     // console.log('💾 [SAVE DEBUG] Début de la sauvegarde pour applicationId:', applicationId);
@@ -356,6 +356,9 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
         .maybeSingle();
 
       const preferExistingIfNewEmpty = <T>(newVal: T | null | undefined, oldVal: T | null | undefined): T | null | undefined => {
+        // Si forceOverwrite est true, toujours utiliser la nouvelle valeur
+        if (forceOverwrite) return newVal;
+        
         // Pour nombres: si newVal === 0 et oldVal > 0 -> garder old
         if (typeof newVal === 'number') {
           if (newVal === 0 && typeof oldVal === 'number' && oldVal > 0) return oldVal;
@@ -606,12 +609,19 @@ export function useOptimizedProtocol1Evaluation(applicationId: string) {
     };
   }, [applicationId, evaluationData, saveEvaluation]);
 
+  // Fonction pour réinitialiser les données (force l'écrasement)
+  const resetEvaluation = useCallback(async (resetData: EvaluationData) => {
+    console.log('🔄 [RESET HOOK] Réinitialisation forcée des données');
+    await saveEvaluation(resetData, true); // forceOverwrite = true
+  }, [saveEvaluation]);
+
   return {
     evaluationData,
     updateEvaluation,
     calculateSectionScores: () => calculateSectionScores(evaluationData.protocol1),
     isLoading,
     isSaving,
-    reload: loadEvaluation
+    reload: loadEvaluation,
+    resetEvaluation
   };
 }

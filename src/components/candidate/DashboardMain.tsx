@@ -57,13 +57,9 @@ export function DashboardMain() {
   // Harmoniser le comptage avec le catalogue: exclure les offres de démonstration/fallback
   const baseJobs = (jobOffers || []).filter(j => !String(j.id).startsWith('fallback-') && j.recruiter_id !== 'fallback-recruiter');
   
-  // Appliquer le même filtre d'audience que le catalogue
-  const visibleJobOffers = baseJobs.filter(job => {
-    // Audience must match when known (même logique que JobCatalog)
-    const offerAudience = (job as any).status_offerts ?? null;
-    const matchesAudience = !candidateAudience || offerAudience === candidateAudience;
-    return matchesAudience;
-  });
+  // NE PLUS FILTRER par audience - toutes les offres sont visibles
+  // La désactivation des boutons se fait dans les composants (job-card, JobDetail, etc.)
+  const visibleJobOffers = baseJobs; // Toutes les offres sont maintenant visibles
   
   // Debug: Log job offers count (après filtration identique au catalogue)
   console.log('🔍 [DashboardMain] Offres visibles (après filtre audience):', visibleJobOffers.length, 'candidateAudience:', candidateAudience);
