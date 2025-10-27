@@ -1375,7 +1375,7 @@ export default function Traitements_IA() {
                 )}
 
                 {/* Score Global */}
-                <Card>
+                {/* <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <BarChart3 className="h-5 w-5" />
@@ -1424,7 +1424,7 @@ export default function Traitements_IA() {
                       </p>
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Conformité documentaire */}
                 {selectedCandidate.aiData?.conformite ? (
