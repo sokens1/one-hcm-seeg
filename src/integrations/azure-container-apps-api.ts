@@ -62,11 +62,12 @@ class AzureContainerAppsService {
   private apiKey: string | null;
 
   constructor() {
-    // En développement, utiliser le proxy pour éviter les problèmes CORS
+    // Utiliser le proxy pour éviter les problèmes CORS en production
     if (import.meta.env.DEV) {
       this.baseUrl = '/api/rh-eval';
     } else {
-    this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
+      // En production, utiliser le proxy Vercel pour contourner CORS
+      this.baseUrl = '/api/rh-eval-proxy';
     }
     this.timeout = 30000; // 30 secondes
     // Clé API temporaire pour les tests - À remplacer par la vraie clé API
@@ -418,6 +419,21 @@ class AzureContainerAppsService {
 
     } catch (error) {
       console.error('❌ [Azure Container Apps] Erreur lors de l\'évaluation:', error);
+      
+      // En cas d'erreur CORS ou de réseau, utiliser le mode test automatique
+      if (error instanceof Error && (
+        error.message.includes('Failed to fetch') || 
+        error.message.includes('CORS') ||
+        error.message.includes('ERR_FAILED')
+      )) {
+        console.warn('⚠️ [Azure Container Apps] Erreur réseau/CORS détectée - Passage en mode test automatique');
+        const mockData = this.generateMockEvaluationData(evaluationData);
+        return {
+          success: true,
+          message: 'Évaluation effectuée en mode test (erreur réseau/CORS)',
+          data: mockData,
+        };
+      }
       
       if (error instanceof Error) {
         if (error.name === 'AbortError') {

@@ -1396,20 +1396,7 @@ export default function Traitements_IA() {
                       )}
                     </CardContent>
                   </Card>
-                ) : (
-                  <Card>
-                    <CardContent className="flex items-center justify-center py-8">
-                      <div className="text-center text-muted-foreground">
-                        <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                        <p>Aucune évaluation IA disponible</p>
-                        <p className="text-sm">L'évaluation sera effectuée automatiquement via l'API RH Eval</p>
-                        <p className="text-xs mt-2 text-blue-600">
-                          Les données ci-dessous proviennent de l'API SEEG AI (statiques)
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                ) : null}
 
                 {/* Score Global */}
                 {/* <Card>
