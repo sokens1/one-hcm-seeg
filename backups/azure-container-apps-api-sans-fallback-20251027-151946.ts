@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 /**
  * Service pour l'API Azure Container Apps - RH RVAL
  * Documentation: https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/docs
