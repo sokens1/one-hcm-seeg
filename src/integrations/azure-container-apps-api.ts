@@ -62,13 +62,8 @@ class AzureContainerAppsService {
   private apiKey: string | null;
 
   constructor() {
-    // Configuration temporaire : utiliser l'URL directe avec fallback automatique
-    if (import.meta.env.DEV) {
-      this.baseUrl = '/api/rh-eval';
-    } else {
-      // En production, utiliser l'URL directe (le fallback gérera les erreurs CORS)
-      this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
-    }
+    // Utiliser le proxy CORS pour éviter les problèmes de CORS
+    this.baseUrl = '/api/rh-eval';
     this.timeout = 30000; // 30 secondes
     // Clé API temporaire pour les tests - À remplacer par la vraie clé API
     this.apiKey = import.meta.env.VITE_AZURE_CONTAINER_APPS_API_KEY || 'test-key-12345';

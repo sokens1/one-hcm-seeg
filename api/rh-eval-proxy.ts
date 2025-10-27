@@ -18,10 +18,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // URL de base de l'API Azure Container Apps
     const baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
     
-    // Construire l'URL complète
+    // Construire l'URL complète - utiliser l'URL complète du path
     const apiUrl = `${baseUrl}${url}`;
     
-    console.log(`🔄 [Proxy] ${method} ${apiUrl}`);
+    console.log(`🔄 [Proxy CORS] ${method} ${apiUrl}`);
+    console.log(`📤 [Proxy CORS] Headers reçus:`, headers);
+    console.log(`📦 [Proxy CORS] Body:`, body);
     
     // Préparer les en-têtes pour la requête vers l'API
     const apiHeaders: Record<string, string> = {
@@ -32,6 +34,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const apiKey = process.env.VITE_AZURE_CONTAINER_APPS_API_KEY;
     if (apiKey) {
       apiHeaders['x-api-key'] = apiKey;
+      console.log(`🔑 [Proxy CORS] Clé API ajoutée`);
+    } else {
+      console.log(`⚠️ [Proxy CORS] Aucune clé API trouvée`);
     }
     
     // Ajouter les en-têtes d'autorisation si présents
@@ -50,13 +55,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       fetchOptions.body = JSON.stringify(body);
     }
     
+    console.log(`🚀 [Proxy CORS] Envoi de la requête vers l'API Azure Container Apps...`);
+    
     // Faire la requête vers l'API Azure Container Apps
     const response = await fetch(apiUrl, fetchOptions);
     
     // Obtenir le contenu de la réponse
     const responseText = await response.text();
     
-    console.log(`✅ [Proxy] Réponse ${response.status} pour ${method} ${url}`);
+    console.log(`✅ [Proxy CORS] Réponse ${response.status} pour ${method} ${url}`);
+    console.log(`📥 [Proxy CORS] Contenu de la réponse:`, responseText.substring(0, 200) + '...');
     
     // Renvoyer la réponse avec le bon statut et contenu
     res.status(response.status);
@@ -64,7 +72,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.send(responseText);
     
   } catch (error) {
-    console.error('❌ [Proxy] Erreur:', error);
+    console.error('❌ [Proxy CORS] Erreur:', error);
     
     res.status(500).json({
       success: false,
