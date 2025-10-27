@@ -35,98 +35,85 @@ export function useSEEGAIData() {
       setIsLoading(true);
       setError(null);
       setHasTriedApi(true);
-      // Ne pas réinitialiser les données ici pour éviter les conflits
 
       const connected = await checkConnection();
       if (!connected) {
         throw new Error('Impossible de se connecter à l\'API SEEG AI');
       }
 
-      // Essayer d'abord l'endpoint dédié
-      try {
-        const aiData = await seegAIService.getAIData();
-        setData(aiData);
-        return;
-      } catch (endpointError) {
-        // Si l'endpoint dédié n'existe pas, utiliser la recherche pour récupérer des données
-        console.info('🔧 [SEEG AI] Endpoint /candidatures/ai-data non disponible, utilisation de GET /candidatures');
+      // Utiliser directement l'endpoint /candidatures qui fonctionne
+      console.info('🔧 [SEEG AI] Récupération des données via GET /candidatures');
+      
+      const searchResults = await seegAIService.getAllCandidates();
+      
+      if (Array.isArray(searchResults) && searchResults.length > 0) {
+        // Organiser les données par département comme attendu par l'interface
+        const organizedData: Record<string, any[]> = {};
         
-        // Récupérer tous les candidats via l'endpoint dédié
-        const searchResults = await seegAIService.getAllCandidates();
+        searchResults.forEach((candidate: any) => {
+          // Essayer différentes sources pour le département
+          let department = 'Autres';
+          
+          if (candidate.offre?.ligne_hierarchique) {
+            department = candidate.offre.ligne_hierarchique;
+          } else if (candidate.offre?.intitule) {
+            // Extraire le département du titre du poste
+            const title = candidate.offre.intitule.toLowerCase();
+            if (title.includes('juridique')) department = 'Juridique';
+            else if (title.includes('rh') || title.includes('ressources humaines')) department = 'Ressources Humaines';
+            else if (title.includes('financier') || title.includes('comptable')) department = 'Finance';
+            else if (title.includes('commercial') || title.includes('vente')) department = 'Commercial';
+            else if (title.includes('technique') || title.includes('ingénieur')) department = 'Technique';
+            else if (title.includes('marketing') || title.includes('communication')) department = 'Marketing';
+            else if (title.includes('système') || title.includes('informatique')) department = 'Systèmes d\'Information';
+            else if (title.includes('direction') || title.includes('directeur')) department = 'Direction';
+            else department = 'Autres';
+          }
+          
+          // Mapper les données de l'API vers le format attendu par l'interface
+          const mappedCandidate = {
+            prenom: candidate.first_name || candidate.prenom || 'N/A',
+            nom: candidate.last_name || candidate.nom || 'N/A',
+            poste: candidate.offre?.intitule || candidate.poste || 'N/A',
+            resume_global: candidate.analysis?.resume_global || candidate.resume_global || {
+              score_global: 0,
+              rang_global: 999,
+              verdict: 'Non évalué',
+              commentaire_global: 'Aucune évaluation disponible'
+            },
+            mtp: {
+              ...candidate.analysis?.mtp,
+              ...candidate.mtp,
+              // Ajouter les réponses MTP si elles existent
+              reponses_mtp: candidate.reponses_mtp || candidate.analysis?.reponses_mtp
+            },
+            similarite_offre: candidate.analysis?.similarite_offre || candidate.similarite_offre,
+            conformite: candidate.analysis?.conformite || candidate.conformite,
+            feedback: candidate.analysis?.feedback || candidate.feedback,
+            // Conserver TOUTES les données originales pour le mapping vers l'API Azure Container Apps
+            documents: candidate.documents,
+            offre: candidate.offre,
+            // Ajouter aussi les données brutes pour debug
+            rawData: candidate,
+            // Ajouter directement les réponses MTP au niveau racine pour faciliter l'accès
+            reponses_mtp: candidate.reponses_mtp,
+            // Ajouter directement les documents au niveau racine pour faciliter l'accès
+            cv: candidate.documents?.cv,
+            cover_letter: candidate.documents?.cover_letter,
+            diplome: candidate.documents?.diplome,
+            certificats: candidate.documents?.certificats
+          };
+          
+          if (!organizedData[department]) {
+            organizedData[department] = [];
+          }
+          organizedData[department].push(mappedCandidate);
+        });
         
-        if (Array.isArray(searchResults) && searchResults.length > 0) {
-          // Organiser les données par département comme attendu par l'interface
-          const organizedData: Record<string, any[]> = {};
-          
-          searchResults.forEach((candidate: any) => {
-            // Essayer différentes sources pour le département
-            let department = 'Autres';
-            
-            if (candidate.offre?.ligne_hierarchique) {
-              department = candidate.offre.ligne_hierarchique;
-            } else if (candidate.offre?.intitule) {
-              // Extraire le département du titre du poste
-              const title = candidate.offre.intitule.toLowerCase();
-              if (title.includes('juridique')) department = 'Juridique';
-              else if (title.includes('rh') || title.includes('ressources humaines')) department = 'Ressources Humaines';
-              else if (title.includes('financier') || title.includes('comptable')) department = 'Finance';
-              else if (title.includes('commercial') || title.includes('vente')) department = 'Commercial';
-              else if (title.includes('technique') || title.includes('ingénieur')) department = 'Technique';
-              else if (title.includes('marketing') || title.includes('communication')) department = 'Marketing';
-              else if (title.includes('système') || title.includes('informatique')) department = 'Systèmes d\'Information';
-              else if (title.includes('direction') || title.includes('directeur')) department = 'Direction';
-              else department = 'Autres';
-            }
-            
-            // Les données de l'API sont bien reçues avec les documents
-            
-            // Mapper les données de l'API vers le format attendu par l'interface
-            const mappedCandidate = {
-              prenom: candidate.first_name || candidate.prenom || 'N/A',
-              nom: candidate.last_name || candidate.nom || 'N/A',
-              poste: candidate.offre?.intitule || candidate.poste || 'N/A',
-              resume_global: candidate.analysis?.resume_global || candidate.resume_global || {
-                score_global: 0,
-                rang_global: 999,
-                verdict: 'Non évalué',
-                commentaire_global: 'Aucune évaluation disponible'
-              },
-              mtp: {
-                ...candidate.analysis?.mtp,
-                ...candidate.mtp,
-                // Ajouter les réponses MTP si elles existent
-                reponses_mtp: candidate.reponses_mtp || candidate.analysis?.reponses_mtp
-              },
-              similarite_offre: candidate.analysis?.similarite_offre || candidate.similarite_offre,
-              conformite: candidate.analysis?.conformite || candidate.conformite,
-              feedback: candidate.analysis?.feedback || candidate.feedback,
-              // Conserver TOUTES les données originales pour le mapping vers l'API Azure Container Apps
-              documents: candidate.documents,
-              offre: candidate.offre,
-              // Ajouter aussi les données brutes pour debug
-              rawData: candidate,
-              // Ajouter directement les réponses MTP au niveau racine pour faciliter l'accès
-              reponses_mtp: candidate.reponses_mtp,
-              // Ajouter directement les documents au niveau racine pour faciliter l'accès
-              cv: candidate.documents?.cv,
-              cover_letter: candidate.documents?.cover_letter,
-              diplome: candidate.documents?.diplome,
-              certificats: candidate.documents?.certificats
-            };
-            
-            // Le mapping est correct et inclut tous les documents
-            
-            if (!organizedData[department]) {
-              organizedData[department] = [];
-            }
-            organizedData[department].push(mappedCandidate);
-          });
-          
-          setData(organizedData);
-          console.info(`🔧 [SEEG AI] ${searchResults.length} candidats récupérés via GET /candidatures`);
-        } else {
-          setData({});
-        }
+        setData(organizedData);
+        console.info(`🔧 [SEEG AI] ${searchResults.length} candidats récupérés via GET /candidatures`);
+      } else {
+        setData({});
       }
     } catch (err) {
       // Ne pas logger les erreurs d'endpoints non implémentés
@@ -134,8 +121,6 @@ export function useSEEGAIData() {
         console.error('Erreur lors du chargement des données IA:', err);
       }
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
-      // Ne pas réinitialiser les données en cas d'erreur pour éviter les conflits
-      // setData({}); // Réinitialiser les données en cas d'erreur
     } finally {
       setIsLoading(false);
     }

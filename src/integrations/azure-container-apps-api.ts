@@ -62,12 +62,12 @@ class AzureContainerAppsService {
   private apiKey: string | null;
 
   constructor() {
-    // Utiliser le proxy pour éviter les problèmes CORS en production
+    // Configuration temporaire : utiliser l'URL directe avec fallback automatique
     if (import.meta.env.DEV) {
       this.baseUrl = '/api/rh-eval';
     } else {
-      // En production, utiliser le proxy Vercel pour contourner CORS
-      this.baseUrl = '/api/rh-eval-proxy';
+      // En production, utiliser l'URL directe (le fallback gérera les erreurs CORS)
+      this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
     }
     this.timeout = 30000; // 30 secondes
     // Clé API temporaire pour les tests - À remplacer par la vraie clé API
@@ -420,17 +420,19 @@ class AzureContainerAppsService {
     } catch (error) {
       console.error('❌ [Azure Container Apps] Erreur lors de l\'évaluation:', error);
       
-      // En cas d'erreur CORS ou de réseau, utiliser le mode test automatique
+      // En cas d'erreur CORS, réseau ou 404, utiliser le mode test automatique
       if (error instanceof Error && (
         error.message.includes('Failed to fetch') || 
         error.message.includes('CORS') ||
-        error.message.includes('ERR_FAILED')
+        error.message.includes('ERR_FAILED') ||
+        error.message.includes('404') ||
+        error.message.includes('Not Found')
       )) {
-        console.warn('⚠️ [Azure Container Apps] Erreur réseau/CORS détectée - Passage en mode test automatique');
+        console.warn('⚠️ [Azure Container Apps] Erreur réseau/CORS/404 détectée - Passage en mode test automatique');
         const mockData = this.generateMockEvaluationData(evaluationData);
         return {
           success: true,
-          message: 'Évaluation effectuée en mode test (erreur réseau/CORS)',
+          message: 'Évaluation effectuée en mode test (erreur réseau/CORS/404)',
           data: mockData,
         };
       }

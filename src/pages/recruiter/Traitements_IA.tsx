@@ -24,7 +24,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Send,
   AlertCircle,
   TrendingUp,
   Target,
@@ -1208,7 +1207,7 @@ export default function Traitements_IA() {
           <CardContent>
             {/* DataTable moderne avec toutes les fonctionnalités intégrées */}
             <DataTable 
-              columns={createColumns(handleViewResults, handleSendToAPI, isSending, candidateEvaluations)} 
+              columns={createColumns(handleViewResults, candidateEvaluations)} 
               data={filteredCandidates as CandidateAIData[]} 
               searchKey="fullName"
               searchPlaceholder="Rechercher par nom..."
