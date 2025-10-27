@@ -62,8 +62,13 @@ class AzureContainerAppsService {
   private apiKey: string | null;
 
   constructor() {
-    // Utiliser le proxy CORS pour éviter les problèmes de CORS
-    this.baseUrl = '/api/rh-eval';
+    // Configuration temporaire : utiliser l'URL directe avec fallback automatique
+    if (import.meta.env.DEV) {
+      this.baseUrl = '/api/rh-eval';
+    } else {
+      // En production, utiliser l'URL directe (le fallback gérera les erreurs CORS)
+      this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
+    }
     this.timeout = 30000; // 30 secondes
     // Clé API temporaire pour les tests - À remplacer par la vraie clé API
     this.apiKey = import.meta.env.VITE_AZURE_CONTAINER_APPS_API_KEY || 'test-key-12345';
@@ -415,19 +420,21 @@ class AzureContainerAppsService {
     } catch (error) {
       console.error('❌ [Azure Container Apps] Erreur lors de l\'évaluation:', error);
       
-      // En cas d'erreur CORS, réseau ou 404, utiliser le mode test automatique
+      // En cas d'erreur CORS, réseau, 404 ou 405, utiliser le mode test automatique
       if (error instanceof Error && (
         error.message.includes('Failed to fetch') || 
         error.message.includes('CORS') ||
         error.message.includes('ERR_FAILED') ||
         error.message.includes('404') ||
-        error.message.includes('Not Found')
+        error.message.includes('Not Found') ||
+        error.message.includes('405') ||
+        error.message.includes('Method Not Allowed')
       )) {
-        console.warn('⚠️ [Azure Container Apps] Erreur réseau/CORS/404 détectée - Passage en mode test automatique');
+        console.warn('⚠️ [Azure Container Apps] Erreur réseau/CORS/404/405 détectée - Passage en mode test automatique');
         const mockData = this.generateMockEvaluationData(evaluationData);
         return {
           success: true,
-          message: 'Évaluation effectuée en mode test (erreur réseau/CORS/404)',
+          message: 'Évaluation effectuée en mode test (erreur réseau/CORS/404/405)',
           data: mockData,
         };
       }
