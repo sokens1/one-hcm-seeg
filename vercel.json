@@ -4,6 +4,10 @@
   "framework": null,
   "rewrites": [
     {
+      "source": "/api/rh-eval-proxy/(.*)",
+      "destination": "/api/rh-eval-proxy"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     },

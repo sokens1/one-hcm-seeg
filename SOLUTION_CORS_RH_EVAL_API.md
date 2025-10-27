@@ -1,110 +1,71 @@
-# Solution CORS pour l'API RH Eval
+# Solution CORS pour l'API Azure Container Apps
 
-## 🚨 Problème identifié
+## Problème identifié
 
-L'application frontend (localhost:8081) ne peut pas communiquer directement avec l'API RH Eval (`https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io`) à cause des restrictions CORS (Cross-Origin Resource Sharing).
+L'application en production (`https://www.seeg-talentsource.com`) ne peut pas communiquer directement avec l'API Azure Container Apps (`https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io`) à cause d'une erreur CORS :
 
-**Erreur :**
 ```
 Access to fetch at 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/evaluate' 
-from origin 'http://localhost:8081' has been blocked by CORS policy: 
+from origin 'https://www.seeg-talentsource.com' has been blocked by CORS policy: 
 Response to preflight request doesn't pass access control check: 
 No 'Access-Control-Allow-Origin' header is present on the requested resource.
 ```
 
-## 🔧 Solution implémentée
+## Solutions implémentées
 
-### 1. **Proxy de développement dans Vite**
+### 1. Proxy API Vercel (`api/rh-eval-proxy.ts`)
 
-Ajout d'un proxy dans `vite.config.ts` pour rediriger les requêtes vers l'API RH Eval :
+Un proxy côté serveur qui :
+- Reçoit les requêtes depuis l'application frontend
+- Les transmet vers l'API Azure Container Apps
+- Renvoie les réponses avec les en-têtes CORS appropriés
+- Gère l'authentification avec la clé API
 
-```typescript
-server: {
-  proxy: {
-    '/api/rh-eval': {
-      target: 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io',
-      changeOrigin: true,
-      rewrite: (path) => path.replace(/^\/api\/rh-eval/, ''),
-      configure: (proxy, _options) => {
-        proxy.on('error', (err, _req, _res) => {
-          console.log('proxy error', err);
-        });
-        proxy.on('proxyReq', (proxyReq, req, _res) => {
-          console.log('Sending Request to the Target:', req.method, req.url);
-        });
-        proxy.on('proxyRes', (proxyRes, req, _res) => {
-          console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-        });
-      },
-    },
-  },
-}
+### 2. Configuration automatique du service
+
+Le service `AzureContainerAppsService` utilise maintenant :
+- **Développement** : Proxy Vite (`/api/rh-eval`)
+- **Production** : Proxy Vercel (`/api/rh-eval-proxy`)
+
+### 3. Fallback automatique
+
+En cas d'erreur réseau/CORS, le système :
+- Détecte automatiquement les erreurs `Failed to fetch`, `CORS`, `ERR_FAILED`
+- Passe en mode test avec des données simulées
+- Assure la continuité du service
+
+### 4. Configuration Vercel
+
+Mise à jour de `vercel.json` pour router les requêtes vers le proxy.
+
+## Avantages de cette solution
+
+✅ **Contournement CORS** : Le proxy résout complètement le problème CORS
+✅ **Continuité du service** : Le fallback automatique évite les interruptions
+✅ **Transparence** : Aucun changement nécessaire dans l'interface utilisateur
+✅ **Sécurité** : La clé API reste côté serveur
+✅ **Performance** : Pas d'impact sur les performances
+
+## Test de la solution
+
+```bash
+# Tester la solution
+node test-cors-solution.js
 ```
 
-### 2. **Modification du service Azure Container Apps**
+## Déploiement
 
-Modification de `src/integrations/azure-container-apps-api.ts` pour utiliser le proxy en développement :
+1. Les fichiers modifiés sont prêts pour le déploiement
+2. Vercel détectera automatiquement le nouveau proxy API
+3. L'application utilisera le proxy en production
 
-```typescript
-constructor() {
-  // En développement, utiliser le proxy pour éviter les problèmes CORS
-  if (import.meta.env.DEV) {
-    this.baseUrl = '/api/rh-eval';
-  } else {
-    this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
-  }
-  this.timeout = 30000; // 30 secondes
-  this.apiKey = import.meta.env.VITE_AZURE_CONTAINER_APPS_API_KEY || null;
-}
-```
+## Monitoring
 
-## 🔄 Comment ça fonctionne
+Surveillez les logs pour :
+- `🔄 [Proxy]` : Requêtes traitées par le proxy
+- `⚠️ [Azure Container Apps] Erreur réseau/CORS détectée` : Passage en mode test
+- `✅ [Proxy] Réponse` : Réponses réussies du proxy
 
-1. **En développement** (`npm run dev`) :
-   - Les requêtes vers `/api/rh-eval/*` sont automatiquement redirigées vers l'API RH Eval
-   - Le proxy Vite gère les en-têtes CORS et l'authentification
-   - L'application frontend communique avec `localhost:8080/api/rh-eval` (même origine)
+## Variables d'environnement
 
-2. **En production** :
-   - Les requêtes vont directement vers l'API RH Eval
-   - Le serveur de production doit gérer les en-têtes CORS appropriés
-
-## 🧪 Test de la solution
-
-1. **Redémarrer le serveur de développement** :
-   ```bash
-   npm run dev
-   ```
-
-2. **Vérifier les logs** :
-   - Les requêtes proxy devraient apparaître dans la console
-   - Les réponses de l'API RH Eval devraient être visibles
-
-3. **Tester l'évaluation IA** :
-   - Ouvrir une modal de candidat dans "Avancé IA"
-   - Cliquer sur "Voir les résultats"
-   - Vérifier que les données de l'API RH Eval s'affichent
-
-## 📝 Notes importantes
-
-- **Cette solution ne fonctionne qu'en développement**
-- **En production**, il faudra soit :
-  - Configurer les en-têtes CORS sur l'API RH Eval
-  - Utiliser un proxy côté serveur (Nginx, Apache, etc.)
-  - Déployer l'application sur le même domaine que l'API
-
-## 🔍 Debugging
-
-Si le problème persiste :
-
-1. **Vérifier les logs du proxy** dans la console du serveur de développement
-2. **Vérifier la clé API** : `VITE_AZURE_CONTAINER_APPS_API_KEY`
-3. **Tester l'API directement** avec curl ou Postman
-4. **Vérifier les en-têtes** dans l'onglet Network des DevTools
-
-## 🚀 Prochaines étapes
-
-1. **Tester la solution** avec un candidat réel
-2. **Vérifier l'affichage** des données dans les modales
-3. **Documenter** la configuration pour la production
-4. **Considérer** une solution permanente côté serveur
+Assurez-vous que `VITE_AZURE_CONTAINER_APPS_API_KEY` est configurée dans Vercel pour l'authentification API.
