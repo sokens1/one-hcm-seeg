@@ -921,8 +921,8 @@ export default function Traitements_IA() {
         cv_content: cvContent,
         cover_letter_content: coverLetterContent,
         mtp_responses: mtpResponses,
-        threshold_pct: 65,
-        hold_threshold_pct: 65
+        threshold_pct: 78,
+        hold_threshold_pct: 78
       };
 
       console.log('📤 [EVAL] job_id récupéré:', jobId);
