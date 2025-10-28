@@ -13,17 +13,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { method, url, headers, body } = req;
+    const { method, headers, body, url } = req;
     
     // URL de base de l'API Azure Container Apps
     const baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
     
-    // Construire l'URL complète - utiliser l'URL complète du path
-    const apiUrl = `${baseUrl}${url}`;
+    // Construire l'URL avec les query params
+    const urlObj = new URL(url || '/evaluate', 'http://localhost');
+    const queryString = urlObj.search; // Récupère ?threshold_pct=50&hold_threshold_pct=50
     
-    console.log(`🔄 [Proxy CORS] ${method} ${apiUrl}`);
+    // Construire l'URL complète vers Azure
+    const apiUrl = `${baseUrl}/evaluate${queryString}`;
+    
+    console.log(`🔄 [Proxy CORS] ${method} /evaluate -> ${apiUrl}`);
     console.log(`📤 [Proxy CORS] Headers reçus:`, headers);
-    console.log(`📦 [Proxy CORS] Body:`, body);
+    console.log(`📦 [Proxy CORS] Body length:`, JSON.stringify(body).length);
     
     // Préparer les en-têtes pour la requête vers l'API
     const apiHeaders: Record<string, string> = {
@@ -63,7 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Obtenir le contenu de la réponse
     const responseText = await response.text();
     
-    console.log(`✅ [Proxy CORS] Réponse ${response.status} pour ${method} ${url}`);
+    console.log(`✅ [Proxy CORS] Réponse ${response.status} pour ${method} /evaluate`);
     console.log(`📥 [Proxy CORS] Contenu de la réponse:`, responseText.substring(0, 200) + '...');
     
     // Renvoyer la réponse avec le bon statut et contenu
@@ -81,3 +85,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 }
+

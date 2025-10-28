@@ -43,8 +43,13 @@ export function useSEEGAIData() {
 
       // Utiliser directement l'endpoint /candidatures qui fonctionne
       console.info('🔧 [SEEG AI] Récupération des données via GET /candidatures');
+      console.info('⏳ [SEEG AI] Chargement en cours, veuillez patienter...');
       
+      const startTime = Date.now();
       const searchResults = await seegAIService.getAllCandidates();
+      const endTime = Date.now();
+      
+      console.info(`✅ [SEEG AI] Données chargées en ${(endTime - startTime) / 1000}s`);
       
       // Log détaillé des données récupérées de l'API SEEG-AI
       console.log('🔍 [DEBUG] Données récupérées de l\'API SEEG-AI:');
@@ -81,7 +86,11 @@ export function useSEEGAIData() {
           const mappedCandidate = {
             prenom: candidate.first_name || candidate.prenom || 'N/A',
             nom: candidate.last_name || candidate.nom || 'N/A',
+            // poste = intitulé du poste pour l'affichage dans le modal
             poste: candidate.offre?.intitule || candidate.poste || 'N/A',
+            // offre_id = référence de l'offre pour l'envoi à l'API dans le champ "post"
+            // Essayer plusieurs sources possibles pour l'ID de l'offre
+            offre_id: candidate.offre?.job_id || candidate.offre?.reference || candidate.offre_id || candidate.application?.offer_id || null,
             resume_global: candidate.analysis?.resume_global || candidate.resume_global || {
               score_global: 0,
               rang_global: 999,
@@ -131,9 +140,25 @@ export function useSEEGAIData() {
     } catch (err) {
       // Ne pas logger les erreurs d'endpoints non implémentés
       if (!(err instanceof Error && err.message.includes('Endpoint not implemented'))) {
-        console.error('Erreur lors du chargement des données IA:', err);
+        if (err instanceof Error) {
+          // Améliorer les messages d'erreur pour l'utilisateur
+          if (err.message.includes('Timeout') || err.message.includes('annulée')) {
+            console.error('⏱️ [SEEG AI] Timeout: La requête a pris trop de temps', err);
+            setError('Le chargement des données prend trop de temps. Veuillez rafraîchir la page.');
+          } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+            console.error('🌐 [SEEG AI] Erreur réseau:', err);
+            setError('Impossible de contacter le serveur. Vérifiez votre connexion internet.');
+          } else {
+            console.error('❌ [SEEG AI] Erreur lors du chargement des données:', err);
+            setError(err.message);
+          }
+        } else {
+          console.error('❌ [SEEG AI] Erreur inconnue:', err);
+          setError('Erreur inconnue lors du chargement des données');
+        }
+      } else {
+        setError(err instanceof Error ? err.message : 'Erreur inconnue');
       }
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
     } finally {
       setIsLoading(false);
     }
@@ -228,8 +253,15 @@ export function useSEEGAIData() {
     setIsInitialized(true);
     console.info('🔧 [SEEG AI] Initialisation - Tentative de connexion à l\'API');
     
-    // Forcer le chargement des données de l'API
-    loadAIData();
+    // Utiliser un délai pour éviter les multiples appels en mode strict
+    const timeoutId = setTimeout(() => {
+      loadAIData();
+    }, 100); // Petit délai pour éviter les doubles appels
+    
+    // Cleanup pour annuler le chargement si le composant se démonte
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []); // Dépendances vides pour s'exécuter une seule fois
 
   // Message informatif pour le développement

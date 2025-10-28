@@ -28,17 +28,24 @@ export class SEEGAIService {
       defaultHeaders['Authorization'] = `Bearer ${this.apiKey}`;
     }
 
+    // Créer un AbortController manuel pour un meilleur contrôle
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, this.timeout);
+
     const config: RequestInit = {
       ...options,
       headers: {
         ...defaultHeaders,
         ...options.headers,
       },
-      signal: AbortSignal.timeout(this.timeout),
+      signal: options.signal || controller.signal, // Utiliser le signal fourni ou celui créé
     };
 
     try {
       const response = await fetch(url, config);
+      clearTimeout(timeoutId); // Annuler le timeout si la requête réussit
       
       if (!response.ok) {
         // Ne pas logger les erreurs 404 comme des erreurs critiques
@@ -51,19 +58,69 @@ export class SEEGAIService {
 
       const data = await response.json();
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      clearTimeout(timeoutId); // S'assurer que le timeout est annulé
+      
+      // Gérer les erreurs d'abort plus gracieusement
+      if (error.name === 'AbortError') {
+        console.warn(`⏱️ SEEG AI API: Requête annulée ou timeout pour ${endpoint}`);
+        throw new Error(`Timeout ou requête annulée: ${endpoint}`);
+      }
+      
       // Ne logger que les vraies erreurs, pas les 404
-      if (!error.message.includes('Endpoint not implemented')) {
+      if (!error.message?.includes('Endpoint not implemented')) {
         console.error('SEEG AI API Error:', error);
       }
       throw error;
     }
   }
 
-  // Récupérer tous les candidats
+  // Méthode utilitaire pour retry les requêtes
+  private async retryRequest<T>(
+    requestFn: () => Promise<T>,
+    maxRetries: number = 2,
+    retryDelay: number = 1000
+  ): Promise<T> {
+    let lastError: any;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          console.info(`🔄 SEEG AI API: Tentative ${attempt + 1}/${maxRetries + 1}`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay * attempt));
+        }
+        return await requestFn();
+      } catch (error: any) {
+        lastError = error;
+        
+        // Ne pas retry si c'est une erreur 404 ou une erreur de validation
+        if (error.message?.includes('Endpoint not implemented') || 
+            error.message?.includes('404') ||
+            error.message?.includes('400')) {
+          throw error;
+        }
+        
+        // Ne pas retry si c'est la dernière tentative
+        if (attempt === maxRetries) {
+          console.error(`❌ SEEG AI API: Toutes les tentatives ont échoué`);
+          throw error;
+        }
+        
+        console.warn(`⚠️ SEEG AI API: Échec de la tentative ${attempt + 1}, nouvelle tentative...`);
+      }
+    }
+    
+    throw lastError;
+  }
+
+  // Récupérer tous les candidats avec retry
   async getAllCandidates(): Promise<SEECandidateSearchResponse> {
-    return this.makeRequest<SEECandidateSearchResponse>(
-      SEEG_AI_CONFIG.ENDPOINTS.GET_ALL_CANDIDATES
+    return this.retryRequest(() => 
+      this.makeRequest<SEECandidateSearchResponse>(
+        SEEG_AI_CONFIG.ENDPOINTS.GET_ALL_CANDIDATES
+      ),
+      2, // 2 retries (3 tentatives au total)
+      2000 // 2 secondes de délai entre les tentatives
     );
   }
 
