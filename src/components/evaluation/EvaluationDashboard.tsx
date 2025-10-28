@@ -500,6 +500,8 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  const [interviewMode, setInterviewMode] = useState<'presentiel' | 'distanciel'>('presentiel');
+  const [videoLink, setVideoLink] = useState<string>('');
   
   // Synchroniser l'état local avec les données chargées
   useEffect(() => {
@@ -1069,26 +1071,74 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
                               <p className="text-sm text-blue-900 leading-6">
                                 Créneau sélectionné: {format(interviewDate, "EEEE dd MMMM yyyy", { locale: fr })} à {selectedTimeSlot}
                               </p>
+                              
+                              {/* Sélection du mode d'entretien */}
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Mode d'entretien</Label>
+                                <Select value={interviewMode} onValueChange={(value: 'presentiel' | 'distanciel') => setInterviewMode(value)}>
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Choisir le mode" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="presentiel">🏢 Présentiel</SelectItem>
+                                    <SelectItem value="distanciel">💻 Distanciel (en ligne)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {/* Champ lien vidéo (visible seulement en mode distanciel) */}
+                              {interviewMode === 'distanciel' && (
+                                <div className="space-y-2">
+                                  <Label className="text-sm font-medium">Lien de visioconférence</Label>
+                                  <Input
+                                    type="url"
+                                    placeholder="https://teams.microsoft.com/... ou https://zoom.us/..."
+                                    value={videoLink}
+                                    onChange={(e) => setVideoLink(e.target.value)}
+                                    className="w-full"
+                                  />
+                                  <p className="text-xs text-muted-foreground">
+                                    Ce lien sera inclus dans l'email envoyé au candidat
+                                  </p>
+                                </div>
+                              )}
+                              
                               <div className="flex flex-col sm:flex-row gap-2 w-full">
                                 <Button
                                   className="bg-blue-600 hover:bg-blue-700 w-full"
                                   onClick={async () => {
-                                    const success = await scheduleInterview(getDateKey(interviewDate), selectedTimeSlot, { sendEmail: true });
+                                    const success = await scheduleInterview(
+                                      getDateKey(interviewDate), 
+                                      selectedTimeSlot, 
+                                      { 
+                                        sendEmail: true,
+                                        interviewMode: interviewMode,
+                                        videoLink: interviewMode === 'distanciel' ? videoLink : undefined
+                                      }
+                                    );
                                     if (success) {
                                       const [hours, minutes] = selectedTimeSlot.split(':');
                                       const newDate = new Date(interviewDate);
                                       newDate.setHours(parseInt(hours), parseInt(minutes));
                                       setInterviewDate(newDate);
                                       updateProtocol1('interview', 'interviewDate', newDate);
+                                      // Réinitialiser les champs
+                                      setInterviewMode('presentiel');
+                                      setVideoLink('');
                                     }
                                   }}
+                                  disabled={interviewMode === 'distanciel' && !videoLink.trim()}
                                 >
                                   Confirmer et envoyer
                                 </Button>
                                 <Button
                                   variant="outline"
                                   className="w-full"
-                                  onClick={() => setSelectedTimeSlot('')}
+                                  onClick={() => {
+                                    setSelectedTimeSlot('');
+                                    setInterviewMode('presentiel');
+                                    setVideoLink('');
+                                  }}
                                 >
                                   Annuler
                                 </Button>

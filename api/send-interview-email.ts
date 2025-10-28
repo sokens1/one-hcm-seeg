@@ -72,6 +72,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       location,
       applicationId,
       interviewType = 'entretien', // Par défaut 'entretien', peut être 'simulation'
+      interviewMode = 'presentiel', // Par défaut 'presentiel', peut être 'distanciel'
+      videoLink, // Lien de visioconférence si mode distanciel
     } = body || {};
 
     console.log('📧 [EMAIL DEBUG] Données reçues:', {
@@ -83,7 +85,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       time,
       location,
       applicationId,
-      interviewType
+      interviewType,
+      interviewMode,
+      videoLink
     });
 
     // Log critique pour debug
@@ -126,12 +130,29 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     const isSimulation = interviewType === 'simulation';
     const eventType = isSimulation ? 'simulation' : 'entretien de recrutement';
     const eventTypeCapitalized = isSimulation ? 'Simulation' : 'Entretien de recrutement';
-    const defaultLocation = isSimulation 
-      ? "Salle de simulation au 9ᵉ étage du siège de la SEEG sis à Libreville."
-      : "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville.";
-    const preparationText = isSimulation
-      ? `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de la simulation</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`
-      : `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`;
+    const isDistanciel = interviewMode === 'distanciel';
+    
+    // Déterminer le lieu selon le mode
+    let finalLocation = location;
+    if (!finalLocation) {
+      if (isDistanciel) {
+        finalLocation = "En ligne (visioconférence)";
+      } else {
+        finalLocation = isSimulation 
+          ? "Salle de simulation au 9ᵉ étage du siège de la SEEG sis à Libreville."
+          : "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville.";
+      }
+    }
+    
+    // Texte de préparation adapté au mode
+    let preparationText = '';
+    if (isDistanciel) {
+      preparationText = `Nous vous prions de bien vouloir vous connecter <strong>5 minutes avant l'heure de ${isSimulation ? 'la simulation' : "l'entretien"}</strong> via le lien de visioconférence fourni ci-dessous. Assurez-vous d'avoir une connexion internet stable, une webcam et un microphone fonctionnels.`;
+    } else {
+      preparationText = isSimulation
+        ? `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de la simulation</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`
+        : `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`;
+    }
 
     console.log('📧 [EMAIL DEBUG] Variables calculées:', {
       isSimulation,
@@ -158,6 +179,19 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       eventTypeCapitalized
     });
 
+    // Générer le bloc lien de visio si distanciel
+    const videoLinkBlock = isDistanciel && videoLink ? `
+      <div style="margin:15px 0; padding:15px; background-color:#e3f2fd; border-left:4px solid #2196f3; border-radius:4px;">
+        <p style="margin:0 0 8px; font-size:16px; font-weight:bold; color:#1565c0;">🎥 Lien de visioconférence :</p>
+        <p style="margin:0; font-size:16px;">
+          <a href="${videoLink}" style="color:#0066cc; text-decoration:underline; font-weight:500;" target="_blank">${videoLink}</a>
+        </p>
+        <p style="margin:8px 0 0; font-size:14px; color:#666;">
+          <em>Cliquez sur le lien ci-dessus pour rejoindre la réunion en ligne.</em>
+        </p>
+      </div>
+    ` : '';
+
     const html = `
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
         <tr>
@@ -167,10 +201,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
                 <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;font-family: ui-serif${serif}; color:#000; font-size:16px; line-height:1.7;">
                   <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
                   <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
-                  <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un ${eventType} qui se tiendra le&nbsp;:</p>
+                  <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un ${eventType} qui se tiendra ${isDistanciel ? 'en ligne' : ''} le&nbsp;:</p>
                   <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
                   <strong>Heure :</strong> ${formattedTime}<br/>
-                  <strong>Lieu :</strong> ${location || defaultLocation}</p>
+                  <strong>${isDistanciel ? 'Mode' : 'Lieu'} :</strong> ${finalLocation}</p>
+                  ${videoLinkBlock}
                   <p style="margin:0 0 10px; font-size:16px;">${preparationText}</p>
                   <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
                   <br/>
