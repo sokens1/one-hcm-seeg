@@ -275,8 +275,6 @@ export const useInterviewScheduling = (applicationId?: string) => {
             is_available: false,
             recruiter_id: user.id,
             candidate_id: applicationDetails.candidate_id,
-            interview_mode: options?.interviewMode || 'presentiel',
-            video_link: options?.videoLink || null,
             notes: 'Entretien programmé',
             updated_at: new Date().toISOString()
           })
@@ -306,8 +304,6 @@ export const useInterviewScheduling = (applicationId?: string) => {
             is_available: false,
             recruiter_id: user.id,
             candidate_id: applicationDetails.candidate_id,
-            interview_mode: options?.interviewMode || 'presentiel',
-            video_link: options?.videoLink || null,
             notes: 'Entretien programmé',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -325,8 +321,6 @@ export const useInterviewScheduling = (applicationId?: string) => {
               is_available: false,
               recruiter_id: user.id,
               candidate_id: applicationDetails.candidate_id,
-              interview_mode: options?.interviewMode || 'presentiel',
-              video_link: options?.videoLink || null,
               notes: 'Entretien programmé',
               updated_at: new Date().toISOString()
             })
