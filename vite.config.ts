@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     host: "::",
-    port: 8080,
+    port: 8082,
     proxy: {
       '/api/rh-eval': {
         target: 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io',
