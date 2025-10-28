@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { azureContainerAppsService, CandidateData, EvaluationRequest } from "@/integrations/azure-container-apps-api";
@@ -24,7 +24,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Send,
   AlertCircle,
   TrendingUp,
   Target,
@@ -48,6 +47,7 @@ interface CandidateApplication {
   poste: string;
   department: string;
   aiData: AICandidateData;
+  [key: string]: any; // Permet d'ajouter des propriétés dynamiques comme rawData, documents, email, phone, etc.
 }
 
 const getVerdictIcon = (verdict: string) => {
@@ -186,12 +186,88 @@ const getVerdictVariant = (verdict: string) => {
   return 'default';
 };
 
+/**
+ * Détecte si un texte est purement technique (à masquer complètement)
+ * Retourne true si le texte contient uniquement des références techniques
+ */
+const isPurelyTechnicalText = (text: string): boolean => {
+  if (!text) return false;
+  
+  // Patterns qui indiquent un texte purement technique
+  const technicalIndicators = [
+    /Vector search/i,
+    /Azure AI Search/i,
+    /cosinus normalisé/i,
+    /fusion pondérée/i,
+    /retrieval persistant/i,
+    /Verdict basé sur seuils/i,
+    /passages.*?;/i,
+    /→/,
+  ];
+  
+  // Si le texte contient plusieurs indicateurs techniques, c'est un texte technique
+  const matchCount = technicalIndicators.filter(pattern => pattern.test(text)).length;
+  
+  // Si 2 indicateurs ou plus, c'est du texte purement technique
+  return matchCount >= 2;
+};
+
+/**
+ * Nettoie le texte technique de l'API pour le rendre plus user-friendly
+ * Si le texte est purement technique, retourne une chaîne vide
+ */
+const cleanTechnicalText = (text: string): string => {
+  if (!text) return '';
+  
+  // Si le texte est purement technique, ne rien afficher
+  if (isPurelyTechnicalText(text)) {
+    return '';
+  }
+  
+  // Sinon, nettoyer le texte des éléments techniques résiduels
+  const technicalPhrases = [
+    /Vector search \(Azure\).*?passages.*?;/gi,
+    /cosinus normalisé.*?%.*?;/gi,
+    /fusion pondérée\.?/gi,
+    /retrieval persistant via Azure AI Search\.?/gi,
+    /Verdict basé sur seuils.*?;/gi,
+    /Azure AI Search/gi,
+    /Vector search/gi,
+  ];
+  
+  let cleanedText = text;
+  
+  // Supprimer les phrases techniques
+  technicalPhrases.forEach(pattern => {
+    cleanedText = cleanedText.replace(pattern, '');
+  });
+  
+  // Supprimer les patterns génériques qui restent
+  cleanedText = cleanedText
+    .replace(/→/g, '') // Flèches
+    .replace(/;\s*;/g, ';') // Double point-virgules
+    .replace(/\s*;\s*$/g, '') // Point-virgules en fin
+    .replace(/^\s*;\s*/g, '') // Point-virgules au début
+    .replace(/\s+/g, ' ') // Espaces multiples
+    .trim();
+  
+  // Si le texte est vide, trop court, ou contient seulement de la ponctuation
+  if (!cleanedText || cleanedText.length < 10 || /^[.,;:\s-]+$/.test(cleanedText)) {
+    return '';
+  }
+  
+  return cleanedText;
+};
+
+/**
+ * Nettoie un tableau de textes techniques
+ */
+const cleanTechnicalArray = (items: string[]): string[] => {
+  if (!items || !Array.isArray(items)) return items;
+  return items.map(item => cleanTechnicalText(item)).filter(item => item.length > 0);
+};
+
 export default function Traitements_IA() {
-  console.log('🚀 [DEBUG] === COMPOSANT TRAITEMENTS_IA DÉMARRÉ ===');
-  console.log('🔍 [DEBUG] === FORCEMENT DES DONNÉES DE TEST ===');
-  console.log('⚠️ [DEBUG] === MODAL AVEC DONNÉES SIMULÉES ===');
-  console.log('🎯 [DEBUG] === TEST MODAL FONCTIONNEL ===');
-  console.log('📊 [DEBUG] === DONNÉES API RH EVAL ===');
   
   const { 
     data: aiData, 
@@ -225,11 +301,7 @@ export default function Traitements_IA() {
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
   
   // Log de débogage pour vérifier que le composant se charge
-  console.log('🔍 [DEBUG] Composant Traitements_IA chargé avec:', {
-    candidatesDataLength: candidatesData.length,
-    aiDataLength: aiData ? Object.keys(aiData).length : 0,
-    searchResultsLength: searchResults.length
-  });
+  // console.log('🔍 [DEBUG] Composant Traitements_IA chargé');
   
   // Données de test pour le développement
   const testCandidates: CandidateApplication[] = [
@@ -241,12 +313,21 @@ export default function Traitements_IA() {
       department: 'IT',
       email: 'jean.dupont@example.com',
       phone: '+241 01 23 45 67',
+      offre: {
+        reference: 'dev-full-stack-001',
+        intitule: 'Développeur Full Stack'
+      },
       aiData: {
+        nom: 'Dupont',
+        prenom: 'Jean',
+        poste: 'Développeur Full Stack',
         resume_global: {
           score_global: 0.85,
           rang_global: 5,
           verdict: 'Favorable',
-          commentaire_global: 'Excellent profil technique avec une expérience solide'
+          commentaire_global: 'Excellent profil technique avec une expérience solide',
+          forces: ['Expérience solide en React', 'Maîtrise des bases de données', 'Esprit d\'équipe'],
+          points_a_ameliorer: ['Manque d\'expérience en DevOps', 'Anglais technique à améliorer']
         },
         mtp: {
           scores: {
@@ -256,12 +337,14 @@ export default function Traitements_IA() {
             Moyen: 0.82
           },
           niveau: 'Senior',
+          verdict: 'Favorable',
+          rang: 5,
           points_forts: [
             'Expérience solide en React',
             'Maîtrise des bases de données',
             'Esprit d\'équipe'
           ],
-          points_faibles: [
+          points_a_travailler: [
             'Manque d\'expérience en DevOps',
             'Anglais technique à améliorer'
           ]
@@ -287,12 +370,21 @@ export default function Traitements_IA() {
       department: 'Management',
       email: 'marie.martin@example.com',
       phone: '+241 01 23 45 68',
+      offre: {
+        reference: 'chef-projet-002',
+        intitule: 'Chef de Projet'
+      },
       aiData: {
+        nom: 'Martin',
+        prenom: 'Marie',
+        poste: 'Chef de Projet',
         resume_global: {
           score_global: 0.78,
           rang_global: 12,
           verdict: 'Favorable',
-          commentaire_global: 'Profil managérial intéressant'
+          commentaire_global: 'Profil managérial intéressant',
+          forces: ['Leadership naturel', 'Expérience en gestion d\'équipe', 'Communication excellente'],
+          points_a_ameliorer: ['Expérience technique limitée', 'Connaissance des outils de gestion']
         },
         mtp: {
           scores: {
@@ -302,12 +394,14 @@ export default function Traitements_IA() {
             Moyen: 0.82
           },
           niveau: 'Senior',
+          verdict: 'Favorable',
+          rang: 12,
           points_forts: [
             'Leadership naturel',
             'Expérience en gestion d\'équipe',
             'Communication excellente'
           ],
-          points_faibles: [
+          points_a_travailler: [
             'Expérience technique limitée',
             'Connaissance des outils de gestion'
           ]
@@ -329,26 +423,9 @@ export default function Traitements_IA() {
   
   // Utiliser les données de test si aucune donnée IA n'est disponible
   const finalCandidatesData = useMemo(() => {
-    console.log('🔍 [DEBUG] Vérification des données:', {
-      candidatesDataLength: candidatesData.length,
-      hasAiData: candidatesData.some(c => c.aiData),
-      firstCandidateAiData: candidatesData[0]?.aiData
-    });
-    
-    // FORCER l'utilisation des données de test pour le développement
-    console.log('⚠️ [DEBUG] FORCEMENT des données de test pour le développement');
-    console.log('📊 [DEBUG] Nombre de candidats de test:', testCandidates.length);
+    // Utiliser les données de test en cas d'absence de données API
     return testCandidates;
-    
-    // Si on a des candidats avec des données IA, les utiliser
-    if (candidatesData.length > 0 && candidatesData.some(c => c.aiData)) {
-      console.log('✅ [DEBUG] Utilisation des données réelles avec IA');
-      return candidatesData;
-    }
-    // Sinon, utiliser les données de test
-    console.log('⚠️ [DEBUG] Utilisation des données de test (pas de données IA)');
-    return testCandidates;
-  }, [candidatesData]);
+  }, []);
   
   // Défère les mises à jour du Select pour éviter les conflits DOM (Chrome)
   const handleDepartmentChange = (value: string) => {
@@ -379,21 +456,92 @@ export default function Traitements_IA() {
       
       console.log('🔄 [AUTO-EVAL] Début de l\'évaluation automatique de tous les candidats');
       
-      // Évaluer chaque candidat qui n'a pas encore été évalué
-      for (const candidate of finalCandidatesData) {
-        if (!candidateEvaluations[candidate.id]) {
-          console.log(`🔍 [AUTO-EVAL] Évaluation du candidat: ${candidate.fullName}`);
-          try {
-            await evaluateCandidateAutomatically(candidate, true);
-            // Petite pause entre les évaluations pour éviter la surcharge
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } catch (error) {
-            console.error(`❌ [AUTO-EVAL] Erreur pour ${candidate.fullName}:`, error);
+      // Étape 1: Extraire et seeder les offres uniques
+      try {
+        console.log('🌱 [SEED] Extraction des offres uniques...');
+        console.log('🌱 [SEED] Nombre de candidats:', finalCandidatesData.length);
+        
+        const uniqueOffersMap = new Map();
+        
+        finalCandidatesData.forEach((candidate: any, index: number) => {
+          const rawData = candidate.rawData || candidate;
+          
+          // Récupérer le job_id depuis le champ post ou offre.reference
+          const jobId = rawData.post || 
+                        candidate.post || 
+                        rawData.offre?.reference || 
+                        candidate.offre?.reference;
+          
+          console.log(`🔍 [SEED] Candidat ${index}:`, {
+            nom: candidate.nom || rawData.nom,
+            hasOffre: !!(candidate.offre || rawData.offre),
+            hasPost: !!(rawData.post || candidate.post),
+            jobId: jobId,
+            offreIntitule: candidate.offre?.intitule || rawData.offre?.intitule
+          });
+          
+          // Essayer d'abord candidate.offre, puis rawData.offre
+          const offre = candidate.offre || rawData.offre;
+          
+          if (jobId) {
+            console.log(`✅ [SEED] Job ID trouvé pour ${candidate.nom || rawData.nom}:`, jobId);
+            
+            const offerData = {
+              job_id: jobId,
+              titre: offre?.intitule || 'Titre non spécifié',
+              offre: offre?.missions_principales || offre?.description || 'Description non disponible',
+              M: offre?.questions_mtp?.metier?.join(' | ') || '',
+              T: offre?.questions_mtp?.talent?.join(' | ') || '',
+              P: offre?.questions_mtp?.paradigme?.join(' | ') || ''
+            };
+            uniqueOffersMap.set(jobId, offerData);
+          } else {
+            console.warn(`⚠️ [SEED] Pas de job_id pour ${candidate.nom || rawData.nom}`);
           }
+        });
+        
+        const offers = Array.from(uniqueOffersMap.values());
+        console.log(`🌱 [SEED] ${offers.length} offres uniques trouvées`);
+        console.log('📋 [SEED] Détail des offres:', offers);
+        
+        if (offers.length > 0) {
+          const seedResult = await azureContainerAppsService.seedOffers(offers);
+          if (seedResult.success) {
+            console.log('✅ [SEED] Offres enregistrées avec succès');
+          } else {
+            console.error('❌ [SEED] Erreur lors du seed:', seedResult.error);
+          }
+        } else {
+          console.error('❌ [SEED] Aucune offre à seeder !');
+        }
+      } catch (error) {
+        console.error('❌ [SEED] Erreur lors du seed des offres:', error);
+      }
+      
+      // Étape 2: Évaluer chaque candidat qui n'a pas encore été évalué
+      const candidatesToEvaluate = finalCandidatesData.filter(c => !candidateEvaluations[c.id]);
+      console.log(`📊 [AUTO-EVAL] ${candidatesToEvaluate.length} candidats à évaluer sur ${finalCandidatesData.length} total`);
+      
+      let evaluatedCount = 0;
+      let errorCount = 0;
+      
+      for (const candidate of candidatesToEvaluate) {
+        evaluatedCount++;
+        console.log(`🔍 [AUTO-EVAL] Évaluation ${evaluatedCount}/${candidatesToEvaluate.length}: ${candidate.fullName}`);
+        try {
+          await evaluateCandidateAutomatically(candidate, true);
+          console.log(`✅ [AUTO-EVAL] Succès pour ${candidate.fullName}`);
+          // Pause plus longue entre les évaluations pour donner le temps à l'API de traiter (3 secondes)
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        } catch (error) {
+          errorCount++;
+          console.error(`❌ [AUTO-EVAL] Erreur ${errorCount} pour ${candidate.fullName}:`, error);
+          // Pause encore plus longue après une erreur (5 secondes) pour laisser l'API récupérer
+          await new Promise(resolve => setTimeout(resolve, 5000));
         }
       }
       
-      console.log('✅ [AUTO-EVAL] Évaluation automatique terminée');
+      console.log(`✅ [AUTO-EVAL] Évaluation automatique terminée: ${evaluatedCount - errorCount} succès, ${errorCount} erreurs`);
     };
 
     // Délai pour laisser le temps aux données de se charger
@@ -428,10 +576,6 @@ export default function Traitements_IA() {
 
   // Transformer les données IA pour l'affichage
   const processedCandidatesData = useMemo(() => {
-    console.log('🔍 [DEBUG] processedCandidatesData:', {
-      finalCandidatesDataLength: finalCandidatesData.length,
-      searchResultsLength: searchResults.length
-    });
     
     // Si on a des résultats de recherche, les utiliser
     if (searchResults.length > 0) {
@@ -446,7 +590,10 @@ export default function Traitements_IA() {
     // Parcourir dynamiquement tous les départements
     Object.entries(aiData).forEach(([departmentKey, candidates]) => {
       candidates.forEach((candidate, index) => {
-        allCandidates.push({
+        const processedCandidate = {
+          // Copier TOUTES les propriétés du candidat en premier (y compris offre_id et offre)
+          ...candidate,
+          // Puis écraser/ajouter les propriétés spécifiques
           id: `${departmentKey}-${index}`,
           firstName: candidate.prenom,
           lastName: candidate.nom,
@@ -461,10 +608,10 @@ export default function Traitements_IA() {
             conformite: candidate.conformite,
             similarite_offre: candidate.similarite_offre,
             feedback: candidate.feedback
-          },
-          // Inclure toutes les propriétés du candidat mappé pour l'accès aux documents
-          ...candidate
-        });
+          }
+        };
+        
+        allCandidates.push(processedCandidate);
       });
     });
 
@@ -579,7 +726,6 @@ export default function Traitements_IA() {
   }, [searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange]);
 
   const handleViewResults = async (candidate: CandidateApplication) => {
-    console.log('🔍 [DEBUG] handleViewResults appelé avec:', candidate);
     
     // Préparer les données au format Azure Container Apps API
     const rawCandidate = candidate.rawData || candidate;
@@ -642,35 +788,40 @@ export default function Traitements_IA() {
       }
     }
     
+    // Log unique pour diagnostiquer le problème du champ offre
+    console.log('🔍 [DIAGNOSTIC] Objet rawCandidate.offre:', JSON.stringify(rawCandidate.offre, null, 2));
+    
+    // PRIORITÉ ABSOLUE à offre?.reference qui est le champ utilisé par l'API SEEG
+    const postId = rawCandidate.offre?.reference || 
+                   candidate.offre?.reference || 
+                   rawCandidate.offre?.job_id || 
+                   candidate.offre?.job_id || 
+                   candidate.offre_id || 
+                   rawCandidate.offre_id || 
+                   candidate.post || 
+                   rawCandidate.post || 
+                   rawCandidate.application?.offer_id || 
+                   '';
+    
+    // Récupérer les données MTP au bon format (déjà des chaînes de texte)
+    const mtpData = rawCandidate.mtp || candidate.mtp || rawCandidate.analysis?.mtp || candidate.aiData?.mtp || {};
+    
     const azureData = {
       id: candidate.id,
-      Nom: candidate.nom || candidate.lastName || candidate.last_name || rawCandidate.last_name || 'N/A',
-      Prénom: candidate.prenom || candidate.firstName || candidate.first_name || rawCandidate.first_name || 'N/A',
+      nom: candidate.nom || candidate.lastName || candidate.last_name || rawCandidate.last_name || 'N/A',
+      prenom: candidate.prenom || candidate.firstName || candidate.first_name || rawCandidate.first_name || 'N/A',
       cv: cvContent,
       lettre_motivation: coverLetterContent,
       MTP: {
-        M: candidate.reponses_mtp?.metier ? candidate.reponses_mtp.metier.join(' | ') :
-           rawCandidate.reponses_mtp?.metier ? rawCandidate.reponses_mtp.metier.join(' | ') : 
-           candidate.aiData?.mtp?.reponses_mtp?.metier ? candidate.aiData.mtp.reponses_mtp.metier.join(' | ') : 'Réponses métier non disponibles',
-        T: candidate.reponses_mtp?.talent ? candidate.reponses_mtp.talent.join(' | ') :
-           rawCandidate.reponses_mtp?.talent ? rawCandidate.reponses_mtp.talent.join(' | ') : 
-           candidate.aiData?.mtp?.reponses_mtp?.talent ? candidate.aiData.mtp.reponses_mtp.talent.join(' | ') : 'Réponses talent non disponibles',
-        P: candidate.reponses_mtp?.paradigme ? candidate.reponses_mtp.paradigme.join(' | ') :
-           rawCandidate.reponses_mtp?.paradigme ? rawCandidate.reponses_mtp.paradigme.join(' | ') : 
-           candidate.aiData?.mtp?.reponses_mtp?.paradigme ? candidate.aiData.mtp.reponses_mtp.paradigme.join(' | ') : 'Réponses paradigme non disponibles'
+        M: mtpData.M || 'Réponses métier non disponibles',
+        T: mtpData.T || 'Réponses talent non disponibles',
+        P: mtpData.P || 'Réponses paradigme non disponibles'
       },
-      post: candidate.poste || candidate.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié'
+      post: postId
     };
     
-    console.log('📤 DONNÉES QUI SERAIENT ENVOYÉES À L\'API AZURE CONTAINER APPS:');
-    console.log('=====================================');
-    console.log(JSON.stringify(azureData, null, 2));
-    console.log('=====================================');
-    
-    console.log('🔍 [DEBUG] Ouverture du modal pour:', candidate.firstName, candidate.lastName);
     setSelectedCandidate(candidate);
     setIsModalOpen(true);
-    console.log('🔍 [DEBUG] États mis à jour - isModalOpen:', true, 'selectedCandidate:', candidate);
     
     // Évaluation automatique du candidat
     await evaluateCandidateAutomatically(candidate);
@@ -751,21 +902,109 @@ export default function Traitements_IA() {
         }
       }
       
+      // PRIORITÉ ABSOLUE à post (champ direct) ou offre?.reference qui est le champ utilisé par l'API SEEG
+      const jobId = rawCandidate.post ||
+                    candidate.post ||
+                    rawCandidate.offre?.reference || 
+                    candidate.offre?.reference || 
+                    rawCandidate.offre?.job_id || 
+                    candidate.offre?.job_id || 
+                    candidate.offre_id || 
+                    rawCandidate.offre_id || 
+                    rawCandidate.application?.offer_id || 
+                    '';
+      
+      // Récupérer les données MTP au bon format (déjà des chaînes de texte)
+      console.log('🔍 [DEBUG] Recherche des données MTP...');
+      console.log('🔍 [DEBUG] rawCandidate.mtp:', rawCandidate.mtp);
+      console.log('🔍 [DEBUG] candidate.mtp:', candidate.mtp);
+      console.log('🔍 [DEBUG] rawCandidate.reponses_mtp:', rawCandidate.reponses_mtp);
+      console.log('🔍 [DEBUG] candidate.reponses_mtp:', candidate.reponses_mtp);
+      
+      // Les données MTP peuvent être dans mtp directement ou dans reponses_mtp
+      let mtpData = rawCandidate.mtp || candidate.mtp || rawCandidate.analysis?.mtp || candidate.aiData?.mtp || {};
+      
+      // Si mtpData contient reponses_mtp, extraire ces données
+      if (mtpData.reponses_mtp) {
+        mtpData = mtpData.reponses_mtp;
+      }
+      
+      // Ou vérifier directement dans reponses_mtp
+      if (!mtpData.M && !mtpData.T && !mtpData.P) {
+        const directMtp = rawCandidate.reponses_mtp || candidate.reponses_mtp;
+        if (directMtp) {
+          mtpData = directMtp;
+        }
+      }
+      
+      console.log('🔍 [DEBUG] mtpData final récupéré:', mtpData);
+      console.log('🔍 [DEBUG] mtpData.M:', mtpData.M);
+      console.log('🔍 [DEBUG] mtpData.T:', mtpData.T);
+      console.log('🔍 [DEBUG] mtpData.P:', mtpData.P);
+      console.log('🔍 [DEBUG] mtpData.metier:', mtpData.metier);
+      console.log('🔍 [DEBUG] mtpData.talent:', mtpData.talent);
+      console.log('🔍 [DEBUG] mtpData.paradigme:', mtpData.paradigme);
+      console.log('🔍 [DEBUG] Type de mtpData.M:', typeof mtpData.M);
+      
+      // Convertir les données MTP au format attendu par l'API (M, T, P)
+      // Gérer deux cas : {M, T, P} ou {metier, talent, paradigme}
+      let M_value = mtpData.M;
+      let T_value = mtpData.T;
+      let P_value = mtpData.P;
+      
+      // Si les données sont au format {metier, talent, paradigme} (tableaux), les convertir
+      if (!M_value && mtpData.metier) {
+        M_value = Array.isArray(mtpData.metier) ? mtpData.metier.join(' | ') : mtpData.metier;
+      }
+      if (!T_value && mtpData.talent) {
+        T_value = Array.isArray(mtpData.talent) ? mtpData.talent.join(' | ') : mtpData.talent;
+      }
+      if (!P_value && mtpData.paradigme) {
+        P_value = Array.isArray(mtpData.paradigme) ? mtpData.paradigme.join(' | ') : mtpData.paradigme;
+      }
+      
+      console.log('🔍 [DEBUG] Valeurs MTP après conversion:', { M_value, T_value, P_value });
+      
+      // S'assurer que les données MTP sont des chaînes de texte
+      const mtpResponses = {
+        M: typeof M_value === 'string' ? M_value : (M_value ? JSON.stringify(M_value) : 'Réponses métier non disponibles'),
+        T: typeof T_value === 'string' ? T_value : (T_value ? JSON.stringify(T_value) : 'Réponses talent non disponibles'),
+        P: typeof P_value === 'string' ? P_value : (P_value ? JSON.stringify(P_value) : 'Réponses paradigme non disponibles')
+      };
+      
+      console.log('🔍 [DEBUG] mtpResponses formaté:', mtpResponses);
+      
       const evaluationData: EvaluationRequest = {
         candidate_id: candidate.id,
         candidate_name: candidate.nom || candidate.lastName || rawCandidate.nom || 'N/A',
         candidate_firstname: candidate.prenom || candidate.firstName || rawCandidate.prenom || 'N/A',
         job_title: candidate.poste || candidate.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié',
+        job_id: jobId,
         cv_content: cvContent,
         cover_letter_content: coverLetterContent,
-        mtp_responses: {
-          metier: candidate.reponses_mtp?.metier || rawCandidate.reponses_mtp?.metier || candidate.aiData?.mtp?.reponses_mtp?.metier || [],
-          talent: candidate.reponses_mtp?.talent || rawCandidate.reponses_mtp?.talent || candidate.aiData?.mtp?.reponses_mtp?.talent || [],
-          paradigme: candidate.reponses_mtp?.paradigme || rawCandidate.reponses_mtp?.paradigme || candidate.aiData?.mtp?.reponses_mtp?.paradigme || []
-        }
+        mtp_responses: mtpResponses,
+        threshold_pct: 50,
+        hold_threshold_pct: 50
       };
 
-      console.log('🔍 ÉVALUATION AUTOMATIQUE DU CANDIDAT:', evaluationData);
+      console.log('📤 [EVAL] job_id récupéré:', jobId);
+      console.log('📤 [EVAL] Sources vérifiées:', {
+        'rawCandidate.post': rawCandidate.post,
+        'candidate.post': candidate.post,
+        'rawCandidate.offre?.reference': rawCandidate.offre?.reference,
+        'candidate.offre?.reference': candidate.offre?.reference
+      });
+      console.log('📤 [EVAL] CV content (premiers 100 chars):', cvContent.substring(0, 100));
+      console.log('📤 [EVAL] Cover letter (premiers 100 chars):', coverLetterContent.substring(0, 100));
+      console.log('📤 [EVAL] evaluationData complet:', JSON.stringify(evaluationData, null, 2));
+
+      // Validation avant envoi
+      if (!jobId || jobId === '') {
+        const errorMsg = `❌ [EVAL] Le job_id est vide pour le candidat ${candidate.fullName || candidate.nom}. L'évaluation ne peut pas être effectuée.`;
+        console.error(errorMsg);
+        console.error('🔍 [DEBUG] Candidat complet pour diagnostic:', JSON.stringify(candidate, null, 2));
+        throw new Error('Le job_id (post) est requis mais n\'a pas été trouvé dans les données du candidat');
+      }
 
       const result = await azureContainerAppsService.evaluateCandidate(evaluationData);
 
@@ -778,12 +1017,8 @@ export default function Traitements_IA() {
           ...prev,
           [candidate.id]: result.data
         }));
-        console.log('✅ Évaluation automatique réussie:', result.data);
-        console.log('📊 [MODAL] Données d\'évaluation pour le modal:', JSON.stringify(result.data, null, 2));
       } else {
         console.error('❌ Erreur d\'évaluation automatique:', result.error);
-        // Ne pas utiliser de données simulées - laisser evaluationData à null
-        console.log('⚠️ [MODAL] Évaluation échouée - aucune donnée à afficher');
       }
 
     } catch (error) {
@@ -870,34 +1105,41 @@ export default function Traitements_IA() {
         }
       }
       
+      // PRIORITÉ ABSOLUE à offre?.reference qui est le champ utilisé par l'API SEEG
+      const postId = rawCandidate.offre?.reference || 
+                     candidate.offre?.reference || 
+                     rawCandidate.offre?.job_id || 
+                     candidate.offre?.job_id || 
+                     candidate.offre_id || 
+                     rawCandidate.offre_id || 
+                     candidate.post || 
+                     rawCandidate.post || 
+                     rawCandidate.application?.offer_id || 
+                     '';
+      
+      // Récupérer les données MTP au bon format (déjà des chaînes de texte)
+      const mtpData = rawCandidate.mtp || candidate.mtp || rawCandidate.analysis?.mtp || candidate.aiData?.mtp || {};
+      
       const candidateData: CandidateData = {
         id: candidate.id,
-        Nom: candidate.nom || candidate.lastName || candidate.last_name || rawCandidate.last_name || 'N/A',
-        Prénom: candidate.prenom || candidate.firstName || candidate.first_name || rawCandidate.first_name || 'N/A',
+        nom: candidate.nom || candidate.lastName || candidate.last_name || rawCandidate.last_name || 'N/A',
+        prenom: candidate.prenom || candidate.firstName || candidate.first_name || rawCandidate.first_name || 'N/A',
         cv: cvContent,
         lettre_motivation: coverLetterContent,
         MTP: {
-          M: candidate.reponses_mtp?.metier ? candidate.reponses_mtp.metier.join(' | ') :
-             rawCandidate.reponses_mtp?.metier ? rawCandidate.reponses_mtp.metier.join(' | ') : 
-             candidate.aiData?.mtp?.reponses_mtp?.metier ? candidate.aiData.mtp.reponses_mtp.metier.join(' | ') : 'Réponses métier non disponibles',
-          T: candidate.reponses_mtp?.talent ? candidate.reponses_mtp.talent.join(' | ') :
-             rawCandidate.reponses_mtp?.talent ? rawCandidate.reponses_mtp.talent.join(' | ') : 
-             candidate.aiData?.mtp?.reponses_mtp?.talent ? candidate.aiData.mtp.reponses_mtp.talent.join(' | ') : 'Réponses talent non disponibles',
-          P: candidate.reponses_mtp?.paradigme ? candidate.reponses_mtp.paradigme.join(' | ') :
-             rawCandidate.reponses_mtp?.paradigme ? rawCandidate.reponses_mtp.paradigme.join(' | ') : 
-             candidate.aiData?.mtp?.reponses_mtp?.paradigme ? candidate.aiData.mtp.reponses_mtp.paradigme.join(' | ') : 'Réponses paradigme non disponibles'
+          M: mtpData.M || 'Réponses métier non disponibles',
+          T: mtpData.T || 'Réponses talent non disponibles',
+          P: mtpData.P || 'Réponses paradigme non disponibles'
         },
-        post: candidate.poste || candidate.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié'
+        post: postId
       };
 
-      console.log('📤 ENVOI DES DONNÉES À L\'API AZURE CONTAINER APPS:', candidateData);
 
       const result = await azureContainerAppsService.sendCandidateData(candidateData);
 
       if (result.success) {
         setSendStatus('success');
         setSendMessage('Données envoyées avec succès à l\'API Azure Container Apps');
-        console.log('✅ Envoi réussi:', result);
       } else {
         setSendStatus('error');
         setSendMessage(result.error || 'Erreur lors de l\'envoi');
@@ -1225,10 +1467,6 @@ export default function Traitements_IA() {
           <Button
             variant="default"
             onClick={() => {
-              console.log('🔍 [DEBUG] Test modal - ouverture manuelle');
-              console.log('⚠️ [DEBUG] === OUVERTURE DU MODAL DE TEST ===');
-              console.log('🎯 [DEBUG] === BOUTON TEST MODAL CLIQUE ===');
-              console.log('📊 [DEBUG] === DONNÉES SIMULÉES CHARGÉES ===');
               setIsModalOpen(true);
               setSelectedCandidate({
                 id: 'test-123',
@@ -1238,8 +1476,6 @@ export default function Traitements_IA() {
                 department: 'IT',
                 email: 'test@example.com'
               } as any);
-              console.log('✅ [DEBUG] Modal ouvert avec candidat de test');
-              console.log('🚀 [DEBUG] === MODAL PRÊT À S\'AFFICHER ===');
             }}
             className="flex items-center gap-2"
           >
@@ -1274,7 +1510,6 @@ export default function Traitements_IA() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {console.log('🔍 [DEBUG] Rendu des candidats:', paginatedCandidates.length, 'candidats')}
                   {paginatedCandidates.map((candidate) => (
                     <TableRow key={candidate.id}>
                       <TableCell className="min-w-[200px]">
@@ -1312,21 +1547,6 @@ export default function Traitements_IA() {
                             <span className="hidden sm:inline">Voir Résultats</span>
                             <span className="sm:hidden">Voir</span>
                           </Button>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleSendToAPI(candidate)}
-                            disabled={isSending}
-                            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-                          >
-                            <Send className="h-3 w-3 sm:h-4 sm:w-4" />
-                            <span className="hidden sm:inline">
-                              {isSending ? 'Envoi...' : 'Envoyer'}
-                            </span>
-                            <span className="sm:hidden">
-                              {isSending ? '...' : 'Env'}
-                            </span>
-                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -1358,21 +1578,6 @@ export default function Traitements_IA() {
                       >
                         <Eye className="h-4 w-4" />
                         <span className="hidden xs:inline">Voir</span>
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => handleSendToAPI(candidate)}
-                        disabled={isSending}
-                        className="gap-2 flex-1"
-                      >
-                        <Send className="h-4 w-4" />
-                        <span className="hidden xs:inline">
-                          {isSending ? 'Envoi...' : 'Envoyer'}
-                        </span>
-                        <span className="xs:hidden">
-                          {isSending ? '...' : 'Env'}
-                        </span>
                       </Button>
                     </div>
                   </div>
@@ -1478,7 +1683,6 @@ export default function Traitements_IA() {
         {/* Modal de détails des évaluations IA */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="max-w-[95vw] sm:max-w-4xl lg:max-w-6xl max-h-[90vh] overflow-y-auto mx-4 sm:mx-0">
-            {console.log('🔍 [DEBUG] Modal rendu - isModalOpen:', isModalOpen, 'selectedCandidate:', selectedCandidate)}
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
@@ -1486,6 +1690,9 @@ export default function Traitements_IA() {
                   Évaluation IA - {selectedCandidate?.firstName || 'Test'} {selectedCandidate?.lastName || 'Candidat'}
                 </span>
               </DialogTitle>
+              <DialogDescription>
+                Résultats détaillés de l'analyse automatique par intelligence artificielle du profil du candidat
+              </DialogDescription>
             </DialogHeader>
             
             {/* Contenu de test si pas de candidat sélectionné */}
@@ -1584,16 +1791,18 @@ export default function Traitements_IA() {
                             {evaluationData.verdict?.verdict || 'Non spécifié'}
                           </span>
                         </div>
-                        {evaluationData.verdict?.rationale && (
+                        {/* Justification masquée - contient souvent du texte technique */}
+                        {/* {evaluationData.verdict?.rationale && cleanTechnicalText(evaluationData.verdict.rationale) && (
                           <p className="text-sm text-gray-700 mb-2">
-                            <strong>Justification :</strong> {evaluationData.verdict.rationale}
+                            <strong>Justification :</strong> {cleanTechnicalText(evaluationData.verdict.rationale)}
                           </p>
-                        )}
-                        {evaluationData.verdict?.commentaires && evaluationData.verdict.commentaires.length > 0 && (
+                        )} */}
+                        {/* Commentaires masqués - contiennent souvent du texte technique */}
+                        {/* {evaluationData.verdict?.commentaires && evaluationData.verdict.commentaires.length > 0 && cleanTechnicalArray(evaluationData.verdict.commentaires).length > 0 && (
                           <div>
                             <p className="text-sm font-medium text-gray-600 mb-1">Commentaires :</p>
                             <ul className="text-sm text-gray-700 space-y-1">
-                              {evaluationData.verdict.commentaires.map((comment, index) => (
+                              {cleanTechnicalArray(evaluationData.verdict.commentaires).map((comment, index) => (
                                 <li key={index} className="flex items-start gap-2">
                                   <span className="text-gray-400">•</span>
                                   {comment}
@@ -1601,7 +1810,7 @@ export default function Traitements_IA() {
                               ))}
                             </ul>
                           </div>
-                        )}
+                        )} */}
                       </div>
 
                       {/* Forces */}
@@ -1640,7 +1849,7 @@ export default function Traitements_IA() {
                         </div>
                       )}
 
-                      {/* Justifications */}
+                      {/* Justifications - Afficher uniquement la première */}
                       {evaluationData.justification && evaluationData.justification.length > 0 && (
                         <div>
                           <h4 className="font-semibold mb-2 flex items-center gap-2">
@@ -1648,7 +1857,7 @@ export default function Traitements_IA() {
                             Justifications Détaillées
                           </h4>
                           <ul className="space-y-2">
-                            {evaluationData.justification.map((justif, index) => (
+                            {cleanTechnicalArray(evaluationData.justification).slice(0, 1).map((justif, index) => (
                               <li key={index} className="text-sm bg-blue-50 p-3 rounded-lg">
                                 {justif}
                               </li>
@@ -1665,7 +1874,7 @@ export default function Traitements_IA() {
                             Commentaires Généraux
                           </h4>
                           <ul className="space-y-2">
-                            {evaluationData.commentaires.map((comment, index) => (
+                            {cleanTechnicalArray(evaluationData.commentaires).map((comment, index) => (
                               <li key={index} className="text-sm bg-gray-50 p-3 rounded-lg">
                                 {comment}
                               </li>

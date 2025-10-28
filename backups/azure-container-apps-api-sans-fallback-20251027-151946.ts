@@ -1,28 +1,14 @@
+/// <reference types="vite/client" />
+
 /**
  * Service pour l'API Azure Container Apps - RH RVAL
  * Documentation: https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/docs
  */
 
-/**
- * Interface pour les données candidat - Structure attendue par l'API RH EVAL
- * {
- *   "id": "cand-001",
- *   "nom": "Dupont",
- *   "prenom": "Alice",
- *   "cv": "Texte du CV…",
- *   "lettre_motivation": "Texte de la LM…",
- *   "MTP": {
- *     "M": "azure, devops, agile…",
- *     "T": "python, ml, docker…",
- *     "P": "gestion de projet, lead dev…"
- *   },
- *   "post": "dev-ia-001"
- * }
- */
 export interface CandidateData {
   id: string | number;
-  nom: string;
-  prenom: string;
+  Nom: string;
+  Prénom: string;
   cv: string;
   lettre_motivation: string;
   MTP: {
@@ -30,7 +16,7 @@ export interface CandidateData {
     T: string;
     P: string;
   };
-  post: string; // ID de l'offre (reference)
+  post: string;
 }
 
 export interface ApiResponse {
@@ -42,19 +28,16 @@ export interface ApiResponse {
 
 export interface EvaluationRequest {
   candidate_id: string | number;
-  job_title: string; // Titre du poste pour l'affichage
-  job_id: string; // ID de l'offre (reference) pour l'API
+  job_title: string;
   cv_content: string;
   cover_letter_content: string;
   candidate_name?: string;
   candidate_firstname?: string;
   mtp_responses?: {
-    M: string;
-    T: string;
-    P: string;
+    metier: string[];
+    talent: string[];
+    paradigme: string[];
   };
-  threshold_pct?: number; // Seuil d'acceptation (défaut: 50)
-  hold_threshold_pct?: number; // Seuil de mise en attente (défaut: 50)
 }
 
 export interface EvaluationResponse {
@@ -75,31 +58,22 @@ export interface EvaluationResponse {
   faiblesses: string[];
 }
 
-export interface OfferSeedData {
-  job_id: string;
-  titre: string;
-  offre: string;
-  M: string;
-  T: string;
-  P: string;
-}
-
 class AzureContainerAppsService {
   private baseUrl: string;
   private timeout: number;
   private apiKey: string | null;
 
   constructor() {
-    // Configuration pour utiliser le proxy Vercel en production
+    // Configuration pour utiliser l'API réelle en production
     if (import.meta.env.DEV) {
       this.baseUrl = '/api/rh-eval';
     } else {
-      // En production, utiliser le proxy Vercel pour contourner CORS
-      this.baseUrl = '/api/rh-eval-proxy';
+      // En production, utiliser l'URL directe de l'API Azure Container Apps
+      this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
     }
-    this.timeout = 30000; // 30 secondes par défaut
-    // Clé API pour l'API SEEG AI
-    this.apiKey = import.meta.env.VITE_SEEG_AI_API_KEY || 'demo-key';
+    this.timeout = 30000; // 30 secondes
+    // Clé API temporaire pour les tests - À remplacer par la vraie clé API
+    this.apiKey = import.meta.env.VITE_SEEG_AI_API_KEY || 'test-key-12345';
   }
 
   /**
@@ -375,44 +349,29 @@ class AzureContainerAppsService {
    */
   async evaluateCandidate(evaluationData: EvaluationRequest): Promise<ApiResponse> {
     try {
+      console.log('🔍 [Azure Container Apps] Évaluation du candidat:', evaluationData.candidate_id);
+      
       // Préparer les données au format de l'API RH Eval
       const rhEvalData = {
         id: evaluationData.candidate_id,
         nom: evaluationData.candidate_name || evaluationData.candidate_id.toString(),
         prenom: evaluationData.candidate_firstname || evaluationData.candidate_id.toString(),
+        post: evaluationData.job_title,
         cv: evaluationData.cv_content,
         lettre_motivation: evaluationData.cover_letter_content,
         MTP: {
-          M: evaluationData.mtp_responses?.M || 'Non spécifié',
-          T: evaluationData.mtp_responses?.T || 'Non spécifié',
-          P: evaluationData.mtp_responses?.P || 'Non spécifié'
-        },
-        // Utiliser job_id (ID de l'offre/reference) pour le champ post
-        // S'assurer que le champ est toujours présent, même s'il est vide
-        post: evaluationData.job_id || ''
+          M: evaluationData.mtp_responses?.metier?.join(', ') || 'Non spécifié',
+          T: evaluationData.mtp_responses?.talent?.join(', ') || 'Non spécifié',
+          P: evaluationData.mtp_responses?.paradigme?.join(', ') || 'Non spécifié'
+        }
       };
-      
-      console.log('📤 [Azure Container Apps] job_id reçu:', evaluationData.job_id);
-      console.log('📤 [Azure Container Apps] Champ post qui sera envoyé:', rhEvalData.post);
-      console.log('📤 [Azure Container Apps] Structure complète envoyée à l\'API:', JSON.stringify(rhEvalData, null, 2));
-      
-      // Timeout plus long pour l'évaluation IA (120 secondes = 2 minutes)
-      const evaluationTimeout = 120000;
-      console.log(`⏱️ [Azure Container Apps] Timeout configuré: ${evaluationTimeout / 1000}s pour l'évaluation IA`);
+
+      console.log('📤 [Azure Container Apps] Données envoyées à l\'API RH Eval:', rhEvalData);
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), evaluationTimeout);
+      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-      // Construire l'URL avec les paramètres de seuil (query parameters)
-      // Utiliser les valeurs de evaluationData si fournies, sinon 50 par défaut
-      const thresholdPct = evaluationData.threshold_pct ?? 50;
-      const holdThresholdPct = evaluationData.hold_threshold_pct ?? 50;
-      const evaluateUrl = `${this.baseUrl}/evaluate?threshold_pct=${thresholdPct}&hold_threshold_pct=${holdThresholdPct}`;
-
-      console.log('🔗 [Azure Container Apps] URL avec paramètres:', evaluateUrl);
-      console.log('📊 [Azure Container Apps] Seuils appliqués:', { threshold_pct: thresholdPct, hold_threshold_pct: holdThresholdPct });
-
-      const response = await fetch(evaluateUrl, {
+      const response = await fetch(`${this.baseUrl}/evaluate`, {
         method: 'POST',
         signal: controller.signal,
         headers: this.getAuthHeaders(),
@@ -480,72 +439,6 @@ class AzureContainerAppsService {
       return {
         success: false,
         error: 'Erreur inconnue lors de l\'évaluation',
-      };
-    }
-  }
-
-  /**
-   * Enregistre (seed) les offres dans l'API avant l'évaluation
-   * Route: POST /index/seed
-   */
-  async seedOffers(offers: OfferSeedData[]): Promise<ApiResponse> {
-    try {
-      console.log('🌱 [Azure Container Apps] Seed des offres:', offers.length, 'offres');
-      
-      const seedUrl = `${this.baseUrl}/index/seed`;
-      
-      console.log('🔗 [Azure Container Apps] URL seed:', seedUrl);
-      console.log('📤 [Azure Container Apps] Données à seeder:', JSON.stringify(offers, null, 2));
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-      const response = await fetch(seedUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(this.apiKey && { 'X-API-Key': this.apiKey }),
-        },
-        body: JSON.stringify(offers),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ [Azure Container Apps] Erreur HTTP seed:', response.status, errorText);
-        throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('✅ [Azure Container Apps] Seed effectué avec succès:', result);
-      
-      return {
-        success: true,
-        message: 'Offres enregistrées avec succès',
-        data: result,
-      };
-
-    } catch (error) {
-      console.error('❌ [Azure Container Apps] Erreur lors du seed:', error);
-      
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          return {
-            success: false,
-            error: 'Timeout: L\'API n\'a pas répondu dans les temps',
-          };
-        }
-        return {
-          success: false,
-          error: error.message,
-        };
-      }
-      
-      return {
-        success: false,
-        error: 'Une erreur inconnue s\'est produite lors du seed',
       };
     }
   }

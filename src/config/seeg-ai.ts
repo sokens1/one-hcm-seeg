@@ -7,7 +7,7 @@ export const SEEG_AI_CONFIG = {
   API_KEY: import.meta.env.VITE_SEEG_AI_API_KEY || '',
   
   // Timeout pour les requêtes (en millisecondes)
-  TIMEOUT: 30000,
+  TIMEOUT: 60000, // 60 secondes pour les requêtes lourdes
   
   // Endpoints de l'API
   ENDPOINTS: {

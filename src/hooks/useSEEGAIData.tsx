@@ -35,107 +35,130 @@ export function useSEEGAIData() {
       setIsLoading(true);
       setError(null);
       setHasTriedApi(true);
-      // Ne pas réinitialiser les données ici pour éviter les conflits
 
       const connected = await checkConnection();
       if (!connected) {
         throw new Error('Impossible de se connecter à l\'API SEEG AI');
       }
 
-      // Essayer d'abord l'endpoint dédié
-      try {
-        const aiData = await seegAIService.getAIData();
-        setData(aiData);
-        return;
-      } catch (endpointError) {
-        // Si l'endpoint dédié n'existe pas, utiliser la recherche pour récupérer des données
-        console.info('🔧 [SEEG AI] Endpoint /candidatures/ai-data non disponible, utilisation de GET /candidatures');
+      // Utiliser directement l'endpoint /candidatures qui fonctionne
+      console.info('🔧 [SEEG AI] Récupération des données via GET /candidatures');
+      console.info('⏳ [SEEG AI] Chargement en cours, veuillez patienter...');
+      
+      const startTime = Date.now();
+      const searchResults = await seegAIService.getAllCandidates();
+      const endTime = Date.now();
+      
+      console.info(`✅ [SEEG AI] Données chargées en ${(endTime - startTime) / 1000}s`);
+      
+      // Log détaillé des données récupérées de l'API SEEG-AI
+      console.log('🔍 [DEBUG] Données récupérées de l\'API SEEG-AI:');
+      console.log('📍 URL source:', 'https://seeg-ai-api.azurewebsites.net/candidatures');
+      console.log('📊 Nombre de candidats récupérés:', searchResults.length);
+      console.log('📋 Structure des données:', JSON.stringify(searchResults.slice(0, 2), null, 2)); // Afficher les 2 premiers pour éviter le spam
+      console.log('📄 Exemple de candidat complet:', searchResults[0]);
+      
+      if (Array.isArray(searchResults) && searchResults.length > 0) {
+        // Organiser les données par département comme attendu par l'interface
+        const organizedData: Record<string, any[]> = {};
         
-        // Récupérer tous les candidats via l'endpoint dédié
-        const searchResults = await seegAIService.getAllCandidates();
+        searchResults.forEach((candidate: any) => {
+          // Essayer différentes sources pour le département
+          let department = 'Autres';
+          
+          if (candidate.offre?.ligne_hierarchique) {
+            department = candidate.offre.ligne_hierarchique;
+          } else if (candidate.offre?.intitule) {
+            // Extraire le département du titre du poste
+            const title = candidate.offre.intitule.toLowerCase();
+            if (title.includes('juridique')) department = 'Juridique';
+            else if (title.includes('rh') || title.includes('ressources humaines')) department = 'Ressources Humaines';
+            else if (title.includes('financier') || title.includes('comptable')) department = 'Finance';
+            else if (title.includes('commercial') || title.includes('vente')) department = 'Commercial';
+            else if (title.includes('technique') || title.includes('ingénieur')) department = 'Technique';
+            else if (title.includes('marketing') || title.includes('communication')) department = 'Marketing';
+            else if (title.includes('système') || title.includes('informatique')) department = 'Systèmes d\'Information';
+            else if (title.includes('direction') || title.includes('directeur')) department = 'Direction';
+            else department = 'Autres';
+          }
+          
+          // Mapper les données de l'API vers le format attendu par l'interface
+          const mappedCandidate = {
+            prenom: candidate.first_name || candidate.prenom || 'N/A',
+            nom: candidate.last_name || candidate.nom || 'N/A',
+            // poste = intitulé du poste pour l'affichage dans le modal
+            poste: candidate.offre?.intitule || candidate.poste || 'N/A',
+            // offre_id = référence de l'offre pour l'envoi à l'API dans le champ "post"
+            // Essayer plusieurs sources possibles pour l'ID de l'offre
+            offre_id: candidate.offre?.job_id || candidate.offre?.reference || candidate.offre_id || candidate.application?.offer_id || null,
+            resume_global: candidate.analysis?.resume_global || candidate.resume_global || {
+              score_global: 0,
+              rang_global: 999,
+              verdict: 'Non évalué',
+              commentaire_global: 'Aucune évaluation disponible'
+            },
+            mtp: {
+              ...candidate.analysis?.mtp,
+              ...candidate.mtp,
+              // Ajouter les réponses MTP si elles existent
+              reponses_mtp: candidate.reponses_mtp || candidate.analysis?.reponses_mtp
+            },
+            similarite_offre: candidate.analysis?.similarite_offre || candidate.similarite_offre,
+            conformite: candidate.analysis?.conformite || candidate.conformite,
+            feedback: candidate.analysis?.feedback || candidate.feedback,
+            // Conserver TOUTES les données originales pour le mapping vers l'API Azure Container Apps
+            documents: candidate.documents,
+            offre: candidate.offre,
+            // Ajouter aussi les données brutes pour debug
+            rawData: candidate,
+            // Ajouter directement les réponses MTP au niveau racine pour faciliter l'accès
+            reponses_mtp: candidate.reponses_mtp,
+            // Ajouter directement les documents au niveau racine pour faciliter l'accès
+            cv: candidate.documents?.cv,
+            cover_letter: candidate.documents?.cover_letter,
+            diplome: candidate.documents?.diplome,
+            certificats: candidate.documents?.certificats
+          };
+          
+          if (!organizedData[department]) {
+            organizedData[department] = [];
+          }
+          organizedData[department].push(mappedCandidate);
+        });
         
-        if (Array.isArray(searchResults) && searchResults.length > 0) {
-          // Organiser les données par département comme attendu par l'interface
-          const organizedData: Record<string, any[]> = {};
-          
-          searchResults.forEach((candidate: any) => {
-            // Essayer différentes sources pour le département
-            let department = 'Autres';
-            
-            if (candidate.offre?.ligne_hierarchique) {
-              department = candidate.offre.ligne_hierarchique;
-            } else if (candidate.offre?.intitule) {
-              // Extraire le département du titre du poste
-              const title = candidate.offre.intitule.toLowerCase();
-              if (title.includes('juridique')) department = 'Juridique';
-              else if (title.includes('rh') || title.includes('ressources humaines')) department = 'Ressources Humaines';
-              else if (title.includes('financier') || title.includes('comptable')) department = 'Finance';
-              else if (title.includes('commercial') || title.includes('vente')) department = 'Commercial';
-              else if (title.includes('technique') || title.includes('ingénieur')) department = 'Technique';
-              else if (title.includes('marketing') || title.includes('communication')) department = 'Marketing';
-              else if (title.includes('système') || title.includes('informatique')) department = 'Systèmes d\'Information';
-              else if (title.includes('direction') || title.includes('directeur')) department = 'Direction';
-              else department = 'Autres';
-            }
-            
-            // Les données de l'API sont bien reçues avec les documents
-            
-            // Mapper les données de l'API vers le format attendu par l'interface
-            const mappedCandidate = {
-              prenom: candidate.first_name || candidate.prenom || 'N/A',
-              nom: candidate.last_name || candidate.nom || 'N/A',
-              poste: candidate.offre?.intitule || candidate.poste || 'N/A',
-              resume_global: candidate.analysis?.resume_global || candidate.resume_global || {
-                score_global: 0,
-                rang_global: 999,
-                verdict: 'Non évalué',
-                commentaire_global: 'Aucune évaluation disponible'
-              },
-              mtp: {
-                ...candidate.analysis?.mtp,
-                ...candidate.mtp,
-                // Ajouter les réponses MTP si elles existent
-                reponses_mtp: candidate.reponses_mtp || candidate.analysis?.reponses_mtp
-              },
-              similarite_offre: candidate.analysis?.similarite_offre || candidate.similarite_offre,
-              conformite: candidate.analysis?.conformite || candidate.conformite,
-              feedback: candidate.analysis?.feedback || candidate.feedback,
-              // Conserver TOUTES les données originales pour le mapping vers l'API Azure Container Apps
-              documents: candidate.documents,
-              offre: candidate.offre,
-              // Ajouter aussi les données brutes pour debug
-              rawData: candidate,
-              // Ajouter directement les réponses MTP au niveau racine pour faciliter l'accès
-              reponses_mtp: candidate.reponses_mtp,
-              // Ajouter directement les documents au niveau racine pour faciliter l'accès
-              cv: candidate.documents?.cv,
-              cover_letter: candidate.documents?.cover_letter,
-              diplome: candidate.documents?.diplome,
-              certificats: candidate.documents?.certificats
-            };
-            
-            // Le mapping est correct et inclut tous les documents
-            
-            if (!organizedData[department]) {
-              organizedData[department] = [];
-            }
-            organizedData[department].push(mappedCandidate);
-          });
-          
-          setData(organizedData);
-          console.info(`🔧 [SEEG AI] ${searchResults.length} candidats récupérés via GET /candidatures`);
-        } else {
-          setData({});
-        }
+        // Log détaillé des données organisées par département
+        console.log('🔍 [DEBUG] Données organisées par département:');
+        console.log('📊 Départements trouvés:', Object.keys(organizedData));
+        console.log('📋 Répartition des candidats:', Object.entries(organizedData).map(([dept, candidates]) => `${dept}: ${candidates.length}`));
+        console.log('📄 Exemple de candidat mappé:', organizedData[Object.keys(organizedData)[0]]?.[0]);
+        
+        setData(organizedData);
+        console.info(`🔧 [SEEG AI] ${searchResults.length} candidats récupérés via GET /candidatures`);
+      } else {
+        setData({});
       }
     } catch (err) {
       // Ne pas logger les erreurs d'endpoints non implémentés
       if (!(err instanceof Error && err.message.includes('Endpoint not implemented'))) {
-        console.error('Erreur lors du chargement des données IA:', err);
+        if (err instanceof Error) {
+          // Améliorer les messages d'erreur pour l'utilisateur
+          if (err.message.includes('Timeout') || err.message.includes('annulée')) {
+            console.error('⏱️ [SEEG AI] Timeout: La requête a pris trop de temps', err);
+            setError('Le chargement des données prend trop de temps. Veuillez rafraîchir la page.');
+          } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+            console.error('🌐 [SEEG AI] Erreur réseau:', err);
+            setError('Impossible de contacter le serveur. Vérifiez votre connexion internet.');
+          } else {
+            console.error('❌ [SEEG AI] Erreur lors du chargement des données:', err);
+            setError(err.message);
+          }
+        } else {
+          console.error('❌ [SEEG AI] Erreur inconnue:', err);
+          setError('Erreur inconnue lors du chargement des données');
+        }
+      } else {
+        setError(err instanceof Error ? err.message : 'Erreur inconnue');
       }
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
-      // Ne pas réinitialiser les données en cas d'erreur pour éviter les conflits
-      // setData({}); // Réinitialiser les données en cas d'erreur
     } finally {
       setIsLoading(false);
     }
@@ -230,8 +253,15 @@ export function useSEEGAIData() {
     setIsInitialized(true);
     console.info('🔧 [SEEG AI] Initialisation - Tentative de connexion à l\'API');
     
-    // Forcer le chargement des données de l'API
-    loadAIData();
+    // Utiliser un délai pour éviter les multiples appels en mode strict
+    const timeoutId = setTimeout(() => {
+      loadAIData();
+    }, 100); // Petit délai pour éviter les doubles appels
+    
+    // Cleanup pour annuler le chargement si le composant se démonte
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []); // Dépendances vides pour s'exécuter une seule fois
 
   // Message informatif pour le développement

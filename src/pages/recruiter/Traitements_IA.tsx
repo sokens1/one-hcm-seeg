@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { azureContainerAppsService, CandidateData, EvaluationRequest } from "@/integrations/azure-container-apps-api";
 import { 
@@ -24,7 +24,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Send,
   AlertCircle,
   TrendingUp,
   Target,
@@ -211,6 +210,87 @@ const getVerdictVariant = (verdict: string | undefined) => {
   
   // Par défaut
   return 'default';
+};
+
+/**
+ * Détecte si un texte est purement technique (à masquer complètement)
+ * Retourne true si le texte contient uniquement des références techniques
+ */
+const isPurelyTechnicalText = (text: string): boolean => {
+  if (!text) return false;
+  
+  // Patterns qui indiquent un texte purement technique
+  const technicalIndicators = [
+    /Vector search/i,
+    /Azure AI Search/i,
+    /cosinus normalisé/i,
+    /fusion pondérée/i,
+    /retrieval persistant/i,
+    /Verdict basé sur seuils/i,
+    /passages.*?;/i,
+    /→/,
+  ];
+  
+  // Si le texte contient plusieurs indicateurs techniques, c'est un texte technique
+  const matchCount = technicalIndicators.filter(pattern => pattern.test(text)).length;
+  
+  // Si 2 indicateurs ou plus, c'est du texte purement technique
+  return matchCount >= 2;
+};
+
+/**
+ * Nettoie le texte technique de l'API pour le rendre plus user-friendly
+ * Si le texte est purement technique, retourne une chaîne vide
+ */
+const cleanTechnicalText = (text: string): string => {
+  if (!text) return '';
+  
+  // Si le texte est purement technique, ne rien afficher
+  if (isPurelyTechnicalText(text)) {
+    return '';
+  }
+  
+  // Sinon, nettoyer le texte des éléments techniques résiduels
+  const technicalPhrases = [
+    /Vector search \(Azure\).*?passages.*?;/gi,
+    /cosinus normalisé.*?%.*?;/gi,
+    /fusion pondérée\.?/gi,
+    /retrieval persistant via Azure AI Search\.?/gi,
+    /Verdict basé sur seuils.*?;/gi,
+    /Azure AI Search/gi,
+    /Vector search/gi,
+  ];
+  
+  let cleanedText = text;
+  
+  // Supprimer les phrases techniques
+  technicalPhrases.forEach(pattern => {
+    cleanedText = cleanedText.replace(pattern, '');
+  });
+  
+  // Supprimer les patterns génériques qui restent
+  cleanedText = cleanedText
+    .replace(/→/g, '') // Flèches
+    .replace(/;\s*;/g, ';') // Double point-virgules
+    .replace(/\s*;\s*$/g, '') // Point-virgules en fin
+    .replace(/^\s*;\s*/g, '') // Point-virgules au début
+    .replace(/\s+/g, ' ') // Espaces multiples
+    .trim();
+  
+  // Si le texte est vide, trop court, ou contient seulement de la ponctuation
+  if (!cleanedText || cleanedText.length < 10 || /^[.,;:\s-]+$/.test(cleanedText)) {
+    return '';
+  }
+  
+  return cleanedText;
+};
+
+/**
+ * Nettoie un tableau de textes techniques
+ */
+const cleanTechnicalArray = (items: string[]): string[] => {
+  if (!items || !Array.isArray(items)) return items;
+  return items.map(item => cleanTechnicalText(item)).filter(item => item.length > 0);
 };
 
 export default function Traitements_IA() {
@@ -545,20 +625,29 @@ export default function Traitements_IA() {
       console.log('🔄 [AUTO-EVAL] Début de l\'évaluation automatique de tous les candidats');
       
       // Évaluer chaque candidat qui n'a pas encore été évalué
-      for (const candidate of filteredCandidates) {
-        if (!candidateEvaluations[candidate.id]) {
-          console.log(`🔍 [AUTO-EVAL] Évaluation du candidat: ${candidate.fullName}`);
-          try {
-            await evaluateCandidateAutomatically(candidate, true);
-            // Petite pause entre les évaluations pour éviter la surcharge
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } catch (error) {
-            console.error(`❌ [AUTO-EVAL] Erreur pour ${candidate.fullName}:`, error);
-          }
+      const candidatesToEvaluate = filteredCandidates.filter(c => !candidateEvaluations[c.id]);
+      console.log(`📊 [AUTO-EVAL] ${candidatesToEvaluate.length} candidats à évaluer sur ${filteredCandidates.length} total`);
+      
+      let evaluatedCount = 0;
+      let errorCount = 0;
+      
+      for (const candidate of candidatesToEvaluate) {
+        evaluatedCount++;
+        console.log(`🔍 [AUTO-EVAL] Évaluation ${evaluatedCount}/${candidatesToEvaluate.length}: ${candidate.fullName}`);
+        try {
+          await evaluateCandidateAutomatically(candidate, true);
+          console.log(`✅ [AUTO-EVAL] Succès pour ${candidate.fullName}`);
+          // Pause plus longue entre les évaluations pour donner le temps à l'API de traiter (3 secondes)
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        } catch (error) {
+          errorCount++;
+          console.error(`❌ [AUTO-EVAL] Erreur ${errorCount} pour ${candidate.fullName}:`, error);
+          // Pause encore plus longue après une erreur (5 secondes) pour laisser l'API récupérer
+          await new Promise(resolve => setTimeout(resolve, 5000));
         }
       }
       
-      console.log('✅ [AUTO-EVAL] Évaluation automatique terminée');
+      console.log(`✅ [AUTO-EVAL] Évaluation automatique terminée: ${evaluatedCount - errorCount} succès, ${errorCount} erreurs`);
     };
 
     // Délai pour laisser le temps aux données de se charger
@@ -650,7 +739,7 @@ export default function Traitements_IA() {
         P: cand.reponses_mtp?.paradigme ? cand.reponses_mtp.paradigme.join(' | ') :
            rawCandidate.reponses_mtp?.paradigme ? rawCandidate.reponses_mtp.paradigme.join(' | ') : 'Réponses paradigme non disponibles'
       },
-      post: cand.poste || cand.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié'
+      post: cand.offre?.reference || rawCandidate.offre?.reference || cand.poste || 'Poste non spécifié'
     };
     
     console.log('📤 DONNÉES QUI SERAIENT ENVOYÉES À L\'API AZURE CONTAINER APPS:');
@@ -754,21 +843,106 @@ export default function Traitements_IA() {
         }
       }
       
+      // PRIORITÉ ABSOLUE à post (champ direct) ou offre?.reference qui est le champ utilisé par l'API SEEG
+      const jobId = rawCandidate.post ||
+                    cand.post ||
+                    rawCandidate.offre?.reference || 
+                    cand.offre?.reference || 
+                    rawCandidate.offre?.job_id || 
+                    cand.offre?.job_id || 
+                    cand.offre_id || 
+                    rawCandidate.offre_id || 
+                    rawCandidate.application?.offer_id || 
+                    '';
+      
+      // Récupérer les données MTP au bon format (déjà des chaînes de texte)
+      console.log('🔍 [DEBUG] Recherche des données MTP...');
+      console.log('🔍 [DEBUG] rawCandidate.mtp:', rawCandidate.mtp);
+      console.log('🔍 [DEBUG] cand.mtp:', cand.mtp);
+      console.log('🔍 [DEBUG] rawCandidate.reponses_mtp:', rawCandidate.reponses_mtp);
+      console.log('🔍 [DEBUG] cand.reponses_mtp:', cand.reponses_mtp);
+      
+      // Les données MTP peuvent être dans mtp directement ou dans reponses_mtp
+      let mtpData = rawCandidate.mtp || cand.mtp || rawCandidate.analysis?.mtp || cand.aiData?.mtp || {};
+      
+      // Si mtpData contient reponses_mtp, extraire ces données
+      if (mtpData.reponses_mtp) {
+        mtpData = mtpData.reponses_mtp;
+      }
+      
+      // Ou vérifier directement dans reponses_mtp
+      if (!mtpData.M && !mtpData.T && !mtpData.P) {
+        const directMtp = rawCandidate.reponses_mtp || cand.reponses_mtp;
+        if (directMtp) {
+          mtpData = directMtp;
+        }
+      }
+      
+      console.log('🔍 [DEBUG] mtpData final récupéré:', mtpData);
+      console.log('🔍 [DEBUG] mtpData.M:', mtpData.M);
+      console.log('🔍 [DEBUG] mtpData.T:', mtpData.T);
+      console.log('🔍 [DEBUG] mtpData.P:', mtpData.P);
+      console.log('🔍 [DEBUG] mtpData.metier:', mtpData.metier);
+      console.log('🔍 [DEBUG] mtpData.talent:', mtpData.talent);
+      console.log('🔍 [DEBUG] mtpData.paradigme:', mtpData.paradigme);
+      
+      // Convertir les données MTP au format attendu par l'API (M, T, P)
+      // Gérer deux cas : {M, T, P} ou {metier, talent, paradigme}
+      let M_value = mtpData.M;
+      let T_value = mtpData.T;
+      let P_value = mtpData.P;
+      
+      // Si les données sont au format {metier, talent, paradigme} (tableaux), les convertir
+      if (!M_value && mtpData.metier) {
+        M_value = Array.isArray(mtpData.metier) ? mtpData.metier.join(' | ') : mtpData.metier;
+      }
+      if (!T_value && mtpData.talent) {
+        T_value = Array.isArray(mtpData.talent) ? mtpData.talent.join(' | ') : mtpData.talent;
+      }
+      if (!P_value && mtpData.paradigme) {
+        P_value = Array.isArray(mtpData.paradigme) ? mtpData.paradigme.join(' | ') : mtpData.paradigme;
+      }
+      
+      console.log('🔍 [DEBUG] Valeurs MTP après conversion:', { M_value, T_value, P_value });
+      
+      // S'assurer que les données MTP sont des chaînes de texte
+      const mtpResponses = {
+        M: typeof M_value === 'string' ? M_value : (M_value ? JSON.stringify(M_value) : 'Réponses métier non disponibles'),
+        T: typeof T_value === 'string' ? T_value : (T_value ? JSON.stringify(T_value) : 'Réponses talent non disponibles'),
+        P: typeof P_value === 'string' ? P_value : (P_value ? JSON.stringify(P_value) : 'Réponses paradigme non disponibles')
+      };
+      
       const evaluationData: EvaluationRequest = {
         candidate_id: cand.id,
         candidate_name: cand.nom || cand.lastName || rawCandidate.nom || 'N/A',
         candidate_firstname: cand.prenom || cand.firstName || rawCandidate.prenom || 'N/A',
-        job_title: cand.poste || cand.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié',
+        job_title: cand.offre?.intitule || rawCandidate.offre?.intitule || cand.poste || 'Poste non spécifié',
+        job_id: jobId,
         cv_content: cvContent,
         cover_letter_content: coverLetterContent,
-        mtp_responses: {
-          metier: cand.reponses_mtp?.metier || rawCandidate.reponses_mtp?.metier || cand.aiData?.mtp?.reponses_mtp?.metier || [],
-          talent: cand.reponses_mtp?.talent || rawCandidate.reponses_mtp?.talent || cand.aiData?.mtp?.reponses_mtp?.talent || [],
-          paradigme: cand.reponses_mtp?.paradigme || rawCandidate.reponses_mtp?.paradigme || cand.aiData?.mtp?.reponses_mtp?.paradigme || []
-        }
+        mtp_responses: mtpResponses,
+        threshold_pct: 50,
+        hold_threshold_pct: 50
       };
 
+      console.log('📤 [EVAL] job_id récupéré:', jobId);
+      console.log('📤 [EVAL] Sources vérifiées:', {
+        'rawCandidate.post': rawCandidate.post,
+        'cand.post': cand.post,
+        'rawCandidate.offre?.reference': rawCandidate.offre?.reference,
+        'cand.offre?.reference': cand.offre?.reference
+      });
+      console.log('📤 [EVAL] CV content (premiers 100 chars):', cvContent.substring(0, 100));
+      console.log('📤 [EVAL] Cover letter (premiers 100 chars):', coverLetterContent.substring(0, 100));
       console.log('🔍 ÉVALUATION AUTOMATIQUE DU CANDIDAT:', evaluationData);
+
+      // Validation avant envoi
+      if (!jobId || jobId === '') {
+        const errorMsg = `❌ [EVAL] Le job_id est vide pour le candidat ${cand.fullName || cand.nom}. L'évaluation ne peut pas être effectuée.`;
+        console.error(errorMsg);
+        console.error('🔍 [DEBUG] Candidat complet pour diagnostic:', JSON.stringify(cand, null, 2));
+        throw new Error('Le job_id (post) est requis mais n\'a pas été trouvé dans les données du candidat');
+      }
 
       const result = await azureContainerAppsService.evaluateCandidate(evaluationData);
 
@@ -890,7 +1064,7 @@ export default function Traitements_IA() {
           P: cand.reponses_mtp?.paradigme ? cand.reponses_mtp.paradigme.join(' | ') :
              rawCandidate.reponses_mtp?.paradigme ? rawCandidate.reponses_mtp.paradigme.join(' | ') : 'Réponses paradigme non disponibles'
         },
-        post: cand.poste || cand.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié'
+        post: cand.offre?.reference || rawCandidate.offre?.reference || cand.poste || 'Poste non spécifié'
       };
 
       console.log('📤 ENVOI DES DONNÉES À L\'API AZURE CONTAINER APPS:', candidateData);
@@ -1208,7 +1382,7 @@ export default function Traitements_IA() {
           <CardContent>
             {/* DataTable moderne avec toutes les fonctionnalités intégrées */}
             <DataTable 
-              columns={createColumns(handleViewResults, handleSendToAPI, isSending, candidateEvaluations)} 
+              columns={createColumns(handleViewResults, candidateEvaluations)} 
               data={filteredCandidates as CandidateAIData[]} 
               searchKey="fullName"
               searchPlaceholder="Rechercher par nom..."
@@ -1305,12 +1479,14 @@ export default function Traitements_IA() {
                             {evaluationData.verdict?.verdict || 'Non spécifié'}
                           </span>
                         </div>
-                        {evaluationData.verdict?.rationale && (
+                        {/* Justification masquée - contient souvent du texte technique */}
+                        {/* {evaluationData.verdict?.rationale && (
                           <p className="text-sm text-gray-700 mb-2">
                             <strong>Justification :</strong> {evaluationData.verdict.rationale}
                           </p>
-                        )}
-                        {evaluationData.verdict?.commentaires && evaluationData.verdict.commentaires.length > 0 && (
+                        )} */}
+                        {/* Commentaires masqués - contiennent souvent du texte technique */}
+                        {/* {evaluationData.verdict?.commentaires && evaluationData.verdict.commentaires.length > 0 && (
                           <div>
                             <p className="text-sm font-medium text-gray-600 mb-1">Commentaires :</p>
                             <ul className="text-sm text-gray-700 space-y-1">
@@ -1322,7 +1498,7 @@ export default function Traitements_IA() {
                               ))}
                             </ul>
                           </div>
-                        )}
+                        )} */}
                       </div>
 
                       {/* Forces */}
@@ -1361,7 +1537,7 @@ export default function Traitements_IA() {
                         </div>
                       )}
 
-                      {/* Justifications */}
+                      {/* Justifications - Afficher uniquement la première */}
                       {evaluationData.justification && evaluationData.justification.length > 0 && (
                         <div>
                           <h4 className="font-semibold mb-2 flex items-center gap-2">
@@ -1369,7 +1545,7 @@ export default function Traitements_IA() {
                             Justifications Détaillées
                           </h4>
                           <ul className="space-y-2">
-                            {evaluationData.justification.map((justif, index) => (
+                            {evaluationData.justification.slice(0, 1).map((justif, index) => (
                               <li key={index} className="text-sm bg-blue-50 p-3 rounded-lg">
                                 {justif}
                               </li>
@@ -1396,20 +1572,7 @@ export default function Traitements_IA() {
                       )}
                     </CardContent>
                   </Card>
-                ) : (
-                  <Card>
-                    <CardContent className="flex items-center justify-center py-8">
-                      <div className="text-center text-muted-foreground">
-                        <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                        <p>Aucune évaluation IA disponible</p>
-                        <p className="text-sm">L'évaluation sera effectuée automatiquement via l'API RH Eval</p>
-                        <p className="text-xs mt-2 text-blue-600">
-                          Les données ci-dessous proviennent de l'API SEEG AI (statiques)
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                ) : null}
 
                 {/* Score Global */}
                 {/* <Card>
