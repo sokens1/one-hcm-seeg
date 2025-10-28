@@ -745,6 +745,53 @@ export default function CandidateAnalysis() {
 
       console.log('✅ [CandidateAnalysis] Statut mis à jour avec succès:', updateData[0]);
 
+      // Envoyer l'email de rejet si le candidat est refusé
+      if (newStatus === 'refuse') {
+        try {
+          console.log('📧 [REJECTION] Envoi email de rejet...');
+          
+          const candidateFullName = `${application.users?.first_name || ''} ${application.users?.last_name || ''}`.trim();
+          const candidateEmail = application.users?.email;
+          const jobTitle = application.job_offers?.title || 'Poste non spécifié';
+          
+          if (candidateFullName && candidateEmail && jobTitle) {
+            const resp = await fetch('/api/send-rejection-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                to: 'support@seeg-talentsource.com',
+                candidateFullName,
+                candidateEmail,
+                jobTitle,
+                applicationId: application.id,
+              })
+            });
+            
+            const json = await (async () => { 
+              try { return await resp.json(); } catch { return undefined; } 
+            })();
+            
+            if (!resp.ok) {
+              console.error('📧 [REJECTION] Échec envoi email:', resp.status, json);
+              toast({
+                title: "Email non envoyé",
+                description: "L'email de rejet n'a pas pu être envoyé",
+                variant: "destructive"
+              });
+            } else {
+              console.log('📧 [REJECTION] Email de rejet envoyé avec succès:', json);
+              toast({
+                title: "Email envoyé",
+                description: "L'email de rejet a été envoyé au candidat",
+              });
+            }
+          }
+        } catch (emailError) {
+          console.error('❌ Erreur lors de l\'envoi de l\'email de rejet:', emailError);
+          // Non bloquant
+        }
+      }
+
       // Recharger les données de l'application pour refléter le nouveau statut
       console.log('🔄 [CandidateAnalysis] Rechargement des données...');
       await refetchApplication();

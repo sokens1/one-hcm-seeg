@@ -232,29 +232,47 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         return;
       }
 
-      // Envoyer email statut (non bloquant)
+      // Envoyer email de rejet au candidat
       try {
-        const toEmail = await (async () => {
-          const { data: app } = await supabase
-            .from('applications')
-            .select('candidate_id, job_offers!applications_job_offer_id_fkey(title), users!applications_candidate_id_fkey(email, first_name)')
-            .eq('id', applicationId)
-            .maybeSingle();
-          const rel: any = (app as any)?.users;
-          return Array.isArray(rel) ? (rel[0] as any)?.email as string | undefined : (rel as any)?.email as string | undefined;
-        })();
-        if (toEmail) {
-          await supabase.functions.invoke('send_application_status_update', {
-            body: {
-              to: toEmail,
-              firstName: candidateName?.split(' ')?.[0] || '',
+        const { data: app } = await supabase
+          .from('applications')
+          .select('candidate_id, job_offers!applications_job_offer_id_fkey(title), users!applications_candidate_id_fkey(email, first_name, last_name)')
+          .eq('id', applicationId)
+          .maybeSingle();
+        
+        const rel: any = (app as any)?.users;
+        const userRecord = Array.isArray(rel) ? rel[0] : rel;
+        const candidateEmail = userRecord?.email;
+        const fullName = `${userRecord?.first_name || ''} ${userRecord?.last_name || ''}`.trim();
+        
+        if (candidateEmail && fullName) {
+          console.log('📧 [REJECTION] Envoi email de rejet à:', candidateEmail);
+          
+          const resp = await fetch('/api/send-rejection-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: 'support@seeg-talentsource.com',
+              candidateFullName: fullName,
+              candidateEmail: candidateEmail,
               jobTitle,
-              status: 'refuse'
-            }
+              applicationId,
+            })
           });
+          
+          const json = await (async () => { 
+            try { return await resp.json(); } catch { return undefined; } 
+          })();
+          
+          if (!resp.ok) {
+            console.error('📧 [REJECTION] Échec envoi email:', resp.status, json);
+          } else {
+            console.log('📧 [REJECTION] Email de rejet envoyé avec succès:', json);
+          }
         }
-      } catch {
-        /* non bloquant */
+      } catch (emailError) {
+        console.error('❌ Erreur lors de l\'envoi de l\'email de rejet:', emailError);
+        // Non bloquant - ne pas faire échouer le refus si l'email échoue
       }
 
       // Propager au parent (pipeline, etc.)
