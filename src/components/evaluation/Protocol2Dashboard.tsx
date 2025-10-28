@@ -6,6 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { CheckCircle, Clock, AlertCircle, FileText, Users, Target, TrendingUp, Star, Calendar as CalendarLucide, RotateCcw } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useOptimizedProtocol2Evaluation } from "@/hooks/useOptimizedProtocol2Evaluation";
@@ -175,6 +177,8 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [isSimulationPopoverOpen, setIsSimulationPopoverOpen] = useState(false);
+  const [simulationMode, setSimulationMode] = useState<'presentiel' | 'distanciel'>('presentiel');
+  const [simulationVideoLink, setSimulationVideoLink] = useState<string>('');
   
   // État pour le modal de réinitialisation
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
@@ -229,9 +233,9 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
         variant: "default"
       });
       
-      // Envoyer une notification au candidat (remplace l'email)
+      // Envoyer un email de simulation au candidat
       try {
-        console.log('🔔 [NOTIFICATION] Début de l\'envoi de notification de simulation');
+        console.log('📧 [EMAIL] Début de l\'envoi d\'email de simulation');
         const { data: applicationDetails } = await supabase
           .from('applications')
           .select(`
@@ -242,7 +246,7 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
           .eq('id', applicationId)
           .single();
 
-        console.log('🔔 [NOTIFICATION] Détails de l\'application récupérés:', applicationDetails);
+        console.log('📧 [EMAIL] Détails de l\'application récupérés:', applicationDetails);
 
         if (applicationDetails?.users && applicationDetails?.job_offers) {
           const user = Array.isArray(applicationDetails.users) ? applicationDetails.users[0] : applicationDetails.users;
@@ -250,53 +254,62 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
           
           if (user && jobOffer) {
             const candidateName = `${user.first_name} ${user.last_name}`;
+            const candidateEmail = (user as any)?.email || '';
             const jobTitle = jobOffer.title;
-            const candidateId = user.id || applicationDetails.candidate_id;
             
-            console.log('🔔 [NOTIFICATION] IDs récupérés:', {
-              user_id: user.id,
-              candidate_id: applicationDetails.candidate_id,
-              final_candidate_id: candidateId
+            console.log('📧 [EMAIL] Envoi email simulation ->', {
+              candidateName,
+              candidateEmail,
+              jobTitle,
+              date: selectedDate,
+              time: selectedTime.slice(0, 5),
+              simulationMode,
+              simulationVideoLink
             });
             
-            if (!candidateId) {
-              throw new Error('ID candidat non trouvé');
-            }
+            // Envoyer l'email via l'API
+            const resp = await fetch('/api/send-interview-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                to: 'support@seeg-talentsource.com',
+                candidateFullName: candidateName,
+                candidateEmail: candidateEmail,
+                jobTitle,
+                date: selectedDate,
+                time: selectedTime.slice(0, 5),
+                applicationId,
+                interviewType: 'simulation',
+                interviewMode: simulationMode,
+                videoLink: simulationMode === 'distanciel' ? simulationVideoLink : null,
+              })
+            });
             
-            // Créer une notification pour le candidat
-            const notificationData = {
-              user_id: candidateId,
-              title: 'Simulation programmée',
-              message: `Votre simulation pour le poste de ${jobTitle} a été programmée pour le ${format(simulationDateTime, "EEEE dd MMMM yyyy", { locale: fr })} à ${selectedTime.slice(0, 5)}.`,
-              type: 'simulation_scheduled',
-              read: false
-            };
+            const json = await (async () => { try { return await resp.json(); } catch { return undefined; } })();
             
-            console.log('🔔 [NOTIFICATION] Données pour la notification:', notificationData);
-            
-            // Insérer la notification via la fonction Supabase (version avec 5 paramètres)
-            const { error: notificationError } = await supabase
-              .rpc('create_notification', {
-                p_user_id: candidateId,
-                p_title: notificationData.title,
-                p_message: notificationData.message,
-                p_type: 'info',
-                p_link: null
+            if (!resp.ok) {
+              console.error('📧 [EMAIL] Échec:', resp.status, json);
+              toast({ 
+                title: 'Email non envoyé', 
+                description: `Erreur ${resp.status} lors de l'envoi de l'email`, 
+                variant: 'destructive' 
               });
-
-            if (notificationError) {
-              console.error('❌ Erreur création notification:', notificationError);
-              throw new Error(`Erreur création notification: ${notificationError.message || 'Erreur inconnue'}`);
+            } else {
+              console.log('📧 [EMAIL] Succès:', json);
+              toast({ 
+                title: 'Email envoyé', 
+                description: 'L\'email de convocation à la simulation a été envoyé avec succès' 
+              });
             }
-
-            console.log('✅ Notification créée avec succès');
           }
         }
-      } catch (notificationError) {
-        console.error('❌ Erreur lors de la création de la notification:', notificationError);
-        // Afficher une alerte à l'utilisateur mais ne pas faire échouer la programmation
-        alert(`Erreur lors de la création de la notification: ${notificationError.message || 'Erreur inconnue'}`);
-        // Ne pas relancer l'erreur pour éviter d'interrompre la programmation
+      } catch (emailError) {
+        console.error('❌ Erreur lors de l\'envoi de l\'email:', emailError);
+        toast({
+          title: 'Erreur email',
+          description: 'Impossible d\'envoyer l\'email de convocation',
+          variant: 'destructive'
+        });
       }
       
       // Ne plus rafraîchir automatiquement la page pour garder les logs
@@ -305,12 +318,14 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
       // Réinitialiser la sélection
       setSelectedDate('');
       setSelectedTime('');
+      setSimulationMode('presentiel');
+      setSimulationVideoLink('');
       setIsSimulationPopoverOpen(false);
       
     } catch (error) {
       console.error('❌ Erreur lors de la programmation de la simulation:', error);
     }
-  }, [selectedDate, selectedTime, saveSimulationDate, applicationId]);
+  }, [selectedDate, selectedTime, saveSimulationDate, applicationId, simulationMode, simulationVideoLink, toast]);
 
   const handleDecision = (decision: 'embauche' | 'refuse') => {
     onStatusChange(decision);
@@ -856,11 +871,46 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
                     </div>
                   )}
 
+                  {/* Sélection du mode de simulation */}
+                  {selectedDate && selectedTime && (
+                    <div className="space-y-3 pt-3 border-t">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Mode de simulation</Label>
+                        <Select value={simulationMode} onValueChange={(value: 'presentiel' | 'distanciel') => setSimulationMode(value)}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Choisir le mode" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="presentiel">🏢 Présentiel</SelectItem>
+                            <SelectItem value="distanciel">💻 Distanciel (en ligne)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Champ lien vidéo (visible seulement en mode distanciel) */}
+                      {simulationMode === 'distanciel' && (
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Lien de visioconférence</Label>
+                          <Input
+                            type="url"
+                            placeholder="https://teams.microsoft.com/... ou https://zoom.us/..."
+                            value={simulationVideoLink}
+                            onChange={(e) => setSimulationVideoLink(e.target.value)}
+                            className="w-full"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Ce lien sera inclus dans l'email envoyé au candidat
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Boutons d'action */}
                   <div className="flex gap-2 pt-2">
                     <Button
                       onClick={handleScheduleSimulation}
-                      disabled={!selectedDate || !selectedTime || isSchedulingSaving}
+                      disabled={!selectedDate || !selectedTime || isSchedulingSaving || (simulationMode === 'distanciel' && !simulationVideoLink.trim())}
                       className="flex-1 bg-blue-600 hover:bg-blue-700"
                     >
                       {isSchedulingSaving ? 'Programmation...' : 'Programmer'}
@@ -870,6 +920,8 @@ export const Protocol2Dashboard = React.memo(function Protocol2Dashboard({ candi
                       onClick={() => {
                         setSelectedDate('');
                         setSelectedTime('');
+                        setSimulationMode('presentiel');
+                        setSimulationVideoLink('');
                       }}
                       className="flex-1"
                     >
