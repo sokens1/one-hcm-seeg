@@ -762,6 +762,150 @@ export default defineConfig(({ mode }) => ({
         });
       },
     },
+    // Dev-only API: /api/send-rejection-email (email de rejet de candidature)
+    mode === 'development' && {
+      name: 'dev-api-send-rejection-email',
+      configureServer(server: ViteDevServer) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.method === 'POST' && req.url === '/api/send-rejection-email') {
+            try {
+              const chunks: Buffer[] = [];
+              await new Promise<void>((resolve, reject) => {
+                req.on('data', (c) => chunks.push(Buffer.from(c)));
+                req.on('end', () => resolve());
+                req.on('error', reject);
+              });
+              const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf-8')) : {};
+              //@ts-expect-error fix it later
+              const nodemailer = (await import('nodemailer')).default;
+              const { createClient } = await import('@supabase/supabase-js');
+
+              const smtpHost = 'smtp.gmail.com';
+              const smtpPort = 587;
+              const smtpSecure = false;
+              const smtpUser = 'support@seeg-talentsource.com';
+              const smtpPass = 'njev urja zsbc spfn';
+              const from = 'One HCM - SEEG Talent Source <support@seeg-talentsource.com>';
+
+              const { to, candidateFullName, candidateEmail, jobTitle, applicationId } = body || {};
+              
+              if (!candidateFullName || !jobTitle) {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: 'Missing fields: candidateFullName, jobTitle' }));
+                return;
+              }
+
+              // Récupérer le genre du candidat
+              let candidateGender = 'Non renseigné';
+              if (applicationId) {
+                try {
+                  const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
+                  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
+                  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+                  const { data: candidateData } = await supabase
+                    .from('applications')
+                    .select('candidate_id, candidate_profiles!inner(gender)')
+                    .eq('id', applicationId)
+                    .single();
+
+                  //@ts-expect-error fix it later
+                  if (candidateData?.candidate_profiles?.gender) {
+                    //@ts-expect-error fix it later
+                    candidateGender = candidateData.candidate_profiles.gender;
+                  }
+                } catch (e) {
+                  console.log('[DEV API] Erreur récupération genre:', e);
+                }
+              }
+
+              const isFemale = candidateGender === 'Femme';
+              const title = isFemale ? 'Madame' : 'Monsieur';
+              const serif = ", Georgia, serif";
+
+              const html = `
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                  <tr>
+                    <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;">
+                      <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                        <tr>
+                          <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;font-family: ui-serif${serif}; color:#000; font-size:16px; line-height:1.7;">
+                            <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
+                            <p style="margin:0 0 10px; font-size:16px;">Nous vous remercions pour l'intérêt que vous avez porté à rejoindre l'équipe dirigeante de la SEEG et pour le temps que vous avez consacré à votre candidature.</p>
+                            <p style="margin:0 0 10px; font-size:16px;">Après un examen approfondi de celle-ci, nous sommes au regret de vous informer que votre profil n'a malheureusement pas été retenu pour le poste de <strong>${jobTitle}</strong> au sein de la SEEG.</p>
+                            <p style="margin:0 0 10px; font-size:16px;">Nous vous souhaitons beaucoup de succès dans vos projets professionnels à venir et nous permettons de conserver votre dossier, au cas où une nouvelle opportunité en adéquation avec votre profil se présenterait.</p>
+                            <br/>
+                            <p style="margin:0 0 8px; font-size:16px;">Salutations distinguées.</p>
+                            <br/>
+                            <p style="margin:0 0 6px; font-size:16px;"><strong>L'équipe de recrutement</strong></p>
+                            <p style="margin:0 0 6px; font-size:16px;"><strong>OneHCM | Talent source</strong></p>
+                            <p style="margin:0 0 6px; font-size:16px;"><strong><a href="https://www.seeg-talentsource.com" style="color: #0066cc; text-decoration: underline;">https://www.seeg-talentsource.com</a></strong></p>
+                            <br/>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                              <tr>
+                                <td align="left" style="padding:0 !important;margin:0 !important;">
+                                  <img src="https://www.seeg-talentsource.com/LOGO%20HCM4.png" alt="OneHCM Logo" style="display:block;height:44px;border:0;outline:none;text-decoration:none;" />
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>`;
+
+              const transporter = nodemailer.createTransport({
+                host: smtpHost,
+                port: smtpPort,
+                secure: smtpSecure,
+                auth: { user: smtpUser, pass: smtpPass },
+              });
+
+              const info = await transporter.sendMail({
+                from,
+                to: String(candidateEmail || to || smtpUser),
+                subject: `Candidature au poste de ${jobTitle} – SEEG`,
+                html,
+              });
+              
+              console.log('✅ [REJECTION EMAIL] Email envoyé via SMTP:', info?.messageId);
+
+              // Log dans email_logs
+              try {
+                const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
+                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
+                const supabase = createClient(supabaseUrl, supabaseAnonKey);
+                await supabase.from('email_logs').insert({
+                  to: String(candidateEmail || to || smtpUser),
+                  subject: `Candidature au poste de ${jobTitle} – SEEG`,
+                  html,
+                  application_id: applicationId || null,
+                  category: 'rejection',
+                  provider_message_id: info?.messageId || null,
+                  sent_at: new Date().toISOString(),
+                });
+              } catch (err) {
+                console.log('[DEV API] insertion email_logs échouée (non bloquant):', err);
+              }
+
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ ok: true, messageId: info?.messageId }));
+              return;
+            } catch (e: any) {
+              console.error('❌ [REJECTION EMAIL] Erreur:', e);
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: e?.message || 'Internal error' }));
+              return;
+            }
+          }
+          next();
+        });
+      },
+    },
     // Dev-only API: /api/send-access-rejected-email
     mode === 'development' && {
       name: 'dev-api-send-access-rejected-email',
