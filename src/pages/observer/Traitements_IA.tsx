@@ -974,6 +974,7 @@ export default function Traitements_IA() {
       
       console.log('🔍 [DEBUG] mtpResponses formaté:', mtpResponses);
       
+      // ✅✅✅ VALEURS À 65% - BUILD 2025-10-28-14h30 ✅✅✅
       const evaluationData: EvaluationRequest = {
         candidate_id: candidate.id,
         candidate_name: candidate.nom || candidate.lastName || rawCandidate.nom || 'N/A',
@@ -983,8 +984,8 @@ export default function Traitements_IA() {
         cv_content: cvContent,
         cover_letter_content: coverLetterContent,
         mtp_responses: mtpResponses,
-        threshold_pct: 50,
-        hold_threshold_pct: 50
+        threshold_pct: 78, // ✅✅✅ SEUILS À 65% ✅✅✅
+        hold_threshold_pct: 78 // ✅✅✅ SEUILS À 65% ✅✅✅
       };
 
       console.log('📤 [EVAL] job_id récupéré:', jobId);
@@ -996,6 +997,7 @@ export default function Traitements_IA() {
       });
       console.log('📤 [EVAL] CV content (premiers 100 chars):', cvContent.substring(0, 100));
       console.log('📤 [EVAL] Cover letter (premiers 100 chars):', coverLetterContent.substring(0, 100));
+      console.log('🚨🚨🚨 [EVAL] VERSION MISE À JOUR BUILD 14h30 - SEUILS À 65% 🚨🚨🚨');
       console.log('📤 [EVAL] evaluationData complet:', JSON.stringify(evaluationData, null, 2));
 
       // Validation avant envoi

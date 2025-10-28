@@ -404,9 +404,12 @@ class AzureContainerAppsService {
       const timeoutId = setTimeout(() => controller.abort(), evaluationTimeout);
 
       // Construire l'URL avec les paramètres de seuil (query parameters)
-      // Utiliser les valeurs de evaluationData si fournies, sinon 50 par défaut
-      const thresholdPct = evaluationData.threshold_pct ?? 50;
-      const holdThresholdPct = evaluationData.hold_threshold_pct ?? 50;
+      console.log('🔍 [DEBUG] evaluationData.threshold_pct reçu:', evaluationData.threshold_pct);
+      console.log('🔍 [DEBUG] evaluationData.hold_threshold_pct reçu:', evaluationData.hold_threshold_pct);
+      
+      // Utiliser les valeurs de evaluationData - TOUJOURS prendre la valeur fournie
+      const thresholdPct = evaluationData.threshold_pct !== undefined ? evaluationData.threshold_pct : 65;
+      const holdThresholdPct = evaluationData.hold_threshold_pct !== undefined ? evaluationData.hold_threshold_pct : 65;
       const evaluateUrl = `${this.baseUrl}/evaluate?threshold_pct=${thresholdPct}&hold_threshold_pct=${holdThresholdPct}`;
 
       console.log('🔗 [Azure Container Apps] URL avec paramètres:', evaluateUrl);
