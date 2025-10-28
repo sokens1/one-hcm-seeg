@@ -921,8 +921,8 @@ export default function Traitements_IA() {
         cv_content: cvContent,
         cover_letter_content: coverLetterContent,
         mtp_responses: mtpResponses,
-        threshold_pct: 50,
-        hold_threshold_pct: 50
+        threshold_pct: 65,
+        hold_threshold_pct: 65
       };
 
       console.log('📤 [EVAL] job_id récupéré:', jobId);
@@ -1078,13 +1078,13 @@ export default function Traitements_IA() {
       } else {
         setSendStatus('error');
         setSendMessage(result.error || 'Erreur lors de l\'envoi');
-        console.error('❌ Erreur d\'envoi:', result.error);
+        console.error(' Erreur d\'envoi:', result.error);
       }
 
     } catch (error) {
       setSendStatus('error');
       setSendMessage('Erreur inattendue lors de l\'envoi');
-      console.error('❌ Erreur inattendue:', error);
+      console.error(' Erreur inattendue:', error);
     } finally {
       setIsSending(false);
     }
@@ -1163,210 +1163,6 @@ export default function Traitements_IA() {
             </div>
           </div>
         </div>
-
-
-        {/* Barre de recherche et filtres */}
-        <Card className="mb-6">
-          <CardContent className="p-4 sm:p-6">
-            <div className="space-y-4">
-              {/* Recherche principale */}
-              <div className="flex flex-col gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Rechercher par nom, prénom, département, poste ou contenu IA..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 w-full"
-                    />
-                  </div>
-                </div>
-                
-                {/* Filtres de base */}
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1 sm:max-w-[240px]">
-                    <div className="relative group">
-                      <select
-                        value={selectedDepartment}
-                        onChange={(e) => handleDepartmentChange(e.target.value)}
-                        className="block w-full h-10 rounded-lg border border-input bg-background px-3 pr-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-colors hover:border-ring/40 appearance-none"
-                      >
-                        <option value="all">Tous les départements</option>
-                        {aiData && (
-                          (CAMPAIGN_MODE
-                            ? allowedDepartments
-                            : Object.keys(aiData)
-                          ).map((departmentKey) => (
-                            <option key={departmentKey} value={departmentKey}>{departmentKey}</option>
-                          ))
-                        )}
-                      </select>
-                      <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-muted-foreground group-hover:text-foreground/80">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                          <path d="m6 9 6 6 6-6" />
-                        </svg>
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                    className="flex items-center justify-center gap-2"
-                  >
-                    <Filter className="h-4 w-4" />
-                    <span className="hidden xs:inline">Filtres avancés</span>
-                    <span className="xs:hidden">Filtres</span>
-                  </Button>
-                </div>
-              </div>
-
-              {/* Filtres avancés */}
-              {showAdvancedFilters && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-4 border-t">
-                  {/* Filtre par verdict */}
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                      Verdict
-                    </label>
-                    <Select value={selectedVerdict} onValueChange={setSelectedVerdict}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Tous les verdicts" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tous les verdicts</SelectItem>
-                        <SelectItem value="Favorable">Favorable</SelectItem>
-                        <SelectItem value="Mitigé">Mitigé</SelectItem>
-                        <SelectItem value="Non retenu">Non retenu</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Filtre par plage de score */}
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                      Score global
-                    </label>
-                    <Select value={selectedScoreRange} onValueChange={setSelectedScoreRange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Toutes les plages" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Toutes les plages</SelectItem>
-                        <SelectItem value="0-20">0% - 20%</SelectItem>
-                        <SelectItem value="21-40">21% - 40%</SelectItem>
-                        <SelectItem value="41-60">41% - 60%</SelectItem>
-                        <SelectItem value="61-80">61% - 80%</SelectItem>
-                        <SelectItem value="81-100">81% - 100%</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Tri par */}
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                      Trier par
-                    </label>
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Critère de tri" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="rang">Rang</SelectItem>
-                        <SelectItem value="score">Score global</SelectItem>
-                        <SelectItem value="nom">Nom</SelectItem>
-                        <SelectItem value="verdict">Verdict</SelectItem>
-                        <SelectItem value="departement">Département</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Ordre de tri */}
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                      Ordre
-                    </label>
-                    <Select value={sortOrder} onValueChange={(value: "asc" | "desc") => setSortOrder(value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Ordre" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="asc">Croissant</SelectItem>
-                        <SelectItem value="desc">Décroissant</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              )}
-
-              {/* Résumé des filtres actifs */}
-              {(selectedDepartment !== "all" || selectedVerdict !== "all" || selectedScoreRange !== "all" || searchTerm) && (
-                <div className="flex flex-wrap gap-2 pt-2 border-t">
-                  <span className="text-sm text-muted-foreground">Filtres actifs:</span>
-                  {searchTerm && (
-                    <Badge variant="secondary" className="gap-1">
-                      Recherche: "{searchTerm}"
-                      <button 
-                        onClick={() => setSearchTerm("")}
-                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
-                      >
-                        <XCircle className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  )}
-                  {selectedDepartment !== "all" && (
-                    <Badge variant="secondary" className="gap-1">
-                      Département: {selectedDepartment}
-                      <button 
-                        onClick={() => setSelectedDepartment("all")}
-                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
-                      >
-                        <XCircle className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  )}
-                  {selectedVerdict !== "all" && (
-                    <Badge variant="secondary" className="gap-1">
-                      Verdict: {selectedVerdict}
-                      <button 
-                        onClick={() => setSelectedVerdict("all")}
-                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
-                      >
-                        <XCircle className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  )}
-                  {selectedScoreRange !== "all" && (
-                    <Badge variant="secondary" className="gap-1">
-                      Score: {selectedScoreRange}%
-                      <button 
-                        onClick={() => setSelectedScoreRange("all")}
-                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
-                      >
-                        <XCircle className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  )}
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => {
-                      setSearchTerm("");
-                      setSelectedDepartment("all");
-                      setSelectedVerdict("all");
-                      setSelectedScoreRange("all");
-                    }}
-                    className="text-xs"
-                  >
-                    Effacer tout
-                  </Button>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Tableau des candidats */}
         <Card>
