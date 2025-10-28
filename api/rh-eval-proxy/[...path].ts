@@ -13,19 +13,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { method, url, headers, body } = req;
+    const { method, headers, body } = req;
     
     // URL de base de l'API Azure Container Apps
     const baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
     
-    // Extraire le chemin après /api/rh-eval-proxy/
-    // Ex: /api/rh-eval-proxy/evaluate?params -> /evaluate?params
-    const path = url?.replace('/api/rh-eval-proxy', '') || '/';
+    // Extraire le path depuis le paramètre path de Vercel
+    // Ex: req.query.path = ['evaluate'] pour /api/rh-eval-proxy/evaluate
+    const pathSegments = req.query.path as string[];
+    const path = pathSegments ? `/${pathSegments.join('/')}` : '/';
+    
+    // Récupérer les query params (sans le path)
+    const queryParams = new URLSearchParams();
+    Object.entries(req.query).forEach(([key, value]) => {
+      if (key !== 'path' && value) {
+        queryParams.append(key, Array.isArray(value) ? value[0] : value);
+      }
+    });
+    const queryString = queryParams.toString();
     
     // Construire l'URL complète
-    const apiUrl = `${baseUrl}${path}`;
+    const apiUrl = `${baseUrl}${path}${queryString ? `?${queryString}` : ''}`;
     
-    console.log(`🔄 [Proxy CORS] ${method} ${url} -> ${apiUrl}`);
+    console.log(`🔄 [Proxy CORS] ${method} ${path} -> ${apiUrl}`);
     console.log(`📤 [Proxy CORS] Headers reçus:`, headers);
     console.log(`📦 [Proxy CORS] Body:`, body);
     
@@ -67,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Obtenir le contenu de la réponse
     const responseText = await response.text();
     
-    console.log(`✅ [Proxy CORS] Réponse ${response.status} pour ${method} ${url}`);
+    console.log(`✅ [Proxy CORS] Réponse ${response.status} pour ${method} ${path}`);
     console.log(`📥 [Proxy CORS] Contenu de la réponse:`, responseText.substring(0, 200) + '...');
     
     // Renvoyer la réponse avec le bon statut et contenu
@@ -85,3 +95,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 }
+
