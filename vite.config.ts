@@ -31,6 +31,24 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      '/api/rh-eval': {
+        target: 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/rh-eval/, ''),
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            console.log('Sending Request to the Target:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+          });
+        },
+      },
+    },
     // Middleware custom pour servir /api/send-interview-email en dev (même port)
     configureServer(server: ViteDevServer) {
       server.middlewares.use(async (req, res, next) => {
@@ -60,11 +78,15 @@ export default defineConfig(({ mode }) => ({
             const {
               to,
               candidateFullName,
+              candidateEmail,
               jobTitle,
               date,
               time,
               location,
               applicationId,
+              interviewType = 'entretien',
+              interviewMode = 'presentiel',
+              videoLink,
             } = body || {};
 
             if (!candidateFullName || !jobTitle || !date || !time) {
@@ -109,6 +131,47 @@ export default defineConfig(({ mode }) => ({
             const formattedDate = dateObj.toLocaleDateString('fr-FR');
             const formattedTime = String(time).slice(0, 5);
             const serif = ", Georgia, serif";
+            
+            // Déterminer si c'est une simulation ou un entretien
+            const isSimulation = interviewType === 'simulation';
+            const eventType = isSimulation ? 'simulation' : 'entretien de recrutement';
+            const isDistanciel = interviewMode === 'distanciel';
+            
+            // Déterminer le lieu selon le mode
+            let finalLocation = location;
+            if (!finalLocation) {
+              if (isDistanciel) {
+                finalLocation = "En ligne (visioconférence)";
+              } else {
+                finalLocation = isSimulation 
+                  ? "Salle de simulation au 9ᵉ étage du siège de la SEEG sis à Libreville."
+                  : "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville.";
+              }
+            }
+            
+            // Texte de préparation adapté au mode
+            let preparationText = '';
+            if (isDistanciel) {
+              preparationText = `Nous vous prions de bien vouloir vous connecter <strong>5 minutes avant l'heure de ${isSimulation ? 'la simulation' : "l'entretien"}</strong> via le lien de visioconférence fourni ci-dessous. Assurez-vous d'avoir une connexion internet stable, une webcam et un microphone fonctionnels.`;
+            } else {
+              preparationText = isSimulation
+                ? `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de la simulation</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`
+                : `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`;
+            }
+            
+            // Générer le bloc lien de visio si distanciel
+            const videoLinkBlock = isDistanciel && videoLink ? `
+              <div style="margin:15px 0; padding:15px; background-color:#e3f2fd; border-left:4px solid #2196f3; border-radius:4px;">
+                <p style="margin:0 0 8px; font-size:16px; font-weight:bold; color:#1565c0;">🎥 Lien de visioconférence :</p>
+                <p style="margin:0; font-size:16px;">
+                  <a href="${videoLink}" style="color:#0066cc; text-decoration:underline; font-weight:500;" target="_blank">${videoLink}</a>
+                </p>
+                <p style="margin:8px 0 0; font-size:14px; color:#666;">
+                  <em>Cliquez sur le lien ci-dessus pour rejoindre la réunion en ligne.</em>
+                </p>
+              </div>
+            ` : '';
+            
             const html = `
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;">
               <tr>
@@ -118,11 +181,12 @@ export default defineConfig(({ mode }) => ({
                       <td align="left" style="padding:0;margin:0;text-align:left;font-family: ui-serif${serif}; color:#000; font-size:16px; line-height:1.7;">
                         <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
                         <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
-                        <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un entretien de recrutement qui se tiendra le&nbsp;:</p>
+                        <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un ${eventType} qui se tiendra ${isDistanciel ? 'en ligne' : ''} le&nbsp;:</p>
                         <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
                         <strong>Heure :</strong> ${formattedTime}<br/>
-                        <strong>Lieu :</strong> ${location || "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville."}</p>
-                        <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle,  badge, ou de toute autre pièce d'identité en cours de validité.</p>
+                        <strong>${isDistanciel ? 'Mode' : 'Lieu'} :</strong> ${finalLocation}</p>
+                        ${videoLinkBlock}
+                        <p style="margin:0 0 10px; font-size:16px;">${preparationText}</p>
                         <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
                         <br/>
                         <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
@@ -228,7 +292,20 @@ export default defineConfig(({ mode }) => ({
               const from = 'One HCM - SEEG Talent Source <support@seeg-talentsource.com>';
               //console.log('[DEV API plugin] SMTP: host=', smtpHost, 'port=', smtpPort, 'secure=', smtpSecure, 'user=', smtpUser, 'pass=', smtpPass ? '***' : 'EMPTY');
 
-              const { to, candidateFullName, jobTitle, date, time, location, applicationId, candidateEmail } = body || {};
+              const { 
+                to, 
+                candidateFullName, 
+                jobTitle, 
+                date, 
+                time, 
+                location, 
+                applicationId, 
+                candidateEmail,
+                interviewType = 'entretien',
+                interviewMode = 'presentiel',
+                videoLink
+              } = body || {};
+              
               if (!candidateFullName || !jobTitle || !date || !time) {
                 res.statusCode = 400;
                 res.setHeader('Content-Type', 'application/json');
@@ -271,6 +348,47 @@ export default defineConfig(({ mode }) => ({
               const formattedDate = dateObj.toLocaleDateString('fr-FR');
               const formattedTime = String(time).slice(0, 5);
               const serif = ", Georgia, serif";
+              
+              // Déterminer si c'est une simulation ou un entretien
+              const isSimulation = interviewType === 'simulation';
+              const eventType = isSimulation ? 'simulation' : 'entretien de recrutement';
+              const isDistanciel = interviewMode === 'distanciel';
+              
+              // Déterminer le lieu selon le mode
+              let finalLocation = location;
+              if (!finalLocation) {
+                if (isDistanciel) {
+                  finalLocation = "En ligne (visioconférence)";
+                } else {
+                  finalLocation = isSimulation 
+                    ? "Salle de simulation au 9ᵉ étage du siège de la SEEG sis à Libreville."
+                    : "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville.";
+                }
+              }
+              
+              // Texte de préparation adapté au mode
+              let preparationText = '';
+              if (isDistanciel) {
+                preparationText = `Nous vous prions de bien vouloir vous connecter <strong>5 minutes avant l'heure de ${isSimulation ? 'la simulation' : "l'entretien"}</strong> via le lien de visioconférence fourni ci-dessous. Assurez-vous d'avoir une connexion internet stable, une webcam et un microphone fonctionnels.`;
+              } else {
+                preparationText = isSimulation
+                  ? `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de la simulation</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`
+                  : `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`;
+              }
+              
+              // Générer le bloc lien de visio si distanciel
+              const videoLinkBlock = isDistanciel && videoLink ? `
+                <div style="margin:15px 0; padding:15px; background-color:#e3f2fd; border-left:4px solid #2196f3; border-radius:4px;">
+                  <p style="margin:0 0 8px; font-size:16px; font-weight:bold; color:#1565c0;">🎥 Lien de visioconférence :</p>
+                  <p style="margin:0; font-size:16px;">
+                    <a href="${videoLink}" style="color:#0066cc; text-decoration:underline; font-weight:500;" target="_blank">${videoLink}</a>
+                  </p>
+                  <p style="margin:8px 0 0; font-size:14px; color:#666;">
+                    <em>Cliquez sur le lien ci-dessus pour rejoindre la réunion en ligne.</em>
+                  </p>
+                </div>
+              ` : '';
+              
               const html = `
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;">
                 <tr>
@@ -280,11 +398,12 @@ export default defineConfig(({ mode }) => ({
                         <td align="left" style="padding:0;margin:0;text-align:left;font-family: ui-serif${serif}; color:#000; font-size:16px; line-height:1.7;">
                           <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
                           <p style="margin:0 0 10px; font-size:16px;">Nous avons le plaisir de vous informer que votre candidature pour le poste de <strong>${jobTitle}</strong> a retenu notre attention.</p>
-                          <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un entretien de recrutement qui se tiendra le&nbsp;:</p>
+                          <p style="margin:0 0 10px; font-size:16px;">Nous vous invitons à un ${eventType} qui se tiendra ${isDistanciel ? 'en ligne' : ''} le&nbsp;:</p>
                           <p style="margin:0 0 10px; font-size:16px;"><strong>Date :</strong> ${formattedDate}<br/>
                           <strong>Heure :</strong> ${formattedTime}<br/>
-                          <strong>Lieu :</strong> ${location || "Salle de réunion du Président du Conseil d'Administration au 9ᵉ étage du siège de la SEEG sis à Libreville."}</p>
-                          <p style="margin:0 0 10px; font-size:16px;">Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de l'entretien</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.</p>
+                          <strong>${isDistanciel ? 'Mode' : 'Lieu'} :</strong> ${finalLocation}</p>
+                          ${videoLinkBlock}
+                          <p style="margin:0 0 10px; font-size:16px;">${preparationText}</p>
                           <p style="margin:0 0 10px; font-size:16px;">Nous restons à votre disposition pour toutes informations complémentaires.</p>
                           <br/>
                           <p style="margin:0 0 8px; font-size:16px;">Cordialement,</p>
@@ -734,6 +853,150 @@ export default defineConfig(({ mode }) => ({
               return;
             } catch (e: any) {
               console.error('❌ [ACCESS APPROVED] Erreur:', e);
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: e?.message || 'Internal error' }));
+              return;
+            }
+          }
+          next();
+        });
+      },
+    },
+    // Dev-only API: /api/send-rejection-email (email de rejet de candidature)
+    mode === 'development' && {
+      name: 'dev-api-send-rejection-email',
+      configureServer(server: ViteDevServer) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.method === 'POST' && req.url === '/api/send-rejection-email') {
+            try {
+              const chunks: Buffer[] = [];
+              await new Promise<void>((resolve, reject) => {
+                req.on('data', (c) => chunks.push(Buffer.from(c)));
+                req.on('end', () => resolve());
+                req.on('error', reject);
+              });
+              const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf-8')) : {};
+              //@ts-expect-error fix it later
+              const nodemailer = (await import('nodemailer')).default;
+              const { createClient } = await import('@supabase/supabase-js');
+
+              const smtpHost = 'smtp.gmail.com';
+              const smtpPort = 587;
+              const smtpSecure = false;
+              const smtpUser = 'support@seeg-talentsource.com';
+              const smtpPass = 'njev urja zsbc spfn';
+              const from = 'One HCM - SEEG Talent Source <support@seeg-talentsource.com>';
+
+              const { to, candidateFullName, candidateEmail, jobTitle, applicationId } = body || {};
+              
+              if (!candidateFullName || !jobTitle) {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: 'Missing fields: candidateFullName, jobTitle' }));
+                return;
+              }
+
+              // Récupérer le genre du candidat
+              let candidateGender = 'Non renseigné';
+              if (applicationId) {
+                try {
+                  const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
+                  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
+                  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+                  const { data: candidateData } = await supabase
+                    .from('applications')
+                    .select('candidate_id, candidate_profiles!inner(gender)')
+                    .eq('id', applicationId)
+                    .single();
+
+                  //@ts-expect-error fix it later
+                  if (candidateData?.candidate_profiles?.gender) {
+                    //@ts-expect-error fix it later
+                    candidateGender = candidateData.candidate_profiles.gender;
+                  }
+                } catch (e) {
+                  console.log('[DEV API] Erreur récupération genre:', e);
+                }
+              }
+
+              const isFemale = candidateGender === 'Femme';
+              const title = isFemale ? 'Madame' : 'Monsieur';
+              const serif = ", Georgia, serif";
+
+              const html = `
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                  <tr>
+                    <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;">
+                      <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                        <tr>
+                          <td align="left" style="padding:0 !important;margin:0 !important;text-align:left;font-family: ui-serif${serif}; color:#000; font-size:16px; line-height:1.7;">
+                            <p style="margin:0 0 10px; font-size:16px;">${title} <strong>${candidateFullName}</strong>,</p>
+                            <p style="margin:0 0 10px; font-size:16px;">Nous vous remercions pour l'intérêt que vous avez porté à rejoindre l'équipe dirigeante de la SEEG et pour le temps que vous avez consacré à votre candidature.</p>
+                            <p style="margin:0 0 10px; font-size:16px;">Après un examen approfondi de celle-ci, nous sommes au regret de vous informer que votre profil n'a malheureusement pas été retenu pour le poste de <strong>${jobTitle}</strong> au sein de la SEEG.</p>
+                            <p style="margin:0 0 10px; font-size:16px;">Nous vous souhaitons beaucoup de succès dans vos projets professionnels à venir et nous permettons de conserver votre dossier, au cas où une nouvelle opportunité en adéquation avec votre profil se présenterait.</p>
+                            <br/>
+                            <p style="margin:0 0 8px; font-size:16px;">Salutations distinguées.</p>
+                            <br/>
+                            <p style="margin:0 0 6px; font-size:16px;"><strong>L'équipe de recrutement</strong></p>
+                            <p style="margin:0 0 6px; font-size:16px;"><strong>OneHCM | Talent source</strong></p>
+                            <p style="margin:0 0 6px; font-size:16px;"><strong><a href="https://www.seeg-talentsource.com" style="color: #0066cc; text-decoration: underline;">https://www.seeg-talentsource.com</a></strong></p>
+                            <br/>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
+                              <tr>
+                                <td align="left" style="padding:0 !important;margin:0 !important;">
+                                  <img src="https://www.seeg-talentsource.com/LOGO%20HCM4.png" alt="OneHCM Logo" style="display:block;height:44px;border:0;outline:none;text-decoration:none;" />
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>`;
+
+              const transporter = nodemailer.createTransport({
+                host: smtpHost,
+                port: smtpPort,
+                secure: smtpSecure,
+                auth: { user: smtpUser, pass: smtpPass },
+              });
+
+              const info = await transporter.sendMail({
+                from,
+                to: String(candidateEmail || to || smtpUser),
+                subject: `Candidature au poste de ${jobTitle} – SEEG`,
+                html,
+              });
+              
+              console.log('✅ [REJECTION EMAIL] Email envoyé via SMTP:', info?.messageId);
+
+              // Log dans email_logs
+              try {
+                const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
+                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
+                const supabase = createClient(supabaseUrl, supabaseAnonKey);
+                await supabase.from('email_logs').insert({
+                  to: String(candidateEmail || to || smtpUser),
+                  subject: `Candidature au poste de ${jobTitle} – SEEG`,
+                  html,
+                  application_id: applicationId || null,
+                  category: 'rejection',
+                  provider_message_id: info?.messageId || null,
+                  sent_at: new Date().toISOString(),
+                });
+              } catch (err) {
+                console.log('[DEV API] insertion email_logs échouée (non bloquant):', err);
+              }
+
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ ok: true, messageId: info?.messageId }));
+              return;
+            } catch (e: any) {
+              console.error('❌ [REJECTION EMAIL] Erreur:', e);
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ error: e?.message || 'Internal error' }));

@@ -192,7 +192,15 @@ export const useInterviewScheduling = (applicationId?: string) => {
   }, [applicationId, toast, schedules.length, timeSlots]);
 
   // Programmer un entretien
-  const scheduleInterview = useCallback(async (date: string, time: string, options?: { sendEmail?: boolean }) => {
+  const scheduleInterview = useCallback(async (
+    date: string, 
+    time: string, 
+    options?: { 
+      sendEmail?: boolean, 
+      interviewMode?: 'presentiel' | 'distanciel',
+      videoLink?: string 
+    }
+  ) => {
     if (!applicationId || !user) return false;
 
     setIsSaving(true);
@@ -389,6 +397,9 @@ export const useInterviewScheduling = (applicationId?: string) => {
               date,
               time: normalizedTime.slice(0,5),
               applicationId,
+              interviewType: 'entretien',
+              interviewMode: options.interviewMode || 'presentiel',
+              videoLink: options.videoLink || null,
             })
           });
           const json = await (async () => { try { return await resp.json(); } catch { return undefined; } })();

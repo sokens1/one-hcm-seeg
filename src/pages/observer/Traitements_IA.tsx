@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { azureContainerAppsService, CandidateData, EvaluationRequest } from "@/integrations/azure-container-apps-api";
 import { 
   Search, 
   Eye, 
@@ -26,6 +27,9 @@ import {
   AlertCircle,
   TrendingUp,
   Target,
+  Loader2,
+  AlertTriangle,
+  MessageSquare,
   Award,
   BarChart3,
   ChevronLeft,
@@ -43,6 +47,7 @@ interface CandidateApplication {
   poste: string;
   department: string;
   aiData: AICandidateData;
+  [key: string]: any; // Permet d'ajouter des propriétés dynamiques comme rawData, documents, email, phone, etc.
 }
 
 const getVerdictIcon = (verdict: string) => {
@@ -181,7 +186,89 @@ const getVerdictVariant = (verdict: string) => {
   return 'default';
 };
 
+/**
+ * Détecte si un texte est purement technique (à masquer complètement)
+ * Retourne true si le texte contient uniquement des références techniques
+ */
+const isPurelyTechnicalText = (text: string): boolean => {
+  if (!text) return false;
+  
+  // Patterns qui indiquent un texte purement technique
+  const technicalIndicators = [
+    /Vector search/i,
+    /Azure AI Search/i,
+    /cosinus normalisé/i,
+    /fusion pondérée/i,
+    /retrieval persistant/i,
+    /Verdict basé sur seuils/i,
+    /passages.*?;/i,
+    /→/,
+  ];
+  
+  // Si le texte contient plusieurs indicateurs techniques, c'est un texte technique
+  const matchCount = technicalIndicators.filter(pattern => pattern.test(text)).length;
+  
+  // Si 2 indicateurs ou plus, c'est du texte purement technique
+  return matchCount >= 2;
+};
+
+/**
+ * Nettoie le texte technique de l'API pour le rendre plus user-friendly
+ * Si le texte est purement technique, retourne une chaîne vide
+ */
+const cleanTechnicalText = (text: string): string => {
+  if (!text) return '';
+  
+  // Si le texte est purement technique, ne rien afficher
+  if (isPurelyTechnicalText(text)) {
+    return '';
+  }
+  
+  // Sinon, nettoyer le texte des éléments techniques résiduels
+  const technicalPhrases = [
+    /Vector search \(Azure\).*?passages.*?;/gi,
+    /cosinus normalisé.*?%.*?;/gi,
+    /fusion pondérée\.?/gi,
+    /retrieval persistant via Azure AI Search\.?/gi,
+    /Verdict basé sur seuils.*?;/gi,
+    /Azure AI Search/gi,
+    /Vector search/gi,
+  ];
+  
+  let cleanedText = text;
+  
+  // Supprimer les phrases techniques
+  technicalPhrases.forEach(pattern => {
+    cleanedText = cleanedText.replace(pattern, '');
+  });
+  
+  // Supprimer les patterns génériques qui restent
+  cleanedText = cleanedText
+    .replace(/→/g, '') // Flèches
+    .replace(/;\s*;/g, ';') // Double point-virgules
+    .replace(/\s*;\s*$/g, '') // Point-virgules en fin
+    .replace(/^\s*;\s*/g, '') // Point-virgules au début
+    .replace(/\s+/g, ' ') // Espaces multiples
+    .trim();
+  
+  // Si le texte est vide, trop court, ou contient seulement de la ponctuation
+  if (!cleanedText || cleanedText.length < 10 || /^[.,;:\s-]+$/.test(cleanedText)) {
+    return '';
+  }
+  
+  return cleanedText;
+};
+
+/**
+ * Nettoie un tableau de textes techniques
+ */
+const cleanTechnicalArray = (items: string[]): string[] => {
+  if (!items || !Array.isArray(items)) return items;
+  return items.map(item => cleanTechnicalText(item)).filter(item => item.length > 0);
+};
+
 export default function Traitements_IA() {
+  
   const { 
     data: aiData, 
     isLoading, 
@@ -204,6 +291,141 @@ export default function Traitements_IA() {
   const [itemsPerPage] = useState(5);
   const [searchResults, setSearchResults] = useState<CandidateApplication[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [sendMessage, setSendMessage] = useState('');
+  const [evaluationData, setEvaluationData] = useState<any>(null);
+  const [isEvaluating, setIsEvaluating] = useState(false);
+  const [candidateEvaluations, setCandidateEvaluations] = useState<Record<string, any>>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
+  
+  // Log de débogage pour vérifier que le composant se charge
+  // console.log('🔍 [DEBUG] Composant Traitements_IA chargé');
+  
+  // Données de test pour le développement
+  const testCandidates: CandidateApplication[] = [
+    {
+      id: 'test-1',
+      firstName: 'Jean',
+      lastName: 'Dupont',
+      poste: 'Développeur Full Stack',
+      department: 'IT',
+      email: 'jean.dupont@example.com',
+      phone: '+241 01 23 45 67',
+      offre: {
+        reference: 'dev-full-stack-001',
+        intitule: 'Développeur Full Stack'
+      },
+      aiData: {
+        nom: 'Dupont',
+        prenom: 'Jean',
+        poste: 'Développeur Full Stack',
+        resume_global: {
+          score_global: 0.85,
+          rang_global: 5,
+          verdict: 'Favorable',
+          commentaire_global: 'Excellent profil technique avec une expérience solide',
+          forces: ['Expérience solide en React', 'Maîtrise des bases de données', 'Esprit d\'équipe'],
+          points_a_ameliorer: ['Manque d\'expérience en DevOps', 'Anglais technique à améliorer']
+        },
+        mtp: {
+          scores: {
+            Métier: 0.9,
+            Talent: 0.8,
+            Paradigme: 0.75,
+            Moyen: 0.82
+          },
+          niveau: 'Senior',
+          verdict: 'Favorable',
+          rang: 5,
+          points_forts: [
+            'Expérience solide en React',
+            'Maîtrise des bases de données',
+            'Esprit d\'équipe'
+          ],
+          points_a_travailler: [
+            'Manque d\'expérience en DevOps',
+            'Anglais technique à améliorer'
+          ]
+        }
+      },
+      rawData: {
+        documents: {
+          cv: 'CV de Jean Dupont - Développeur Full Stack avec 5 ans d\'expérience...',
+          cover_letter: 'Lettre de motivation pour le poste de Développeur Full Stack...'
+        },
+        reponses_mtp: {
+          metier: ['React', 'Node.js', 'TypeScript'],
+          talent: ['Collaboration', 'Innovation'],
+          paradigme: ['Agile', 'DevOps']
+        }
+      }
+    },
+    {
+      id: 'test-2',
+      firstName: 'Marie',
+      lastName: 'Martin',
+      poste: 'Chef de Projet',
+      department: 'Management',
+      email: 'marie.martin@example.com',
+      phone: '+241 01 23 45 68',
+      offre: {
+        reference: 'chef-projet-002',
+        intitule: 'Chef de Projet'
+      },
+      aiData: {
+        nom: 'Martin',
+        prenom: 'Marie',
+        poste: 'Chef de Projet',
+        resume_global: {
+          score_global: 0.78,
+          rang_global: 12,
+          verdict: 'Favorable',
+          commentaire_global: 'Profil managérial intéressant',
+          forces: ['Leadership naturel', 'Expérience en gestion d\'équipe', 'Communication excellente'],
+          points_a_ameliorer: ['Expérience technique limitée', 'Connaissance des outils de gestion']
+        },
+        mtp: {
+          scores: {
+            Métier: 0.85,
+            Talent: 0.9,
+            Paradigme: 0.7,
+            Moyen: 0.82
+          },
+          niveau: 'Senior',
+          verdict: 'Favorable',
+          rang: 12,
+          points_forts: [
+            'Leadership naturel',
+            'Expérience en gestion d\'équipe',
+            'Communication excellente'
+          ],
+          points_a_travailler: [
+            'Expérience technique limitée',
+            'Connaissance des outils de gestion'
+          ]
+        }
+      },
+      rawData: {
+        documents: {
+          cv: 'CV de Marie Martin - Chef de Projet avec 8 ans d\'expérience...',
+          cover_letter: 'Lettre de motivation pour le poste de Chef de Projet...'
+        },
+        reponses_mtp: {
+          metier: ['Gestion de projet', 'Agile', 'Scrum'],
+          talent: ['Leadership', 'Communication'],
+          paradigme: ['Agile', 'Management']
+        }
+      }
+    }
+  ];
+  
+  // Utiliser les données de test si aucune donnée IA n'est disponible
+  const finalCandidatesData = useMemo(() => {
+    // Utiliser les données de test en cas d'absence de données API
+    return testCandidates;
+  }, []);
   
   // Défère les mises à jour du Select pour éviter les conflits DOM (Chrome)
   const handleDepartmentChange = (value: string) => {
@@ -227,6 +449,107 @@ export default function Traitements_IA() {
     }
   }, [searchParams]);
 
+  // Effet pour évaluer automatiquement tous les candidats au chargement
+  useEffect(() => {
+    const evaluateAllCandidates = async () => {
+      if (finalCandidatesData.length === 0) return;
+      
+      console.log('🔄 [AUTO-EVAL] Début de l\'évaluation automatique de tous les candidats');
+      
+      // Étape 1: Extraire et seeder les offres uniques
+      try {
+        console.log('🌱 [SEED] Extraction des offres uniques...');
+        console.log('🌱 [SEED] Nombre de candidats:', finalCandidatesData.length);
+        
+        const uniqueOffersMap = new Map();
+        
+        finalCandidatesData.forEach((candidate: any, index: number) => {
+          const rawData = candidate.rawData || candidate;
+          
+          // Récupérer le job_id depuis le champ post ou offre.reference
+          const jobId = rawData.post || 
+                        candidate.post || 
+                        rawData.offre?.reference || 
+                        candidate.offre?.reference;
+          
+          console.log(`🔍 [SEED] Candidat ${index}:`, {
+            nom: candidate.nom || rawData.nom,
+            hasOffre: !!(candidate.offre || rawData.offre),
+            hasPost: !!(rawData.post || candidate.post),
+            jobId: jobId,
+            offreIntitule: candidate.offre?.intitule || rawData.offre?.intitule
+          });
+          
+          // Essayer d'abord candidate.offre, puis rawData.offre
+          const offre = candidate.offre || rawData.offre;
+          
+          if (jobId) {
+            console.log(`✅ [SEED] Job ID trouvé pour ${candidate.nom || rawData.nom}:`, jobId);
+            
+            const offerData = {
+              job_id: jobId,
+              titre: offre?.intitule || 'Titre non spécifié',
+              offre: offre?.missions_principales || offre?.description || 'Description non disponible',
+              M: offre?.questions_mtp?.metier?.join(' | ') || '',
+              T: offre?.questions_mtp?.talent?.join(' | ') || '',
+              P: offre?.questions_mtp?.paradigme?.join(' | ') || ''
+            };
+            uniqueOffersMap.set(jobId, offerData);
+          } else {
+            console.warn(`⚠️ [SEED] Pas de job_id pour ${candidate.nom || rawData.nom}`);
+          }
+        });
+        
+        const offers = Array.from(uniqueOffersMap.values());
+        console.log(`🌱 [SEED] ${offers.length} offres uniques trouvées`);
+        console.log('📋 [SEED] Détail des offres:', offers);
+        
+        if (offers.length > 0) {
+          const seedResult = await azureContainerAppsService.seedOffers(offers);
+          if (seedResult.success) {
+            console.log('✅ [SEED] Offres enregistrées avec succès');
+          } else {
+            console.error('❌ [SEED] Erreur lors du seed:', seedResult.error);
+          }
+        } else {
+          console.error('❌ [SEED] Aucune offre à seeder !');
+        }
+      } catch (error) {
+        console.error('❌ [SEED] Erreur lors du seed des offres:', error);
+      }
+      
+      // Étape 2: Évaluer chaque candidat qui n'a pas encore été évalué
+      const candidatesToEvaluate = finalCandidatesData.filter(c => !candidateEvaluations[c.id]);
+      console.log(`📊 [AUTO-EVAL] ${candidatesToEvaluate.length} candidats à évaluer sur ${finalCandidatesData.length} total`);
+      
+      let evaluatedCount = 0;
+      let errorCount = 0;
+      
+      for (const candidate of candidatesToEvaluate) {
+        evaluatedCount++;
+        console.log(`🔍 [AUTO-EVAL] Évaluation ${evaluatedCount}/${candidatesToEvaluate.length}: ${candidate.fullName}`);
+        try {
+          await evaluateCandidateAutomatically(candidate, true);
+          console.log(`✅ [AUTO-EVAL] Succès pour ${candidate.fullName}`);
+          // Pause plus longue entre les évaluations pour donner le temps à l'API de traiter (3 secondes)
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        } catch (error) {
+          errorCount++;
+          console.error(`❌ [AUTO-EVAL] Erreur ${errorCount} pour ${candidate.fullName}:`, error);
+          // Pause encore plus longue après une erreur (5 secondes) pour laisser l'API récupérer
+          await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+      }
+      
+      console.log(`✅ [AUTO-EVAL] Évaluation automatique terminée: ${evaluatedCount - errorCount} succès, ${errorCount} erreurs`);
+    };
+
+    // Délai pour laisser le temps aux données de se charger
+    const timeoutId = setTimeout(evaluateAllCandidates, 2000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [finalCandidatesData.length]); // Se déclenche quand le nombre de candidats change
+
   // Recherche en temps réel
   useEffect(() => {
     const performSearch = async () => {
@@ -249,35 +572,46 @@ export default function Traitements_IA() {
     const timeoutId = setTimeout(performSearch, 500); // Debounce de 500ms
     return () => clearTimeout(timeoutId);
   }, [searchTerm, searchCandidates]);
-  const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
 
   // Transformer les données IA pour l'affichage
-  const candidatesData = useMemo(() => {
+  const processedCandidatesData = useMemo(() => {
+    
     // Si on a des résultats de recherche, les utiliser
     if (searchResults.length > 0) {
       return searchResults;
     }
 
     // Sinon, utiliser les données statiques
-    if (!aiData) return [];
+    if (!aiData) return finalCandidatesData;
 
     const allCandidates: CandidateApplication[] = [];
 
     // Parcourir dynamiquement tous les départements
     Object.entries(aiData).forEach(([departmentKey, candidates]) => {
       candidates.forEach((candidate, index) => {
-        allCandidates.push({
+        const processedCandidate = {
+          // Copier TOUTES les propriétés du candidat en premier (y compris offre_id et offre)
+          ...candidate,
+          // Puis écraser/ajouter les propriétés spécifiques
           id: `${departmentKey}-${index}`,
           firstName: candidate.prenom,
           lastName: candidate.nom,
           poste: candidate.poste,
           department: departmentKey, // Utiliser le nom exact du département
-          aiData: candidate,
-          // Inclure toutes les propriétés du candidat mappé pour l'accès aux documents
-          ...candidate
-        });
+          aiData: {
+            nom: candidate.nom,
+            prenom: candidate.prenom,
+            poste: candidate.poste,
+            resume_global: candidate.resume_global,
+            mtp: candidate.mtp,
+            conformite: candidate.conformite,
+            similarite_offre: candidate.similarite_offre,
+            feedback: candidate.feedback
+          }
+        };
+        
+        allCandidates.push(processedCandidate);
       });
     });
 
@@ -286,7 +620,7 @@ export default function Traitements_IA() {
 
   // Filtrer et trier les candidats
   const filteredCandidates = useMemo(() => {
-    let filtered = candidatesData;
+    let filtered = processedCandidatesData;
 
     // Filtrer par terme de recherche (recherche avancée)
     if (searchTerm) {
@@ -378,7 +712,7 @@ export default function Traitements_IA() {
     });
 
     return filtered;
-  }, [candidatesData, searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange, sortBy, sortOrder]);
+  }, [processedCandidatesData, searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange, sortBy, sortOrder]);
 
   // Calculer la pagination
   const totalPages = Math.ceil(filteredCandidates.length / itemsPerPage);
@@ -391,8 +725,9 @@ export default function Traitements_IA() {
     setCurrentPage(1);
   }, [searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange]);
 
-  const handleViewResults = (candidate: CandidateApplication) => {
-    // Préparer les données au format momo.com
+  const handleViewResults = async (candidate: CandidateApplication) => {
+    
+    // Préparer les données au format Azure Container Apps API
     const rawCandidate = candidate.rawData || candidate;
     
     // Récupérer le CV et la lettre de motivation depuis l'API
@@ -453,33 +788,371 @@ export default function Traitements_IA() {
       }
     }
     
-    const momoData = {
+    // Log unique pour diagnostiquer le problème du champ offre
+    console.log('🔍 [DIAGNOSTIC] Objet rawCandidate.offre:', JSON.stringify(rawCandidate.offre, null, 2));
+    
+    // PRIORITÉ ABSOLUE à offre?.reference qui est le champ utilisé par l'API SEEG
+    const postId = rawCandidate.offre?.reference || 
+                   candidate.offre?.reference || 
+                   rawCandidate.offre?.job_id || 
+                   candidate.offre?.job_id || 
+                   candidate.offre_id || 
+                   rawCandidate.offre_id || 
+                   candidate.post || 
+                   rawCandidate.post || 
+                   rawCandidate.application?.offer_id || 
+                   '';
+    
+    // Récupérer les données MTP au bon format (déjà des chaînes de texte)
+    const mtpData = rawCandidate.mtp || candidate.mtp || rawCandidate.analysis?.mtp || candidate.aiData?.mtp || {};
+    
+    const azureData = {
       id: candidate.id,
-      Nom: candidate.nom || candidate.lastName || candidate.last_name || rawCandidate.last_name || 'N/A',
-      Prénom: candidate.prenom || candidate.firstName || candidate.first_name || rawCandidate.first_name || 'N/A',
+      nom: candidate.nom || candidate.lastName || candidate.last_name || rawCandidate.last_name || 'N/A',
+      prenom: candidate.prenom || candidate.firstName || candidate.first_name || rawCandidate.first_name || 'N/A',
       cv: cvContent,
       lettre_motivation: coverLetterContent,
       MTP: {
-        M: candidate.reponses_mtp?.metier ? candidate.reponses_mtp.metier.join(' | ') :
-           rawCandidate.reponses_mtp?.metier ? rawCandidate.reponses_mtp.metier.join(' | ') : 
-           candidate.aiData?.mtp?.reponses_mtp?.metier ? candidate.aiData.mtp.reponses_mtp.metier.join(' | ') : 'Réponses métier non disponibles',
-        T: candidate.reponses_mtp?.talent ? candidate.reponses_mtp.talent.join(' | ') :
-           rawCandidate.reponses_mtp?.talent ? rawCandidate.reponses_mtp.talent.join(' | ') : 
-           candidate.aiData?.mtp?.reponses_mtp?.talent ? candidate.aiData.mtp.reponses_mtp.talent.join(' | ') : 'Réponses talent non disponibles',
-        P: candidate.reponses_mtp?.paradigme ? candidate.reponses_mtp.paradigme.join(' | ') :
-           rawCandidate.reponses_mtp?.paradigme ? rawCandidate.reponses_mtp.paradigme.join(' | ') : 
-           candidate.aiData?.mtp?.reponses_mtp?.paradigme ? candidate.aiData.mtp.reponses_mtp.paradigme.join(' | ') : 'Réponses paradigme non disponibles'
+        M: mtpData.M || 'Réponses métier non disponibles',
+        T: mtpData.T || 'Réponses talent non disponibles',
+        P: mtpData.P || 'Réponses paradigme non disponibles'
       },
-      post: candidate.poste || candidate.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié'
+      post: postId
     };
-    
-    console.log('📤 DONNÉES QUI SERAIENT ENVOYÉES:');
-    console.log('=====================================');
-    console.log(JSON.stringify(momoData, null, 2));
-    console.log('=====================================');
     
     setSelectedCandidate(candidate);
     setIsModalOpen(true);
+    
+    // Évaluation automatique du candidat
+    await evaluateCandidateAutomatically(candidate);
+  };
+
+  const evaluateCandidateAutomatically = async (candidate: CandidateApplication, isBackground = false) => {
+    try {
+      // Ne pas afficher le loader si c'est une évaluation en arrière-plan
+      if (!isBackground) {
+        setIsEvaluating(true);
+        setEvaluationData(null);
+      }
+
+      // Vérifier la configuration de la clé API
+      if (!azureContainerAppsService.hasApiKey()) {
+        console.warn('⚠️ [Azure Container Apps] Clé API non configurée - Évaluation ignorée');
+        return;
+      }
+
+      // Préparer les données au format Azure Container Apps API
+      const rawCandidate = candidate.rawData || candidate;
+      
+      // Récupérer le CV et la lettre de motivation depuis l'API
+      let cvContent = 'CV non disponible';
+      let coverLetterContent = 'Lettre de motivation non disponible';
+      
+      // Essayer de récupérer le CV - priorité aux données brutes de l'API
+      if (rawCandidate.documents?.cv) {
+        if (typeof rawCandidate.documents.cv === 'string') {
+          cvContent = rawCandidate.documents.cv;
+        } else if (rawCandidate.documents.cv.url) {
+          cvContent = `CV disponible: ${rawCandidate.documents.cv.name} (${rawCandidate.documents.cv.url})`;
+        }
+      } else if (candidate.documents?.cv) {
+        if (typeof candidate.documents.cv === 'string') {
+          cvContent = candidate.documents.cv;
+        } else if (candidate.documents.cv.url) {
+          cvContent = `CV disponible: ${candidate.documents.cv.name} (${candidate.documents.cv.url})`;
+        }
+      } else if (candidate.cv) {
+        if (typeof candidate.cv === 'string') {
+          cvContent = candidate.cv;
+        } else if (candidate.cv.url) {
+          cvContent = `CV disponible: ${candidate.cv.name} (${candidate.cv.url})`;
+        }
+      } else if (rawCandidate.cv) {
+        if (typeof rawCandidate.cv === 'string') {
+          cvContent = rawCandidate.cv;
+        } else if (rawCandidate.cv.url) {
+          cvContent = `CV disponible: ${rawCandidate.cv.name} (${rawCandidate.cv.url})`;
+        }
+      }
+      
+      // Essayer de récupérer la lettre de motivation - priorité aux données brutes de l'API
+      if (rawCandidate.documents?.cover_letter) {
+        if (typeof rawCandidate.documents.cover_letter === 'string') {
+          coverLetterContent = rawCandidate.documents.cover_letter;
+        } else if (rawCandidate.documents.cover_letter.url) {
+          coverLetterContent = `Lettre de motivation disponible: ${rawCandidate.documents.cover_letter.name} (${rawCandidate.documents.cover_letter.url})`;
+        }
+      } else if (candidate.documents?.cover_letter) {
+        if (typeof candidate.documents.cover_letter === 'string') {
+          coverLetterContent = candidate.documents.cover_letter;
+        } else if (candidate.documents.cover_letter.url) {
+          coverLetterContent = `Lettre de motivation disponible: ${candidate.documents.cover_letter.name} (${candidate.documents.cover_letter.url})`;
+        }
+      } else if (candidate.cover_letter) {
+        if (typeof candidate.cover_letter === 'string') {
+          coverLetterContent = candidate.cover_letter;
+        } else if (candidate.cover_letter.url) {
+          coverLetterContent = `Lettre de motivation disponible: ${candidate.cover_letter.name} (${candidate.cover_letter.url})`;
+        }
+      } else if (rawCandidate.cover_letter) {
+        if (typeof rawCandidate.cover_letter === 'string') {
+          coverLetterContent = rawCandidate.cover_letter;
+        } else if (rawCandidate.cover_letter.url) {
+          coverLetterContent = `Lettre de motivation disponible: ${rawCandidate.cover_letter.name} (${rawCandidate.cover_letter.url})`;
+        }
+      }
+      
+      // PRIORITÉ ABSOLUE à post (champ direct) ou offre?.reference qui est le champ utilisé par l'API SEEG
+      const jobId = rawCandidate.post ||
+                    candidate.post ||
+                    rawCandidate.offre?.reference || 
+                    candidate.offre?.reference || 
+                    rawCandidate.offre?.job_id || 
+                    candidate.offre?.job_id || 
+                    candidate.offre_id || 
+                    rawCandidate.offre_id || 
+                    rawCandidate.application?.offer_id || 
+                    '';
+      
+      // Récupérer les données MTP au bon format (déjà des chaînes de texte)
+      console.log('🔍 [DEBUG] Recherche des données MTP...');
+      console.log('🔍 [DEBUG] rawCandidate.mtp:', rawCandidate.mtp);
+      console.log('🔍 [DEBUG] candidate.mtp:', candidate.mtp);
+      console.log('🔍 [DEBUG] rawCandidate.reponses_mtp:', rawCandidate.reponses_mtp);
+      console.log('🔍 [DEBUG] candidate.reponses_mtp:', candidate.reponses_mtp);
+      
+      // Les données MTP peuvent être dans mtp directement ou dans reponses_mtp
+      let mtpData = rawCandidate.mtp || candidate.mtp || rawCandidate.analysis?.mtp || candidate.aiData?.mtp || {};
+      
+      // Si mtpData contient reponses_mtp, extraire ces données
+      if (mtpData.reponses_mtp) {
+        mtpData = mtpData.reponses_mtp;
+      }
+      
+      // Ou vérifier directement dans reponses_mtp
+      if (!mtpData.M && !mtpData.T && !mtpData.P) {
+        const directMtp = rawCandidate.reponses_mtp || candidate.reponses_mtp;
+        if (directMtp) {
+          mtpData = directMtp;
+        }
+      }
+      
+      console.log('🔍 [DEBUG] mtpData final récupéré:', mtpData);
+      console.log('🔍 [DEBUG] mtpData.M:', mtpData.M);
+      console.log('🔍 [DEBUG] mtpData.T:', mtpData.T);
+      console.log('🔍 [DEBUG] mtpData.P:', mtpData.P);
+      console.log('🔍 [DEBUG] mtpData.metier:', mtpData.metier);
+      console.log('🔍 [DEBUG] mtpData.talent:', mtpData.talent);
+      console.log('🔍 [DEBUG] mtpData.paradigme:', mtpData.paradigme);
+      console.log('🔍 [DEBUG] Type de mtpData.M:', typeof mtpData.M);
+      
+      // Convertir les données MTP au format attendu par l'API (M, T, P)
+      // Gérer deux cas : {M, T, P} ou {metier, talent, paradigme}
+      let M_value = mtpData.M;
+      let T_value = mtpData.T;
+      let P_value = mtpData.P;
+      
+      // Si les données sont au format {metier, talent, paradigme} (tableaux), les convertir
+      if (!M_value && mtpData.metier) {
+        M_value = Array.isArray(mtpData.metier) ? mtpData.metier.join(' | ') : mtpData.metier;
+      }
+      if (!T_value && mtpData.talent) {
+        T_value = Array.isArray(mtpData.talent) ? mtpData.talent.join(' | ') : mtpData.talent;
+      }
+      if (!P_value && mtpData.paradigme) {
+        P_value = Array.isArray(mtpData.paradigme) ? mtpData.paradigme.join(' | ') : mtpData.paradigme;
+      }
+      
+      console.log('🔍 [DEBUG] Valeurs MTP après conversion:', { M_value, T_value, P_value });
+      
+      // S'assurer que les données MTP sont des chaînes de texte
+      const mtpResponses = {
+        M: typeof M_value === 'string' ? M_value : (M_value ? JSON.stringify(M_value) : 'Réponses métier non disponibles'),
+        T: typeof T_value === 'string' ? T_value : (T_value ? JSON.stringify(T_value) : 'Réponses talent non disponibles'),
+        P: typeof P_value === 'string' ? P_value : (P_value ? JSON.stringify(P_value) : 'Réponses paradigme non disponibles')
+      };
+      
+      console.log('🔍 [DEBUG] mtpResponses formaté:', mtpResponses);
+      
+      const evaluationData: EvaluationRequest = {
+        candidate_id: candidate.id,
+        candidate_name: candidate.nom || candidate.lastName || rawCandidate.nom || 'N/A',
+        candidate_firstname: candidate.prenom || candidate.firstName || rawCandidate.prenom || 'N/A',
+        job_title: candidate.poste || candidate.offre?.intitule || rawCandidate.offre?.intitule || 'Poste non spécifié',
+        job_id: jobId,
+        cv_content: cvContent,
+        cover_letter_content: coverLetterContent,
+        mtp_responses: mtpResponses,
+        threshold_pct: 50,
+        hold_threshold_pct: 50
+      };
+
+      console.log('📤 [EVAL] job_id récupéré:', jobId);
+      console.log('📤 [EVAL] Sources vérifiées:', {
+        'rawCandidate.post': rawCandidate.post,
+        'candidate.post': candidate.post,
+        'rawCandidate.offre?.reference': rawCandidate.offre?.reference,
+        'candidate.offre?.reference': candidate.offre?.reference
+      });
+      console.log('📤 [EVAL] CV content (premiers 100 chars):', cvContent.substring(0, 100));
+      console.log('📤 [EVAL] Cover letter (premiers 100 chars):', coverLetterContent.substring(0, 100));
+      console.log('📤 [EVAL] evaluationData complet:', JSON.stringify(evaluationData, null, 2));
+
+      // Validation avant envoi
+      if (!jobId || jobId === '') {
+        const errorMsg = `❌ [EVAL] Le job_id est vide pour le candidat ${candidate.fullName || candidate.nom}. L'évaluation ne peut pas être effectuée.`;
+        console.error(errorMsg);
+        console.error('🔍 [DEBUG] Candidat complet pour diagnostic:', JSON.stringify(candidate, null, 2));
+        throw new Error('Le job_id (post) est requis mais n\'a pas été trouvé dans les données du candidat');
+      }
+
+      const result = await azureContainerAppsService.evaluateCandidate(evaluationData);
+
+      if (result.success) {
+        if (!isBackground) {
+          setEvaluationData(result.data);
+        }
+        // Stocker l'évaluation pour ce candidat
+        setCandidateEvaluations(prev => ({
+          ...prev,
+          [candidate.id]: result.data
+        }));
+      } else {
+        console.error('❌ Erreur d\'évaluation automatique:', result.error);
+      }
+
+    } catch (error) {
+      console.error('❌ Erreur inattendue lors de l\'évaluation automatique:', error);
+    } finally {
+      if (!isBackground) {
+        setIsEvaluating(false);
+      }
+    }
+  };
+
+  const handleSendToAPI = async (candidate: CandidateApplication) => {
+    try {
+      setIsSending(true);
+      setSendStatus('idle');
+      setSendMessage('');
+
+      // Vérifier la configuration de la clé API
+      if (!azureContainerAppsService.hasApiKey()) {
+        setSendStatus('error');
+        setSendMessage('Clé API non configurée. Ajoutez VITE_AZURE_CONTAINER_APPS_API_KEY dans votre .env');
+        console.warn('⚠️ [Azure Container Apps] Clé API non configurée');
+        return;
+      }
+
+      // Préparer les données au format Azure Container Apps API
+      const rawCandidate = candidate.rawData || candidate;
+      
+      // Récupérer le CV et la lettre de motivation depuis l'API
+      let cvContent = 'CV non disponible';
+      let coverLetterContent = 'Lettre de motivation non disponible';
+      
+      // Essayer de récupérer le CV - priorité aux données brutes de l'API
+      if (rawCandidate.documents?.cv) {
+        if (typeof rawCandidate.documents.cv === 'string') {
+          cvContent = rawCandidate.documents.cv;
+        } else if (rawCandidate.documents.cv.url) {
+          cvContent = `CV disponible: ${rawCandidate.documents.cv.name} (${rawCandidate.documents.cv.url})`;
+        }
+      } else if (candidate.documents?.cv) {
+        if (typeof candidate.documents.cv === 'string') {
+          cvContent = candidate.documents.cv;
+        } else if (candidate.documents.cv.url) {
+          cvContent = `CV disponible: ${candidate.documents.cv.name} (${candidate.documents.cv.url})`;
+        }
+      } else if (candidate.cv) {
+        if (typeof candidate.cv === 'string') {
+          cvContent = candidate.cv;
+        } else if (candidate.cv.url) {
+          cvContent = `CV disponible: ${candidate.cv.name} (${candidate.cv.url})`;
+        }
+      } else if (rawCandidate.cv) {
+        if (typeof rawCandidate.cv === 'string') {
+          cvContent = rawCandidate.cv;
+        } else if (rawCandidate.cv.url) {
+          cvContent = `CV disponible: ${rawCandidate.cv.name} (${rawCandidate.cv.url})`;
+        }
+      }
+      
+      // Essayer de récupérer la lettre de motivation - priorité aux données brutes de l'API
+      if (rawCandidate.documents?.cover_letter) {
+        if (typeof rawCandidate.documents.cover_letter === 'string') {
+          coverLetterContent = rawCandidate.documents.cover_letter;
+        } else if (rawCandidate.documents.cover_letter.url) {
+          coverLetterContent = `Lettre de motivation disponible: ${rawCandidate.documents.cover_letter.name} (${rawCandidate.documents.cover_letter.url})`;
+        }
+      } else if (candidate.documents?.cover_letter) {
+        if (typeof candidate.documents.cover_letter === 'string') {
+          coverLetterContent = candidate.documents.cover_letter;
+        } else if (candidate.documents.cover_letter.url) {
+          coverLetterContent = `Lettre de motivation disponible: ${candidate.documents.cover_letter.name} (${candidate.documents.cover_letter.url})`;
+        }
+      } else if (candidate.cover_letter) {
+        if (typeof candidate.cover_letter === 'string') {
+          coverLetterContent = candidate.cover_letter;
+        } else if (candidate.cover_letter.url) {
+          coverLetterContent = `Lettre de motivation disponible: ${candidate.cover_letter.name} (${candidate.cover_letter.url})`;
+        }
+      } else if (rawCandidate.cover_letter) {
+        if (typeof rawCandidate.cover_letter === 'string') {
+          coverLetterContent = rawCandidate.cover_letter;
+        } else if (rawCandidate.cover_letter.url) {
+          coverLetterContent = `Lettre de motivation disponible: ${rawCandidate.cover_letter.name} (${rawCandidate.cover_letter.url})`;
+        }
+      }
+      
+      // PRIORITÉ ABSOLUE à offre?.reference qui est le champ utilisé par l'API SEEG
+      const postId = rawCandidate.offre?.reference || 
+                     candidate.offre?.reference || 
+                     rawCandidate.offre?.job_id || 
+                     candidate.offre?.job_id || 
+                     candidate.offre_id || 
+                     rawCandidate.offre_id || 
+                     candidate.post || 
+                     rawCandidate.post || 
+                     rawCandidate.application?.offer_id || 
+                     '';
+      
+      // Récupérer les données MTP au bon format (déjà des chaînes de texte)
+      const mtpData = rawCandidate.mtp || candidate.mtp || rawCandidate.analysis?.mtp || candidate.aiData?.mtp || {};
+      
+      const candidateData: CandidateData = {
+        id: candidate.id,
+        nom: candidate.nom || candidate.lastName || candidate.last_name || rawCandidate.last_name || 'N/A',
+        prenom: candidate.prenom || candidate.firstName || candidate.first_name || rawCandidate.first_name || 'N/A',
+        cv: cvContent,
+        lettre_motivation: coverLetterContent,
+        MTP: {
+          M: mtpData.M || 'Réponses métier non disponibles',
+          T: mtpData.T || 'Réponses talent non disponibles',
+          P: mtpData.P || 'Réponses paradigme non disponibles'
+        },
+        post: postId
+      };
+
+
+      const result = await azureContainerAppsService.sendCandidateData(candidateData);
+
+      if (result.success) {
+        setSendStatus('success');
+        setSendMessage('Données envoyées avec succès à l\'API Azure Container Apps');
+      } else {
+        setSendStatus('error');
+        setSendMessage(result.error || 'Erreur lors de l\'envoi');
+        console.error('❌ Erreur d\'envoi:', result.error);
+      }
+
+    } catch (error) {
+      setSendStatus('error');
+      setSendMessage('Erreur inattendue lors de l\'envoi');
+      console.error('❌ Erreur inattendue:', error);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -569,6 +1242,14 @@ export default function Traitements_IA() {
                       (Utilisation des données statiques)
                     </span>
                   )}
+                </div>
+              )}
+              {sendStatus !== 'idle' && (
+                <div className="flex items-center gap-2 mt-2">
+                  <div className={`w-2 h-2 rounded-full ${sendStatus === 'success' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  <span className={`text-xs ${sendStatus === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                    {sendMessage}
+                  </span>
                 </div>
               )}
             </div>
@@ -781,6 +1462,28 @@ export default function Traitements_IA() {
           </CardContent>
         </Card>
 
+        {/* Bouton de test modal */}
+        <div className="mb-4">
+          <Button
+            variant="default"
+            onClick={() => {
+              setIsModalOpen(true);
+              setSelectedCandidate({
+                id: 'test-123',
+                firstName: 'Test',
+                lastName: 'Candidat',
+                poste: 'Développeur Test',
+                department: 'IT',
+                email: 'test@example.com'
+              } as any);
+            }}
+            className="flex items-center gap-2"
+          >
+            <Brain className="h-4 w-4" />
+            Test Modal
+          </Button>
+        </div>
+
         {/* Tableau des candidats */}
         <Card>
           <CardHeader>
@@ -832,17 +1535,19 @@ export default function Traitements_IA() {
                           <span className="font-medium text-sm sm:text-base inline-flex whitespace-nowrap">#{candidate.aiData.resume_global.rang_global}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="min-w-[120px]">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewResults(candidate)}
-                          className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm w-full sm:w-auto"
-                        >
-                          <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-                          <span className="hidden sm:inline">Voir Résultats</span>
-                          <span className="sm:hidden">Voir</span>
-                        </Button>
+                      <TableCell className="min-w-[200px]">
+                        <div className="flex gap-2 justify-center">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewResults(candidate)}
+                            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                          >
+                            <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="hidden sm:inline">Voir Résultats</span>
+                            <span className="sm:hidden">Voir</span>
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -864,15 +1569,17 @@ export default function Traitements_IA() {
                         <div className="text-sm text-muted-foreground inline-flex whitespace-nowrap">#{candidate.aiData?.resume_global?.rang_global || 'N/A'}</div>
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewResults(candidate)}
-                      className="gap-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span className="hidden xs:inline">Voir</span>
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewResults(candidate)}
+                        className="gap-2 flex-1"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="hidden xs:inline">Voir</span>
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="space-y-2">
@@ -979,11 +1686,30 @@ export default function Traitements_IA() {
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
-                <span className="truncate">Évaluation IA - {selectedCandidate?.firstName} {selectedCandidate?.lastName}</span>
+                <span className="truncate">
+                  Évaluation IA - {selectedCandidate?.firstName || 'Test'} {selectedCandidate?.lastName || 'Candidat'}
+                </span>
               </DialogTitle>
+              <DialogDescription>
+                Résultats détaillés de l'analyse automatique par intelligence artificielle du profil du candidat
+              </DialogDescription>
             </DialogHeader>
             
-            {selectedCandidate && (
+            {/* Contenu de test si pas de candidat sélectionné */}
+            {!selectedCandidate ? (
+              <div className="space-y-6">
+                <Card>
+                  <CardContent className="flex items-center justify-center py-8">
+                    <div className="text-center text-muted-foreground">
+                      <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>Modal de test - Aucun candidat sélectionné</p>
+                      <p className="text-sm">isModalOpen: {isModalOpen.toString()}</p>
+                      <p className="text-sm">selectedCandidate: {selectedCandidate ? 'Défini' : 'Null'}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : selectedCandidate && (
               <div className="space-y-6">
                 {/* Informations du candidat */}
                 <Card>
@@ -1008,12 +1734,174 @@ export default function Traitements_IA() {
                   </CardContent>
                 </Card>
 
-                {/* Score Global */}
+                {/* Évaluation IA */}
+                {isEvaluating ? (
+                  <Card>
+                    <CardContent className="flex items-center justify-center py-8">
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Évaluation IA en cours...</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : evaluationData ? (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Brain className="h-5 w-5 text-purple-500" />
+                        Évaluation IA Complète
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* Scores */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="text-center p-4 bg-blue-50 rounded-lg">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {evaluationData.scores?.score_offre_pct || 0}%
+                          </div>
+                          <p className="text-sm text-muted-foreground">Score Offre</p>
+                        </div>
+                        <div className="text-center p-4 bg-green-50 rounded-lg">
+                          <div className="text-2xl font-bold text-green-600">
+                            {evaluationData.scores?.score_mtp_pct || 0}%
+                          </div>
+                          <p className="text-sm text-muted-foreground">Score MTP</p>
+                        </div>
+                        <div className="text-center p-4 bg-purple-50 rounded-lg">
+                          <div className="text-2xl font-bold text-purple-600">
+                            {evaluationData.scores?.score_global_pct || 0}%
+                          </div>
+                          <p className="text-sm text-muted-foreground">Score Global</p>
+                        </div>
+                      </div>
+
+                      {/* Verdict */}
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-semibold mb-2">Verdict</h4>
+                        <div className="mb-2">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                            evaluationData.verdict?.verdict?.toLowerCase().includes('accept') || 
+                            evaluationData.verdict?.verdict?.toLowerCase().includes('favorable')
+                              ? 'bg-green-100 text-green-800'
+                              : evaluationData.verdict?.verdict?.toLowerCase().includes('reject') ||
+                                evaluationData.verdict?.verdict?.toLowerCase().includes('défavorable')
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {evaluationData.verdict?.verdict || 'Non spécifié'}
+                          </span>
+                        </div>
+                        {/* Justification masquée - contient souvent du texte technique */}
+                        {/* {evaluationData.verdict?.rationale && cleanTechnicalText(evaluationData.verdict.rationale) && (
+                          <p className="text-sm text-gray-700 mb-2">
+                            <strong>Justification :</strong> {cleanTechnicalText(evaluationData.verdict.rationale)}
+                          </p>
+                        )} */}
+                        {/* Commentaires masqués - contiennent souvent du texte technique */}
+                        {/* {evaluationData.verdict?.commentaires && evaluationData.verdict.commentaires.length > 0 && cleanTechnicalArray(evaluationData.verdict.commentaires).length > 0 && (
+                          <div>
+                            <p className="text-sm font-medium text-gray-600 mb-1">Commentaires :</p>
+                            <ul className="text-sm text-gray-700 space-y-1">
+                              {cleanTechnicalArray(evaluationData.verdict.commentaires).map((comment, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <span className="text-gray-400">•</span>
+                                  {comment}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )} */}
+                      </div>
+
+                      {/* Forces */}
+                      {evaluationData.forces && evaluationData.forces.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            Points Forts
+                          </h4>
+                          <ul className="space-y-1">
+                            {evaluationData.forces.map((force, index) => (
+                              <li key={index} className="flex items-start gap-2 text-sm">
+                                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                {force}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Faiblesses */}
+                      {evaluationData.faiblesses && evaluationData.faiblesses.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-orange-500" />
+                            Points à Améliorer
+                          </h4>
+                          <ul className="space-y-1">
+                            {evaluationData.faiblesses.map((faiblesse, index) => (
+                              <li key={index} className="flex items-start gap-2 text-sm">
+                                <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                                {faiblesse}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Justifications - Afficher uniquement la première */}
+                      {evaluationData.justification && evaluationData.justification.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-blue-500" />
+                            Justifications Détaillées
+                          </h4>
+                          <ul className="space-y-2">
+                            {cleanTechnicalArray(evaluationData.justification).slice(0, 1).map((justif, index) => (
+                              <li key={index} className="text-sm bg-blue-50 p-3 rounded-lg">
+                                {justif}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Commentaires généraux */}
+                      {evaluationData.commentaires && evaluationData.commentaires.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4 text-gray-500" />
+                            Commentaires Généraux
+                          </h4>
+                          <ul className="space-y-2">
+                            {cleanTechnicalArray(evaluationData.commentaires).map((comment, index) => (
+                              <li key={index} className="text-sm bg-gray-50 p-3 rounded-lg">
+                                {comment}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card>
+                    <CardContent className="flex items-center justify-center py-8">
+                      <div className="text-center text-muted-foreground">
+                        <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p>Aucune évaluation IA disponible</p>
+                        <p className="text-sm">L'évaluation sera effectuée automatiquement</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Score Global (Ancien format - gardé pour compatibilité) */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <BarChart3 className="h-5 w-5" />
-                      Score Global IA
+                      Score Global IA (Ancien Format)
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
