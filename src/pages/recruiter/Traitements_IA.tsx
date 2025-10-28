@@ -921,8 +921,8 @@ export default function Traitements_IA() {
         cv_content: cvContent,
         cover_letter_content: coverLetterContent,
         mtp_responses: mtpResponses,
-        threshold_pct: 50,
-        hold_threshold_pct: 50
+        threshold_pct: 65,
+        hold_threshold_pct: 65
       };
 
       console.log('📤 [EVAL] job_id récupéré:', jobId);
@@ -1078,13 +1078,13 @@ export default function Traitements_IA() {
       } else {
         setSendStatus('error');
         setSendMessage(result.error || 'Erreur lors de l\'envoi');
-        console.error('❌ Erreur d\'envoi:', result.error);
+        console.error(' Erreur d\'envoi:', result.error);
       }
 
     } catch (error) {
       setSendStatus('error');
       setSendMessage('Erreur inattendue lors de l\'envoi');
-      console.error('❌ Erreur inattendue:', error);
+      console.error(' Erreur inattendue:', error);
     } finally {
       setIsSending(false);
     }
