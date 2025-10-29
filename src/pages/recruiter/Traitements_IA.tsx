@@ -33,10 +33,14 @@ import {
   Loader2,
   MessageCircle
 } from "lucide-react";
-import { useSEEGAIData } from "@/hooks/useSEEGAIData";
+import { useSEEGAIDataOptimized } from "@/hooks/useSEEGAIDataOptimized";
 import { AICandidateData } from "@/hooks/useAIData";
 import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { NetworkIndicator } from "@/components/NetworkIndicator";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useCache } from "@/contexts/CacheContext";
 import { DataTable } from "@/components/ui/data-table";
 import { createColumns, CandidateAIData } from "@/components/ai/columns";
 
@@ -296,18 +300,20 @@ const cleanTechnicalArray = (items: string[]): string[] => {
 export default function Traitements_IA() {
   const { 
     data: aiData, 
-    isLoading, 
+    isLoading,
+    isValidating,
     error, 
     isConnected,
     searchCandidates,
     loadAIData 
-  } = useSEEGAIData();
+  } = useSEEGAIDataOptimized();
   
-  
+  const cache = useCache();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const [selectedPostes, setSelectedPostes] = useState<string[]>([]); // Nouveau filtre par poste
   const [selectedVerdict, setSelectedVerdict] = useState<string>("all");
   const [selectedScoreRange, setSelectedScoreRange] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("rang");
@@ -446,6 +452,23 @@ export default function Traitements_IA() {
 
   // Le DataTable gère automatiquement la réinitialisation de la pagination
 
+  // Extraire la liste unique des postes depuis les données
+  const availablePostes = useMemo(() => {
+    if (!aiData) return [];
+    
+    const postesSet = new Set<string>();
+    Object.values(aiData).forEach(candidates => {
+      candidates.forEach(candidate => {
+        const poste = candidate.poste || 'Non spécifié';
+        if (poste !== 'N/A' && poste !== 'Non spécifié') {
+          postesSet.add(poste);
+        }
+      });
+    });
+    
+    return Array.from(postesSet).sort();
+  }, [aiData]);
+
   // Départements autorisés (uniquement ceux contenant des postes de la nouvelle campagne)
   const allowedDepartments = useMemo(() => {
     if (!aiData) return [] as string[];
@@ -552,6 +575,13 @@ export default function Traitements_IA() {
       filtered = filtered.filter(candidate => candidate.department === selectedDepartment);
     }
 
+    // Filtrer par poste (multi-sélection)
+    if (selectedPostes.length > 0) {
+      filtered = filtered.filter(candidate => 
+        selectedPostes.includes(candidate.poste || 'Non spécifié')
+      );
+    }
+
     // Filtrer par verdict
     if (selectedVerdict !== "all") {
       filtered = filtered.filter(candidate => {
@@ -615,7 +645,7 @@ export default function Traitements_IA() {
     });
 
     return filtered;
-  }, [candidatesData, searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange, sortBy, sortOrder, searchResults]);
+  }, [candidatesData, searchTerm, selectedDepartment, selectedPostes, selectedVerdict, selectedScoreRange, sortBy, sortOrder, searchResults]);
 
   // Effet pour évaluer automatiquement tous les candidats au chargement
   useEffect(() => {
@@ -767,6 +797,22 @@ export default function Traitements_IA() {
 
   const evaluateCandidateAutomatically = async (candidate: CandidateApplication | CandidateAIData, isBackground = false) => {
     try {
+      // Créer une clé de cache unique pour ce candidat
+      const candidateId = candidate.id || `${candidate.firstName}_${candidate.lastName}`;
+      const cacheKey = `evaluation_${candidateId}`;
+      
+      // Vérifier d'abord le cache
+      const cachedEvaluation = cache.get<any>(cacheKey);
+      if (cachedEvaluation && !isBackground) {
+        console.log(`✅ [Cache] Évaluation trouvée en cache pour ${candidate.firstName} ${candidate.lastName}`);
+        setEvaluationData(cachedEvaluation);
+        setCandidateEvaluations(prev => ({
+          ...prev,
+          [candidateId]: cachedEvaluation
+        }));
+        return;
+      }
+      
       // Ne pas afficher le loader si c'est une évaluation en arrière-plan
       if (!isBackground) {
         setIsEvaluating(true);
@@ -955,6 +1001,13 @@ export default function Traitements_IA() {
           ...prev,
           [cand.id]: result.data
         }));
+        
+        // Sauvegarder dans le cache pour 30 minutes
+        const candidateId = candidate.id || `${candidate.firstName}_${candidate.lastName}`;
+        const cacheKey = `evaluation_${candidateId}`;
+        cache.set(cacheKey, result.data, 1000 * 60 * 30); // 30 minutes
+        console.log(`✅ [Cache] Évaluation sauvegardée en cache pour ${candidate.firstName} ${candidate.lastName}`);
+        
         console.log('✅ Évaluation automatique réussie:', result.data);
         console.log('📊 [MODAL] Données d\'évaluation pour le modal:', JSON.stringify(result.data, null, 2));
       } else {
@@ -1128,6 +1181,14 @@ export default function Traitements_IA() {
     <RecruiterLayout>
       <ErrorBoundary>
       <div className="container mx-auto px-4 py-6">
+        {/* Indicateur de rechargement en arrière-plan */}
+        {isValidating && (
+          <div className="fixed top-4 right-4 z-50 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-pulse">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-sm font-medium">Mise à jour des données...</span>
+          </div>
+        )}
+        
         {/* En-tête de la page */}
         <div className="mb-8">
           {/* Bouton retour */}
@@ -1150,7 +1211,11 @@ export default function Traitements_IA() {
               <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
+                {/* Indicateur de qualité réseau */}
+                <NetworkIndicator />
+              </div>
               <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
               {sendStatus !== 'idle' && (
                 <div className="flex items-center gap-2 mt-2">
@@ -1176,6 +1241,79 @@ export default function Traitements_IA() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Filtre multi-select par poste */}
+            <div className="mb-4">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto h-10 justify-start text-left font-normal"
+                  >
+                    <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
+                    {selectedPostes.length === 0
+                      ? "Filtrer par poste..."
+                      : `${selectedPostes.length} poste${selectedPostes.length > 1 ? 's' : ''} sélectionné${selectedPostes.length > 1 ? 's' : ''}`}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-0" align="start">
+                  <div className="max-h-[200px] overflow-y-auto p-3">
+                    {availablePostes.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-2">
+                        Aucun poste disponible
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {availablePostes.map((poste) => (
+                          <div key={poste} className="flex items-start space-x-2">
+                            <Checkbox
+                              id={`poste-${poste}`}
+                              checked={selectedPostes.includes(poste)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setSelectedPostes([...selectedPostes, poste]);
+                                } else {
+                                  setSelectedPostes(selectedPostes.filter(p => p !== poste));
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor={`poste-${poste}`}
+                              className="text-sm leading-tight cursor-pointer flex-1"
+                            >
+                              {poste}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {selectedPostes.length > 0 && (
+                      <div className="mt-3 pt-3 border-t">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full text-xs"
+                          onClick={() => setSelectedPostes([])}
+                        >
+                          Effacer la sélection
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {selectedPostes.length > 0 && (
+                <Badge variant="secondary" className="ml-2 gap-1">
+                  Postes: {selectedPostes.length} sélectionné{selectedPostes.length > 1 ? 's' : ''}
+                  <button 
+                    onClick={() => setSelectedPostes([])}
+                    className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                  >
+                    <XCircle className="h-3 w-3" />
+                  </button>
+                </Badge>
+              )}
+            </div>
+            
             {/* DataTable moderne avec toutes les fonctionnalités intégrées */}
             <DataTable 
               columns={createColumns(handleViewResults, candidateEvaluations)} 

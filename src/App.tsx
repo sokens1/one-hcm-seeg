@@ -25,6 +25,8 @@ import type { FallbackProps } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/ui/ErrorFallback';
 import { useAccessRequestsRealtime } from '@/hooks/useAccessRequestsRealtime';
 import { DOMErrorMonitor } from '@/components/dev/DOMErrorMonitor';
+import { CacheProvider } from '@/contexts/CacheContext';
+import { SWRConfig } from 'swr';
 
 //Maintenance page
 const Maintenance = lazy(() => import("./pages/maintenance"));
@@ -224,6 +226,22 @@ function AppContent() {
   );
 }
 
+// Configuration globale pour SWR
+const swrConfig = {
+  // Révalider au focus de la fenêtre
+  revalidateOnFocus: false,
+  // Révalider à la reconnexion
+  revalidateOnReconnect: true,
+  // Ne pas suspendre automatiquement
+  suspense: false,
+  // Garder les données en cache pendant 10 minutes
+  dedupingInterval: 600000,
+  // Stratégie de cache : garder les anciennes données pendant le rechargement
+  keepPreviousData: true,
+  // Provider de cache personnalisé utilisant Map (plus performant)
+  provider: () => new Map(),
+};
+
 function App() {
   // Composant de secours personnalisé pour ErrorBoundary
   const CustomErrorFallback = (props: FallbackProps) => {
@@ -232,10 +250,14 @@ function App() {
 
   return (
     <ErrorBoundary FallbackComponent={CustomErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <AppContent />
-        {/* <DOMErrorMonitor /> */}
-      </QueryClientProvider>
+      <SWRConfig value={swrConfig}>
+        <CacheProvider>
+          <QueryClientProvider client={queryClient}>
+            <AppContent />
+            {/* <DOMErrorMonitor /> */}
+          </QueryClientProvider>
+        </CacheProvider>
+      </SWRConfig>
     </ErrorBoundary>
   );
 }
