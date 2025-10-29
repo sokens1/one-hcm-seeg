@@ -31,8 +31,8 @@ const SWR_CONFIG = {
   errorRetryInterval: 5000,
   // Ne PAS revalider si on a des données en cache (même "stale")
   revalidateIfStale: false,
-  // Garder les données en cache indéfiniment
-  revalidateOnMount: false,
+  // Charger au montage SEULEMENT si pas de données en cache
+  // revalidateOnMount sera géré via fallbackData
 };
 
 // Fetcher pour SWR - Récupère tous les candidats
@@ -72,9 +72,14 @@ const fetchAllCandidates = async (): Promise<AIDataResponse> => {
     }
     
     // Mapper les données
+    const firstName = candidate.first_name || candidate.prenom || 'N/A';
+    const lastName = candidate.last_name || candidate.nom || 'N/A';
+    
     const mappedCandidate = {
-      prenom: candidate.first_name || candidate.prenom || 'N/A',
-      nom: candidate.last_name || candidate.nom || 'N/A',
+      // ✅ ID unique pour lier avec candidateEvaluations
+      id: candidate.id || `${firstName}_${lastName}`,
+      prenom: firstName,
+      nom: lastName,
       poste: candidate.offre?.intitule || candidate.poste || 'N/A',
       offre_id: candidate.offre?.job_id || candidate.offre?.reference || candidate.offre_id || candidate.application?.offer_id || null,
       resume_global: candidate.analysis?.resume_global || candidate.resume_global || {
@@ -139,10 +144,15 @@ export function useSEEGAIDataOptimized() {
       ...SWR_CONFIG,
       // Utiliser les données du cache localStorage comme fallback
       fallbackData: cachedData || undefined,
+      // Fetch au montage SEULEMENT si pas de cachedData
+      revalidateOnMount: !cachedData,
       // Callback quand les données sont mises à jour
       onSuccess: (data) => {
-        // Sauvegarder dans le cache localStorage (30 minutes)
-        cache.set(CACHE_KEYS.ALL_CANDIDATES, data, 1000 * 60 * 30);
+        // Sauvegarder dans le cache localStorage (1 heure)
+        if (data && Object.keys(data).length > 0) {
+          cache.set(CACHE_KEYS.ALL_CANDIDATES, data, 1000 * 60 * 60); // 1 heure
+          console.log('✅ [Cache] Données candidats sauvegardées');
+        }
       },
       onError: (error) => {
         console.error('❌ [SEEG AI Optimized] Erreur lors du chargement:', error);

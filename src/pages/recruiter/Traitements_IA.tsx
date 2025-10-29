@@ -38,8 +38,9 @@ import { AICandidateData } from "@/hooks/useAIData";
 import { CAMPAIGN_MODE, CAMPAIGN_JOBS, CAMPAIGN_JOB_PATTERNS } from "@/config/campaign";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { NetworkIndicator } from "@/components/NetworkIndicator";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Check } from "lucide-react";
 import { useCache } from "@/contexts/CacheContext";
 import { DataTable } from "@/components/ui/data-table";
 import { createColumns, CandidateAIData } from "@/components/ai/columns";
@@ -326,7 +327,18 @@ export default function Traitements_IA() {
   const [sendMessage, setSendMessage] = useState('');
   const [evaluationData, setEvaluationData] = useState<any>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
-  const [candidateEvaluations, setCandidateEvaluations] = useState<Record<string, any>>({});
+  
+  // Charger les évaluations depuis le cache au montage
+  const cachedEvaluations = cache.get<Record<string, any>>('all_candidate_evaluations') || {};
+  const [candidateEvaluations, setCandidateEvaluations] = useState<Record<string, any>>(cachedEvaluations);
+  
+  // Sauvegarder les évaluations dans le cache à chaque changement
+  useEffect(() => {
+    if (Object.keys(candidateEvaluations).length > 0) {
+      cache.set('all_candidate_evaluations', candidateEvaluations, 1000 * 60 * 60); // 1 heure
+      console.log(`💾 [Cache] ${Object.keys(candidateEvaluations).length} évaluations sauvegardées`);
+    }
+  }, [candidateEvaluations]); // ✅ Retiré 'cache' pour éviter la boucle
   
   // Défère les mises à jour du Select pour éviter les conflits DOM (Chrome)
   const handleDepartmentChange = (value: string) => {
@@ -394,14 +406,17 @@ export default function Traitements_IA() {
 
     // Parcourir dynamiquement tous les départements
     Object.entries(aiData).forEach(([departmentKey, candidates]) => {
-      candidates.forEach((candidate, index) => {
+      candidates.forEach((candidate) => {
         // Créer le nom complet pour une recherche optimisée
         const firstName = candidate.prenom || '';
         const lastName = candidate.nom || '';
         const fullName = `${firstName} ${lastName}`.trim();
         
+        // ✅ Utiliser l'ID du candidat (créé dans useSEEGAIDataOptimized)
+        const candidateId = (candidate as any).id || `${firstName}_${lastName}`;
+        
         allCandidates.push({
-          id: `${departmentKey}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+          id: candidateId, // ✅ ID stable pour lier avec candidateEvaluations
           firstName: firstName,
           lastName: lastName,
           fullName: fullName, // Nom complet pour la recherche
@@ -1105,8 +1120,8 @@ export default function Traitements_IA() {
       
       const candidateData: CandidateData = {
         id: cand.id,
-        Nom: cand.nom || cand.lastName || rawCandidate.nom || 'N/A',
-        Prénom: cand.prenom || cand.firstName || rawCandidate.prenom || 'N/A',
+        nom: cand.nom || cand.lastName || rawCandidate.nom || 'N/A',
+        prenom: cand.prenom || cand.firstName || rawCandidate.prenom || 'N/A',
         cv: cvContent,
         lettre_motivation: coverLetterContent,
         MTP: {
@@ -1206,17 +1221,14 @@ export default function Traitements_IA() {
             </div>
           )}
           
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4">
-            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center flex-shrink-0">
-              <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
-                {/* Indicateur de qualité réseau */}
-                <NetworkIndicator />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-              <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
+                <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
               {sendStatus !== 'idle' && (
                 <div className="flex items-center gap-2 mt-2">
                   <div className={`w-2 h-2 rounded-full ${sendStatus === 'success' ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -1225,6 +1237,12 @@ export default function Traitements_IA() {
                   </span>
                 </div>
               )}
+              </div>
+            </div>
+            
+            {/* Indicateur de qualité réseau - À droite */}
+            <div className="flex-shrink-0">
+              <NetworkIndicator />
             </div>
           </div>
         </div>
@@ -1249,56 +1267,51 @@ export default function Traitements_IA() {
                     variant="outline"
                     className="w-full sm:w-auto h-10 justify-start text-left font-normal"
                   >
-                    <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
                     {selectedPostes.length === 0
                       ? "Filtrer par poste..."
                       : `${selectedPostes.length} poste${selectedPostes.length > 1 ? 's' : ''} sélectionné${selectedPostes.length > 1 ? 's' : ''}`}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[280px] p-0" align="start">
-                  <div className="max-h-[200px] overflow-y-auto p-3">
-                    {availablePostes.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-2">
-                        Aucun poste disponible
-                      </p>
-                    ) : (
-                      <div className="space-y-2">
-                        {availablePostes.map((poste) => (
-                          <div key={poste} className="flex items-start space-x-2">
-                            <Checkbox
-                              id={`poste-${poste}`}
-                              checked={selectedPostes.includes(poste)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  setSelectedPostes([...selectedPostes, poste]);
-                                } else {
-                                  setSelectedPostes(selectedPostes.filter(p => p !== poste));
-                                }
-                              }}
-                            />
-                            <label
-                              htmlFor={`poste-${poste}`}
-                              className="text-sm leading-tight cursor-pointer flex-1"
-                            >
-                              {poste}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                <PopoverContent className="w-[300px] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Rechercher un poste..." />
+                    <CommandEmpty>Aucun poste trouvé.</CommandEmpty>
+                    <CommandGroup className="max-h-[200px] overflow-y-auto">
+                      {availablePostes.map((poste) => {
+                        const isSelected = selectedPostes.includes(poste);
+                        return (
+                          <CommandItem
+                            key={poste}
+                            onSelect={() => {
+                              if (isSelected) {
+                                setSelectedPostes(selectedPostes.filter(p => p !== poste));
+                              } else {
+                                setSelectedPostes([...selectedPostes, poste]);
+                              }
+                            }}
+                            className={isSelected ? "bg-accent" : ""}
+                          >
+                            {isSelected && (
+                              <Check className="mr-2 h-4 w-4" />
+                            )}
+                            <span className={isSelected ? "font-medium" : ""}>{poste}</span>
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
                     {selectedPostes.length > 0 && (
-                      <div className="mt-3 pt-3 border-t">
+                      <div className="border-t p-2">
                         <Button
                           variant="ghost"
                           size="sm"
                           className="w-full text-xs"
                           onClick={() => setSelectedPostes([])}
                         >
-                          Effacer la sélection
+                          Effacer la sélection ({selectedPostes.length})
                         </Button>
                       </div>
                     )}
-                  </div>
+                  </Command>
                 </PopoverContent>
               </Popover>
               {selectedPostes.length > 0 && (
