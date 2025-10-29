@@ -198,7 +198,8 @@ export const useInterviewScheduling = (applicationId?: string) => {
     options?: { 
       sendEmail?: boolean, 
       interviewMode?: 'presentiel' | 'distanciel',
-      videoLink?: string 
+      videoLink?: string,
+      swapWithApplicationId?: string // option pour échanger avec un autre candidat
     }
   ) => {
     if (!applicationId || !user) return false;
@@ -239,6 +240,29 @@ export const useInterviewScheduling = (applicationId?: string) => {
 
       // console.log('📋 Détails récupérés:', { candidateName, jobTitle, candidateId: applicationDetails.candidate_id });
 
+      // ✅ D'ABORD : Annuler l'ancien créneau de cette application (s'il existe)
+      // Cela libère l'ancien créneau pour qu'il soit disponible pour d'autres candidats
+      const { error: cancelOldSlotError } = await supabase
+        .from('interview_slots')
+        .update({
+          is_available: true,
+          application_id: null,
+          candidate_id: null,
+          candidate_name: null,
+          job_title: null,
+          status: 'cancelled',
+          notes: 'Créneau libéré - nouveau créneau programmé',
+          updated_at: new Date().toISOString()
+        })
+        .eq('application_id', applicationId)
+        .eq('status', 'scheduled')
+        .neq('date', date) // Ne pas annuler si c'est le même créneau (même date/heure)
+        .neq('time', normalizeTimeToHms(time));
+
+      if (cancelOldSlotError) {
+        console.warn('⚠️ Erreur lors de l\'annulation de l\'ancien créneau (non bloquant):', cancelOldSlotError);
+      }
+
       // Vérifier si le créneau existe déjà et s'il est occupé
       const { data: existingSlot, error: checkError } = await supabase
         .from('interview_slots')
@@ -254,6 +278,25 @@ export const useInterviewScheduling = (applicationId?: string) => {
 
       // Si le créneau existe et est occupé par une autre application
       if (existingSlot && existingSlot.application_id && existingSlot.application_id !== applicationId && !existingSlot.is_available) {
+        // Si on a demandé explicitement un échange, tenter l'échange atomique côté DB
+        if (options?.swapWithApplicationId && options.swapWithApplicationId === existingSlot.application_id) {
+          const { data: swapResp, error: swapError } = await supabase.rpc('swap_interview_slots', {
+            p_app_id_a: applicationId,
+            p_app_id_b: options.swapWithApplicationId,
+          });
+          if (swapError || !(swapResp as any)?.success) {
+            console.error('❌ Échec de l\'échange de créneaux:', swapError || swapResp);
+            toast({ title: 'Échec de l\'échange', description: 'Impossible d\'échanger les créneaux', variant: 'destructive' });
+            return false;
+          }
+          // Succès de l'échange -> recharger et notifier
+          lastApplicationIdRef.current = undefined;
+          await loadInterviewSlots();
+          notifySlotsChange('updated', { date, time: normalizedTime, applicationId, swappedWith: options.swapWithApplicationId });
+          toast({ title: 'Créneaux échangés', description: 'Les créneaux ont été échangés avec succès.' });
+          return true;
+        }
+
         toast({
           title: "Créneau occupé",
           description: "Ce créneau est déjà réservé par une autre candidature",
