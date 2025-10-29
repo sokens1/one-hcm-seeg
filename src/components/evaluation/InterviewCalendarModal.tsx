@@ -207,9 +207,36 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
     const timeChanged = editingInterview.time !== draftTime;
     
     if (dateChanged || timeChanged) {
-      // Si la date ou l'heure a changé, libérer l'ancien créneau
-      //console.log('🔄 [CALENDAR DEBUG] Libération de l\'ancien créneau:', editingInterview.date, editingInterview.time);
+      // ✅ D'ABORD vérifier si le nouveau créneau existe et est occupé
+      const { data: existingSlot, error: checkError } = await supabase
+        .from('interview_slots')
+        .select('id, application_id, is_available')
+        .eq('date', draftDate)
+        .eq('time', draftTime)
+        .maybeSingle();
       
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('❌ [CALENDAR DEBUG] Erreur vérification nouveau créneau:', checkError);
+        return;
+      }
+      
+      // Si le nouveau créneau est occupé par un AUTRE candidat → ÉCHANGE ATOMIQUE
+      if (existingSlot && existingSlot.application_id && existingSlot.application_id !== editingInterview.application_id && !existingSlot.is_available) {
+        // Le swap gère TOUT automatiquement (échange + libération)
+        const { data: swapResp, error: swapError } = await supabase.rpc('swap_interview_slots', {
+          p_app_id_a: editingInterview.application_id,
+          p_app_id_b: existingSlot.application_id,
+        });
+        if (swapError || !(swapResp as any)?.success) {
+          console.error('❌ [CALENDAR DEBUG] Échec de l\'échange de créneaux:', swapError || swapResp);
+          return;
+        }
+        // Succès -> notifier et recharger
+        window.dispatchEvent(new CustomEvent('forceReloadSlots'));
+        return;
+      }
+      
+      // ✅ Le nouveau créneau est LIBRE → libérer l'ancien, puis créer/mettre à jour le nouveau
       // Libérer l'ancien créneau en le marquant comme disponible
       const { error: freeOldSlotError } = await supabase
         .from('interview_slots')
@@ -229,25 +256,6 @@ export const InterviewCalendarModal: React.FC<InterviewCalendarModalProps> = ({
       
       if (freeOldSlotError) {
         console.error('❌ [CALENDAR DEBUG] Erreur libération ancien créneau:', freeOldSlotError);
-      } else {
-        //console.log('✅ [CALENDAR DEBUG] Ancien créneau libéré avec succès');
-      }
-      
-      // Vérifier si le nouveau créneau existe déjà
-      const { data: existingSlot, error: checkError } = await supabase
-        .from('interview_slots')
-        .select('id, application_id, is_available')
-        .eq('date', draftDate)
-        .eq('time', draftTime)
-        .maybeSingle();
-      
-      if (checkError && checkError.code !== 'PGRST116') {
-        console.error('❌ [CALENDAR DEBUG] Erreur vérification nouveau créneau:', checkError);
-        return;
-      }
-      
-      if (existingSlot && existingSlot.application_id && existingSlot.application_id !== editingInterview.application_id && !existingSlot.is_available) {
-        console.error('❌ [CALENDAR DEBUG] Le nouveau créneau est déjà occupé par une autre application');
         return;
       }
       
