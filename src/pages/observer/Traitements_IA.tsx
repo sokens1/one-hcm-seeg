@@ -1643,14 +1643,43 @@ export default function Traitements_IA() {
         {/* Tableau des candidats */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Évaluations IA des Candidats
-              {filteredCandidates.length > itemsPerPage && (
-                <span className="text-sm font-normal text-muted-foreground">
-                  - Page {currentPage} sur {totalPages}
-                </span>
-              )}
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Évaluations IA des Candidats
+                {filteredCandidates.length > itemsPerPage && (
+                  <span className="text-sm font-normal text-muted-foreground">
+                    - Page {currentPage} sur {totalPages}
+                  </span>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  try {
+                    setIsEvaluating(false);
+                    // Vider les caches AI et évaluations
+                    cache.remove('seeg_ai_all_candidates');
+                    cache.remove('all_candidate_evaluations');
+                    // Nettoyer toutes les évaluations par candidat
+                    for (let i = 0; i < localStorage.length; i++) {
+                      const key = localStorage.key(i);
+                      if (key && key.startsWith('talent_flow_cache_evaluation_')) {
+                        localStorage.removeItem(key);
+                      }
+                    }
+                    setCandidateEvaluations({});
+                    // Forcer le rechargement des données via SWR
+                    await forceReload();
+                  } catch (e) {
+                    console.error('❌ [Refresh] Erreur lors du rafraîchissement:', e);
+                  }
+                }}
+                className="ml-4"
+              >
+                Rafraîchir
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 sm:p-6">
