@@ -159,7 +159,7 @@ export default defineConfig(({ mode }) => ({
               // Texte de préparation adapté au mode
               let preparationText = '';
               if (isDistanciel) {
-                preparationText = `Nous vous prions de bien vouloir vous connecter <strong>5 minutes avant l'heure de ${isSimulation ? 'la simulation' : "l'entretien"}</strong> via le lien de visioconférence fourni ci-dessous. Assurez-vous d'avoir une connexion internet stable, une webcam et un microphone fonctionnels.`;
+                preparationText = `Nous vous prions de bien vouloir vous connecter <strong>10 minutes avant l'heure de ${isSimulation ? 'la simulation' : "l'entretien"}</strong> via le lien de visioconférence fourni ci-dessous. Assurez-vous d'avoir une connexion internet stable, une webcam et un microphone fonctionnels.`;
               } else {
                 preparationText = isSimulation
                   ? `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de la simulation</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`
