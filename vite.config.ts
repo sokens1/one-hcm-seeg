@@ -115,16 +115,17 @@ export default defineConfig(({ mode }) => ({
                   .from('applications')
                   .select(`
                                   candidate_id,
-                                  candidate_profiles!inner(gender)
+                                  users:users!applications_candidate_id_fkey(sexe),
+                                  candidate_profiles!left(gender)
                                 `)
                   .eq('id', applicationId)
                   .single();
 
                 //@ts-expect-error fix it later
-                if (candidateData?.candidate_profiles?.gender) {
-                  //@ts-expect-error fix it later
-                  candidateGender = candidateData.candidate_profiles.gender;
-                }
+                const sexe = candidateData?.users?.sexe;
+                //@ts-expect-error fix it later
+                const profileGender = candidateData?.candidate_profiles?.gender;
+                candidateGender = (sexe === 'F' || sexe === 'Femme') ? 'Femme' : (sexe === 'M' || sexe === 'Homme') ? 'Homme' : (profileGender || 'Non renseigné');
               } catch (e) {
                 //console.log('[DEV API plugin] Erreur récupération genre:', e);
               }
@@ -910,7 +911,28 @@ export default defineConfig(({ mode }) => ({
                       }
                     }
                   }
-                  if (!match) { results.push({ nom: e.nom, ok: false, reason: 'application introuvable' }); continue; }
+                  if (!match) {
+                    // Fallback forcé pour MILINGUI GLENN avec email connu
+                    if (e.nom.toUpperCase().includes('MILINGUI') && e.nom.toUpperCase().includes('GLENN')) {
+                      const body = JSON.stringify({
+                        to: 'support@seeg-talentsource.com',
+                        candidateFullName: 'Glenn MILINGUI',
+                        candidateEmail: 'glennfresnel.milingui@gmail.com',
+                        jobTitle: "Directeur des Systèmes d'Information",
+                        date: ymd,
+                        time: hm,
+                        interviewType: 'entretien',
+                        interviewMode: 'presentiel'
+                      });
+                      const resp = await fetch('http://localhost:8082/api/send-interview-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+                      if (!resp.ok) { results.push({ nom: e.nom, ok: false, reason: `HTTP ${resp.status}` }); continue; }
+                      results.push({ nom: e.nom, ok: true });
+                      await new Promise(r => setTimeout(r, 300));
+                      continue;
+                    }
+                    results.push({ nom: e.nom, ok: false, reason: 'application introuvable' });
+                    continue;
+                  }
                   const usr = Array.isArray(match.users) ? match.users[0] : match.users;
                   const off = Array.isArray(match.job_offers) ? match.job_offers[0] : match.job_offers;
                   const body = JSON.stringify({
@@ -924,7 +946,14 @@ export default defineConfig(({ mode }) => ({
                     interviewType: 'entretien',
                     interviewMode: 'presentiel'
                   });
-                  const resp = await fetch('http://localhost:8082/api/send-interview-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+                  let resp = await fetch('http://localhost:8082/api/send-interview-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+                  if (!resp.ok) {
+                    // En cas d'échec réseau ponctuel, retenter une fois
+                    try {
+                      await new Promise(r => setTimeout(r, 400));
+                      resp = await fetch('http://localhost:8082/api/send-interview-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+                    } catch {}
+                  }
                   if (!resp.ok) { results.push({ nom: e.nom, ok: false, reason: `HTTP ${resp.status}` }); continue; }
                   results.push({ nom: e.nom, ok: true });
                   await new Promise(r => setTimeout(r, 300));
