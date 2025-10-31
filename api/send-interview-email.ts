@@ -158,7 +158,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       isSimulation,
       eventType,
       eventTypeCapitalized,
-      defaultLocation,
+      finalLocation,
       preparationText: preparationText.substring(0, 100) + '...'
     });
 
@@ -167,7 +167,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       interviewType,
       isSimulation,
       eventType,
-      defaultLocation: defaultLocation.substring(0, 50) + '...',
+      finalLocation: finalLocation.substring(0, 50) + '...',
       preparationText: preparationText.substring(0, 50) + '...'
     });
 
