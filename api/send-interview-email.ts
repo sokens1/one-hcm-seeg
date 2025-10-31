@@ -99,20 +99,24 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return;
     }
 
-    // Optionnel: récupérer le genre depuis Supabase pour accords
+    // Récupérer le genre (priorité users.sexe, fallback candidate_profiles.gender)
     let candidateGender = 'Non renseigné';
     if (applicationId && supabase) {
       try {
         const { data: candidateData } = await supabase
           .from('applications')
-          .select(`candidate_id, candidate_profiles!inner(gender)`) 
+          .select(`
+            candidate_id,
+            users:users!applications_candidate_id_fkey(sexe),
+            candidate_profiles!left(gender)
+          `)
           .eq('id', applicationId)
           .single();
         // @ts-expect-error dynamic
-        if (candidateData?.candidate_profiles?.gender) {
-          // @ts-expect-error dynamic
-          candidateGender = candidateData.candidate_profiles.gender as string;
-        }
+        const sexe = candidateData?.users?.sexe as string | undefined;
+        // @ts-expect-error dynamic
+        const profileGender = candidateData?.candidate_profiles?.gender as string | undefined;
+        candidateGender = (sexe === 'F' || sexe === 'Femme') ? 'Femme' : (sexe === 'M' || sexe === 'Homme') ? 'Homme' : (profileGender || 'Non renseigné');
       } catch {
         // Non bloquant
       }

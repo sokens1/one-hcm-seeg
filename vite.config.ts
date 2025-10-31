@@ -57,21 +57,21 @@ export default defineConfig(({ mode }) => ({
     // Dev-only API: /api/send-interview-email (sert l'email SMTP sur le même port 8080)
     mode === 'development' && {
       name: 'dev-api-send-interview-email',
-      configureServer(server: ViteDevServer) {
-        server.middlewares.use(async (req, res, next) => {
-          if (req.method === 'POST' && req.url === '/api/send-interview-email') {
-            try {
+    configureServer(server: ViteDevServer) {
+      server.middlewares.use(async (req, res, next) => {
+        if (req.method === 'POST' && req.url === '/api/send-interview-email') {
+          try {
               //console.log('[DEV API plugin] POST /api/send-interview-email');
-              const chunks: Buffer[] = [];
-              await new Promise<void>((resolve, reject) => {
-                req.on('data', (c) => chunks.push(Buffer.from(c)));
-                req.on('end', () => resolve());
-                req.on('error', reject);
-              });
-              const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf-8')) : {};
-              //@ts-expect-error fix it later
-              const nodemailer = (await import('nodemailer')).default;
-              const { createClient } = await import('@supabase/supabase-js');
+            const chunks: Buffer[] = [];
+            await new Promise<void>((resolve, reject) => {
+              req.on('data', (c) => chunks.push(Buffer.from(c)));
+              req.on('end', () => resolve());
+              req.on('error', reject);
+            });
+            const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf-8')) : {};
+            //@ts-expect-error fix it later
+            const nodemailer = (await import('nodemailer')).default;
+            const { createClient } = await import('@supabase/supabase-js');
 
               // Configuration SMTP directe (hardcodée pour éviter les problèmes d'env)
               const smtpHost = 'smtp.gmail.com';
@@ -82,62 +82,62 @@ export default defineConfig(({ mode }) => ({
               const from = 'One HCM - SEEG Talent Source <support@seeg-talentsource.com>';
               //console.log('[DEV API plugin] SMTP: host=', smtpHost, 'port=', smtpPort, 'secure=', smtpSecure, 'user=', smtpUser, 'pass=', smtpPass ? '***' : 'EMPTY');
 
-              const { 
-                to, 
-                candidateFullName, 
-                jobTitle, 
-                date, 
-                time, 
-                location, 
-                applicationId, 
+            const {
+              to,
+              candidateFullName,
+              jobTitle,
+              date,
+              time,
+              location,
+              applicationId,
                 candidateEmail,
                 interviewType = 'entretien',
                 interviewMode = 'presentiel',
                 videoLink
-              } = body || {};
-              
-              if (!candidateFullName || !jobTitle || !date || !time) {
-                res.statusCode = 400;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify({ error: 'Missing fields: candidateFullName, jobTitle, date, time' }));
-                return;
-              }
+            } = body || {};
 
-              // Récupérer le genre du candidat depuis la base de données
-              let candidateGender = 'Non renseigné';
-              if (applicationId) {
-                try {
-                  const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
-                  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
-                  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+            if (!candidateFullName || !jobTitle || !date || !time) {
+              res.statusCode = 400;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: 'Missing fields: candidateFullName, jobTitle, date, time' }));
+              return;
+            }
 
-                  const { data: candidateData } = await supabase
-                    .from('applications')
-                    .select(`
-                      candidate_id,
-                      candidate_profiles!inner(gender)
-                    `)
-                    .eq('id', applicationId)
-                    .single();
+            // Récupérer le genre du candidat depuis la base de données
+            let candidateGender = 'Non renseigné';
+            if (applicationId) {
+              try {
+                const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
+                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
+                const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+                const { data: candidateData } = await supabase
+                  .from('applications')
+                  .select(`
+                                  candidate_id,
+                                  candidate_profiles!inner(gender)
+                                `)
+                  .eq('id', applicationId)
+                  .single();
+
+                //@ts-expect-error fix it later
+                if (candidateData?.candidate_profiles?.gender) {
                   //@ts-expect-error fix it later
-                  if (candidateData?.candidate_profiles?.gender) {
-                    //@ts-expect-error fix it later
-                    candidateGender = candidateData.candidate_profiles.gender;
-                  }
-                } catch (e) {
-                  //console.log('[DEV API plugin] Erreur récupération genre:', e);
+                  candidateGender = candidateData.candidate_profiles.gender;
                 }
+              } catch (e) {
+                //console.log('[DEV API plugin] Erreur récupération genre:', e);
               }
+            }
 
-              // Déterminer les accords selon le genre
-              const isFemale = candidateGender === 'Femme';
-              const title = isFemale ? 'Madame' : 'Monsieur';
-              const muniAccord = isFemale ? 'munie' : 'muni';
-              const dateObj = new Date(`${date}T${String(time).slice(0, 5)}`);
-              const formattedDate = dateObj.toLocaleDateString('fr-FR');
-              const formattedTime = String(time).slice(0, 5);
-              const serif = ", Georgia, serif";
+            // Déterminer les accords selon le genre
+            const isFemale = candidateGender === 'Femme';
+            const title = isFemale ? 'Madame' : 'Monsieur';
+            const muniAccord = isFemale ? 'munie' : 'muni';
+            const dateObj = new Date(`${date}T${String(time).slice(0, 5)}`);
+            const formattedDate = dateObj.toLocaleDateString('fr-FR');
+            const formattedTime = String(time).slice(0, 5);
+            const serif = ", Georgia, serif";
               
               // Déterminer si c'est une simulation ou un entretien
               const isSimulation = interviewType === 'simulation';
@@ -790,6 +790,157 @@ export default defineConfig(({ mode }) => ({
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ error: e?.message || 'Internal error' }));
+              return;
+            }
+          }
+          next();
+        });
+      },
+    },
+    // Dev-only API: renvoi batch des emails d'entretien PRESENTIEL (LBV) d'après la liste fournie
+    mode === 'development' && {
+      name: 'dev-api-resend-presentiel',
+      configureServer(server: ViteDevServer) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.method === 'POST' && req.url === '/api/dev-resend-presentiel') {
+            try {
+              //@ts-expect-error dynamic import for dev
+              const { createClient } = await import('@supabase/supabase-js');
+              const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
+              const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
+              const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+              // Liste complète initiale (présentiel LBV)
+              const entriesAll = [
+                // Présentiel (LBV) uniquement, exclus: Tristan EDOU BENGONE, Wilfrid NOUHANDO, ALBERIC BEKALE OBAME
+                { nom: 'Souany Adamo Lyne', poste: 'Directeur Juridique, Communication & RSE', date: '11/3/2025', heure: '09h00' },
+                { nom: 'Cendrine MBADINGA MBADINGA', poste: 'Directeur Juridique, Communication & RSE', date: '11/3/2025', heure: '10h00' },
+                { nom: 'Charles ASSEMBE OVONO', poste: 'Directeur Juridique, Communication & RSE', date: '11/3/2025', heure: '11h00' },
+                { nom: 'Fany Laetitia MILANG MANYANA', poste: 'Directeur Juridique, Communication & RSE', date: '11/3/2025', heure: '13h00' },
+                { nom: 'Nick Venance TA', poste: 'Directeur Audit & Contrôle interne', date: '11/3/2025', heure: '14h00' },
+                { nom: 'Brice Armand OKOLOGHO', poste: 'Directeur Audit & Contrôle interne', date: '11/4/2025', heure: '09h00' },
+                { nom: 'Louis-Cédric DA-GRACA OKILI', poste: 'Directeur Audit & Contrôle interne', date: '11/4/2025', heure: '10h00' },
+                { nom: 'Salomon Esnaut', poste: 'Directeur Audit & Contrôle interne', date: '11/4/2025', heure: '11h00' },
+                { nom: 'Urielle OZOUAKI', poste: 'Directeur Audit & Contrôle interne', date: '11/5/2025', heure: '09h00' },
+                { nom: 'Rodrigue Dick Léon RENOMBO', poste: 'Directeur Audit & Contrôle interne', date: '11/5/2025', heure: '10h00' },
+                { nom: 'MILINGUI GLENN', poste: "Directeur des Systèmes d'Information", date: '11/5/2025', heure: '13h00' },
+                { nom: 'MVE MEYE Patrick', poste: "Directeur des Systèmes d'Information", date: '11/5/2025', heure: '14h00' },
+                { nom: 'MOUTETE Jean Marcel', poste: "Directeur des Systèmes d'Information", date: '11/6/2025', heure: '09h00' },
+                { nom: 'SIMBA Didier', poste: "Directeur des Systèmes d'Information", date: '11/6/2025', heure: '10h00' },
+                { nom: 'MBOUMBA OLAGO Andrei Laud', poste: "Directeur des Systèmes d'Information", date: '11/6/2025', heure: '11h00' },
+                { nom: 'KOUMBA Jean Vital', poste: "Directeur des Systèmes d'Information", date: '11/6/2025', heure: '13h00' },
+                { nom: 'MBOUMBA Simon', poste: "Directeur des Systèmes d'Information", date: '11/6/2025', heure: '14h00' },
+                { nom: 'EYIH OBIANG Louis Eric Amédée', poste: "Directeur des Systèmes d'Information", date: '11/6/2025', heure: '15h00' },
+              ];
+
+              // Cible: uniquement les 5 restants à envoyer (en dur)
+              const targets = new Set([
+                'MILINGUI GLENN',
+              ]);
+              const entries = entriesAll.filter(e => targets.has(e.nom));
+
+              const toYmd = (s: string) => {
+                const p = s.split('/'); const m = p[0]; const d = p[1]; const y = p[2];
+                return `${y}-${String(parseInt(m)).padStart(2, '0')}-${String(parseInt(d)).padStart(2, '0')}`;
+              };
+              const toHm = (s: string) => s.replace('h', ':').replace('H', ':');
+
+              const results: Array<{nom: string; ok: boolean; reason?: string}> = [];
+              for (const e of entries) {
+                try {
+                  const ymd = toYmd(e.date);
+                  const hm = toHm(e.heure);
+                  const iso = `${ymd}T${hm}:00`;
+
+                  // 1) Recherche tolérante dans applications: toute la journée, filtre HH:MM et poste côté JS
+                  const { data, error } = await supabase
+                    .from('applications')
+                    .select(`
+                      id,
+                      interview_date,
+                      job_offers:job_offers!applications_job_offer_id_fkey(title),
+                      users:users!applications_candidate_id_fkey(email, first_name, last_name)
+                    `)
+                    .gte('interview_date', `${ymd}T00:00:00`)
+                    .lt('interview_date', `${ymd}T23:59:59`)
+                    .limit(10);
+                  if (error) throw error;
+                  let match = (data || []).find((row: any) => {
+                    // Filtre heure au format HH:MM
+                    try {
+                      const dt = new Date(row.interview_date);
+                      const hh = String(dt.getHours()).padStart(2, '0');
+                      const mm = String(dt.getMinutes()).padStart(2, '0');
+                      const rowHm = `${hh}:${mm}`;
+                      if (rowHm !== hm) return false;
+                    } catch { return false; }
+                    const rel = row.job_offers; const job = Array.isArray(rel) ? rel[0] : rel;
+                    return (job?.title || '').trim().toLowerCase() === e.poste.trim().toLowerCase();
+                  });
+
+                  // 2) Fallback: si non trouvé, tenter via interview_slots (date+time séparées), puis joindre l'application
+                  if (!match) {
+                    const { data: slots, error: slotErr } = await supabase
+                      .from('interview_slots')
+                      .select('application_id, date, time, is_available')
+                      .eq('date', ymd)
+                      .eq('time', `${hm}:00`)
+                      .eq('is_available', false)
+                      .limit(5);
+                    if (!slotErr && slots && slots.length > 0) {
+                      const appId = slots[0].application_id;
+                      if (appId) {
+                        const { data: appRows } = await supabase
+                          .from('applications')
+                          .select(`
+                            id,
+                            interview_date,
+                            job_offers:job_offers!applications_job_offer_id_fkey(title),
+                            users:users!applications_candidate_id_fkey(email, first_name, last_name)
+                          `)
+                          .eq('id', appId)
+                          .limit(1);
+                        if (appRows && appRows.length > 0) {
+                          const row = appRows[0];
+                          const rel = row.job_offers; const job = Array.isArray(rel) ? rel[0] : rel;
+                          if ((job?.title || '').trim().toLowerCase() === e.poste.trim().toLowerCase()) {
+                            match = row;
+                          }
+                        }
+                      }
+                    }
+                  }
+                  if (!match) { results.push({ nom: e.nom, ok: false, reason: 'application introuvable' }); continue; }
+                  const usr = Array.isArray(match.users) ? match.users[0] : match.users;
+                  const off = Array.isArray(match.job_offers) ? match.job_offers[0] : match.job_offers;
+                  const body = JSON.stringify({
+                    to: 'support@seeg-talentsource.com',
+                    candidateFullName: `${usr?.first_name || ''} ${usr?.last_name || ''}`.trim(),
+                    candidateEmail: usr?.email,
+                    jobTitle: off?.title || 'Poste',
+                    date: ymd,
+                    time: hm,
+                    applicationId: match.id,
+                    interviewType: 'entretien',
+                    interviewMode: 'presentiel'
+                  });
+                  const resp = await fetch('http://localhost:8082/api/send-interview-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+                  if (!resp.ok) { results.push({ nom: e.nom, ok: false, reason: `HTTP ${resp.status}` }); continue; }
+                  results.push({ nom: e.nom, ok: true });
+                  await new Promise(r => setTimeout(r, 300));
+                } catch (err: any) {
+                  results.push({ nom: e.nom, ok: false, reason: String(err?.message || err) });
+                }
+              }
+
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ ok: true, count: results.filter(r => r.ok).length, results }));
+              return;
+            } catch (e: any) {
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ ok: false, error: e?.message || 'Internal error' }));
               return;
             }
           }
