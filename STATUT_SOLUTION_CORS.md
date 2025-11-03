@@ -27,7 +27,7 @@ L'application utilise maintenant un **fallback automatique** qui détecte les er
 baseUrl = '/api/rh-eval'
 
 // En production : URL directe avec fallback
-baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io'
+baseUrl = 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io'
 ```
 
 ## Prochaines étapes

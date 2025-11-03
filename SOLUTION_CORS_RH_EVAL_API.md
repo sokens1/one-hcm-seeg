@@ -2,10 +2,10 @@
 
 ## Problème identifié
 
-L'application en production (`https://www.seeg-talentsource.com`) ne peut pas communiquer directement avec l'API Azure Container Apps (`https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io`) à cause d'une erreur CORS :
+L'application en production (`https://www.seeg-talentsource.com`) ne peut pas communiquer directement avec l'API Azure Container Apps (`https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io`) à cause d'une erreur CORS :
 
 ```
-Access to fetch at 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/evaluate' 
+Access to fetch at 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/evaluate' 
 from origin 'https://www.seeg-talentsource.com' has been blocked by CORS policy: 
 Response to preflight request doesn't pass access control check: 
 No 'Access-Control-Allow-Origin' header is present on the requested resource.

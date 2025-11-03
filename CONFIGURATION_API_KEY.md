@@ -65,7 +65,7 @@ L'API utilise l'en-tête `x-api-key` pour l'authentification :
 
 ```http
 POST /api/candidats HTTP/1.1
-Host: rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io
+Host: rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io
 Content-Type: application/json
 x-api-key: your-api-key-here
 

@@ -16,7 +16,7 @@ constructor() {
     this.baseUrl = '/api/rh-eval';
   } else {
     // En production, utiliser l'URL directe de l'API Azure Container Apps
-    this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
+    this.baseUrl = 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
   }
   this.timeout = 30000; // 30 secondes
   this.apiKey = import.meta.env.VITE_AZURE_CONTAINER_APPS_API_KEY || 'test-key-12345';

@@ -134,7 +134,7 @@ VITE_AZURE_CONTAINER_APPS_API_KEY=votre_cle_api_rh_eval
 
 ### Endpoint API
 ```
-POST https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/evaluate
+POST https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/evaluate
 ```
 
 ## Avantages de l'Intégration

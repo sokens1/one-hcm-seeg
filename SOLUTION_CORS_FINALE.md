@@ -4,7 +4,7 @@
 
 **Problème initial :** Erreur CORS empêchant l'accès à l'API Azure Container Apps depuis la production
 ```
-Access to fetch at 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/evaluate' 
+Access to fetch at 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/evaluate' 
 from origin 'https://www.seeg-talentsource.com' has been blocked by CORS policy
 ```
 

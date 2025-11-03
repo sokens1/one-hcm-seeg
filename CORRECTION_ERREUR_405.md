@@ -24,7 +24,7 @@ constructor() {
     this.baseUrl = '/api/rh-eval';  // Développement : proxy Vite
   } else {
     // Production : URL directe Azure Container Apps
-    this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
+    this.baseUrl = 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
   }
   // ...
 }

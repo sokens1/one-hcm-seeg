@@ -74,7 +74,7 @@ VITE_AZURE_CONTAINER_APPS_API_KEY=votre_cle_api_ici
 
 ### Endpoint API
 ```
-POST https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/api/candidats/evaluate
+POST https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/api/candidats/evaluate
 ```
 
 ## Test de Fonctionnement

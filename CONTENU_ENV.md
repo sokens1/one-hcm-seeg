@@ -24,7 +24,7 @@ VITE_AZURE_CONTAINER_APPS_API_KEY=abc123def456ghi789jkl012mno345pqr678stu901vwx2
 | Variable | Description | Requis | Défaut |
 |----------|-------------|--------|--------|
 | `VITE_AZURE_CONTAINER_APPS_API_KEY` | Clé API pour l'authentification | ✅ Oui | - |
-| `VITE_AZURE_CONTAINER_APPS_API_URL` | URL de base de l'API | ❌ Non | `https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io` |
+| `VITE_AZURE_CONTAINER_APPS_API_URL` | URL de base de l'API | ❌ Non | `https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io` |
 
 ## Sécurité
 

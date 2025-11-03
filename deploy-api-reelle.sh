@@ -12,7 +12,7 @@ fi
 echo "📋 Configuration actuelle :"
 echo "  • Fallback automatique : ❌ DÉSACTIVÉ"
 echo "  • Utilisation API réelle : ✅ ACTIVÉ"
-echo "  • URL de production : https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io"
+echo "  • URL de production : https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io"
 
 echo ""
 echo "⚠️  ATTENTION : Cette configuration va :"
