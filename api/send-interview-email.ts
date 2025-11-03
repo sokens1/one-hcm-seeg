@@ -99,20 +99,24 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return;
     }
 
-    // Optionnel: récupérer le genre depuis Supabase pour accords
+    // Récupérer le genre (priorité users.sexe, fallback candidate_profiles.gender)
     let candidateGender = 'Non renseigné';
     if (applicationId && supabase) {
       try {
         const { data: candidateData } = await supabase
           .from('applications')
-          .select(`candidate_id, candidate_profiles!inner(gender)`) 
+          .select(`
+            candidate_id,
+            users:users!applications_candidate_id_fkey(sexe),
+            candidate_profiles!left(gender)
+          `)
           .eq('id', applicationId)
           .single();
         // @ts-expect-error dynamic
-        if (candidateData?.candidate_profiles?.gender) {
-          // @ts-expect-error dynamic
-          candidateGender = candidateData.candidate_profiles.gender as string;
-        }
+        const sexe = candidateData?.users?.sexe as string | undefined;
+        // @ts-expect-error dynamic
+        const profileGender = candidateData?.candidate_profiles?.gender as string | undefined;
+        candidateGender = (sexe === 'F' || sexe === 'Femme') ? 'Femme' : (sexe === 'M' || sexe === 'Homme') ? 'Homme' : (profileGender || 'Non renseigné');
       } catch {
         // Non bloquant
       }
@@ -147,7 +151,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     // Texte de préparation adapté au mode
     let preparationText = '';
     if (isDistanciel) {
-      preparationText = `Nous vous prions de bien vouloir vous connecter <strong>5 minutes avant l'heure de ${isSimulation ? 'la simulation' : "l'entretien"}</strong> via le lien de visioconférence fourni ci-dessous. Assurez-vous d'avoir une connexion internet stable, une webcam et un microphone fonctionnels.`;
+      preparationText = `Nous vous prions de bien vouloir vous connecter <strong>10 minutes avant l'heure de ${isSimulation ? 'la simulation' : "l'entretien"}</strong> via le lien de visioconférence fourni ci-dessous. Assurez-vous d'avoir une connexion internet stable, une webcam et un microphone fonctionnels.`;
     } else {
       preparationText = isSimulation
         ? `Nous vous prions de bien vouloir vous présenter <strong>15 minutes avant l'heure de la simulation</strong>, ${muniAccord} de votre carte professionnelle, badge, ou de toute autre pièce d'identité en cours de validité.`
@@ -158,7 +162,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       isSimulation,
       eventType,
       eventTypeCapitalized,
-      defaultLocation,
+      finalLocation,
       preparationText: preparationText.substring(0, 100) + '...'
     });
 
@@ -167,7 +171,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       interviewType,
       isSimulation,
       eventType,
-      defaultLocation: defaultLocation.substring(0, 50) + '...',
+      finalLocation: finalLocation.substring(0, 50) + '...',
       preparationText: preparationText.substring(0, 50) + '...'
     });
 
