@@ -72,13 +72,13 @@ const fetchJobOffers = async () => {
           candidateStatus = (userData as any)?.candidate_status
             || ((userData as any)?.matricule ? 'interne' : null);
           
-          // console.log('🔍 [fetchJobOffers] User info:', {
-          //   isCandidate,
-          //   isRecruiter,
-          //   isAuthenticated,
-          //   candidateStatus,
-          //   userId: uid
-          // });
+          console.log('🔍 [fetchJobOffers] User info:', {
+            isCandidate,
+            isRecruiter,
+            isAuthenticated,
+            candidateStatus,
+            userId: uid
+          });
         }
       }
     } catch (e) {
@@ -209,21 +209,17 @@ const fetchJobOffers = async () => {
     }));
 
     // 4.5. Filter offers based on candidate status (internal/external)
-    // DÉSACTIVÉ : Toutes les offres sont maintenant visibles, seuls les boutons sont désactivés après les dates limites
     // Les recruteurs/admins/observateurs voient TOUTES les offres
+    // Les candidats voient uniquement les offres correspondant à leur statut
     const offersFilteredByStatus = offersWithStats.filter(offer => {
-      // NE PLUS FILTRER par audience - toutes les offres sont visibles
-      // La désactivation des boutons se fait dans les composants (job-card, JobDetail, etc.)
-      return true;
-      
-      /* ANCIEN FILTRAGE COMMENTÉ - MAINTENANT TOUTES LES OFFRES SONT VISIBLES
       // Appliquer le filtre d'audience aux utilisateurs connectés non-recruteurs
       const shouldApplyAudienceFilter = isAuthenticated && !isRecruiter;
       if (!shouldApplyAudienceFilter) {
+        // Recruteurs/admins/observateurs ou visiteurs non connectés : toutes les offres
         return true;
       }
       
-      // À partir d'ici, on sait que c'est un utilisateur connecté non-recruteur
+      // À partir d'ici, on sait que c'est un utilisateur connecté non-recruteur (candidat)
       
       // Définir le statut de l'offre (externe par défaut si NULL)
       const offerStatus = offer.status_offerts || 'externe';
@@ -232,22 +228,21 @@ const fetchJobOffers = async () => {
       const userStatus = candidateStatus || 'externe';
       
       // RÈGLE D'AUDIENCE :
+      // - Candidat INTERNE : voit SEULEMENT les offres internes
       // - Candidat EXTERNE : voit SEULEMENT les offres externes
-      // - Candidat INTERNE : voit TOUTES les offres (internes + externes)
-      if (userStatus === 'interne') {
-        return true; // Les internes voient tout
+      if (userStatus === 'interne' && offerStatus === 'interne') {
+        return true; // Les internes voient seulement les offres internes
       } else if (userStatus === 'externe' && offerStatus === 'externe') {
         return true; // Les externes voient seulement les offres externes
       } else {
-        return false;
+        return false; // Ne pas afficher les offres qui ne correspondent pas au statut
       }
-      */
     });
 
     if (isCandidate) {
-      // console.log(`📊 [FILTER CANDIDAT] Offres visibles: ${offersFilteredByStatus.length}/${offersWithStats.length} (Statut: ${candidateStatus || 'non défini'})`);
+      console.log(`📊 [FILTER CANDIDAT] Offres visibles: ${offersFilteredByStatus.length}/${offersWithStats.length} (Statut: ${candidateStatus || 'non défini'})`);
     } else {
-      // console.log(`📊 [FILTER NON-CANDIDAT] Toutes les offres visibles: ${offersFilteredByStatus.length} offres`);
+      console.log(`📊 [FILTER NON-CANDIDAT] Toutes les offres visibles: ${offersFilteredByStatus.length} offres`);
     }
 
     // 5. FILTRAGE PAR CAMPAGNE

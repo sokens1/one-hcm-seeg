@@ -99,9 +99,9 @@ export function JobCatalog() {
   const baseJobs = (jobs || []).filter(j => !String(j.id).startsWith('fallback-') && j.recruiter_id !== 'fallback-recruiter');
 
   const filteredJobs = baseJobs.filter(job => {
-    // NE PLUS FILTRER par audience - toutes les offres sont visibles
-    // La désactivation des boutons se fait dans les composants (job-card, JobDetail, etc.)
-    const matchesAudience = true; // Toujours true pour afficher toutes les offres
+    // Le filtre par audience (interne/externe) est appliqué dans useJobOffers
+    // Les offres retournées sont déjà filtrées selon le statut du candidat
+    const matchesAudience = true;
     const locationText = toText(job.location);
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          locationText.toLowerCase().includes(searchTerm.toLowerCase()) ||
