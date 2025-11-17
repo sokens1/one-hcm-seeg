@@ -13,8 +13,8 @@ Interface de dépôt de candidature avec vérification de la complétude du prof
 ### 4. Tableau de bord candidat
 Page de synthèse affichant les indicateurs clés : nombre de candidatures en cours et nombre d'offres disponibles. Vue d'ensemble des candidatures actives avec filtres par localisation et type de contrat, affichage en cartes avec informations essentielles (titre du poste, statut, date de dépôt) et accès rapide au suivi détaillé. Navigation vers le catalogue d'offres et les différentes sections de l'espace candidat.
 
-### 5. Liste des candidatures
-Interface dédiée présentant toutes les candidatures du candidat avec possibilité de basculer entre vue grille et vue liste. Chaque candidature affiche le titre du poste, la localisation, la date de dépôt, le statut actuel (candidature, incubation, embauche, refusé, entretien programmé) et un bouton d'accès au suivi détaillé. Message informatif si aucune candidature n'est en cours avec lien vers le catalogue d'offres.
+### 5. Mes candidatures
+Page listant toutes les candidatures de l'utilisateur avec bascule entre vue grille et vue liste. Chaque carte/liste affiche le titre du poste, la localisation, la date de dépôt et un badge de statut (candidature, incubation, embauche, refusé, entretien programmé), avec un bouton « Voir le suivi détaillé ». Un message indique l'absence de candidatures et propose un lien direct vers le catalogue d'offres.
 
 ### 6. Suivi détaillé d'une candidature
 Page présentant le parcours complet d'une candidature avec timeline interactive montrant les différentes étapes : candidature soumise, traitement (Protocole 1), présélection/incubation (Protocole 2), et sélection finale. Affichage des statuts avec codes couleur (complété, en cours, en attente, refusé), dates associées à chaque étape, et détails complets incluant les documents soumis et l'historique des changements de statut.
