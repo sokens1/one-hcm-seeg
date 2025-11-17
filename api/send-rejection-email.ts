@@ -83,27 +83,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return;
     }
 
-    // Optionnel: récupérer le genre depuis Supabase pour accords
-    let candidateGender = 'Non renseigné';
-    if (applicationId && supabase) {
-      try {
-        const { data: candidateData } = await supabase
-          .from('applications')
-          .select(`candidate_id, candidate_profiles!inner(gender)`) 
-          .eq('id', applicationId)
-          .single();
-        // @ts-expect-error dynamic
-        if (candidateData?.candidate_profiles?.gender) {
-          // @ts-expect-error dynamic
-          candidateGender = candidateData.candidate_profiles.gender as string;
-        }
-      } catch {
-        // Non bloquant
-      }
-    }
-
-    const isFemale = candidateGender === 'Femme';
-    const title = isFemale ? 'Madame' : 'Monsieur';
+    // Utilisation de "Monsieur/Madame" pour éviter les problèmes de détermination du sexe
+    const title = 'Monsieur/Madame';
     const serif = ", Georgia, serif";
 
     const html = `

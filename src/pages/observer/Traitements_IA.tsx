@@ -882,10 +882,54 @@ export default function Traitements_IA() {
       const candidateId = candidate.id || `${candidate.firstName}_${candidate.lastName}`;
       const cacheKey = `evaluation_${candidateId}`;
       
-      // Vérifier d'abord le cache
+      // Vérifier d'abord le cache mémoire
       const cachedEvaluation = cache.get<any>(cacheKey);
       if (cachedEvaluation && !isBackground) {
-        console.log(`✅ [Cache] Évaluation trouvée en cache pour ${candidate.firstName} ${candidate.lastName}`);
+        console.log(`✅ [Cache] Évaluation trouvée en cache mémoire pour ${candidate.firstName} ${candidate.lastName}`);
+        
+        // IMPORTANT: Sauvegarder aussi en base de données pour les prochaines fois
+        const { saveCachedEvaluation } = await import('@/services/candidateEvaluationCache');
+        const rawCandidate = candidate.rawData || candidate;
+        const jobId = rawCandidate.post ||
+                      candidate.post ||
+                      rawCandidate.offre?.reference || 
+                      candidate.offre?.reference || 
+                      rawCandidate.offre?.job_id || 
+                      candidate.offre?.job_id || 
+                      candidate.offre_id || 
+                      rawCandidate.offre_id || 
+                      rawCandidate.application?.offer_id || 
+                      '';
+        
+        console.log(`🔍 [Cache] Diagnostic pour candidat ${candidateId}:`, {
+          jobId,
+          hasCachedEvaluation: !!cachedEvaluation,
+          rawCandidatePost: rawCandidate.post,
+          candidatePost: candidate.post,
+          offreReference: rawCandidate.offre?.reference || candidate.offre?.reference,
+        });
+        
+        if (jobId && cachedEvaluation) {
+          console.log(`💾 [Cache] Sauvegarde de l'évaluation existante en base pour candidat ${candidateId}, poste ${jobId}`);
+          try {
+            const saved = await saveCachedEvaluation(candidateId, jobId, cachedEvaluation, 78, 78);
+            if (saved) {
+              console.log(`✅ [Cache] Évaluation sauvegardée en base avec succès pour ${candidate.firstName} ${candidate.lastName}`);
+            } else {
+              console.warn(`⚠️ [Cache] Échec de la sauvegarde en base pour ${candidate.firstName} ${candidate.lastName}`);
+            }
+          } catch (err) {
+            console.error('❌ [Cache] Erreur lors de la sauvegarde en base:', err);
+          }
+        } else {
+          if (!jobId) {
+            console.warn(`⚠️ [Cache] job_id vide pour ${candidate.firstName} ${candidate.lastName} - impossible de sauvegarder en base`);
+          }
+          if (!cachedEvaluation) {
+            console.warn(`⚠️ [Cache] Évaluation manquante pour ${candidate.firstName} ${candidate.lastName}`);
+          }
+        }
+        
         setEvaluationData(cachedEvaluation);
         setCandidateEvaluations(prev => ({
           ...prev,
@@ -1090,6 +1134,47 @@ export default function Traitements_IA() {
         const cacheKey = `evaluation_${candidateId}`;
         cache.set(cacheKey, result.data, 1000 * 60 * 30); // 30 minutes
         console.log(`✅ [Cache] Évaluation sauvegardée en cache pour ${candidate.firstName} ${candidate.lastName}`);
+        
+        // IMPORTANT: Sauvegarder aussi en base de données Supabase
+        console.log(`🚀🚀🚀 [Cache] DEBUT SAUVEGARDE BASE - Après API call pour ${candidate.firstName} ${candidate.lastName}`);
+        const rawCandidate = candidate.rawData || candidate;
+        const jobId = rawCandidate.post ||
+                      candidate.post ||
+                      rawCandidate.offre?.reference || 
+                      candidate.offre?.reference || 
+                      rawCandidate.offre?.job_id || 
+                      candidate.offre?.job_id || 
+                      candidate.offre_id || 
+                      rawCandidate.offre_id || 
+                      rawCandidate.application?.offer_id || 
+                      '';
+        
+        console.log(`🔍 [Cache] Diagnostic jobId pour ${candidate.firstName} ${candidate.lastName}:`, {
+          jobId,
+          hasResultData: !!result.data,
+          rawCandidatePost: rawCandidate.post,
+          candidatePost: candidate.post,
+          offreReference: rawCandidate.offre?.reference || candidate.offre?.reference,
+        });
+        
+        if (jobId) {
+          console.log(`💾💾💾 [Cache] SAUVEGARDE EN BASE SUPABASE pour candidat ${candidateId}, poste ${jobId}`);
+          try {
+            const { saveCachedEvaluation } = await import('@/services/candidateEvaluationCache');
+            console.log(`📦 [Cache] Service importé, appel de saveCachedEvaluation...`);
+            const saved = await saveCachedEvaluation(candidateId, jobId, result.data, 78, 78);
+            if (saved) {
+              console.log(`✅✅✅ [Cache] Évaluation sauvegardée en base Supabase avec succès pour ${candidate.firstName} ${candidate.lastName}`);
+            } else {
+              console.warn(`⚠️⚠️⚠️ [Cache] Échec de la sauvegarde en base Supabase pour ${candidate.firstName} ${candidate.lastName}`);
+            }
+          } catch (err) {
+            console.error('❌❌❌ [Cache] ERREUR lors de la sauvegarde en base Supabase:', err);
+            console.error('❌❌❌ [Cache] Stack trace:', err instanceof Error ? err.stack : 'No stack trace');
+          }
+        } else {
+          console.warn(`⚠️⚠️⚠️ [Cache] job_id VIDE pour ${candidate.firstName} ${candidate.lastName} - impossible de sauvegarder en base`);
+        }
       } else {
         console.error('❌ Erreur d\'évaluation automatique:', result.error);
       }

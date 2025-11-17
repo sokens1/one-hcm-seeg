@@ -103,38 +103,9 @@ export default defineConfig(({ mode }) => ({
               return;
             }
 
-            // Récupérer le genre du candidat depuis la base de données
-            let candidateGender = 'Non renseigné';
-            if (applicationId) {
-              try {
-                const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
-                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
-                const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-                const { data: candidateData } = await supabase
-                  .from('applications')
-                  .select(`
-                                  candidate_id,
-                                  users:users!applications_candidate_id_fkey(sexe),
-                                  candidate_profiles!left(gender)
-                                `)
-                  .eq('id', applicationId)
-                  .single();
-
-                //@ts-expect-error fix it later
-                const sexe = candidateData?.users?.sexe;
-                //@ts-expect-error fix it later
-                const profileGender = candidateData?.candidate_profiles?.gender;
-                candidateGender = (sexe === 'F' || sexe === 'Femme') ? 'Femme' : (sexe === 'M' || sexe === 'Homme') ? 'Homme' : (profileGender || 'Non renseigné');
-              } catch (e) {
-                //console.log('[DEV API plugin] Erreur récupération genre:', e);
-              }
-            }
-
-            // Déterminer les accords selon le genre
-            const isFemale = candidateGender === 'Femme';
-            const title = isFemale ? 'Madame' : 'Monsieur';
-            const muniAccord = isFemale ? 'munie' : 'muni';
+            // Utilisation de "Monsieur/Madame" pour éviter les problèmes de détermination du sexe
+            const title = 'Monsieur/Madame';
+            const muniAccord = 'muni(e)';
             const dateObj = new Date(`${date}T${String(time).slice(0, 5)}`);
             const formattedDate = dateObj.toLocaleDateString('fr-FR');
             const formattedTime = String(time).slice(0, 5);
@@ -329,7 +300,8 @@ export default defineConfig(({ mode }) => ({
                }
  
                const serif = ", Georgia, serif";
-               const title = sexe === 'F' ? 'Madame' : 'Monsieur';
+               // Utilisation de "Monsieur/Madame" pour éviter les problèmes de détermination du sexe
+               const title = 'Monsieur/Madame';
                
                const html = `
                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
@@ -578,7 +550,8 @@ export default defineConfig(({ mode }) => ({
               }
 
               const serif = ", Georgia, serif";
-              const title = sexe === 'F' ? 'Madame' : 'Monsieur';
+              // Utilisation de "Monsieur/Madame" pour éviter les problèmes de détermination du sexe
+              const title = 'Monsieur/Madame';
 
               const html = `
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
@@ -688,32 +661,8 @@ export default defineConfig(({ mode }) => ({
                 return;
               }
 
-              // Récupérer le genre du candidat
-              let candidateGender = 'Non renseigné';
-              if (applicationId) {
-                try {
-                  const supabaseUrl = 'https://fyiitzndlqcnyluwkpqp.supabase.co';
-                  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWl0em5kbHFjbnlsdXdrcHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MDkxNTksImV4cCI6MjA3MTA4NTE1OX0.C3pTJmFapb9a2M6BLtb6AeKZX9SbkEikrosOIYJts9Q';
-                  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-                  const { data: candidateData } = await supabase
-                    .from('applications')
-                    .select('candidate_id, candidate_profiles!inner(gender)')
-                    .eq('id', applicationId)
-                    .single();
-
-                  //@ts-expect-error fix it later
-                  if (candidateData?.candidate_profiles?.gender) {
-                    //@ts-expect-error fix it later
-                    candidateGender = candidateData.candidate_profiles.gender;
-                  }
-                } catch (e) {
-                  console.log('[DEV API] Erreur récupération genre:', e);
-                }
-              }
-
-              const isFemale = candidateGender === 'Femme';
-              const title = isFemale ? 'Madame' : 'Monsieur';
+              // Utilisation de "Monsieur/Madame" pour éviter les problèmes de détermination du sexe
+              const title = 'Monsieur/Madame';
               const serif = ", Georgia, serif";
 
               const html = `
@@ -1011,7 +960,8 @@ export default defineConfig(({ mode }) => ({
               }
 
               const serif = ", Georgia, serif";
-              const title = sexe === 'F' ? 'Madame' : 'Monsieur';
+              // Utilisation de "Monsieur/Madame" pour éviter les problèmes de détermination du sexe
+              const title = 'Monsieur/Madame';
 
               const html = `
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">

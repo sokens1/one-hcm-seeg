@@ -99,32 +99,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return;
     }
 
-    // Récupérer le genre (priorité users.sexe, fallback candidate_profiles.gender)
-    let candidateGender = 'Non renseigné';
-    if (applicationId && supabase) {
-      try {
-        const { data: candidateData } = await supabase
-          .from('applications')
-          .select(`
-            candidate_id,
-            users:users!applications_candidate_id_fkey(sexe),
-            candidate_profiles!left(gender)
-          `)
-          .eq('id', applicationId)
-          .single();
-        // @ts-expect-error dynamic
-        const sexe = candidateData?.users?.sexe as string | undefined;
-        // @ts-expect-error dynamic
-        const profileGender = candidateData?.candidate_profiles?.gender as string | undefined;
-        candidateGender = (sexe === 'F' || sexe === 'Femme') ? 'Femme' : (sexe === 'M' || sexe === 'Homme') ? 'Homme' : (profileGender || 'Non renseigné');
-      } catch {
-        // Non bloquant
-      }
-    }
-
-    const isFemale = candidateGender === 'Femme';
-    const title = isFemale ? 'Madame' : 'Monsieur';
-    const muniAccord = isFemale ? 'munie' : 'muni';
+    // Utilisation de "Monsieur/Madame" pour éviter les problèmes de détermination du sexe
+    const title = 'Monsieur/Madame';
+    const muniAccord = 'muni(e)';
     const dateObj = new Date(`${date}T${String(time).slice(0, 5)}`);
     const formattedDate = dateObj.toLocaleDateString('fr-FR');
     const formattedTime = String(time).slice(0, 5);
