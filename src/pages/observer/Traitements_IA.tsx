@@ -36,9 +36,14 @@ import {
   ChevronRight,
   ArrowLeft
 } from "lucide-react";
-import { useSEEGAIData } from "@/hooks/useSEEGAIData";
+import { useSEEGAIDataOptimized } from "@/hooks/useSEEGAIDataOptimized";
 import { AICandidateData } from "@/hooks/useAIData";
+import { useCache } from "@/contexts/CacheContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { NetworkIndicator } from "@/components/NetworkIndicator";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Check } from "lucide-react";
 
 interface CandidateApplication {
   id: string;
@@ -272,16 +277,18 @@ export default function Traitements_IA() {
   const { 
     data: aiData, 
     isLoading, 
+    isValidating,
     error, 
     isConnected,
     searchCandidates,
     loadAIData,
     forceReload
-  } = useSEEGAIData();
+  } = useSEEGAIDataOptimized();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const [selectedPostes, setSelectedPostes] = useState<string[]>([]); // Nouveau filtre par poste
   const [selectedVerdict, setSelectedVerdict] = useState<string>("all");
   const [selectedScoreRange, setSelectedScoreRange] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("rang");
@@ -296,9 +303,21 @@ export default function Traitements_IA() {
   const [sendMessage, setSendMessage] = useState('');
   const [evaluationData, setEvaluationData] = useState<any>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
-  const [candidateEvaluations, setCandidateEvaluations] = useState<Record<string, any>>({});
+  const cache = useCache();
+  
+  // Charger les évaluations depuis le cache au montage
+  const cachedEvaluations = cache.get<Record<string, any>>('all_candidate_evaluations') || {};
+  const [candidateEvaluations, setCandidateEvaluations] = useState<Record<string, any>>(cachedEvaluations);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateApplication | null>(null);
+  
+  // Sauvegarder les évaluations dans le cache à chaque changement
+  useEffect(() => {
+    if (Object.keys(candidateEvaluations).length > 0) {
+      cache.set('all_candidate_evaluations', candidateEvaluations, 1000 * 60 * 60); // 1 heure
+      console.log(`💾 [Cache] ${Object.keys(candidateEvaluations).length} évaluations sauvegardées`);
+    }
+  }, [candidateEvaluations]); // ✅ Retiré 'cache' pour éviter la boucle
   
   // Log de débogage pour vérifier que le composant se charge
   // console.log('🔍 [DEBUG] Composant Traitements_IA chargé');
@@ -575,6 +594,23 @@ export default function Traitements_IA() {
 
 
   // Transformer les données IA pour l'affichage
+  // Extraire la liste unique des postes depuis les données
+  const availablePostes = useMemo(() => {
+    if (!aiData) return [];
+    
+    const postesSet = new Set<string>();
+    Object.values(aiData).forEach(candidates => {
+      candidates.forEach(candidate => {
+        const poste = candidate.poste || 'Non spécifié';
+        if (poste !== 'N/A' && poste !== 'Non spécifié') {
+          postesSet.add(poste);
+        }
+      });
+    });
+    
+    return Array.from(postesSet).sort();
+  }, [aiData]);
+
   const processedCandidatesData = useMemo(() => {
     
     // Si on a des résultats de recherche, les utiliser
@@ -589,14 +625,20 @@ export default function Traitements_IA() {
 
     // Parcourir dynamiquement tous les départements
     Object.entries(aiData).forEach(([departmentKey, candidates]) => {
-      candidates.forEach((candidate, index) => {
+      candidates.forEach((candidate) => {
+        const firstName = candidate.prenom || '';
+        const lastName = candidate.nom || '';
+        
+        // ✅ Utiliser l'ID du candidat (créé dans useSEEGAIDataOptimized)
+        const candidateId = (candidate as any).id || `${firstName}_${lastName}`;
+        
         const processedCandidate = {
           // Copier TOUTES les propriétés du candidat en premier (y compris offre_id et offre)
           ...candidate,
           // Puis écraser/ajouter les propriétés spécifiques
-          id: `${departmentKey}-${index}`,
-          firstName: candidate.prenom,
-          lastName: candidate.nom,
+          id: candidateId, // ✅ ID stable pour lier avec candidateEvaluations
+          firstName: firstName,
+          lastName: lastName,
           poste: candidate.poste,
           department: departmentKey, // Utiliser le nom exact du département
           aiData: {
@@ -647,6 +689,13 @@ export default function Traitements_IA() {
     // Filtrer par département
     if (selectedDepartment !== "all") {
       filtered = filtered.filter(candidate => candidate.department === selectedDepartment);
+    }
+
+    // Filtrer par poste (multi-sélection)
+    if (selectedPostes.length > 0) {
+      filtered = filtered.filter(candidate => 
+        selectedPostes.includes(candidate.poste || 'Non spécifié')
+      );
     }
 
     // Filtrer par verdict
@@ -712,7 +761,7 @@ export default function Traitements_IA() {
     });
 
     return filtered;
-  }, [processedCandidatesData, searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange, sortBy, sortOrder]);
+  }, [processedCandidatesData, searchTerm, selectedDepartment, selectedPostes, selectedVerdict, selectedScoreRange, sortBy, sortOrder]);
 
   // Calculer la pagination
   const totalPages = Math.ceil(filteredCandidates.length / itemsPerPage);
@@ -723,7 +772,7 @@ export default function Traitements_IA() {
   // Réinitialiser la page quand les filtres changent
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedDepartment, selectedVerdict, selectedScoreRange]);
+  }, [searchTerm, selectedDepartment, selectedPostes, selectedVerdict, selectedScoreRange]);
 
   const handleViewResults = async (candidate: CandidateApplication) => {
     
@@ -829,6 +878,66 @@ export default function Traitements_IA() {
 
   const evaluateCandidateAutomatically = async (candidate: CandidateApplication, isBackground = false) => {
     try {
+      // Créer une clé de cache unique pour ce candidat
+      const candidateId = candidate.id || `${candidate.firstName}_${candidate.lastName}`;
+      const cacheKey = `evaluation_${candidateId}`;
+      
+      // Vérifier d'abord le cache mémoire
+      const cachedEvaluation = cache.get<any>(cacheKey);
+      if (cachedEvaluation && !isBackground) {
+        console.log(`✅ [Cache] Évaluation trouvée en cache mémoire pour ${candidate.firstName} ${candidate.lastName}`);
+        
+        // IMPORTANT: Sauvegarder aussi en base de données pour les prochaines fois
+        const { saveCachedEvaluation } = await import('@/services/candidateEvaluationCache');
+        const rawCandidate = candidate.rawData || candidate;
+        const jobId = rawCandidate.post ||
+                      candidate.post ||
+                      rawCandidate.offre?.reference || 
+                      candidate.offre?.reference || 
+                      rawCandidate.offre?.job_id || 
+                      candidate.offre?.job_id || 
+                      candidate.offre_id || 
+                      rawCandidate.offre_id || 
+                      rawCandidate.application?.offer_id || 
+                      '';
+        
+        console.log(`🔍 [Cache] Diagnostic pour candidat ${candidateId}:`, {
+          jobId,
+          hasCachedEvaluation: !!cachedEvaluation,
+          rawCandidatePost: rawCandidate.post,
+          candidatePost: candidate.post,
+          offreReference: rawCandidate.offre?.reference || candidate.offre?.reference,
+        });
+        
+        if (jobId && cachedEvaluation) {
+          console.log(`💾 [Cache] Sauvegarde de l'évaluation existante en base pour candidat ${candidateId}, poste ${jobId}`);
+          try {
+            const saved = await saveCachedEvaluation(candidateId, jobId, cachedEvaluation, 78, 78);
+            if (saved) {
+              console.log(`✅ [Cache] Évaluation sauvegardée en base avec succès pour ${candidate.firstName} ${candidate.lastName}`);
+            } else {
+              console.warn(`⚠️ [Cache] Échec de la sauvegarde en base pour ${candidate.firstName} ${candidate.lastName}`);
+            }
+          } catch (err) {
+            console.error('❌ [Cache] Erreur lors de la sauvegarde en base:', err);
+          }
+        } else {
+          if (!jobId) {
+            console.warn(`⚠️ [Cache] job_id vide pour ${candidate.firstName} ${candidate.lastName} - impossible de sauvegarder en base`);
+          }
+          if (!cachedEvaluation) {
+            console.warn(`⚠️ [Cache] Évaluation manquante pour ${candidate.firstName} ${candidate.lastName}`);
+          }
+        }
+        
+        setEvaluationData(cachedEvaluation);
+        setCandidateEvaluations(prev => ({
+          ...prev,
+          [candidateId]: cachedEvaluation
+        }));
+        return;
+      }
+      
       // Ne pas afficher le loader si c'est une évaluation en arrière-plan
       if (!isBackground) {
         setIsEvaluating(true);
@@ -974,6 +1083,7 @@ export default function Traitements_IA() {
       
       console.log('🔍 [DEBUG] mtpResponses formaté:', mtpResponses);
       
+      // ✅✅✅ VALEURS À 65% - BUILD 2025-10-28-14h30 ✅✅✅
       const evaluationData: EvaluationRequest = {
         candidate_id: candidate.id,
         candidate_name: candidate.nom || candidate.lastName || rawCandidate.nom || 'N/A',
@@ -983,8 +1093,8 @@ export default function Traitements_IA() {
         cv_content: cvContent,
         cover_letter_content: coverLetterContent,
         mtp_responses: mtpResponses,
-        threshold_pct: 50,
-        hold_threshold_pct: 50
+        threshold_pct: 78, // ✅✅✅ SEUILS À 65% ✅✅✅
+        hold_threshold_pct: 78 // ✅✅✅ SEUILS À 65% ✅✅✅
       };
 
       console.log('📤 [EVAL] job_id récupéré:', jobId);
@@ -996,6 +1106,7 @@ export default function Traitements_IA() {
       });
       console.log('📤 [EVAL] CV content (premiers 100 chars):', cvContent.substring(0, 100));
       console.log('📤 [EVAL] Cover letter (premiers 100 chars):', coverLetterContent.substring(0, 100));
+      console.log('🚨🚨🚨 [EVAL] VERSION MISE À JOUR BUILD 14h30 - SEUILS À 65% 🚨🚨🚨');
       console.log('📤 [EVAL] evaluationData complet:', JSON.stringify(evaluationData, null, 2));
 
       // Validation avant envoi
@@ -1017,6 +1128,53 @@ export default function Traitements_IA() {
           ...prev,
           [candidate.id]: result.data
         }));
+        
+        // Sauvegarder dans le cache pour 30 minutes
+        const candidateId = candidate.id || `${candidate.firstName}_${candidate.lastName}`;
+        const cacheKey = `evaluation_${candidateId}`;
+        cache.set(cacheKey, result.data, 1000 * 60 * 30); // 30 minutes
+        console.log(`✅ [Cache] Évaluation sauvegardée en cache pour ${candidate.firstName} ${candidate.lastName}`);
+        
+        // IMPORTANT: Sauvegarder aussi en base de données Supabase
+        console.log(`🚀🚀🚀 [Cache] DEBUT SAUVEGARDE BASE - Après API call pour ${candidate.firstName} ${candidate.lastName}`);
+        const rawCandidate = candidate.rawData || candidate;
+        const jobId = rawCandidate.post ||
+                      candidate.post ||
+                      rawCandidate.offre?.reference || 
+                      candidate.offre?.reference || 
+                      rawCandidate.offre?.job_id || 
+                      candidate.offre?.job_id || 
+                      candidate.offre_id || 
+                      rawCandidate.offre_id || 
+                      rawCandidate.application?.offer_id || 
+                      '';
+        
+        console.log(`🔍 [Cache] Diagnostic jobId pour ${candidate.firstName} ${candidate.lastName}:`, {
+          jobId,
+          hasResultData: !!result.data,
+          rawCandidatePost: rawCandidate.post,
+          candidatePost: candidate.post,
+          offreReference: rawCandidate.offre?.reference || candidate.offre?.reference,
+        });
+        
+        if (jobId) {
+          console.log(`💾💾💾 [Cache] SAUVEGARDE EN BASE SUPABASE pour candidat ${candidateId}, poste ${jobId}`);
+          try {
+            const { saveCachedEvaluation } = await import('@/services/candidateEvaluationCache');
+            console.log(`📦 [Cache] Service importé, appel de saveCachedEvaluation...`);
+            const saved = await saveCachedEvaluation(candidateId, jobId, result.data, 78, 78);
+            if (saved) {
+              console.log(`✅✅✅ [Cache] Évaluation sauvegardée en base Supabase avec succès pour ${candidate.firstName} ${candidate.lastName}`);
+            } else {
+              console.warn(`⚠️⚠️⚠️ [Cache] Échec de la sauvegarde en base Supabase pour ${candidate.firstName} ${candidate.lastName}`);
+            }
+          } catch (err) {
+            console.error('❌❌❌ [Cache] ERREUR lors de la sauvegarde en base Supabase:', err);
+            console.error('❌❌❌ [Cache] Stack trace:', err instanceof Error ? err.stack : 'No stack trace');
+          }
+        } else {
+          console.warn(`⚠️⚠️⚠️ [Cache] job_id VIDE pour ${candidate.firstName} ${candidate.lastName} - impossible de sauvegarder en base`);
+        }
       } else {
         console.error('❌ Erreur d\'évaluation automatique:', result.error);
       }
@@ -1207,6 +1365,14 @@ export default function Traitements_IA() {
     <ObserverLayout>
       <ErrorBoundary>
       <div className="container mx-auto px-4 py-6">
+        {/* Indicateur de rechargement en arrière-plan */}
+        {isValidating && (
+          <div className="fixed top-4 right-4 z-50 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-pulse">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-sm font-medium">Mise à jour des données...</span>
+          </div>
+        )}
+        
         {/* En-tête de la page */}
         <div className="mb-8">
           {/* Bouton retour */}
@@ -1224,13 +1390,14 @@ export default function Traitements_IA() {
             </div>
           )}
           
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4">
-            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center flex-shrink-0">
-              <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
-              <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Traitements IA</h1>
+                <p className="text-sm sm:text-base text-muted-foreground mt-1">Gestion intelligente des candidatures</p>
               {isConnected !== null && (
                 <div className="flex items-center gap-2 mt-2">
                   <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
@@ -1252,6 +1419,12 @@ export default function Traitements_IA() {
                   </span>
                 </div>
               )}
+              </div>
+            </div>
+            
+            {/* Indicateur de qualité réseau - À droite */}
+            <div className="flex-shrink-0">
+              <NetworkIndicator />
             </div>
           </div>
           
@@ -1284,6 +1457,63 @@ export default function Traitements_IA() {
                 
                 {/* Filtres de base */}
                 <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Filtre multi-select par poste */}
+                  <div className="flex-1 sm:max-w-[280px]">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full h-10 justify-start text-left font-normal"
+                        >
+                          {selectedPostes.length === 0
+                            ? "Filtrer par poste..."
+                            : `${selectedPostes.length} poste${selectedPostes.length > 1 ? 's' : ''} sélectionné${selectedPostes.length > 1 ? 's' : ''}`}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[300px] p-0" align="start">
+                        <Command>
+                          <CommandInput placeholder="Rechercher un poste..." />
+                          <CommandEmpty>Aucun poste trouvé.</CommandEmpty>
+                          <CommandGroup className="max-h-[200px] overflow-y-auto">
+                            {availablePostes.map((poste) => {
+                              const isSelected = selectedPostes.includes(poste);
+                              return (
+                                <CommandItem
+                                  key={poste}
+                                  onSelect={() => {
+                                    if (isSelected) {
+                                      setSelectedPostes(selectedPostes.filter(p => p !== poste));
+                                    } else {
+                                      setSelectedPostes([...selectedPostes, poste]);
+                                    }
+                                  }}
+                                  className={isSelected ? "bg-accent" : ""}
+                                >
+                                  {isSelected && (
+                                    <Check className="mr-2 h-4 w-4" />
+                                  )}
+                                  <span className={isSelected ? "font-medium" : ""}>{poste}</span>
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                          {selectedPostes.length > 0 && (
+                            <div className="border-t p-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full text-xs"
+                                onClick={() => setSelectedPostes([])}
+                              >
+                                Effacer la sélection ({selectedPostes.length})
+                              </Button>
+                            </div>
+                          )}
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
                   <div className="flex-1 sm:max-w-[240px]">
                     <div className="relative group">
                       <select
@@ -1396,7 +1626,7 @@ export default function Traitements_IA() {
               )}
 
               {/* Résumé des filtres actifs */}
-              {(selectedDepartment !== "all" || selectedVerdict !== "all" || selectedScoreRange !== "all" || searchTerm) && (
+              {(selectedDepartment !== "all" || selectedPostes.length > 0 || selectedVerdict !== "all" || selectedScoreRange !== "all" || searchTerm) && (
                 <div className="flex flex-wrap gap-2 pt-2 border-t">
                   <span className="text-sm text-muted-foreground">Filtres actifs:</span>
                   {searchTerm && (
@@ -1415,6 +1645,17 @@ export default function Traitements_IA() {
                       Département: {selectedDepartment}
                       <button 
                         onClick={() => setSelectedDepartment("all")}
+                        className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                      >
+                        <XCircle className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  )}
+                  {selectedPostes.length > 0 && (
+                    <Badge variant="secondary" className="gap-1">
+                      Postes: {selectedPostes.length} sélectionné{selectedPostes.length > 1 ? 's' : ''}
+                      <button 
+                        onClick={() => setSelectedPostes([])}
                         className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                       >
                         <XCircle className="h-3 w-3" />
@@ -1487,14 +1728,43 @@ export default function Traitements_IA() {
         {/* Tableau des candidats */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Évaluations IA des Candidats
-              {filteredCandidates.length > itemsPerPage && (
-                <span className="text-sm font-normal text-muted-foreground">
-                  - Page {currentPage} sur {totalPages}
-                </span>
-              )}
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Évaluations IA des Candidats
+                {filteredCandidates.length > itemsPerPage && (
+                  <span className="text-sm font-normal text-muted-foreground">
+                    - Page {currentPage} sur {totalPages}
+                  </span>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  try {
+                    setIsEvaluating(false);
+                    // Vider les caches AI et évaluations
+                    cache.remove('seeg_ai_all_candidates');
+                    cache.remove('all_candidate_evaluations');
+                    // Nettoyer toutes les évaluations par candidat
+                    for (let i = 0; i < localStorage.length; i++) {
+                      const key = localStorage.key(i);
+                      if (key && key.startsWith('talent_flow_cache_evaluation_')) {
+                        localStorage.removeItem(key);
+                      }
+                    }
+                    setCandidateEvaluations({});
+                    // Forcer le rechargement des données via SWR
+                    await forceReload();
+                  } catch (e) {
+                    console.error('❌ [Refresh] Erreur lors du rafraîchissement:', e);
+                  }
+                }}
+                className="ml-4"
+              >
+                Rafraîchir
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 sm:p-6">

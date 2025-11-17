@@ -1,6 +1,6 @@
 /**
  * Service pour l'API Azure Container Apps - RH RVAL
- * Documentation: https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/docs
+ * Documentation: https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/docs#/
  */
 
 /**
@@ -372,9 +372,38 @@ class AzureContainerAppsService {
 
   /**
    * Évaluer un candidat avec l'IA via la route /evaluate
+   * Vérifie d'abord en base de données pour éviter les appels API coûteux
    */
   async evaluateCandidate(evaluationData: EvaluationRequest): Promise<ApiResponse> {
     try {
+      const candidateId = evaluationData.candidate_id;
+      const jobId = evaluationData.job_id || '';
+      
+      // ÉTAPE 1: Vérifier d'abord en base de données
+      console.log(`🔍 [Evaluation Cache] Vérification en base pour candidat ${candidateId}, poste ${jobId}`);
+      
+      // Import dynamique pour éviter les problèmes de dépendances circulaires
+      let cachedResult = null;
+      try {
+        const { getCachedEvaluation } = await import('@/services/candidateEvaluationCache');
+        cachedResult = await getCachedEvaluation(candidateId, jobId);
+      } catch (importError) {
+        console.warn('⚠️ [Evaluation Cache] Erreur lors de l\'import du service de cache:', importError);
+        // Continue sans cache si l'import échoue
+      }
+      
+      if (cachedResult) {
+        console.log('✅ [Evaluation Cache] Résultat trouvé en base - utilisation du cache (économie de crédits)');
+        return {
+          success: true,
+          message: 'Évaluation récupérée depuis le cache',
+          data: cachedResult,
+        };
+      }
+      
+      console.log('ℹ️ [Evaluation Cache] Aucun résultat en cache - appel à l\'API d\'analyse IA');
+      
+      // ÉTAPE 2: Si pas en cache, appeler l'API (logique originale conservée)
       // Préparer les données au format de l'API RH Eval
       const rhEvalData = {
         id: evaluationData.candidate_id,
@@ -404,9 +433,12 @@ class AzureContainerAppsService {
       const timeoutId = setTimeout(() => controller.abort(), evaluationTimeout);
 
       // Construire l'URL avec les paramètres de seuil (query parameters)
-      // Utiliser les valeurs de evaluationData si fournies, sinon 50 par défaut
-      const thresholdPct = evaluationData.threshold_pct ?? 50;
-      const holdThresholdPct = evaluationData.hold_threshold_pct ?? 50;
+      console.log('🔍 [DEBUG] evaluationData.threshold_pct reçu:', evaluationData.threshold_pct);
+      console.log('🔍 [DEBUG] evaluationData.hold_threshold_pct reçu:', evaluationData.hold_threshold_pct);
+      
+      // Utiliser les valeurs de evaluationData - TOUJOURS prendre la valeur fournie
+      const thresholdPct = evaluationData.threshold_pct !== undefined ? evaluationData.threshold_pct : 65;
+      const holdThresholdPct = evaluationData.hold_threshold_pct !== undefined ? evaluationData.hold_threshold_pct : 65;
       const evaluateUrl = `${this.baseUrl}/evaluate?threshold_pct=${thresholdPct}&hold_threshold_pct=${holdThresholdPct}`;
 
       console.log('🔗 [Azure Container Apps] URL avec paramètres:', evaluateUrl);
@@ -453,6 +485,30 @@ class AzureContainerAppsService {
       console.log('⚠️ [Azure Container Apps] Faiblesses:', result.faiblesses);
       console.log('📝 [Azure Container Apps] Justifications:', result.justification);
       console.log('💬 [Azure Container Apps] Commentaires:', result.commentaires);
+      
+      // ÉTAPE 3: Sauvegarder le résultat en base de données pour les prochaines fois
+      if (jobId) {
+        console.log(`💾 [Evaluation Cache] Sauvegarde du résultat en base de données pour candidat ${candidateId}, poste ${jobId}...`);
+        try {
+          const { saveCachedEvaluation } = await import('@/services/candidateEvaluationCache');
+          const saved = await saveCachedEvaluation(
+            candidateId,
+            jobId,
+            result,
+            thresholdPct,
+            holdThresholdPct
+          );
+          if (saved) {
+            console.log(`✅ [Evaluation Cache] Résultat sauvegardé avec succès pour candidat ${candidateId}, poste ${jobId} - économie de crédits pour les prochaines fois`);
+          } else {
+            console.warn(`⚠️ [Evaluation Cache] Échec de la sauvegarde pour candidat ${candidateId}, poste ${jobId} (non bloquant)`);
+          }
+        } catch (saveError) {
+          console.error(`❌ [Evaluation Cache] Erreur lors de la sauvegarde pour candidat ${candidateId}, poste ${jobId}:`, saveError);
+        }
+      } else {
+        console.warn(`⚠️ [Evaluation Cache] job_id vide pour candidat ${candidateId} - impossible de sauvegarder en cache`);
+      }
       
       return {
         success: true,

@@ -5,8 +5,8 @@
 L'API momo.com a été remplacée par l'API Azure Container Apps officielle pour le traitement des données de candidats.
 
 ### Nouvelle API
-- **URL de base**: `https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io`
-- **Documentation**: https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/docs
+- **URL de base**: `https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io`
+- **Documentation**: https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/docs
 
 ## Fichiers modifiés
 

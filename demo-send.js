@@ -1,7 +1,7 @@
 // Script de démonstration - Affiche exactement ce qui est envoyé vers l'API Azure Container Apps
 console.log('🎯 === DÉMONSTRATION D\'ENVOI VERS L\'API AZURE CONTAINER APPS ===\n');
 
-const API_URL = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/api/candidats';
+const API_URL = 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/api/candidats';
 
 // Données exactes à envoyer
 const candidatData = {

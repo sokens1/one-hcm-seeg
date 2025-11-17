@@ -1,0 +1,542 @@
+' ================================================
+' DIAGRAMMES UML POUR RAPPORT DE STAGE
+' Projet: Talent Flow Gabon - SEEG HCM
+' ================================================
+
+' ================================================
+' 1. DIAGRAMME DE CAS D'UTILISATION (USE CASE)
+' ================================================
+
+@startuml UseCase
+!define CANDIDAT_COLOR #E8F5E9
+!define RECRUTEUR_COLOR #E3F2FD
+!define ADMIN_COLOR #FFF3E0
+!define INTERNE_COLOR #F3E5F5
+
+skinparam actorStyle awesome
+
+actor "Candidat\\Interne" as Interne CANDIDAT_COLOR
+actor "Candidat\\Externe" as Externe CANDIDAT_COLOR
+actor "Recruteur\\SEEG" as Recruteur RECRUTEUR_COLOR
+actor "Admin" as Admin ADMIN_COLOR
+
+rectangle "Système de Recrutement SEEG" {
+  
+  package "Gestion de Candidatures" {
+    usecase "S'inscrire" as UC1
+    usecase "Se connecter" as UC2
+    usecase "Compléter profil" as UC3
+    usecase "Consulter offres" as UC4
+    usecase "Postuler à une offre" as UC5
+    usecase "Télécharger documents" as UC6
+    usecase "Suivre candidature" as UC7
+    usecase "Demander accès" as UC8
+  }
+  
+  package "Gestion des Offres" {
+    usecase "Créer offre" as UC9
+    usecase "Modifier offre" as UC10
+    usecase "Publier offre" as UC11
+    usecase "Clore offre" as UC12
+  }
+  
+  package "Évaluation" {
+    usecase "Évaluer dossier" as UC13
+    usecase "Planifier entretien" as UC14
+    usecase "Analyser candidat" as UC15
+  }
+  
+  package "Administration" {
+    usecase "Gérer utilisateurs" as UC16
+    usecase "Valider demandes accès" as UC17
+    usecase "Superviser activités" as UC18
+  }
+}
+
+Interne --> UC1
+Interne --> UC2
+Interne --> UC3
+Interne --> UC4
+Interne --> UC5
+Interne --> UC6
+Interne --> UC7
+Interne --> UC8
+
+Externe --> UC1
+Externe --> UC2
+Externe --> UC3
+Externe --> UC4
+Externe --> UC5
+Externe --> UC6
+Externe --> UC7
+
+Recruteur --> UC9
+Recruteur --> UC10
+Recruteur --> UC11
+Recruteur --> UC12
+Recruteur --> UC13
+Recruteur --> UC14
+Recruteur --> UC15
+
+Admin --> UC16
+Admin --> UC17
+Admin --> UC18
+
+UC5 ..> UC6 : <<include>>
+UC7 ..> UC13 : <<extend>>
+UC9 ..> UC11 : <<include>>
+
+@enduml
+
+' ================================================
+' 2. DIAGRAMME DE CLASSES
+' ================================================
+
+@startuml ClassDiagram
+skinparam classAttributeIconSize 0
+
+class User {
+  - id: UUID
+  - email: String
+  - role: String
+  - first_name: String
+  - last_name: String
+  - candidate_status: String
+  - matricule: String
+  - statut: String
+  - created_at: DateTime
+  - updated_at: DateTime
+  + verifyMatricule()
+  + updateProfile()
+  + getApplications()
+}
+
+class CandidateProfile {
+  - id: UUID
+  - user_id: UUID
+  - current_position: String
+  - current_department: String
+  - years_experience: Integer
+  - skills: Array<String>
+  - cv_url: String
+}
+
+class JobOffer {
+  - id: UUID
+  - recruiter_id: UUID
+  - title: String
+  - description: String
+  - location: String
+  - contract_type: String
+  - department: String
+  - campaign_id: Integer
+  - status_offers: String
+  - status: String
+  - application_deadline: Date
+  + create()
+  + publish()
+  + close()
+}
+
+class Application {
+  - id: UUID
+  - candidate_id: UUID
+  - job_offer_id: UUID
+  - candidature_status: String
+  - has_been_manager: Boolean
+  - status: String
+  - cover_letter: String
+  - motivation: String
+  + submit()
+  + update()
+  + validateStatus()
+}
+
+class ApplicationDocument {
+  - id: UUID
+  - application_id: UUID
+  - document_type: String
+  - file_name: String
+  - file_url: String
+  + upload()
+  + download()
+}
+
+class Protocol1Evaluation {
+  - id: UUID
+  - application_id: UUID
+  - evaluator_id: UUID
+  - cv_score: Integer
+  - cv_comments: String
+  - metier_score: Integer
+  - talent_score: Integer
+  - paradigme_score: Integer
+  - documentary_score: Integer
+  - mtp_score: Integer
+  - completed: Boolean
+  + evaluate()
+  + calculateScores()
+}
+
+class Protocol2Evaluation {
+  - id: UUID
+  - application_id: UUID
+  - evaluator_id: UUID
+  - simulation_date: Date
+  - simulation_time: Time
+  - jeu_role_score: Integer
+  - validation_score: Integer
+  - completed: Boolean
+  + scheduleSimulation()
+  + evaluate()
+}
+
+class ApplicationHistory {
+  - id: UUID
+  - application_id: UUID
+  - previous_status: String
+  - new_status: String
+  - changed_by: UUID
+  - notes: String
+  - changed_at: DateTime
+}
+
+class AccessRequest {
+  - id: UUID
+  - user_id: UUID
+  - status: String
+  - viewed: Boolean
+  - rejection_reason: String
+  - created_at: DateTime
+  + approve()
+  + reject()
+}
+
+class Notification {
+  - id: UUID
+  - user_id: UUID
+  - title: String
+  - message: String
+  - read: Boolean
+  - created_at: DateTime
+}
+
+' Relations
+User "1" -- "0..1" CandidateProfile
+User "1" -- "*" Application : creates
+User "1" -- "*" JobOffer : publishes
+Application "*" -- "1" JobOffer
+Application "1" -- "*" ApplicationDocument : has
+Application "1" -- "0..1" Protocol1Evaluation : evaluated_by
+Application "1" -- "0..1" Protocol2Evaluation : evaluated_by
+Application "1" -- "*" ApplicationHistory : tracked_in
+User "1" -- "*" AccessRequest : requests
+User "1" -- "*" Notification : receives
+
+note right of User
+  Types: candidat, recruteur, admin, observateur
+  Status: actif, bloqué, en_attente
+end note
+
+note right of JobOffer
+  Campaigns: 1, 2, 3
+  Status: active, paused, closed, draft
+end note
+
+note right of Application
+  Validation automatique
+  cohérence interne/externe
+end note
+
+@enduml
+
+' ================================================
+' 3. DIAGRAMME DE SÉQUENCE - DÉPÔT DE CANDIDATURE
+' ================================================
+
+@startuml SequenceDepotCandidature
+actor "Candidat" as Cand
+participant "Interface Web" as UI
+participant "API Frontend" as API
+database "Supabase" as DB
+
+Cand -> UI: Accéder au catalogue d'offres
+UI -> API: Récupérer offres disponibles
+API -> DB: SELECT job_offers WHERE status='active'
+DB --> API: Liste des offres
+API --> UI: Offres affichées
+UI --> Cand: Affichage
+
+Cand -> UI: Cliquer sur une offre
+UI -> API: Récupérer détails offre
+API -> DB: SELECT job_offer WHERE id=?
+DB --> API: Détails complets
+API --> UI: Informations
+UI --> Cand: Affichage détaillé
+
+Cand -> UI: Postuler à l'offre
+UI -> UI: Vérifier profil complet
+alt Profil incomplet
+  UI --> Cand: Demander complément profil
+end
+UI -> API: Créer candidature
+API -> DB: INSERT INTO applications
+DB -> DB: Trigger validation interne/externe
+alt Validation échouée
+  DB --> API: Erreur
+  API --> UI: Message d'erreur
+  UI --> Cand: Candidature refusée
+else Validation réussie
+  DB --> API: Candidature créée
+  API -> DB: CREATE protocol1_evaluation
+  API --> UI: Succès
+  UI --> Cand: Confirmation
+end
+
+Cand -> UI: Uploader documents (CV, lettre)
+UI -> API: Envoyer documents
+API -> DB: INSERT INTO application_documents
+DB --> API: Documents sauvegardés
+API --> UI: Confirmation upload
+UI --> Cand: Documents téléchargés
+
+@enduml
+
+' ================================================
+' 4. DIAGRAMME DE SÉQUENCE - ANALYSE PAR RECRUTEUR
+' ================================================
+
+@startuml SequenceAnalyseRecruteur
+actor "Recruteur" as Recr
+participant "Dashboard" as Dash
+participant "API Frontend" as API
+database "Supabase" as DB
+
+Recr -> Dash: Se connecter
+Dash -> API: Authentifier
+API -> DB: Vérifier credentials
+DB --> API: Rôle recruteur confirmé
+API --> Dash: Session active
+Dash --> Recr: Dashboard affiché
+
+Recr -> Dash: Accéder aux candidatures
+Dash -> API: Récupérer candidatures en attente
+API -> DB: SELECT applications WHERE status='pending'
+DB --> API: Liste candidatures
+API --> Dash: Candidatures affichées
+Dash --> Recr: Liste
+
+Recr -> Dash: Sélectionner une candidature
+Dash -> API: Charger détails candidat
+API -> DB: SELECT application + documents + profile
+DB --> API: Données complètes
+API --> Dash: Détails affichés
+Dash --> Recr: Fiche candidat
+
+Recr -> Dash: Évaluer dossier (Protocole 1)
+Dash -> API: Récupérer évaluation
+API -> DB: SELECT protocol1_evaluation
+DB --> API: Évaluation existante/créer
+
+Recr -> Dash: Saisir scores (CV, MTP, etc.)
+Dash -> API: Sauvegarder évaluation
+API -> DB: UPDATE protocol1_evaluation
+DB -> DB: Calculer scores totaux
+DB --> API: Évaluation mise à jour
+API --> Dash: Confirmation
+Dash --> Recr: Scores enregistrés
+
+Recr -> Dash: Planifier simulation (Protocole 2)
+Dash -> API: Créer protocole 2
+API -> DB: INSERT/UPDATE protocol2_evaluation
+API -> DB: UPDATE simulation_date, simulation_time
+DB --> API: Simulation planifiée
+API --> Dash: Confirmation
+Dash --> Recr: Simulation programmée
+
+Recr -> Dash: Prendre décision finale
+Dash -> API: Mettre à jour statut candidature
+API -> DB: UPDATE applications SET status
+DB -> DB: Trigger historique
+DB --> API: Statut mis à jour
+API --> Dash: Décision enregistrée
+Dash --> Recr: Confirmation décision
+
+@enduml
+
+' ================================================
+' 5. DIAGRAMME D'ACTIVITÉ - PROCESSUS DE CANDIDATURE
+' ================================================
+
+@startuml ActivityProcessusCandidature
+start
+
+:Inscription candidate;
+:Vérification du matricule;
+
+if (Matricule valide?) then (oui)
+  :Créer compte;
+  if (Candidat interne?) then (oui)
+    :Demander accès admin;
+  else (non)
+    :Compte actif immédiatement;
+  endif
+else (non)
+  :Afficher erreur;
+  stop
+endif
+
+:Consulter offres;
+:Choisir une offre;
+
+if (Profil complet?) then (non)
+  :Compléter profil;
+else (oui)
+endif
+
+:Postuler à l'offre;
+:Uploader documents;
+
+partition "Évaluation Recruteur" {
+  :Analyser dossier;
+  :Protocole 1: Évaluation documentaire;
+  if (Score suffisant?) then (non)
+    :Rejeter candidature;
+    stop
+  else (oui)
+    :Planifier simulation;
+    :Protocole 2: Évaluation simulation;
+  endif
+  
+  :Calculer scores finaux;
+  
+  if (Score global suffisant?) then (non)
+    :Rejeter candidature;
+    stop
+  else (oui)
+    :Accepter candidature;
+  endif
+}
+
+:Notification au candidat;
+
+stop
+
+@enduml
+
+' ================================================
+' 6. DIAGRAMME D'ARCHITECTURE GLOBALE (LOGIQUE)
+' ================================================
+
+@startuml ArchitectureGlobale
+!theme plain
+skinparam shadowing false
+skinparam linetype ortho
+skinparam componentStyle rectangle
+
+!define FRONTEND_COLOR #E3F2FD
+!define BaaS_COLOR #C8E6C9
+!define DATABASE_COLOR #FFF9C4
+!define CONNECTION_COLOR #FFCCBC
+
+title Architecture Globale - Talent Flow Gabon\nClient-BaaS (Backend as a Service)
+
+package "🌐 CLIENT" FRONTEND_COLOR {
+    component [Frontend SPA] as Frontend #white
+    note right of Frontend
+        **React 18.3 + TypeScript 5.8**
+        **Vite 5.4** (Build Tool)
+        
+        Technologies:
+        - React Router (Routing)
+        - TanStack Query (État serveur)
+        - shadcn/ui (Composants)
+        - Tailwind CSS (Styling)
+    end note
+}
+
+package "🔐 BAAS - SUPABASE" BaaS_COLOR {
+    component [Authentication] as Auth #white
+    component [REST API] as API #white
+    component [File Storage] as Storage #white
+    component [Real-time] as Realtime #white
+    
+    note right of Auth
+        JWT-based authentication
+        Session management
+        User roles & permissions
+    end note
+    
+    note right of API
+        PostgreSQL REST API
+        CRUD operations
+        Query builder
+    end note
+    
+    note right of Storage
+        Document storage
+        CVs, Lettres, Diplômes
+        Signed URLs
+    end note
+    
+    note right of Realtime
+        WebSocket subscriptions
+        Live updates
+        Notifications
+    end note
+}
+
+database "💾 DATABASE" DATABASE_COLOR {
+    database [PostgreSQL 13.0.4] as DB #white
+    
+    note right of DB
+        **Données structurées**
+        
+        Tables principales:
+        - users
+        - job_offers
+        - applications
+        - protocol1_evaluations
+        - protocol2_evaluations
+        - application_documents
+        
+        **Row Level Security (RLS)**
+        - Politiques par rôle
+        - Sécurité au niveau des données
+        - Validation automatique
+    end note
+}
+
+' Connexions principales
+Frontend -[#0000FF,bold]-> Auth : **Connexion JWT\nsécurisée**
+Frontend -[#0000FF,bold]-> API : **REST API\nHTTPS**
+Frontend -[#0000FF,bold]-> Storage : **Upload/Download\nFichiers**
+Frontend -[#FF6F00,bold]-> Realtime : **WebSocket\nTemps Réel**
+
+Auth -[#4CAF50,thickness=2]-> DB : **Validation\nUtilisateurs**
+API -[#4CAF50,thickness=2]-> DB : **Requêtes SQL\nCRUD**
+Storage -[#4CAF50,thickness=2]-> DB : **Métadonnées\nFichiers**
+
+note top of Frontend
+    **Avantages Client-BaaS:**
+    
+    ✅ Pas d'infrastructure à gérer
+    ✅ Évolutivité automatique
+    ✅ Coûts optimisés
+    ✅ Sécurité intégrée
+    ✅ Réactivité maximale
+    ✅ Développement rapide
+end note
+
+legend right
+    |= Couleur |= Composant |
+    | <#E3F2FD> | Frontend SPA |
+    | <#C8E6C9> | Backend as a Service |
+    | <#FFF9C4> | Base de données |
+    | <#0000FF> | Connexions client |
+    | <#4CAF50> | Connexions backend |
+    |<b>Gras</b>| Protocoles sécurisés |
+endlegend
+
+@enduml
+
