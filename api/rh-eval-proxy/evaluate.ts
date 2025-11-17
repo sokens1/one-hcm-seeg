@@ -16,7 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { method, headers, body, url } = req;
     
     // URL de base de l'API Azure Container Apps
-    const baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
+    const baseUrl = 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
     
     // Construire l'URL avec les query params
     const urlObj = new URL(url || '/evaluate', 'http://localhost');

@@ -2,7 +2,7 @@
 
 /**
  * Service pour l'API Azure Container Apps - RH RVAL
- * Documentation: https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/docs
+ * Documentation: https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io/docs
  */
 
 export interface CandidateData {
@@ -69,7 +69,7 @@ class AzureContainerAppsService {
       this.baseUrl = '/api/rh-eval';
     } else {
       // En production, utiliser l'URL directe de l'API Azure Container Apps
-      this.baseUrl = 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
+      this.baseUrl = 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io';
     }
     this.timeout = 30000; // 30 secondes
     // Clé API temporaire pour les tests - À remplacer par la vraie clé API

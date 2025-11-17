@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => ({
     port: 8082,
     proxy: {
       '/api/rh-eval': {
-        target: 'https://rh-rval-api--1uyr6r3.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io',
+        target: 'https://rh-rval-api.gentlestone-a545d2f8.canadacentral.azurecontainerapps.io',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/rh-eval/, ''),
         configure: (proxy, _options) => {
