@@ -878,64 +878,69 @@ export default function Traitements_IA() {
 
   const evaluateCandidateAutomatically = async (candidate: CandidateApplication, isBackground = false) => {
     try {
+      console.log(`🎯 [Cache] evaluateCandidateAutomatically appelé pour ${candidate.firstName} ${candidate.lastName}, isBackground: ${isBackground}`);
+      
       // Créer une clé de cache unique pour ce candidat
       const candidateId = candidate.id || `${candidate.firstName}_${candidate.lastName}`;
       const cacheKey = `evaluation_${candidateId}`;
       
-      // Vérifier d'abord le cache mémoire
-      const cachedEvaluation = cache.get<any>(cacheKey);
-      if (cachedEvaluation && !isBackground) {
-        console.log(`✅ [Cache] Évaluation trouvée en cache mémoire pour ${candidate.firstName} ${candidate.lastName}`);
+      // Récupérer le jobId pour vérifier en base
+      const rawCandidate = candidate.rawData || candidate;
+      const jobId = rawCandidate.post ||
+                    candidate.post ||
+                    rawCandidate.offre?.reference || 
+                    candidate.offre?.reference || 
+                    rawCandidate.offre?.job_id || 
+                    candidate.offre?.job_id || 
+                    candidate.offre_id || 
+                    rawCandidate.offre_id || 
+                    rawCandidate.application?.offer_id || 
+                    '';
+      
+      // ÉTAPE 1: Vérifier d'abord le cache mémoire
+      let cachedEvaluation = cache.get<any>(cacheKey);
+      console.log(`🔍 [Cache] Vérification cache mémoire - candidat ${candidateId}, trouvé: ${!!cachedEvaluation}`);
+      
+      // ÉTAPE 2: Si pas en mémoire, vérifier en base de données
+      if (!cachedEvaluation && jobId) {
+        try {
+          const { getCachedEvaluation } = await import('@/services/candidateEvaluationCache');
+          const dbCached = await getCachedEvaluation(candidateId, jobId);
+          if (dbCached) {
+            console.log(`✅ [Cache] Évaluation trouvée en base de données pour ${candidate.firstName} ${candidate.lastName}`);
+            // Mettre en cache mémoire pour les prochaines fois
+            cache.set(cacheKey, dbCached, 1000 * 60 * 30); // 30 minutes
+            cachedEvaluation = dbCached;
+          }
+        } catch (err) {
+          console.warn('⚠️ [Cache] Erreur lors de la vérification en base:', err);
+        }
+      }
+      
+      // ÉTAPE 3: Si trouvé (en mémoire ou en base), utiliser le cache
+      if (cachedEvaluation) {
+        console.log(`✅ [Cache] Évaluation trouvée en cache pour ${candidate.firstName} ${candidate.lastName} - PAS D'APPEL API`);
         
-        // IMPORTANT: Sauvegarder aussi en base de données pour les prochaines fois
-        const { saveCachedEvaluation } = await import('@/services/candidateEvaluationCache');
-        const rawCandidate = candidate.rawData || candidate;
-        const jobId = rawCandidate.post ||
-                      candidate.post ||
-                      rawCandidate.offre?.reference || 
-                      candidate.offre?.reference || 
-                      rawCandidate.offre?.job_id || 
-                      candidate.offre?.job_id || 
-                      candidate.offre_id || 
-                      rawCandidate.offre_id || 
-                      rawCandidate.application?.offer_id || 
-                      '';
-        
-        console.log(`🔍 [Cache] Diagnostic pour candidat ${candidateId}:`, {
-          jobId,
-          hasCachedEvaluation: !!cachedEvaluation,
-          rawCandidatePost: rawCandidate.post,
-          candidatePost: candidate.post,
-          offreReference: rawCandidate.offre?.reference || candidate.offre?.reference,
-        });
-        
-        if (jobId && cachedEvaluation) {
-          console.log(`💾 [Cache] Sauvegarde de l'évaluation existante en base pour candidat ${candidateId}, poste ${jobId}`);
-          try {
-            const saved = await saveCachedEvaluation(candidateId, jobId, cachedEvaluation, 78, 78);
-            if (saved) {
-              console.log(`✅ [Cache] Évaluation sauvegardée en base avec succès pour ${candidate.firstName} ${candidate.lastName}`);
-            } else {
-              console.warn(`⚠️ [Cache] Échec de la sauvegarde en base pour ${candidate.firstName} ${candidate.lastName}`);
+        // Sauvegarder en base si pas déjà fait (pour migration)
+        if (jobId) {
+          (async () => {
+            try {
+              const { saveCachedEvaluation } = await import('@/services/candidateEvaluationCache');
+              await saveCachedEvaluation(candidateId, jobId, cachedEvaluation, 78, 78);
+            } catch (err) {
+              // Ignorer les erreurs de sauvegarde (déjà en base probablement)
             }
-          } catch (err) {
-            console.error('❌ [Cache] Erreur lors de la sauvegarde en base:', err);
-          }
-        } else {
-          if (!jobId) {
-            console.warn(`⚠️ [Cache] job_id vide pour ${candidate.firstName} ${candidate.lastName} - impossible de sauvegarder en base`);
-          }
-          if (!cachedEvaluation) {
-            console.warn(`⚠️ [Cache] Évaluation manquante pour ${candidate.firstName} ${candidate.lastName}`);
-          }
+          })();
         }
         
-        setEvaluationData(cachedEvaluation);
+        if (!isBackground) {
+          setEvaluationData(cachedEvaluation);
+        }
         setCandidateEvaluations(prev => ({
           ...prev,
           [candidateId]: cachedEvaluation
         }));
-        return;
+        return; // ✅ RETOUR IMMÉDIAT - PAS D'APPEL API
       }
       
       // Ne pas afficher le loader si c'est une évaluation en arrière-plan
@@ -950,8 +955,7 @@ export default function Traitements_IA() {
         return;
       }
 
-      // Préparer les données au format Azure Container Apps API
-      const rawCandidate = candidate.rawData || candidate;
+      // rawCandidate est déjà déclaré au début de la fonction
       
       // Récupérer le CV et la lettre de motivation depuis l'API
       let cvContent = 'CV non disponible';
@@ -1011,17 +1015,7 @@ export default function Traitements_IA() {
         }
       }
       
-      // PRIORITÉ ABSOLUE à post (champ direct) ou offre?.reference qui est le champ utilisé par l'API SEEG
-      const jobId = rawCandidate.post ||
-                    candidate.post ||
-                    rawCandidate.offre?.reference || 
-                    candidate.offre?.reference || 
-                    rawCandidate.offre?.job_id || 
-                    candidate.offre?.job_id || 
-                    candidate.offre_id || 
-                    rawCandidate.offre_id || 
-                    rawCandidate.application?.offer_id || 
-                    '';
+      // jobId est déjà déclaré au début de la fonction
       
       // Récupérer les données MTP au bon format (déjà des chaînes de texte)
       console.log('🔍 [DEBUG] Recherche des données MTP...');
