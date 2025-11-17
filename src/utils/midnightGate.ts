@@ -34,7 +34,7 @@ export function isAfterMidnightInternal(now: Date = new Date()): boolean {
  * @returns true si les inscriptions externes doivent être désactivées
  */
 export function isExternalRegistrationDisabled(now: Date = new Date()): boolean {
-  return isAfterMidnight(now);
+  return false; // Désactivations temporairement désactivées
 }
 
 /**
@@ -43,7 +43,7 @@ export function isExternalRegistrationDisabled(now: Date = new Date()): boolean 
  * @returns true si les candidatures externes doivent être désactivées
  */
 export function isExternalApplicationDisabled(now: Date = new Date()): boolean {
-  return isAfterMidnight(now);
+  return false; // Désactivations temporairement désactivées
 }
 
 /**
@@ -52,7 +52,7 @@ export function isExternalApplicationDisabled(now: Date = new Date()): boolean {
  * @returns true si les inscriptions internes doivent être désactivées
  */
 export function isInternalRegistrationDisabled(now: Date = new Date()): boolean {
-  return isAfterMidnightInternal(now);
+  return false; // Désactivations temporairement désactivées
 }
 
 /**
@@ -61,7 +61,7 @@ export function isInternalRegistrationDisabled(now: Date = new Date()): boolean 
  * @returns true si les candidatures internes doivent être désactivées
  */
 export function isInternalApplicationDisabled(now: Date = new Date()): boolean {
-  return isAfterMidnightInternal(now);
+  return false; // Désactivations temporairement désactivées
 }
 
 /**

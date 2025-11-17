@@ -891,7 +891,11 @@ export default function Traitements_IA() {
         return;
       }
 
-      // Les variables cand, rawCandidate et jobId sont déjà déclarées plus haut dans la fonction
+      // Cast pour éviter les problèmes de types entre CandidateApplication et CandidateAIData
+      const cand = candidate as any;
+      
+      // Préparer les données au format Azure Container Apps API
+      const rawCandidate = cand.rawData || cand;
       
       // Récupérer le CV et la lettre de motivation depuis l'API
       let cvContent = 'CV non disponible';
@@ -951,7 +955,17 @@ export default function Traitements_IA() {
         }
       }
       
-      // jobId est déjà déclaré plus haut dans la fonction (ligne 825)
+      // PRIORITÉ ABSOLUE à post (champ direct) ou offre?.reference qui est le champ utilisé par l'API SEEG
+      const jobId = rawCandidate.post ||
+                    cand.post ||
+                    rawCandidate.offre?.reference || 
+                    cand.offre?.reference || 
+                    rawCandidate.offre?.job_id || 
+                    cand.offre?.job_id || 
+                    cand.offre_id || 
+                    rawCandidate.offre_id || 
+                    rawCandidate.application?.offer_id || 
+                    '';
       
       // Récupérer les données MTP au bon format (déjà des chaînes de texte)
       console.log('🔍 [DEBUG] Recherche des données MTP...');
