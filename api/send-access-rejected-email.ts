@@ -75,7 +75,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
 
     const serif = ", Georgia, serif";
-    const title = sexe === 'F' ? 'Madame' : 'Monsieur';
+    // Utilisation de "Monsieur/Madame" pour éviter les problèmes de détermination du sexe
+    const title = 'Monsieur/Madame';
 
     const rejectedEmailHtml = `
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="left" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;margin:0 !important;padding:0 !important;">
