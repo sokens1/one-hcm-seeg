@@ -13,6 +13,7 @@ interface NetworkInfo {
   rtt?: number; // ms (round-trip time)
   saveData?: boolean;
   online: boolean;
+  type?: string; // Type de connexion (wifi, cellular, etc.)
 }
 
 export function NetworkIndicator() {
@@ -31,13 +32,47 @@ export function NetworkIndicator() {
 
       if (connection) {
         const newRtt = connection.rtt || 0;
+        const downlink = connection.downlink || 0;
+        const effectiveType = connection.effectiveType || 'unknown';
+        const connectionType = connection.type || 'unknown';
+        
+        // Détection améliorée : utiliser downlink et rtt pour mieux détecter les changements
+        // Si downlink est très élevé (> 10 Mbps) et rtt faible (< 50ms), c'est probablement 4G/5G
+        // Si downlink est moyen (1-10 Mbps), c'est probablement 3G
+        // Si downlink est faible (< 1 Mbps) ou rtt élevé (> 200ms), c'est probablement 2G
+        
+        let detectedType = effectiveType;
+        
+        // Si effectiveType est '4g' mais les métriques suggèrent autre chose, ajuster
+        if (effectiveType === '4g' || effectiveType === 'unknown') {
+          if (downlink > 0) {
+            if (downlink < 0.5 || newRtt > 500) {
+              detectedType = 'slow-2g';
+            } else if (downlink < 1.5 || newRtt > 200) {
+              detectedType = '2g';
+            } else if (downlink < 5 || newRtt > 100) {
+              detectedType = '3g';
+            } else {
+              detectedType = '4g';
+            }
+          }
+        }
+        
+        console.log('🔍 [NetworkIndicator] Mise à jour:', {
+          effectiveType: connection.effectiveType,
+          detectedType,
+          downlink,
+          rtt: newRtt,
+          type: connectionType,
+        });
         
         setNetworkInfo({
-          effectiveType: connection.effectiveType || 'unknown',
-          downlink: connection.downlink,
+          effectiveType: detectedType,
+          downlink: downlink,
           rtt: newRtt,
           saveData: connection.saveData,
           online: navigator.onLine,
+          type: connectionType,
         });
 
         // Mettre à jour l'historique pour calculer la variance
